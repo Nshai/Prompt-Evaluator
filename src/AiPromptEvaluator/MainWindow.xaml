@@ -1,0 +1,69 @@
+﻿<Window x:Class="AiPromptEvaluator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="AI Prompt Evaluator" Height="720" Width="1100">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Header="Configuration" Grid.Row="0" Margin="0,0,0,8">
+            <Grid Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Edit the application settings for Anthropic connection, models, and document context." VerticalAlignment="Center"/>
+                <Button Grid.Column="1" Content="Open Config" Padding="10,4" Click="OpenConfigButton_Click"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Prompt Context" Grid.Row="1" Margin="0,0,0,8">
+            <Grid Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="DocumentFolderBox" Grid.Column="0" Margin="0,0,8,0" Text="{Binding DocumentFolder, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button x:Name="BrowseFolderButton" Grid.Column="1" Content="Browse Folder" Padding="10,4" Click="BrowseFolderButton_Click"/>
+            </Grid>
+        </GroupBox>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Content="Prompt" FontWeight="Bold"/>
+            <TextBox x:Name="PromptBox" Grid.Row="1" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Margin="0,0,0,8" Text="{Binding Prompt, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <CheckBox x:Name="ClarificationCheckBox" Grid.Row="2" Content="Ask for clarification when the prompt is ambiguous" Margin="0,0,0,8" IsChecked="{Binding AskClarification}"/>
+
+            <Label Grid.Row="3" Content="Response" FontWeight="Bold"/>
+            <TextBox x:Name="ResponseBox" Grid.Row="3" Margin="0,24,0,0" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding Response}"/>
+        </Grid>
+
+        <Grid Grid.Row="3" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="RunButton" Grid.Column="0" Content="Run Prompt" Padding="12,6" Margin="0,0,8,0" Click="RunButton_Click" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}"/>
+            <TextBlock x:Name="CostTextBlock" Grid.Column="1" VerticalAlignment="Center" Text="{Binding CostText}" FontWeight="SemiBold"/>
+            <Button x:Name="SaveSettingsButton" Grid.Column="2" Content="Save Settings" Padding="10,6" Margin="0,0,8,0" Click="SaveSettingsButton_Click"/>
+            <Button x:Name="ClearButton" Grid.Column="3" Content="Clear" Padding="10,6" Click="ClearButton_Click"/>
+        </Grid>
+    </Grid>
+</Window>

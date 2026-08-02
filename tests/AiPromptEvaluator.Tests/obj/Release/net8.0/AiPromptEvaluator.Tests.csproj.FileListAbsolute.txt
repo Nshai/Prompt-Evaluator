@@ -1,0 +1,5 @@
+C:\Work\Ai-Prompt-Evaluator\tests\AiPromptEvaluator.Tests\obj\Release\net8.0\AiPromptEvaluator.Tests.csproj.AssemblyReference.cache
+C:\Work\Ai-Prompt-Evaluator\tests\AiPromptEvaluator.Tests\obj\Release\net8.0\AiPromptEvaluator.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Work\Ai-Prompt-Evaluator\tests\AiPromptEvaluator.Tests\obj\Release\net8.0\AiPromptEvaluator.Tests.AssemblyInfoInputs.cache
+C:\Work\Ai-Prompt-Evaluator\tests\AiPromptEvaluator.Tests\obj\Release\net8.0\AiPromptEvaluator.Tests.AssemblyInfo.cs
+C:\Work\Ai-Prompt-Evaluator\tests\AiPromptEvaluator.Tests\obj\Release\net8.0\AiPromptEvaluator.Tests.csproj.CoreCompileInputs.cache

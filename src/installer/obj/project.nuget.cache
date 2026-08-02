@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "nJwXL0U259g=",
+  "success": true,
+  "projectFilePath": "C:\\Work\\Ai-Prompt-Evaluator\\src\\installer\\AiPromptEvaluator.wixproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\najaf\\.nuget\\packages\\wixtoolset.heat\\6.0.0\\wixtoolset.heat.6.0.0.nupkg.sha512",
+    "C:\\Users\\najaf\\.nuget\\packages\\wixtoolset.ui.wixext\\6.0.0\\wixtoolset.ui.wixext.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,80 @@
+<Window x:Class="AiPromptEvaluator.ConfigurationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Configuration" Height="560" Width="760">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Update the application settings used by the prompt evaluator." FontWeight="SemiBold" Margin="0,0,0,8"/>
+
+        <GroupBox Header="Connection" Grid.Row="1" Margin="0,0,0,8">
+            <Grid Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Anthropic API Key"/>
+                <PasswordBox x:Name="ApiKeyBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,6" PasswordChanged="ApiKeyBox_PasswordChanged"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Anthropic Base URL"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,6" Text="{Binding BaseUrl, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Models" Grid.Row="2" Margin="0,0,0,8">
+            <Grid Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Available Models"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,6" Text="{Binding ModelsText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Selected Model"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,6" ItemsSource="{Binding Models}" SelectedItem="{Binding SelectedModel, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Context" Grid.Row="3" Margin="0,0,0,8">
+            <Grid Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" Content="Document Folder"/>
+                <TextBox Grid.Column="1" Margin="0,0,8,0" Text="{Binding DocumentFolder, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Grid.Column="2" Content="Browse" Padding="10,4" Click="BrowseButton_Click"/>
+            </Grid>
+        </GroupBox>
+
+        <CheckBox Grid.Row="4" Content="Ask for clarification when the prompt is ambiguous" Margin="0,0,0,8" IsChecked="{Binding AskClarification}"/>
+
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <Button Content="Save" Padding="12,6" Margin="0,0,8,0" Click="SaveButton_Click"/>
+            <Button Content="Cancel" Padding="12,6" Click="CancelButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

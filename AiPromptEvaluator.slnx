@@ -3,7 +3,7 @@
     <Project Path="src/AiPromptEvaluator/AiPromptEvaluator.csproj" />
   </Folder>
   <Folder Name="/src/installer/">
-    <Project Path="src/installer/AiPromptEvaluator.wixproj" Type="b7dd6f7e-def8-4e67-b5b7-07ef123db6f0" />
+    <Project Path="src/installer/AiPromptEvaluator.Installer.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/AiPromptEvaluator.Tests/AiPromptEvaluator.Tests.csproj" />

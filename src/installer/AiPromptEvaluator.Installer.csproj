@@ -1,0 +1,74 @@
+<!--
+  MSI installer project.
+
+  This is a plain SDK-style project so it loads in Visual Studio 2022 and 2026
+  without the WiX Visual Studio extension. It compiles no code; building it
+  publishes the application and then invokes the WiX CLI (restored as a local
+  dotnet tool from .config/dotnet-tools.json) to produce the MSI.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Matches the app's TFM so the ProjectReference below is accepted. -->
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <IsPackable>false</IsPackable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- CS2008: no source files. This project intentionally has none. -->
+    <NoWarn>$(NoWarn);CS2008</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ProductVersion Condition="'$(ProductVersion)' == ''">1.0.0.0</ProductVersion>
+    <InstallerArchitecture Condition="'$(InstallerArchitecture)' == ''">x64</InstallerArchitecture>
+    <InstallerRuntimeIdentifier Condition="'$(InstallerRuntimeIdentifier)' == ''">win-x64</InstallerRuntimeIdentifier>
+    <!-- false: requires the .NET 8 Desktop Runtime on the target machine.
+         true: bundles the runtime, producing a much larger but self-sufficient MSI. -->
+    <InstallerSelfContained Condition="'$(InstallerSelfContained)' == ''">false</InstallerSelfContained>
+
+    <AppProjectPath>$(MSBuildThisFileDirectory)..\AiPromptEvaluator\AiPromptEvaluator.csproj</AppProjectPath>
+    <StageDir>$(MSBuildThisFileDirectory)obj\stage\$(Configuration)</StageDir>
+    <MsiOutputDir>$(MSBuildThisFileDirectory)bin\$(Configuration)</MsiOutputDir>
+    <MsiOutputPath>$(MsiOutputDir)\AiPromptEvaluator.msi</MsiOutputPath>
+    <RepoRoot>$(MSBuildThisFileDirectory)..\..\</RepoRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Package.wxs" />
+    <None Include="README.md" />
+  </ItemGroup>
+
+  <!-- Build the app first so the MSI never packages a stale binary. -->
+  <ItemGroup>
+    <ProjectReference Include="$(AppProjectPath)" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <Target Name="PublishApplicationForInstaller">
+    <RemoveDir Directories="$(StageDir)" />
+    <MakeDir Directories="$(StageDir);$(MsiOutputDir)" />
+
+    <Exec Command="dotnet publish &quot;$(AppProjectPath)&quot; --configuration $(Configuration) --runtime $(InstallerRuntimeIdentifier) --self-contained $(InstallerSelfContained) --output &quot;$(StageDir)&quot;"
+          WorkingDirectory="$(RepoRoot)" />
+  </Target>
+
+  <!-- No Inputs/Outputs: the payload is re-published on every build, so an
+       incremental check against Package.wxs alone would ship a stale MSI
+       whenever only application code changed. -->
+  <Target Name="BuildMsi"
+          AfterTargets="Build"
+          DependsOnTargets="PublishApplicationForInstaller">
+
+    <Exec Command="dotnet tool restore" WorkingDirectory="$(RepoRoot)" />
+
+    <Exec Command="dotnet wix build &quot;$(MSBuildThisFileDirectory)Package.wxs&quot; -arch $(InstallerArchitecture) -d HarvestDir=&quot;$(StageDir)&quot; -d ProductVersion=$(ProductVersion) -out &quot;$(MsiOutputPath)&quot;"
+          WorkingDirectory="$(RepoRoot)" />
+
+    <Message Importance="high" Text="Installer written to $(MsiOutputPath)" />
+  </Target>
+
+  <Target Name="CleanMsi" AfterTargets="Clean">
+    <RemoveDir Directories="$(StageDir);$(MsiOutputDir)" />
+  </Target>
+
+</Project>

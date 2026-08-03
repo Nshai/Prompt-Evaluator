@@ -1,5 +1,0 @@
-C:\Work\Ai-Prompt-Evaluator\src\installer\obj\Release\AiPromptEvaluator.wixproj.CoreCompileInputs.cache
-C:\Work\Ai-Prompt-Evaluator\src\installer\obj\Release\AiPromptEvaluator1.cab
-C:\Work\Ai-Prompt-Evaluator\src\installer\obj\Release\AiPromptEvaluator.msi
-C:\Work\Ai-Prompt-Evaluator\src\installer\obj\Release\AiPromptEvaluator.wixpdb
-C:\Work\Ai-Prompt-Evaluator\src\installer\obj\Release\AiPromptEvaluator.wixproj.BindTracking-neutral.txt

@@ -150,7 +150,7 @@ partial class ConfigurationForm
         baseUrlLabel.Anchor = AnchorStyles.Left;
         baseUrlLabel.AutoSize = true;
         baseUrlLabel.Name = "baseUrlLabel";
-        baseUrlLabel.Text = "API URL format";
+        baseUrlLabel.Text = "API base URL";
 
         // baseUrlTextBox
         baseUrlTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
@@ -163,7 +163,7 @@ partial class ConfigurationForm
         baseUrlHintLabel.ForeColor = SystemColors.GrayText;
         baseUrlHintLabel.Margin = new Padding(0, 0, 8, 3);
         baseUrlHintLabel.Name = "baseUrlHintLabel";
-        baseUrlHintLabel.Text = "Leave empty for the default. {0} is the API version, {1} the endpoint.";
+        baseUrlHintLabel.Text = "Leave empty for the default. Enter a base URL (e.g. https://litellm.example.com) or a full format string where {0}=version, {1}=endpoint.";
 
         // modelsGroup
         modelsGroup.AutoSize = true;

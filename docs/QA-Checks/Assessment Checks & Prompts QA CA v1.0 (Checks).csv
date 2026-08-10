@@ -1,0 +1,175 @@
+Check ID,Check Name,Applies To,Regulatory Basis,Primary Document Categories,Prompt,What to Look For,Decision Logic
+"CHK-001
+",Suitability completeness against client information ,All advised investment and pension cases,Not required for this check,"Client Authority (A)
+Know Your Client (B)
+Meeting & Communications (C)
+Recommendations & Advice (I)",Where client information/facts have been included in the Suitability Report they are consistent with the evidence provided?,"Look for data mismatches and unsupported figures. 
+- Essential facts (personal details, tax status, employment etc.)
+- Financial situation (income/expenditure, assets/liabilities & state pension entitlement)
+- Existing products (pensions and investments)
+","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required
+ 
+N/A: trigger absent."
+CHK-002,"Objectives, Needs and Time-Horizon Alignment",All advised investment and pension cases,COBS 9.2.1R–9.2.2R; COBS 9A.2.1R–9A.2.2R; PRIN 2A.,"Know Your Client (B)
+Meetings & Communications (C)
+Needs Analysis (F)
+Recommendations & Advice (I)","Are the details of the recommendations and goals consistent with the evidence provided?
+
+
+
+","Consistency:
+- Stated goals and their priority order
+- Retirement target date and investment time horizon details
+- Access requirements (emergency, planned and ad-hoc)
+- foreseeable life changes
+Appropriateness:
+- Conflicting goals
+- Recommendations aren't appropriate for stated goals based on access needs and investment term with foreseeable life changes factored in.
+","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required
+ 
+N/A: trigger absent."
+CHK-003,"Risk, Capacity for Loss and Investment Strategy Match",All investment and pension accumulation/decumulation cases,COBS 9.2.1R–9.2.2R; COBS 9A.2.1R–9A.,"Know Your Client (B)
+Risk, Capacity & Experience (D)
+Existing Plans & Portfolios (E)
+Research (G)
+Recommendations & Advice (I)","Where the Suitability Report includes portfolio /product investment strategy recommendations, are they consistent with the evidence provided.
+
+Where the Suitability Report includes information relating to the client's attitude to risk, capacity for loss, tolerance for loss/need level risk and investment term it is consistent with the evidence provided?
+","Consistency:
+- Risk rating and summary
+- CFL assessment
+- Time horizon
+- investment strategy and asset allocation
+- How recommendation and strategy aligns with risk profile (covering atr, cfl, time horizon and investment strategy)
+Appropriateness:
+- Recommendation/strategy exceeds risk tolerence (taking account of risk and tolerance for loss).
+","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required. 
+
+N/A: trigger absent."
+CHK-004,"Knowledge, Experience and Product Complexity",All advised investment and pension cases,COBS 9.2.1R–9.2.2R; COBS 9A.2.1R–9A.2.2R; PRIN ,"Know Your Client (B)
+Meetings & Communications (C)
+Research (G)
+Solution Design (H)
+Recommendations & Advice (I)","Where knoweledge, experience and product details are included in the Suitability Report are they consistent with the evidence provided?","Consistency
+- Client's stated product/investment knowledge level
+- Previous investment/pensions experience
+- Existing products (pensions and investments)
+- Complexity of recommended products/investments including risks and features
+Appropriateness:
+- Recommended product/investment too complex for stated level of knowledge and understanding
+- Misinterpreted level of knowledge stated by the client
+- No evidence or minimal evidence to suggest client can evaluate risks and features of a complex product (based on client questions and comprehension).","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required. 
+
+
+N/A: trigger absent."
+CHK-005,"Financial Resilience, Affordability and Liquidity","All cases involving capital, contributions, withdrawals or charges",COBS 9.2.1R–9.2.2R; COBS 9A.2.1R–9A.2.2R; PRIN 2A.,"Know Your Client (B)
+Needs Analysis (F)
+Recommendations & Advice (I)","Can the client afford the recommendations in the Suitability Report, consideriing initial and ongoing commitment, and acces to funds for emergencies, planned spending and foreseeable needs?
+
+Is the affordability consistent with the evidence across those documents?","Consistency:
+- Affordability of initial and ongoing commitments (contributions)
+- Financial situation (income/expenditure, assets/liabilities & state pension entitlement) + cashflow
+- Emergency fund and liquidity needs (both foreseeable and unforeseeable needs)
+Appropriateness:
+- Initial and ongoing commitments are unaffordable based on income, expenditure and cashflow
+- Recommendation hasn't taken into account emergency funds and liquidity/withdrawal needs or are depleted/unavailable at the point they are required.
+- Liquidity mismatch with access needs.","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required
+
+
+N/A: trigger absent."
+CHK-006,Recommendation Rationale and Suitable Alternatives,All cases requiring a suitability report,COBS 9.4.1R–9.4.2R; COBS 9A.3.1R–9A.3.3R where applicable; PRIN 2A,"Know Your Client (B)
+Meetings & Communications (C)
+Needs Analysis (F)
+Research (G)
+Recommendations & Advice (I)","Where the Suitability Report includes rationale i.e. why the recommendations are suitable based on the client's goals, and details of any alternative solutions that were considered, are they consistent with the evidence provided?
+
+Does the Suitability Report include rationale and explanations, in client-specific terms, why the recommended product, provider, wrapper, investment solution and strategy meet the client's demands and needs (goals), including relevant alternatives?
+
+","Consistency only:
+- Client-specific rationale for each recommendation based on and linked to specified goals i.e. why recommendation is suitable
+- Jusitification for particular product, provider, wrapper, investment etc.
+- Personalised language linked to individual circumstances
+- Any alternatives considered and reasons for rejection","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required
+
+N/A: trigger absent."
+CHK-007,"Costs, Charges and Value of the Recommendation",All advised investment and pension cases,COBS 6.1ZA (where applicable); COBS 6.1; COBS 9.2.2R; PRIN 2A.4,"Know Your Client (B)
+Meetings & Communications (C)
+Existing Plans & Portfolios (E)
+Needs Analysis (F)
+Research (G)
+Solution Design (H)
+Recommendations & Advice (I)","Where the Suitability Report includes details of costs, charges and value of recommendations, are they consistent with the evidence provided?
+
+Where the Suitability Report does include a costs and charges section does it include all material initial, ongoing, product, platform, investment transaction costs and advice fees where relevant to the recommendation?
+","Consistency:
+- All materical costs/charges disclosed (advice, platform, fund, transaction etc.). Including intitial and ongoing.
+- Cumulative impact of costs/charges 
+- Cost comparison with alternative options
+- Benefit vs cost
+Appropriateness:
+- Costs excessive relative to benefits provided.
+- Alternatives provide better cost/benefit to client","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required
+
+N/A: trigger absent."
+CHK-008,"Disadvantages, Risks and Customer Understanding",All advised investment and pension cases,COBS 9.4.7R; COBS 4.2.1R; PRIN 2A.5; COBS 2.1.1R,"Know Your Client (B)
+Meetings & Communications (C)
+Research (G)
+Solution Design (H)
+Recommendations & Advice (I)","Where the Suitability Report includes details of disadvantages and risks in relation to the recommendations, are they consistent with the evidence provided?
+
+Does the Suitability Report fairly and prominently explain material disadvantages, risk factors, limitations, tax consequences and loss scenarios?","Consistency Only:
+- Material disadvantages, risk factors and limitations and tax consequences of recommendation.
+- Investment and product-specific risks explained
+- Loss scenarios illustrated","No Issue: evidence complete, consistent and supports outcome.
+
+Potential Concern: material clarification or additional evidence required. 
+
+N/A: trigger absent."
+CHK-009,Replacement or Switch Justification,Replacement/switch cases only; N/A otherwise,COBS 9.2.2R; COBS 9.2.5R; COBS 9A.2.18R where applicable; COBS 2.1.1R,"Know Your Client (B)
+Existing Plans & Portfolios (E)
+Needs Analysis (F)
+Research (G)
+Solution Design (H)
+Recommendations & Advice (I)","Where the Suitability Report includes details of product replacement or switch in recommendations, are they consistent with the evidence provided?
+","Consistency:
+- Comparision of existing vs recommended product/investments
+- Benefits and costs of switching - including where benefits outweigh higher costs of the recommended product/investment
+- Details of lost features and/or guarantees
+- Alternatives considered
+Appropriateness:
+- Switching costs exceed benefits
+- lost guarantees and/or benefits disadvantage the client
+- other alternatives provide better outcomes for the client ","No Issue: evidence complete, consistent and supports outcome. 
+
+N/A: trigger absent."
+CHK-010,"Vulnerability, Support Needs and Foreseeable Harm Overlay",All cases as an overlay; enhanced where vulnerability is present,PRIN 2A.2.1R; PRIN 2A.5; PRIN 2A.6; FCA FG21/1,"Client Authority (A)
+Know Your Client (B)
+Meetings & Communications (C)
+Recommendations & Advice (I)","Where the Suitability Report includes details of needs and adjustments or duty of care resulting from client vulnerabilities, are they consistent with the evidence provided?
+
+*Wherever we assess the appropriateness of recommendations (through all the prompts) they should consider any characteristics of vulnerability that the client may have and any needs and adjustments that have been agreed in the evidence provided.","Consistency:
+- Details of additional support and needs, including where third party support has been requested
+- Communication preferences and formats 
+- Adjustments to support client comprehension
+Appropriateness (overlay):
+ - Vulnerability has a material impact on the recommendation
+
+","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required. 
+
+N/A: trigger absent."

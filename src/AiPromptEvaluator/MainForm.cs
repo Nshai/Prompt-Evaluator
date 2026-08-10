@@ -5,11 +5,13 @@ public partial class MainForm : Form
     private readonly AppSettings _settings;
     private bool _suppressSettingsSync;
 
-    public MainForm()
+    public MainForm() : this(SettingsStorage.Load()) { }
+
+    public MainForm(AppSettings settings)
     {
         InitializeComponent();
 
-        _settings = SettingsStorage.Load();
+        _settings = settings;
         LoadSettingsIntoUi();
         ShowBreakdown(CostBreakdown.Empty(_settings.SelectedModel));
     }
@@ -98,6 +100,34 @@ public partial class MainForm : Form
         {
             documentFolderTextBox.Text = dialog.SelectedPath;
         }
+    }
+
+    private void CategoriseButton_Click(object? sender, EventArgs e)
+    {
+        var folder = documentFolderTextBox.Text.Trim();
+        if (!Directory.Exists(folder))
+        {
+            MessageBox.Show(this, "Please select a valid document folder first.", "No folder",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        using var form = new DocumentCategorizerForm(folder, _settings.DocumentCategories);
+        if (form.ShowDialog(this) == DialogResult.OK)
+        {
+            _settings.DocumentCategories = new Dictionary<string, string>(form.Categories);
+        }
+    }
+
+    private void OpenCheckEvaluatorButton_Click(object? sender, EventArgs e)
+    {
+        var form = new CheckEvaluatorForm(_settings);
+        form.Location = Location;
+        form.Size = Size;
+        form.WindowState = WindowState;
+        form.FormClosed += (_, _) => Show();
+        Hide();
+        form.Show();
     }
 
     private void OpenConfigButton_Click(object? sender, EventArgs e)

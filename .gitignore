@@ -10,3 +10,6 @@ obj/
 ## Installer output
 *.msi
 *.wixpdb
+
+## Office lock files
+~$*

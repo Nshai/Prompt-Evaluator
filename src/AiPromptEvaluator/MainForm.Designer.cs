@@ -9,11 +9,13 @@ partial class MainForm
     private Label modelLabel;
     private ComboBox modelComboBox;
     private Button openConfigButton;
+    private Button openCheckEvaluatorButton;
     private Button saveSettingsButton;
     private GroupBox contextGroup;
     private TableLayoutPanel contextLayout;
     private TextBox documentFolderTextBox;
     private Button browseFolderButton;
+    private Button categoriseButton;
     private SplitContainer mainSplit;
     private SplitContainer promptResponseSplit;
     private GroupBox promptGroup;
@@ -52,11 +54,13 @@ partial class MainForm
         modelLabel = new Label();
         modelComboBox = new ComboBox();
         openConfigButton = new Button();
+        openCheckEvaluatorButton = new Button();
         saveSettingsButton = new Button();
         contextGroup = new GroupBox();
         contextLayout = new TableLayoutPanel();
         documentFolderTextBox = new TextBox();
         browseFolderButton = new Button();
+        categoriseButton = new Button();
         mainSplit = new SplitContainer();
         promptResponseSplit = new SplitContainer();
         promptGroup = new GroupBox();
@@ -113,10 +117,11 @@ partial class MainForm
 
         // topPanel
         topPanel.AutoSize = true;
-        topPanel.ColumnCount = 5;
+        topPanel.ColumnCount = 6;
         topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 260F));
         topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topPanel.Dock = DockStyle.Fill;
@@ -124,8 +129,9 @@ partial class MainForm
         topPanel.RowCount = 1;
         topPanel.Controls.Add(modelLabel, 0, 0);
         topPanel.Controls.Add(modelComboBox, 1, 0);
-        topPanel.Controls.Add(openConfigButton, 3, 0);
-        topPanel.Controls.Add(saveSettingsButton, 4, 0);
+        topPanel.Controls.Add(openCheckEvaluatorButton, 3, 0);
+        topPanel.Controls.Add(openConfigButton, 4, 0);
+        topPanel.Controls.Add(saveSettingsButton, 5, 0);
         topPanel.Name = "topPanel";
 
         // modelLabel
@@ -142,9 +148,18 @@ partial class MainForm
         modelComboBox.SelectedIndexChanged += ModelComboBox_Changed;
         modelComboBox.TextChanged += ModelComboBox_Changed;
 
+        // openCheckEvaluatorButton
+        openCheckEvaluatorButton.AutoSize = true;
+        openCheckEvaluatorButton.Margin = new Padding(8, 0, 8, 0);
+        openCheckEvaluatorButton.Name = "openCheckEvaluatorButton";
+        openCheckEvaluatorButton.Padding = new Padding(8, 2, 8, 2);
+        openCheckEvaluatorButton.Text = "Check Evaluator...";
+        openCheckEvaluatorButton.UseVisualStyleBackColor = true;
+        openCheckEvaluatorButton.Click += OpenCheckEvaluatorButton_Click;
+
         // openConfigButton
         openConfigButton.AutoSize = true;
-        openConfigButton.Margin = new Padding(8, 0, 8, 0);
+        openConfigButton.Margin = new Padding(0, 0, 8, 0);
         openConfigButton.Name = "openConfigButton";
         openConfigButton.Padding = new Padding(8, 2, 8, 2);
         openConfigButton.Text = "Configuration...";
@@ -172,13 +187,15 @@ partial class MainForm
 
         // contextLayout
         contextLayout.AutoSize = true;
-        contextLayout.ColumnCount = 2;
+        contextLayout.ColumnCount = 3;
         contextLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        contextLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         contextLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         contextLayout.Dock = DockStyle.Fill;
         contextLayout.RowCount = 1;
         contextLayout.Controls.Add(documentFolderTextBox, 0, 0);
         contextLayout.Controls.Add(browseFolderButton, 1, 0);
+        contextLayout.Controls.Add(categoriseButton, 2, 0);
         contextLayout.Name = "contextLayout";
 
         // documentFolderTextBox
@@ -189,12 +206,21 @@ partial class MainForm
 
         // browseFolderButton
         browseFolderButton.AutoSize = true;
-        browseFolderButton.Margin = new Padding(0);
+        browseFolderButton.Margin = new Padding(0, 0, 6, 0);
         browseFolderButton.Name = "browseFolderButton";
         browseFolderButton.Padding = new Padding(8, 2, 8, 2);
         browseFolderButton.Text = "Browse...";
         browseFolderButton.UseVisualStyleBackColor = true;
         browseFolderButton.Click += BrowseFolderButton_Click;
+
+        // categoriseButton
+        categoriseButton.AutoSize = true;
+        categoriseButton.Margin = new Padding(0);
+        categoriseButton.Name = "categoriseButton";
+        categoriseButton.Padding = new Padding(8, 2, 8, 2);
+        categoriseButton.Text = "Categorise...";
+        categoriseButton.UseVisualStyleBackColor = true;
+        categoriseButton.Click += CategoriseButton_Click;
 
         // mainSplit
         mainSplit.Dock = DockStyle.Fill;

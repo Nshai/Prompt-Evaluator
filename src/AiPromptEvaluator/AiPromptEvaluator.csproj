@@ -12,6 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Anthropic.SDK" Version="5.10.0" />
+    <PackageReference Include="Anthropic" Version="12.35.1" />
   </ItemGroup>
 </Project>

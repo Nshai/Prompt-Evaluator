@@ -4,13 +4,13 @@ namespace AiPromptEvaluator;
 
 public class AppSettings
 {
-    public const string DefaultBaseUrl = "https://api.anthropic.com/{0}/{1}";
+    public const string DefaultBaseUrl = "https://api.anthropic.com";
 
     [JsonPropertyName("anthropicApiKey")]
     public string AnthropicApiKey { get; set; } = string.Empty;
 
     /// <summary>
-    /// API URL format string. {0} is the API version, {1} the endpoint.
+    /// Plain base URL (no path/version placeholders), e.g. https://api.anthropic.com.
     /// Leave empty to use the SDK default.
     /// </summary>
     [JsonPropertyName("anthropicBaseUrl")]
@@ -31,6 +31,13 @@ public class AppSettings
 
     [JsonPropertyName("maxTokens")]
     public int MaxTokens { get; set; } = 4096;
+
+    /// <summary>Maps file name (not full path) to category label.</summary>
+    [JsonPropertyName("documentCategories")]
+    public Dictionary<string, string> DocumentCategories { get; set; } = new();
+
+    [JsonPropertyName("lastChecksCsvPath")]
+    public string LastChecksCsvPath { get; set; } = string.Empty;
 
     public List<string> ParseModels() =>
         AvailableModels

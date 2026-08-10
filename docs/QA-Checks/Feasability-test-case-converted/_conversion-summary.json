@@ -1,0 +1,257 @@
+{
+  "converted": [
+    {
+      "source": "A/IMPORT_2.PDF",
+      "category": "A",
+      "pages": 9,
+      "pdfPages": null,
+      "characters": 19418,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "A/TFAS Wealth Client Agreement Privacy.pdf",
+      "category": "A",
+      "pages": 9,
+      "pdfPages": null,
+      "characters": 27020,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "B/Fact Find (Test 1).pdf",
+      "category": "B",
+      "pages": 15,
+      "pdfPages": null,
+      "characters": 40735,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "C/File notes notes - updated.docx",
+      "category": "C",
+      "pages": 1,
+      "pdfPages": null,
+      "characters": 4567,
+      "pageProvenance": false,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "D/Risk profile report.docx",
+      "category": "D",
+      "pages": 1,
+      "pdfPages": null,
+      "characters": 15726,
+      "pageProvenance": false,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/Aviva Policy Info.pdf",
+      "category": "E",
+      "pages": 17,
+      "pdfPages": null,
+      "characters": 40946,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/People's Pension Fund FactSheet.pdf",
+      "category": "E",
+      "pages": 2,
+      "pdfPages": null,
+      "characters": 4690,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/Peoples Pension Policy Info.pdf",
+      "category": "E",
+      "pages": 25,
+      "pdfPages": null,
+      "characters": 89081,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/SW Charges Info 2.pdf",
+      "category": "E",
+      "pages": 2,
+      "pdfPages": null,
+      "characters": 3273,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/SW Further Info 4.pdf",
+      "category": "E",
+      "pages": 3,
+      "pdfPages": null,
+      "characters": 4442,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/SW Illustration 3.pdf",
+      "category": "E",
+      "pages": 4,
+      "pdfPages": null,
+      "characters": 14306,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/SW MT Plan Schedule.pdf",
+      "category": "E",
+      "pages": 3,
+      "pdfPages": null,
+      "characters": 13926,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/Scottish Widows Policy Info.pdf",
+      "category": "E",
+      "pages": 11,
+      "pdfPages": null,
+      "characters": 35684,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/Standard Life Policy illustration.pdf",
+      "category": "E",
+      "pages": 4,
+      "pdfPages": null,
+      "characters": 6786,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/Standard_Life_Policy Value.pdf",
+      "category": "E",
+      "pages": 2,
+      "pdfPages": null,
+      "characters": 1480,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/Standard_Life_Policy_Info.pdf",
+      "category": "E",
+      "pages": 11,
+      "pdfPages": null,
+      "characters": 23553,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "E/Zurich Policy Info.pdf",
+      "category": "E",
+      "pages": 41,
+      "pdfPages": null,
+      "characters": 153948,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "F/intelliflo planning Baseline scenario.pdf",
+      "category": "F",
+      "pages": 38,
+      "pdfPages": null,
+      "characters": 33208,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "F/intelliflo planning proposed scenario.pdf",
+      "category": "F",
+      "pages": 38,
+      "pdfPages": null,
+      "characters": 32549,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "G/Pension switch report - updated.docx",
+      "category": "G",
+      "pages": 1,
+      "pdfPages": null,
+      "characters": 46570,
+      "pageProvenance": false,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "G/SIPP research report.docx",
+      "category": "G",
+      "pages": 1,
+      "pdfPages": null,
+      "characters": 39301,
+      "pageProvenance": false,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "G/Test Case 1 - Policy Research -2025.xlsx",
+      "category": "G",
+      "pages": 2,
+      "pdfPages": null,
+      "characters": 42456,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "H/Fund Factsheet (1).pdf",
+      "category": "H",
+      "pages": 11,
+      "pdfPages": null,
+      "characters": 32746,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "H/Illustration - new.pdf",
+      "category": "H",
+      "pages": 8,
+      "pdfPages": null,
+      "characters": 16692,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "H/KIIDs (1).pdf",
+      "category": "H",
+      "pages": 4,
+      "pdfPages": null,
+      "characters": 25154,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "H/Key Features (1).pdf",
+      "category": "H",
+      "pages": 11,
+      "pdfPages": null,
+      "characters": 49419,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "H/Terms and conditions (1).pdf",
+      "category": "H",
+      "pages": 22,
+      "pdfPages": null,
+      "characters": 126628,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    },
+    {
+      "source": "I/Suitability Report Test 1.pdf",
+      "category": "I",
+      "pages": 21,
+      "pdfPages": null,
+      "characters": 61447,
+      "pageProvenance": true,
+      "converter": "docling-serve (do_ocr=true, to_formats=md)"
+    }
+  ],
+  "failures": []
+}

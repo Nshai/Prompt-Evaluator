@@ -217,7 +217,7 @@ partial class CheckEvaluatorForm
         browseCaseFolderButton.UseVisualStyleBackColor = true;
         browseCaseFolderButton.Click += BrowseCaseFolderButton_Click;
 
-        // loadDocsButton — uploads every file under the case folder to the Files API
+        // loadDocsButton — converts every file under the case folder into sendable form
         loadDocsButton.AutoSize = true;
         loadDocsButton.Margin = new Padding(0);
         loadDocsButton.Name = "loadDocsButton";
@@ -433,13 +433,13 @@ partial class CheckEvaluatorForm
         cancelRunButton.UseVisualStyleBackColor = true;
         cancelRunButton.Click += CancelButton_Click;
 
-        // unloadDocsButton
+        // unloadDocsButton — forgets this case folder's cached conversions
         unloadDocsButton.AutoSize = true;
         unloadDocsButton.Enabled = false;
         unloadDocsButton.Margin = new Padding(0, 0, 12, 0);
         unloadDocsButton.Name = "unloadDocsButton";
         unloadDocsButton.Padding = new Padding(12, 4, 12, 4);
-        unloadDocsButton.Text = "Unload Docs";
+        unloadDocsButton.Text = "Clear Cache";
         unloadDocsButton.UseVisualStyleBackColor = true;
         unloadDocsButton.Click += UnloadDocsButton_Click;
 

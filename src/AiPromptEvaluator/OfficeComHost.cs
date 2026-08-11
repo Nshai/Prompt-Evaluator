@@ -21,7 +21,7 @@ internal static class OfficeComHost
     /// <summary>
     /// Serialises every Office automation call in the process. Two callers starting Word or
     /// Excel at the same time would each see the other's new process in their own PID diff,
-    /// and could quit or kill an instance they don't own. Uploads still run concurrently —
+    /// and could quit or kill an instance they don't own. The load still runs concurrently —
     /// only the COM step is one-at-a-time, which is also how Office prefers to be driven.
     /// </summary>
     private static readonly SemaphoreSlim ComGate = new(1, 1);

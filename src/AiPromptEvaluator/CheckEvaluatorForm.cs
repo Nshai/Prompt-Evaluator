@@ -2,16 +2,16 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-using Anthropic.Models.Beta.Messages;
+using Anthropic.Models.Messages;
 
 namespace AiPromptEvaluator;
 
 public partial class CheckEvaluatorForm : Form
 {
     /// <summary>
-    /// How much document content one token-counting request may carry. The counting endpoint
-    /// rejects file_id sources, so documents go inline and a whole case folder easily exceeds
-    /// the request size limit — counting is therefore split into batches under this budget.
+    /// How much document content one token-counting request may carry. Documents travel
+    /// inline, so a whole case folder easily exceeds the request size limit — counting is
+    /// therefore split into batches under this budget.
     /// </summary>
     private const long CountingBatchByteBudget = 6L * 1024 * 1024;
 
@@ -25,8 +25,9 @@ public partial class CheckEvaluatorForm : Form
     private readonly AppSettings _settings;
     private readonly PromptEvaluator _evaluator;
     private readonly DoclingClient _docling;
-    private readonly AnthropicFileUploader _fileUploader;
-    private readonly UploadedFileStore? _uploadStore;
+    private readonly CaseFilePreparer _preparer;
+    private readonly PreparedFileStore? _preparedStore;
+    private readonly InlineContentCache _inlineContent = new();
     private List<AssessmentCheck> _checks = new();
     private CaseDocumentLibrary? _library;
     private CancellationTokenSource? _cts;
@@ -40,19 +41,18 @@ public partial class CheckEvaluatorForm : Form
         _evaluator = new PromptEvaluator(_settings);
         // Read the endpoint lazily so editing it in Settings takes effect without a restart.
         _docling = new DoclingClient(() => _settings.ResolveDoclingEndpoint());
-        _fileUploader = new AnthropicFileUploader(
-            _evaluator, new SpreadsheetToMarkdownConverter(_docling));
+        _preparer = new CaseFilePreparer(new SpreadsheetToMarkdownConverter(_docling));
 
-        // The upload cache is an optimisation: if the database can't be opened the app still
-        // works, it just re-uploads every time.
+        // The conversion cache is an optimisation: if the database can't be opened the app
+        // still works, it just re-converts every time.
         try
         {
-            _uploadStore = new UploadedFileStore();
+            _preparedStore = new PreparedFileStore();
         }
         catch (Exception ex)
         {
-            _uploadStore = null;
-            statusLabel.Text = $"Upload cache unavailable ({ex.Message}); files will be re-uploaded each time.";
+            _preparedStore = null;
+            statusLabel.Text = $"Conversion cache unavailable ({ex.Message}); files will be re-converted each time.";
         }
 
         caseFolderTextBox.Text = _settings.DocumentFolder;
@@ -161,16 +161,17 @@ public partial class CheckEvaluatorForm : Form
         if (dlg.ShowDialog(this) == DialogResult.OK)
         {
             caseFolderTextBox.Text = dlg.SelectedPath;
-            // A different folder invalidates any previously uploaded file_id map.
+            // A different folder invalidates the prepared documents and their encoded bytes.
             _library = null;
+            _inlineContent.Clear();
             UpdateRunAvailability();
         }
     }
 
     /// <summary>
-    /// Uploads every file under the case folder (and its sub-folders) to the Files API,
-    /// recording each returned file_id against its document category. Runs are then free
-    /// to reference the documents by file_id instead of re-uploading them.
+    /// Gets every file under the case folder (and its sub-folders) into sendable form —
+    /// converting Word to PDF and spreadsheets to Markdown — and records the result against
+    /// its document category. Runs then attach those documents inline; nothing is uploaded.
     /// </summary>
     private async void LoadDocsButton_Click(object? sender, EventArgs e)
     {
@@ -179,13 +180,6 @@ public partial class CheckEvaluatorForm : Form
         {
             MessageBox.Show(this, "Please select a valid case folder first.", "No case folder",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(_settings.AnthropicApiKey))
-        {
-            MessageBox.Show(this, "Please configure an Anthropic API key first.", "No API key",
-                MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
@@ -198,29 +192,30 @@ public partial class CheckEvaluatorForm : Form
         statusLabel.Text = "Loading documents...";
 
         responseTextBox.Clear();
-        AppendResponseLine($"Uploading documents from {caseFolder}");
+        AppendResponseLine($"Preparing documents from {caseFolder}");
         AppendResponseLine(new string('-', 72));
 
         var elapsed = Stopwatch.StartNew();
         _cts = new CancellationTokenSource();
         try
         {
-            // Uploads complete out of order, so each line carries its own running count.
+            // Conversions complete out of order, so each line carries its own running count.
             var progress = new Progress<CaseLoadProgress>(p =>
             {
-                AppendResponseLine(DescribeUpload(p));
-                statusLabel.Text = $"Uploading {p.Done}/{p.Total}...";
+                AppendResponseLine(DescribePreparation(p));
+                statusLabel.Text = $"Preparing {p.Done}/{p.Total}...";
             });
 
             var library = await CaseDocumentLibrary
-                .LoadAsync(caseFolder, _fileUploader, progress, _uploadStore, _cts.Token)
+                .LoadAsync(caseFolder, _preparer, progress, _preparedStore, _cts.Token)
                 .ConfigureAwait(true);
 
             elapsed.Stop();
 
             // Keep the library the moment it exists. Everything below is reporting, and a
-            // failure there must never throw away documents that are already uploaded.
+            // failure there must never throw away documents that are already prepared.
             _library = library;
+            _inlineContent.Clear();
 
             var summary = SummariseLoad(library, elapsed.Elapsed);
             AppendResponseLine(new string('-', 72));
@@ -265,8 +260,8 @@ public partial class CheckEvaluatorForm : Form
         }
     }
 
-    /// <summary>One line per completed upload: position, category, name, and what happened to it.</summary>
-    private static string DescribeUpload(CaseLoadProgress p)
+    /// <summary>One line per prepared file: position, category, name, and what happened to it.</summary>
+    private static string DescribePreparation(CaseLoadProgress p)
     {
         var doc = p.Document;
         var category = string.IsNullOrEmpty(doc.CategoryCode) ? "-" : doc.CategoryCode;
@@ -276,11 +271,11 @@ public partial class CheckEvaluatorForm : Form
             { Error: not null } when doc.IsExcludedSpreadsheet => $"EXCLUDED — {doc.Error}",
             { Error: not null } => $"FAILED — {doc.Error}",
             { IsExcludedSpreadsheet: true } => "EXCLUDED — unsupported spreadsheet",
-            { ReusedFromCache: true } => "reused (already uploaded)",
-            { FileId: not null, ConvertedTo: ConversionTarget.Pdf } => "uploaded (converted to PDF)",
-            { FileId: not null, ConvertedTo: ConversionTarget.Markdown } => "uploaded (converted to Markdown)",
-            { FileId: not null } => "uploaded",
-            _ => "inline text (format not supported by the Files API)",
+            { ReusedFromCache: true } => "reused (already converted)",
+            { ConvertedTo: ConversionTarget.Pdf } => "converted to PDF",
+            { ConvertedTo: ConversionTarget.Markdown } => "converted to Markdown",
+            { Kind: AnthropicFileKind.Unsupported } => "text preview (no block type accepts this format)",
+            _ => "ready",
         };
 
         return $"[{p.Done,3}/{p.Total}] {category,-3} {doc.FileName,-48} {outcome} ({p.Elapsed.TotalSeconds:0.0}s)";
@@ -289,11 +284,11 @@ public partial class CheckEvaluatorForm : Form
     private static string SummariseLoad(CaseDocumentLibrary library, TimeSpan elapsed)
     {
         var summary = new StringBuilder(
-            $"Ready: {library.UploadedCount} documents across {library.ByCategory().Count} categories in {elapsed.TotalSeconds:0.0}s");
+            $"Ready: {library.PreparedCount} documents across {library.ByCategory().Count} categories in {elapsed.TotalSeconds:0.0}s");
 
         if (library.ReusedCount > 0)
         {
-            summary.Append($", {library.ReusedCount} reused from cache, {library.FreshlyUploadedCount} uploaded");
+            summary.Append($", {library.ReusedCount} reused from cache, {library.FreshlyPreparedCount} prepared now");
         }
 
         var toPdf = library.ConvertedCount(ConversionTarget.Pdf);
@@ -310,7 +305,7 @@ public partial class CheckEvaluatorForm : Form
 
         if (library.UnsupportedCount > 0)
         {
-            summary.Append($", {library.UnsupportedCount} sent as inline text");
+            summary.Append($", {library.UnsupportedCount} sent as a text preview");
         }
 
         var excluded = library.ExcludedSpreadsheets.Count;
@@ -438,7 +433,7 @@ public partial class CheckEvaluatorForm : Form
         foreach (var file in files.OrderBy(f => f))
         {
             // Display as "CODE / filename", store full path. A tick marks documents already
-            // uploaded by "Load Docs"; an excluded spreadsheet is flagged and left unticked,
+            // prepared by "Load Docs"; an excluded spreadsheet is flagged and left unticked,
             // since a run would drop it anyway.
             var code = Path.GetFileName(Path.GetDirectoryName(file)) ?? string.Empty;
             var known = library is not null && library.TryGet(file, out var doc) ? doc : null;
@@ -446,7 +441,7 @@ public partial class CheckEvaluatorForm : Form
             var marker = known switch
             {
                 { IsExcludedSpreadsheet: true } => "✗ ",
-                { FileId: not null } => "✓ ",
+                { PreparedPath: not null } => "✓ ",
                 _ => string.Empty,
             };
 
@@ -482,7 +477,7 @@ public partial class CheckEvaluatorForm : Form
         if (library is null)
         {
             MessageBox.Show(this,
-                "Load the case documents first — click \"Load Docs\" to upload them and capture their file IDs.",
+                "Load the case documents first — click \"Load Docs\" to convert them into sendable form.",
                 "Documents not loaded", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -503,9 +498,11 @@ public partial class CheckEvaluatorForm : Form
         try
         {
             var checkPrompt = BuildCheckPromptText(check);
-            var contentBlocks = BuildDocumentBlocks(selectedFiles, library);
+            var documentBlocks = BuildDocumentBlocks(selectedFiles, library);
 
-            var result = await _evaluator.RunWithFilesAsync(checkPrompt, contentBlocks, _cts.Token).ConfigureAwait(true);
+            var result = await _evaluator
+                .RunWithDocumentsAsync(documentBlocks, checkPrompt, _cts.Token)
+                .ConfigureAwait(true);
 
             responseTextBox.Text = result.Response;
             _lastBreakdown = result.Breakdown;
@@ -540,109 +537,65 @@ public partial class CheckEvaluatorForm : Form
     }
 
     /// <summary>
-    /// Deletes this case folder's uploads from Anthropic and forgets them in SQLite, so the
-    /// next "Load Docs" uploads everything fresh.
+    /// Forgets this case folder's conversions — the SQLite records and the encoded bytes held
+    /// in memory — so the next "Load Docs" converts everything fresh. Nothing leaves the
+    /// machine and nothing is deleted remotely: documents are only ever sent inline with a run.
     ///
-    /// The file_ids come from the loaded library *and* the database, because after a restart
-    /// there is no library but the rows — and the files on Anthropic's side — are still there.
+    /// Use it when a conversion produced something wrong, or after replacing files in a way
+    /// that preserved their timestamps and sizes.
     /// </summary>
-    private async void UnloadDocsButton_Click(object? sender, EventArgs e)
+    private void UnloadDocsButton_Click(object? sender, EventArgs e)
     {
         var caseFolder = caseFolderTextBox.Text.Trim();
+        var cachedCount = CachedConversionCountFor(caseFolder);
 
-        var uploadedIds = (_library?.Documents ?? [])
-            .Where(d => !string.IsNullOrWhiteSpace(d.FileId))
-            .Select(d => d.FileId!)
-            .Concat(CachedFileIdsFor(caseFolder))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        if (uploadedIds.Count == 0)
+        if (cachedCount == 0 && _library is null)
         {
-            _library = null;
-            UpdateRunAvailability();
-            statusLabel.Text = "No uploaded documents to unload.";
+            statusLabel.Text = "Nothing to clear for this case folder.";
             return;
         }
 
         if (MessageBox.Show(this,
-                $"Delete {uploadedIds.Count} uploaded file(s) from Anthropic and clear them from the upload cache?\n\n"
-                + "The next \"Load Docs\" will upload them again.",
-                "Unload documents", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                $"Clear {cachedCount} cached conversion(s) for this case folder?\n\n"
+                + "The next \"Load Docs\" will convert everything again.",
+                "Clear cache", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
         {
             return;
         }
 
-        SetBusy(true);
-        statusLabel.Text = "Deleting uploaded documents...";
-
-        _cts = new CancellationTokenSource();
-        var deleted = 0;
-        var alreadyGone = 0;
-
         try
         {
-            foreach (var fileId in uploadedIds)
-            {
-                try
-                {
-                    await _fileUploader.DeleteUploadedFileAsync(fileId, _cts.Token).ConfigureAwait(true);
-                    deleted++;
-                }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-                catch
-                {
-                    // Already deleted server-side, or never existed. Either way the local
-                    // record is wrong and must go, or we would reuse a dead file_id forever.
-                    alreadyGone++;
-                }
-            }
-
-            var forgotten = _uploadStore?.RemoveCaseFolder(caseFolder) ?? 0;
+            var forgotten = _preparedStore?.RemoveCaseFolder(caseFolder) ?? 0;
 
             _library = null;
+            _inlineContent.Clear();
             UpdateRunAvailability();
             responseTextBox.Clear();
             ShowBreakdown(CostBreakdown.Empty(_settings.SelectedModel));
 
-            statusLabel.Text = alreadyGone > 0
-                ? $"Deleted {deleted} file(s), {alreadyGone} were already gone; cleared {forgotten} cache entries."
-                : $"Deleted {deleted} file(s) and cleared {forgotten} cache entries.";
-        }
-        catch (OperationCanceledException)
-        {
-            statusLabel.Text = $"Unload cancelled after deleting {deleted} file(s).";
+            statusLabel.Text = $"Cleared {forgotten} cached conversion(s).";
         }
         catch (Exception ex)
         {
-            statusLabel.Text = $"Failed to unload documents: {ex.Message}";
-        }
-        finally
-        {
-            _cts.Dispose();
-            _cts = null;
-            SetBusy(false);
+            statusLabel.Text = $"Failed to clear the cache: {ex.Message}";
         }
     }
 
-    /// <summary>file_ids recorded for a case folder, so a restart can still clean them up.</summary>
-    private IReadOnlyList<string> CachedFileIdsFor(string caseFolder)
+    /// <summary>How many conversions are recorded for a case folder, including from earlier sessions.</summary>
+    private int CachedConversionCountFor(string caseFolder)
     {
-        if (_uploadStore is null || string.IsNullOrWhiteSpace(caseFolder))
+        if (_preparedStore is null || string.IsNullOrWhiteSpace(caseFolder))
         {
-            return [];
+            return 0;
         }
 
         try
         {
-            return _uploadStore.GetForCaseFolder(caseFolder).Select(f => f.FileId).ToList();
+            return _preparedStore.GetForCaseFolder(caseFolder).Count;
         }
         catch
         {
-            return [];
+            return 0;
         }
     }
 
@@ -686,51 +639,26 @@ public partial class CheckEvaluatorForm : Form
     }
 
     /// <summary>
-    /// Builds the ordered content blocks for the "Supporting Documents" portion of the
-    /// request, entirely from the documents already loaded by "Load Docs" — PDFs, text
-    /// and images are referenced by their captured file_id, and formats the Files API
-    /// can't take directly (zip, ...) fall back to inline text. Spreadsheets that could not
-    /// be converted are left out entirely — their bytes carry no meaning as text. Nothing is
-    /// uploaded here: a run never touches the Files API.
+    /// Builds the "Supporting Documents" blocks for a run, from the documents already prepared
+    /// by "Load Docs". Every document travels inline — base64 for PDFs and images, text
+    /// otherwise — so the request works unchanged against Anthropic or through a LiteLLM proxy
+    /// to Bedrock, neither of which needs an upload step.
+    ///
+    /// The instruction that follows the documents is appended here rather than in the check
+    /// text, so that the check-specific wording stays after the cache breakpoint.
     /// </summary>
-    private static List<BetaContentBlockParam> BuildDocumentBlocks(List<string> filePaths, CaseDocumentLibrary library)
+    private List<ContentBlockParam> BuildDocumentBlocks(List<string> filePaths, CaseDocumentLibrary library)
     {
-        var blocks = new List<BetaContentBlockParam>();
-
-        // Only documents present in the loaded library, and sendable, can be referenced.
+        // Only documents present in the loaded library can be attached.
         var documents = filePaths
             .Select(f => library.TryGet(f, out var doc) ? doc : null)
-            .Where(d => d is not null && d.IsSendable)
+            .Where(d => d is not null)
             .Select(d => d!)
             .ToList();
 
-        if (documents.Count == 0)
-        {
-            blocks.Add(new BetaTextBlockParam { Text = "No documents are available for this check." });
-        }
-        else
-        {
-            blocks.Add(new BetaTextBlockParam { Text = "### Supporting Documents" });
+        var blocks = InlineDocumentBlocks.Build(documents, _inlineContent);
 
-            var byCategory = documents
-                .GroupBy(d => d.CategoryCode)
-                .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase);
-
-            foreach (var group in byCategory)
-            {
-                blocks.Add(new BetaTextBlockParam
-                {
-                    Text = $"#### [{group.Key}] {ResolveCategoryName(group.Key)}"
-                });
-
-                foreach (var doc in group)
-                {
-                    blocks.Add(BlockFor(doc));
-                }
-            }
-        }
-
-        blocks.Add(new BetaTextBlockParam
+        blocks.Add(new TextBlockParam
         {
             Text = "Based on the documents above, assess this check and state your finding as one of: **No Issue**, **Potential Concern**, or **N/A**. Provide a concise explanation referencing specific evidence."
         });
@@ -739,103 +667,9 @@ public partial class CheckEvaluatorForm : Form
     }
 
     /// <summary>
-    /// One content block per document: a file_id reference for PDFs/text/images, or an
-    /// inline text preview for formats the Files API can't take directly.
-    /// </summary>
-    private static BetaContentBlockParam BlockFor(CaseDocument doc) => doc.Kind switch
-    {
-        AnthropicFileKind.Document => new BetaRequestDocumentBlock
-        {
-            Source = new BetaFileDocumentSource(doc.FileId!),
-            Title = $"[{doc.CategoryCode}] {doc.FileName}",
-            Context = doc.CategoryName,
-        },
-        AnthropicFileKind.Image => new BetaImageBlockParam
-        {
-            Source = new BetaFileImageSource(doc.FileId!),
-        },
-        // A Word document we failed to convert would be binary noise as inline text.
-        _ when doc.Error is not null => new BetaTextBlockParam
-        {
-            Text = $"--- File: {doc.FileName} (could not be converted: {doc.Error}) ---",
-        },
-        _ => new BetaTextBlockParam { Text = BuildInlineTextBlock(doc.FilePath, doc.FileName) },
-    };
-
-    /// <summary>
-    /// The counting equivalent of <see cref="BlockFor"/>. The token-counting endpoint rejects
-    /// file_id sources outright ("File sources are not supported in the token counting
-    /// endpoint"), so the same bytes are sent inline instead — base64 for PDFs, plain text
-    /// otherwise. Token counting is free, so re-sending the content here costs nothing.
-    ///
-    /// Returns null for anything we can't price locally, so it is left out of the estimate
-    /// rather than counted as zero.
-    /// </summary>
-    private static BetaContentBlockParam? CountingBlockFor(CaseDocument doc)
-    {
-        var path = doc.BilledPath;
-
-        try
-        {
-            if (doc.Kind == AnthropicFileKind.Document &&
-                Path.GetExtension(path).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
-            {
-                return new BetaRequestDocumentBlock
-                {
-                    Source = new BetaBase64PdfSource(Convert.ToBase64String(File.ReadAllBytes(path))),
-                    Title = $"[{doc.CategoryCode}] {doc.FileName}",
-                    Context = doc.CategoryName,
-                };
-            }
-
-            if (doc.Kind == AnthropicFileKind.Document)
-            {
-                return new BetaRequestDocumentBlock
-                {
-                    Source = new BetaPlainTextSource(File.ReadAllText(path)),
-                    Title = $"[{doc.CategoryCode}] {doc.FileName}",
-                    Context = doc.CategoryName,
-                };
-            }
-
-            // Images bill by dimensions rather than bytes; leave them out of the estimate.
-            if (doc.Kind == AnthropicFileKind.Image)
-            {
-                return null;
-            }
-
-            return new BetaTextBlockParam { Text = BuildInlineTextBlock(doc.FilePath, doc.FileName) };
-        }
-        catch
-        {
-            // An unreadable file just doesn't contribute to the estimate.
-            return null;
-        }
-    }
-
-    private static string BuildInlineTextBlock(string file, string fileName)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine($"--- File: {fileName} ---");
-        try
-        {
-            var content = File.ReadAllText(file);
-            var preview = content.Length > 2000 ? content[..2000] : content;
-            sb.AppendLine(preview.Replace("\r\n", "\n"));
-        }
-        catch
-        {
-            sb.AppendLine("(unreadable)");
-        }
-        return sb.ToString();
-    }
-
-    private static string ResolveCategoryName(string code) => CaseDocumentLibrary.ResolveCategoryName(code);
-
-    /// <summary>
-    /// Prices the uploaded documents: counts the input tokens the file blocks would bill if
-    /// every sendable document were attached, and shows that in the cost panel. Uploading and
-    /// token counting are both free — this is what a run attaching all documents would cost.
+    /// Prices the prepared documents: counts the input tokens the document blocks would bill
+    /// if every sendable document were attached, and shows that in the cost panel. Token
+    /// counting is free — this is what a run attaching all documents would cost.
     /// Returns a one-line summary for the response pane.
     /// </summary>
     private async Task<string> ShowDocumentTokenCostAsync(
@@ -872,9 +706,10 @@ public partial class CheckEvaluatorForm : Form
         ShowBreakdown(_lastBreakdown);
         costNoteLabel.Text =
             $"Estimated input cost if all {counted} documents are attached to one check. "
-            + "Uploading and token counting are free; you are billed when the documents are sent with a run.";
+            + "Token counting is free; you are billed when the documents are sent with a run. "
+            + "Re-running a check against the same documents reads them from the prompt cache at a tenth of this.";
 
-        report.Append($"Total upload: {inputTokens:N0} input tokens across {counted} documents "
+        report.Append($"Total: {inputTokens:N0} input tokens across {counted} documents "
                     + $"— {_lastBreakdown.TotalCost:C4} if all were attached to one check ({_settings.SelectedModel}).");
 
         if (skipped > 0)
@@ -911,10 +746,13 @@ public partial class CheckEvaluatorForm : Form
     private async Task<(long Tokens, int Counted, int Skipped)> CountCategoryAsync(
         IEnumerable<CaseDocument> documents, CancellationToken cancellationToken)
     {
+        // The same blocks a run would send, so the estimate prices what is actually billed.
+        // No cache breakpoint: there is nothing to cache in a counting request, and the
+        // marker would only make the estimate harder to read against a run's usage.
         var priced = documents
-            .Select(doc => (Block: CountingBlockFor(doc), Bytes: EstimatedRequestBytes(doc)))
-            .Where(x => x.Block is not null)
-            .Select(x => (Block: x.Block!, x.Bytes))
+            .Select(doc => (
+                Block: InlineDocumentBlocks.BlockFor(doc, _inlineContent),
+                Bytes: EstimatedRequestBytes(doc)))
             .ToList();
 
         long tokens = 0;
@@ -951,11 +789,11 @@ public partial class CheckEvaluatorForm : Form
     /// are summed across the groups, which is a few tokens high per extra request because each
     /// carries its own message envelope — immaterial against a case folder's total.
     /// </summary>
-    private static List<List<(BetaContentBlockParam Block, long Bytes)>> BatchByBytes(
-        List<(BetaContentBlockParam Block, long Bytes)> items, long budget)
+    private static List<List<(ContentBlockParam Block, long Bytes)>> BatchByBytes(
+        List<(ContentBlockParam Block, long Bytes)> items, long budget)
     {
-        var batches = new List<List<(BetaContentBlockParam, long)>>();
-        var current = new List<(BetaContentBlockParam, long)>();
+        var batches = new List<List<(ContentBlockParam, long)>>();
+        var current = new List<(ContentBlockParam, long)>();
         long running = 0;
 
         foreach (var item in items)
@@ -986,9 +824,12 @@ public partial class CheckEvaluatorForm : Form
         try
         {
             var length = new FileInfo(doc.BilledPath).Length;
-            return Path.GetExtension(doc.BilledPath).Equals(".pdf", StringComparison.OrdinalIgnoreCase)
-                ? length * 4 / 3
-                : length;
+
+            // PDFs and images travel as base64, which costs four bytes per three.
+            var isBase64 = doc.Kind == AnthropicFileKind.Image
+                || Path.GetExtension(doc.BilledPath).Equals(".pdf", StringComparison.OrdinalIgnoreCase);
+
+            return isBase64 ? length * 4 / 3 : length;
         }
         catch
         {
@@ -1067,8 +908,8 @@ public partial class CheckEvaluatorForm : Form
     }
 
     /// <summary>
-    /// A check can only run once the case documents have been loaded — runs reference
-    /// documents by file_id and never upload during the run itself.
+    /// A check can only run once the case documents have been prepared — a run attaches what
+    /// the load produced and never converts during the run itself.
     ///
     /// Loading is a one-shot action per folder: once it has succeeded there is nothing to
     /// gain from repeating it, so the button stays disabled until Browse picks a folder,
@@ -1084,10 +925,10 @@ public partial class CheckEvaluatorForm : Form
         loadDocsButton.Enabled = !_busy && !loaded;
         loadDocsButton.Text = loaded ? "Docs Loaded" : "Load Docs";
 
-        // Unload stays available whenever anything is uploaded for this folder — including
-        // uploads from an earlier session, which outlive the in-memory library.
+        // Clearing stays available whenever anything is cached for this folder — including
+        // conversions from an earlier session, which outlive the in-memory library.
         unloadDocsButton.Enabled = !_busy &&
-            (loaded || CachedFileIdsFor(caseFolderTextBox.Text.Trim()).Count > 0);
+            (loaded || CachedConversionCountFor(caseFolderTextBox.Text.Trim()) > 0);
     }
 
     private sealed class DocumentItem(string label, string fullPath)

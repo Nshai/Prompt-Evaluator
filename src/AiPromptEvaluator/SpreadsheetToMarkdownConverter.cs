@@ -12,8 +12,8 @@ public sealed record MarkdownConversionResult(bool Success, string? MarkdownPath
 }
 
 /// <summary>
-/// Converts spreadsheets to Markdown through the Docling sidecar, because the Files API
-/// won't take .xlsx and a spreadsheet uploaded as raw bytes is unreadable to the model.
+/// Converts spreadsheets to Markdown through the Docling sidecar, because no content block
+/// takes .xlsx and a spreadsheet sent as raw bytes is unreadable to the model.
 /// Docling renders each sheet as a Markdown table, which reads cleanly and costs far fewer
 /// tokens than a PDF rendering of the same grid.
 ///
@@ -33,7 +33,7 @@ public sealed class SpreadsheetToMarkdownConverter
     }
 
     /// <summary>
-    /// Spreadsheet formats the Files API can't take but Docling can render: the modern and
+    /// Spreadsheet formats the API can't take but Docling can render: the modern and
     /// legacy Excel formats, their macro-enabled and binary variants, and OpenDocument.
     /// </summary>
     public static bool IsConvertible(string filePath) =>

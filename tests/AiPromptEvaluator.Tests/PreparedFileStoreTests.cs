@@ -3,16 +3,16 @@ using Xunit;
 
 namespace AiPromptEvaluator.Tests;
 
-public sealed class UploadedFileStoreTests : IDisposable
+public sealed class PreparedFileStoreTests : IDisposable
 {
     private readonly string _root;
-    private readonly UploadedFileStore _store;
+    private readonly PreparedFileStore _store;
 
-    public UploadedFileStoreTests()
+    public PreparedFileStoreTests()
     {
         _root = Path.Combine(Path.GetTempPath(), "aipe-store-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(_root);
-        _store = new UploadedFileStore(Path.Combine(_root, "uploads.db"));
+        _store = new PreparedFileStore(Path.Combine(_root, "uploads.db"));
     }
 
     public void Dispose()
@@ -34,18 +34,18 @@ public sealed class UploadedFileStoreTests : IDisposable
         return path;
     }
 
-    private UploadedFile RecordFor(string path, string fileId = "file_abc") =>
+    /// <summary>A record for a file used as it stands — no conversion, so no separate output.</summary>
+    private PreparedFile RecordFor(string path) =>
         new(FilePath: path,
             CaseFolder: _root,
             CategoryCode: "B",
             CategoryName: "Know Your Client",
-            FileId: fileId,
             Kind: AnthropicFileKind.Document,
             ConvertedTo: ConversionTarget.None,
-            UploadedPath: null,
+            PreparedPath: path,
             SourceWriteUtc: File.GetLastWriteTimeUtc(path),
             SourceSize: new FileInfo(path).Length,
-            UploadedUtc: DateTime.UtcNow);
+            PreparedUtc: DateTime.UtcNow);
 
     [Fact]
     public void Save_ThenGet_RoundTripsEveryField()
@@ -55,19 +55,18 @@ public sealed class UploadedFileStoreTests : IDisposable
         {
             Kind = AnthropicFileKind.Image,
             ConvertedTo = ConversionTarget.Pdf,
-            UploadedPath = @"C:\cache\report.pdf",
+            PreparedPath = @"C:\cache\report.pdf",
         };
 
         _store.Save(record);
         var loaded = _store.Get(path);
 
         Assert.NotNull(loaded);
-        Assert.Equal(record.FileId, loaded!.FileId);
-        Assert.Equal("B", loaded.CategoryCode);
+        Assert.Equal("B", loaded!.CategoryCode);
         Assert.Equal("Know Your Client", loaded.CategoryName);
         Assert.Equal(AnthropicFileKind.Image, loaded.Kind);
         Assert.Equal(ConversionTarget.Pdf, loaded.ConvertedTo);
-        Assert.Equal(@"C:\cache\report.pdf", loaded.UploadedPath);
+        Assert.Equal(@"C:\cache\report.pdf", loaded.PreparedPath);
         Assert.Equal(record.SourceSize, loaded.SourceSize);
     }
 
@@ -76,10 +75,10 @@ public sealed class UploadedFileStoreTests : IDisposable
     {
         var path = WriteFile("notes.txt");
 
-        _store.Save(RecordFor(path, "file_first"));
-        _store.Save(RecordFor(path, "file_second"));
+        _store.Save(RecordFor(path) with { CategoryCode = "A" });
+        _store.Save(RecordFor(path) with { CategoryCode = "C" });
 
-        Assert.Equal("file_second", _store.Get(path)!.FileId);
+        Assert.Equal("C", _store.Get(path)!.CategoryCode);
         Assert.Single(_store.GetForCaseFolder(_root));
     }
 
@@ -103,7 +102,7 @@ public sealed class UploadedFileStoreTests : IDisposable
         Assert.NotNull(_store.GetIfCurrent(path));
     }
 
-    /// <summary>An edit changes the size, so the stale file_id must not be reused.</summary>
+    /// <summary>An edit changes the size, so the stale conversion must not be reused.</summary>
     [Fact]
     public void GetIfCurrent_ReturnsNull_WhenTheFileChanged()
     {
@@ -129,7 +128,30 @@ public sealed class UploadedFileStoreTests : IDisposable
     [Fact]
     public void GetIfCurrent_ReturnsNull_WhenNothingWasEverRecorded()
     {
-        Assert.Null(_store.GetIfCurrent(WriteFile("never-uploaded.txt")));
+        Assert.Null(_store.GetIfCurrent(WriteFile("never-prepared.txt")));
+    }
+
+    /// <summary>
+    /// Converted output lives in the temp folder, which Windows clears out. A record pointing
+    /// at output that is no longer there has to re-convert, not hand back a missing path.
+    /// </summary>
+    [Fact]
+    public void GetIfCurrent_ReturnsNull_WhenTheConvertedOutputIsGone()
+    {
+        var source = WriteFile("holdings.xlsx");
+        var converted = WriteFile("holdings.md");
+
+        _store.Save(RecordFor(source) with
+        {
+            ConvertedTo = ConversionTarget.Markdown,
+            PreparedPath = converted,
+        });
+
+        Assert.NotNull(_store.GetIfCurrent(source));
+
+        File.Delete(converted);
+
+        Assert.Null(_store.GetIfCurrent(source));
     }
 
     [Fact]
@@ -152,18 +174,17 @@ public sealed class UploadedFileStoreTests : IDisposable
     }
 
     [Fact]
-    public void GetForCaseFolder_ReturnsEveryFileIdForCleanup()
+    public void GetForCaseFolder_ReturnsEveryRecordedFile()
     {
         foreach (var name in new[] { "a.txt", "b.txt", "c.txt" })
         {
-            var path = WriteFile(name);
-            _store.Save(RecordFor(path, "file_" + name));
+            _store.Save(RecordFor(WriteFile(name)));
         }
 
-        var ids = _store.GetForCaseFolder(_root).Select(f => f.FileId).ToList();
+        var paths = _store.GetForCaseFolder(_root).Select(f => Path.GetFileName(f.FilePath)).ToList();
 
-        Assert.Equal(3, ids.Count);
-        Assert.Contains("file_a.txt", ids);
+        Assert.Equal(3, paths.Count);
+        Assert.Contains("a.txt", paths);
     }
 
     /// <summary>The database is the point — a new instance must see what the last one wrote.</summary>
@@ -173,9 +194,9 @@ public sealed class UploadedFileStoreTests : IDisposable
         var databasePath = Path.Combine(_root, "reopened.db");
         var path = WriteFile("persisted.txt");
 
-        new UploadedFileStore(databasePath).Save(RecordFor(path, "file_persisted"));
+        new PreparedFileStore(databasePath).Save(RecordFor(path) with { CategoryCode = "G" });
 
-        Assert.Equal("file_persisted", new UploadedFileStore(databasePath).Get(path)!.FileId);
+        Assert.Equal("G", new PreparedFileStore(databasePath).Get(path)!.CategoryCode);
     }
 
     /// <summary>The load runs eight files at a time, so concurrent writes must not deadlock.</summary>
@@ -185,7 +206,7 @@ public sealed class UploadedFileStoreTests : IDisposable
         var paths = Enumerable.Range(0, 40).Select(i => WriteFile($"concurrent{i}.txt")).ToList();
 
         Parallel.ForEach(paths, new ParallelOptions { MaxDegreeOfParallelism = 8 },
-            path => _store.Save(RecordFor(path, "file_" + Path.GetFileName(path))));
+            path => _store.Save(RecordFor(path)));
 
         Assert.Equal(40, _store.GetForCaseFolder(_root).Count);
     }

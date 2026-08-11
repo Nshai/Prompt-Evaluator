@@ -1,10 +1,7 @@
-using System.Net.Http.Headers;
 using System.Text;
 using Anthropic;
 using Anthropic.Core;
-using Anthropic.Models.Beta;
-using Anthropic.Models.Beta.Messages;
-using BetaMessages = Anthropic.Models.Beta.Messages;
+using Anthropic.Models.Messages;
 using Messages = Anthropic.Models.Messages;
 
 namespace AiPromptEvaluator;
@@ -79,12 +76,19 @@ public class PromptEvaluator
     }
 
     /// <summary>
-    /// Sends <paramref name="textPrompt"/> alongside file-reference content blocks
-    /// (documents/images uploaded via the Files API). Requires the beta Messages endpoint.
+    /// Sends inline document blocks followed by <paramref name="instructionText"/>.
+    ///
+    /// The order matters and is not cosmetic. Prompt caching is a prefix match, so the
+    /// documents — the part that repeats across every check run against a case folder — go
+    /// first and carry the cache breakpoint, and the per-check instruction goes last where
+    /// changing it costs nothing already cached.
+    ///
+    /// This uses the plain Messages endpoint with no beta headers, so the same request works
+    /// against api.anthropic.com and through a LiteLLM proxy to Bedrock.
     /// </summary>
-    public async Task<PromptResult> RunWithFilesAsync(
-        string textPrompt,
-        IReadOnlyList<BetaContentBlockParam> fileBlocks,
+    public async Task<PromptResult> RunWithDocumentsAsync(
+        IReadOnlyList<ContentBlockParam> documentBlocks,
+        string instructionText,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(_settings.AnthropicApiKey))
@@ -94,18 +98,19 @@ public class PromptEvaluator
 
         var client = CreateClient();
 
-        var content = new List<BetaContentBlockParam> { new BetaTextBlockParam { Text = textPrompt } };
-        content.AddRange(fileBlocks);
-
-        var parameters = new BetaMessages.MessageCreateParams
+        var content = new List<ContentBlockParam>(documentBlocks)
         {
-            Betas = [AnthropicBeta.FilesApi2025_04_14],
-            Messages = [new BetaMessageParam { Role = Role.User, Content = content }],
+            new TextBlockParam { Text = instructionText },
+        };
+
+        var parameters = new Messages.MessageCreateParams
+        {
+            Messages = [new Messages.MessageParam { Role = Messages.Role.User, Content = content }],
             MaxTokens = _settings.MaxTokens,
             Model = _settings.SelectedModel,
         };
 
-        var result = await client.Beta.Messages.Create(parameters, cancellationToken).ConfigureAwait(false);
+        var result = await client.Messages.Create(parameters, cancellationToken).ConfigureAwait(false);
 
         var usage = ReadUsage(result.Usage);
         var breakdown = CostBreakdown.Create(_settings.SelectedModel, usage);
@@ -117,7 +122,7 @@ public class PromptEvaluator
     /// The count_tokens endpoint is itself free — this is an estimate, not a charge.
     /// </summary>
     public async Task<long> CountTokensAsync(
-        IReadOnlyList<BetaContentBlockParam> blocks,
+        IReadOnlyList<ContentBlockParam> blocks,
         CancellationToken cancellationToken = default)
     {
         if (blocks.Count == 0)
@@ -126,52 +131,14 @@ public class PromptEvaluator
         }
 
         var client = CreateClient();
-        var parameters = new BetaMessages.MessageCountTokensParams
+        var parameters = new Messages.MessageCountTokensParams
         {
-            Betas = [AnthropicBeta.FilesApi2025_04_14],
-            Messages = [new BetaMessageParam { Role = Role.User, Content = blocks.ToList() }],
+            Messages = [new Messages.MessageParam { Role = Messages.Role.User, Content = blocks.ToList() }],
             Model = _settings.SelectedModel,
         };
 
-        var result = await client.Beta.Messages.CountTokens(parameters, cancellationToken).ConfigureAwait(false);
+        var result = await client.Messages.CountTokens(parameters, cancellationToken).ConfigureAwait(false);
         return result.InputTokens;
-    }
-
-    /// <summary>Uploads a document/image file so its content can be referenced by file_id.</summary>
-    public async Task<string> UploadFileAsync(Stream stream, string fileName, string mimeType, CancellationToken cancellationToken = default)
-    {
-        var client = CreateClient();
-        var uploaded = await client.Beta.Files.Upload(
-            new Anthropic.Models.Beta.Files.FileUploadParams
-            {
-                File = new BinaryContent
-                {
-                    Stream = stream,
-                    FileName = fileName,
-                    ContentType = new MediaTypeHeaderValue(mimeType)
-                }
-            },
-            cancellationToken).ConfigureAwait(false);
-
-        return uploaded.ID;
-    }
-
-    /// <summary>Deletes an uploaded Anthropic file by its file_id.</summary>
-    public async Task DeleteFileAsync(string fileId, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrWhiteSpace(fileId))
-        {
-            return;
-        }
-
-        var client = CreateClient();
-        await client.Beta.Files.Delete(
-            new Anthropic.Models.Beta.Files.FileDeleteParams
-            {
-                FileID = fileId,
-                Betas = [AnthropicBeta.FilesApi2025_04_14],
-            },
-            cancellationToken).ConfigureAwait(false);
     }
 
     internal static string ExtractText(IReadOnlyList<Messages.ContentBlock> content)
@@ -187,34 +154,7 @@ public class PromptEvaluator
         return sb.ToString();
     }
 
-    internal static string ExtractText(IReadOnlyList<BetaContentBlock> content)
-    {
-        var sb = new StringBuilder();
-        foreach (var block in content)
-        {
-            if (block.TryPickText(out var text))
-            {
-                sb.Append(text.Text);
-            }
-        }
-        return sb.ToString();
-    }
-
     internal static TokenUsage ReadUsage(Messages.Usage? usage)
-    {
-        if (usage is null)
-        {
-            return TokenUsage.Empty;
-        }
-
-        return new TokenUsage(
-            InputTokens: usage.InputTokens,
-            OutputTokens: usage.OutputTokens,
-            CacheWriteTokens: usage.CacheCreationInputTokens ?? 0,
-            CacheReadTokens: usage.CacheReadInputTokens ?? 0);
-    }
-
-    internal static TokenUsage ReadUsage(BetaUsage? usage)
     {
         if (usage is null)
         {

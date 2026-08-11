@@ -14,7 +14,7 @@ public sealed record PdfConversionResult(bool Success, string? PdfPath, string? 
 }
 
 /// <summary>
-/// Converts Word documents to PDF so they can be sent through the Files API, which
+/// Converts Word documents to PDF so they can be sent as a document content block, which
 /// does not accept .doc/.docx directly.
 ///
 /// Two engines are tried in order: Microsoft Word via COM automation (best fidelity,
@@ -33,7 +33,7 @@ public static class DocumentToPdfConverter
     private static readonly TimeSpan LibreOfficeTimeout = TimeSpan.FromMinutes(3);
 
     /// <summary>
-    /// Word-family formats the Files API can't take but Word/LibreOffice can render:
+    /// Word-family formats the API can't take but Word/LibreOffice can render:
     /// the modern and legacy document formats, their macro-enabled and template
     /// variants, plus Rich Text and OpenDocument Text.
     /// </summary>

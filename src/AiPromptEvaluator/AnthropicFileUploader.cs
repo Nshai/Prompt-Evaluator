@@ -14,7 +14,29 @@ public enum AnthropicFileKind
     Unsupported,
 }
 
-public sealed record AnthropicFileRef(AnthropicFileKind Kind, string? FileId, string FilePath);
+/// <summary>What a source file was rendered to before being uploaded.</summary>
+public enum ConversionTarget
+{
+    /// <summary>Uploaded as-is.</summary>
+    None,
+
+    /// <summary>Word document rendered to PDF by <see cref="DocumentToPdfConverter"/>.</summary>
+    Pdf,
+
+    /// <summary>Spreadsheet rendered to Markdown tables by Docling.</summary>
+    Markdown,
+}
+
+/// <param name="FilePath">The original case-folder file.</param>
+/// <param name="UploadedPath">What was actually sent — differs from <paramref name="FilePath"/> for converted files.</param>
+/// <param name="ConversionError">Why the file could not be converted, if it couldn't.</param>
+public sealed record AnthropicFileRef(
+    AnthropicFileKind Kind,
+    string? FileId,
+    string FilePath,
+    string? UploadedPath = null,
+    string? ConversionError = null,
+    ConversionTarget ConvertedTo = ConversionTarget.None);
 
 /// <summary>
 /// Uploads case documents to the Anthropic Files API and caches the resulting file_id
@@ -24,11 +46,13 @@ public sealed record AnthropicFileRef(AnthropicFileKind Kind, string? FileId, st
 public sealed class AnthropicFileUploader
 {
     private readonly PromptEvaluator _evaluator;
+    private readonly SpreadsheetToMarkdownConverter _spreadsheets;
     private readonly ConcurrentDictionary<(string Path, DateTime WriteUtc), string> _cache = new();
 
-    public AnthropicFileUploader(PromptEvaluator evaluator)
+    public AnthropicFileUploader(PromptEvaluator evaluator, SpreadsheetToMarkdownConverter spreadsheets)
     {
         _evaluator = evaluator;
+        _spreadsheets = spreadsheets;
     }
 
     public static AnthropicFileKind Classify(string filePath) => Path.GetExtension(filePath).ToLowerInvariant() switch
@@ -55,23 +79,78 @@ public sealed class AnthropicFileUploader
     /// </summary>
     public async Task<AnthropicFileRef> GetOrUploadAsync(string filePath, CancellationToken cancellationToken = default)
     {
-        var kind = Classify(filePath);
-        if (kind == AnthropicFileKind.Unsupported)
+        // Neither Word documents nor spreadsheets are accepted by the Files API — render
+        // them to a format that is (PDF via Word, Markdown via Docling) before uploading.
+        var uploadPath = filePath;
+        string? conversionError = null;
+        var convertedTo = ConversionTarget.None;
+
+        if (DocumentToPdfConverter.IsConvertible(filePath))
         {
-            return new AnthropicFileRef(kind, null, filePath);
+            var conversion = await Task.Run(
+                () => DocumentToPdfConverter.Convert(filePath), cancellationToken).ConfigureAwait(false);
+
+            if (conversion.Success)
+            {
+                uploadPath = conversion.PdfPath!;
+                convertedTo = ConversionTarget.Pdf;
+            }
+            else
+            {
+                conversionError = conversion.Error;
+            }
+        }
+        else if (SpreadsheetToMarkdownConverter.IsConvertible(filePath))
+        {
+            var conversion = await _spreadsheets.ConvertAsync(filePath, cancellationToken).ConfigureAwait(false);
+
+            if (conversion.Success)
+            {
+                uploadPath = conversion.MarkdownPath!;
+                convertedTo = ConversionTarget.Markdown;
+            }
+            else
+            {
+                conversionError = conversion.Error;
+            }
         }
 
+        var kind = Classify(uploadPath);
+        if (kind == AnthropicFileKind.Unsupported)
+        {
+            return new AnthropicFileRef(kind, null, filePath, ConversionError: conversionError);
+        }
+
+        // Cache against the original file, so an edited source is re-converted and re-uploaded.
         var key = (filePath, File.GetLastWriteTimeUtc(filePath));
         if (_cache.TryGetValue(key, out var cachedFileId))
         {
-            return new AnthropicFileRef(kind, cachedFileId, filePath);
+            return new AnthropicFileRef(kind, cachedFileId, filePath, uploadPath, ConvertedTo: convertedTo);
         }
 
-        using var stream = File.OpenRead(filePath);
+        using var stream = File.OpenRead(uploadPath);
         var fileId = await _evaluator.UploadFileAsync(
-            stream, Path.GetFileName(filePath), MimeTypeFor(filePath, kind), cancellationToken).ConfigureAwait(false);
+            stream, Path.GetFileName(uploadPath), MimeTypeFor(uploadPath, kind), cancellationToken).ConfigureAwait(false);
 
         _cache[key] = fileId;
-        return new AnthropicFileRef(kind, fileId, filePath);
+        return new AnthropicFileRef(kind, fileId, filePath, uploadPath, ConvertedTo: convertedTo);
+    }
+
+    public async Task DeleteUploadedFileAsync(string fileId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(fileId))
+        {
+            return;
+        }
+
+        await _evaluator.DeleteFileAsync(fileId, cancellationToken).ConfigureAwait(false);
+
+        foreach (var key in _cache.Keys.ToList())
+        {
+            if (_cache[key] == fileId)
+            {
+                _cache.TryRemove(key, out _);
+            }
+        }
     }
 }

@@ -13,6 +13,10 @@ partial class ConfigurationForm
     private Label baseUrlLabel;
     private TextBox baseUrlTextBox;
     private Label baseUrlHintLabel;
+    private Label doclingLabel;
+    private TextBox doclingTextBox;
+    private Button doclingTestButton;
+    private Label doclingHintLabel;
     private GroupBox modelsGroup;
     private TableLayoutPanel modelsLayout;
     private Label availableModelsLabel;
@@ -53,6 +57,10 @@ partial class ConfigurationForm
         baseUrlLabel = new Label();
         baseUrlTextBox = new TextBox();
         baseUrlHintLabel = new Label();
+        doclingLabel = new Label();
+        doclingTextBox = new TextBox();
+        doclingTestButton = new Button();
+        doclingHintLabel = new Label();
         modelsGroup = new GroupBox();
         modelsLayout = new TableLayoutPanel();
         availableModelsLabel = new Label();
@@ -117,13 +125,17 @@ partial class ConfigurationForm
         connectionLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         connectionLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         connectionLayout.Dock = DockStyle.Fill;
-        connectionLayout.RowCount = 3;
+        connectionLayout.RowCount = 5;
         connectionLayout.Controls.Add(apiKeyLabel, 0, 0);
         connectionLayout.Controls.Add(apiKeyTextBox, 1, 0);
         connectionLayout.Controls.Add(showKeyCheckBox, 2, 0);
         connectionLayout.Controls.Add(baseUrlLabel, 0, 1);
         connectionLayout.Controls.Add(baseUrlTextBox, 1, 1);
         connectionLayout.Controls.Add(baseUrlHintLabel, 1, 2);
+        connectionLayout.Controls.Add(doclingLabel, 0, 3);
+        connectionLayout.Controls.Add(doclingTextBox, 1, 3);
+        connectionLayout.Controls.Add(doclingTestButton, 2, 3);
+        connectionLayout.Controls.Add(doclingHintLabel, 1, 4);
         connectionLayout.Name = "connectionLayout";
 
         // apiKeyLabel
@@ -164,6 +176,34 @@ partial class ConfigurationForm
         baseUrlHintLabel.Margin = new Padding(0, 0, 8, 3);
         baseUrlHintLabel.Name = "baseUrlHintLabel";
         baseUrlHintLabel.Text = "Leave empty for the default. Enter a base URL (e.g. https://litellm.example.com) or a full format string where {0}=version, {1}=endpoint.";
+
+        // doclingLabel
+        doclingLabel.Anchor = AnchorStyles.Left;
+        doclingLabel.AutoSize = true;
+        doclingLabel.Name = "doclingLabel";
+        doclingLabel.Text = "Docling endpoint";
+
+        // doclingTextBox
+        doclingTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        doclingTextBox.Margin = new Padding(0, 3, 8, 0);
+        doclingTextBox.Name = "doclingTextBox";
+        doclingTextBox.PlaceholderText = AppSettings.DefaultDoclingEndpoint;
+
+        // doclingTestButton
+        doclingTestButton.Anchor = AnchorStyles.Left;
+        doclingTestButton.AutoSize = true;
+        doclingTestButton.Name = "doclingTestButton";
+        doclingTestButton.Text = "Test";
+        doclingTestButton.UseVisualStyleBackColor = true;
+        doclingTestButton.Click += DoclingTestButton_Click;
+
+        // doclingHintLabel
+        doclingHintLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        doclingHintLabel.AutoSize = true;
+        doclingHintLabel.ForeColor = SystemColors.GrayText;
+        doclingHintLabel.Margin = new Padding(0, 0, 8, 3);
+        doclingHintLabel.Name = "doclingHintLabel";
+        doclingHintLabel.Text = $"Docker host running docling-serve, used to convert spreadsheets to Markdown. Leave empty for {AppSettings.DefaultDoclingEndpoint}.";
 
         // modelsGroup
         modelsGroup.AutoSize = true;

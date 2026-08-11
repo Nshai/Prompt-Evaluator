@@ -6,6 +6,9 @@ public class AppSettings
 {
     public const string DefaultBaseUrl = "https://api.anthropic.com";
 
+    /// <summary>Where the Docling container publishes its API by default.</summary>
+    public const string DefaultDoclingEndpoint = "http://localhost:5001";
+
     [JsonPropertyName("anthropicApiKey")]
     public string AnthropicApiKey { get; set; } = string.Empty;
 
@@ -38,6 +41,19 @@ public class AppSettings
 
     [JsonPropertyName("lastChecksCsvPath")]
     public string LastChecksCsvPath { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Base URL of the Docling sidecar that converts spreadsheets to Markdown, e.g.
+    /// http://localhost:5001. Leave empty to use <see cref="DefaultDoclingEndpoint"/>.
+    /// </summary>
+    [JsonPropertyName("doclingEndpoint")]
+    public string DoclingEndpoint { get; set; } = string.Empty;
+
+    /// <summary>The configured Docling endpoint, or the default, with any trailing slash removed.</summary>
+    public string ResolveDoclingEndpoint() =>
+        (string.IsNullOrWhiteSpace(DoclingEndpoint) ? DefaultDoclingEndpoint : DoclingEndpoint)
+            .Trim()
+            .TrimEnd('/');
 
     public List<string> ParseModels() =>
         AvailableModels

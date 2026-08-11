@@ -13,6 +13,7 @@ partial class CheckEvaluatorForm
     private Label caseFolderLabel;
     private TextBox caseFolderTextBox;
     private Button browseCaseFolderButton;
+    private Button loadDocsButton;
 
     // Main split: left (checks list) | right (details + docs + response)
     private SplitContainer mainSplit;
@@ -56,6 +57,7 @@ partial class CheckEvaluatorForm
     private TableLayoutPanel actionPanel;
     private Button runButton;
     private Button cancelRunButton;
+    private Button unloadDocsButton;
     private Label statusLabel;
     private Button openPromptEvaluatorButton;
     private Button openConfigButton;
@@ -82,6 +84,7 @@ partial class CheckEvaluatorForm
         caseFolderLabel = new Label();
         caseFolderTextBox = new TextBox();
         browseCaseFolderButton = new Button();
+        loadDocsButton = new Button();
         mainSplit = new SplitContainer();
         checksGroup = new GroupBox();
         checksListView = new ListView();
@@ -109,6 +112,7 @@ partial class CheckEvaluatorForm
         costNoteLabel = new Label();
         runButton = new Button();
         cancelRunButton = new Button();
+        unloadDocsButton = new Button();
         statusLabel = new Label();
         openPromptEvaluatorButton = new Button();
         openConfigButton = new Button();
@@ -151,9 +155,10 @@ partial class CheckEvaluatorForm
 
         // topBar — 2 rows: CSV row, folder row
         topBar.AutoSize = true;
-        topBar.ColumnCount = 3;
+        topBar.ColumnCount = 4;
         topBar.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 130F));
         topBar.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        topBar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topBar.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topBar.Dock = DockStyle.Fill;
         topBar.Margin = new Padding(0, 0, 0, 8);
@@ -166,6 +171,7 @@ partial class CheckEvaluatorForm
         topBar.Controls.Add(caseFolderLabel, 0, 1);
         topBar.Controls.Add(caseFolderTextBox, 1, 1);
         topBar.Controls.Add(browseCaseFolderButton, 2, 1);
+        topBar.Controls.Add(loadDocsButton, 3, 1);
         topBar.Name = "topBar";
 
         // csvLabel
@@ -204,12 +210,21 @@ partial class CheckEvaluatorForm
 
         // browseCaseFolderButton
         browseCaseFolderButton.AutoSize = true;
-        browseCaseFolderButton.Margin = new Padding(0);
+        browseCaseFolderButton.Margin = new Padding(0, 0, 8, 0);
         browseCaseFolderButton.Name = "browseCaseFolderButton";
         browseCaseFolderButton.Padding = new Padding(8, 2, 8, 2);
         browseCaseFolderButton.Text = "Browse...";
         browseCaseFolderButton.UseVisualStyleBackColor = true;
         browseCaseFolderButton.Click += BrowseCaseFolderButton_Click;
+
+        // loadDocsButton — uploads every file under the case folder to the Files API
+        loadDocsButton.AutoSize = true;
+        loadDocsButton.Margin = new Padding(0);
+        loadDocsButton.Name = "loadDocsButton";
+        loadDocsButton.Padding = new Padding(8, 2, 8, 2);
+        loadDocsButton.Text = "Load Docs";
+        loadDocsButton.UseVisualStyleBackColor = true;
+        loadDocsButton.Click += LoadDocsButton_Click;
 
         // mainSplit — left: checks list, right: details/docs/response
         mainSplit.Dock = DockStyle.Fill;
@@ -379,22 +394,24 @@ partial class CheckEvaluatorForm
 
         // actionPanel — left: Run + Cancel + status; right: Prompt Evaluator + Configuration + Save
         actionPanel.AutoSize = true;
-        actionPanel.ColumnCount = 7;
+        actionPanel.ColumnCount = 8;
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 0 Run
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 1 Cancel
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 2 status (stretches)
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 3 Prompt Evaluator
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 4 Configuration
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 5 Save Settings
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 2 Unload Docs
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 3 status (stretches)
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 4 Prompt Evaluator
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 5 Configuration
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 6 Save Settings
         actionPanel.Dock = DockStyle.Fill;
         actionPanel.Margin = new Padding(0);
         actionPanel.RowCount = 1;
         actionPanel.Controls.Add(runButton, 0, 0);
         actionPanel.Controls.Add(cancelRunButton, 1, 0);
-        actionPanel.Controls.Add(statusLabel, 2, 0);
-        actionPanel.Controls.Add(openPromptEvaluatorButton, 3, 0);
-        actionPanel.Controls.Add(openConfigButton, 4, 0);
-        actionPanel.Controls.Add(saveSettingsButton, 5, 0);
+        actionPanel.Controls.Add(unloadDocsButton, 2, 0);
+        actionPanel.Controls.Add(statusLabel, 3, 0);
+        actionPanel.Controls.Add(openPromptEvaluatorButton, 4, 0);
+        actionPanel.Controls.Add(openConfigButton, 5, 0);
+        actionPanel.Controls.Add(saveSettingsButton, 6, 0);
         actionPanel.Name = "actionPanel";
 
         // runButton
@@ -415,6 +432,16 @@ partial class CheckEvaluatorForm
         cancelRunButton.Text = "Cancel";
         cancelRunButton.UseVisualStyleBackColor = true;
         cancelRunButton.Click += CancelButton_Click;
+
+        // unloadDocsButton
+        unloadDocsButton.AutoSize = true;
+        unloadDocsButton.Enabled = false;
+        unloadDocsButton.Margin = new Padding(0, 0, 12, 0);
+        unloadDocsButton.Name = "unloadDocsButton";
+        unloadDocsButton.Padding = new Padding(12, 4, 12, 4);
+        unloadDocsButton.Text = "Unload Docs";
+        unloadDocsButton.UseVisualStyleBackColor = true;
+        unloadDocsButton.Click += UnloadDocsButton_Click;
 
         // statusLabel
         statusLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;

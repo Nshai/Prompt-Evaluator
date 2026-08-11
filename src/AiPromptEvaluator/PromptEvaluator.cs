@@ -112,6 +112,31 @@ public class PromptEvaluator
         return new PromptResult(ExtractText(result.Content), breakdown);
     }
 
+    /// <summary>
+    /// Counts the input tokens the given content blocks would bill if they were sent.
+    /// The count_tokens endpoint is itself free — this is an estimate, not a charge.
+    /// </summary>
+    public async Task<long> CountTokensAsync(
+        IReadOnlyList<BetaContentBlockParam> blocks,
+        CancellationToken cancellationToken = default)
+    {
+        if (blocks.Count == 0)
+        {
+            return 0;
+        }
+
+        var client = CreateClient();
+        var parameters = new BetaMessages.MessageCountTokensParams
+        {
+            Betas = [AnthropicBeta.FilesApi2025_04_14],
+            Messages = [new BetaMessageParam { Role = Role.User, Content = blocks.ToList() }],
+            Model = _settings.SelectedModel,
+        };
+
+        var result = await client.Beta.Messages.CountTokens(parameters, cancellationToken).ConfigureAwait(false);
+        return result.InputTokens;
+    }
+
     /// <summary>Uploads a document/image file so its content can be referenced by file_id.</summary>
     public async Task<string> UploadFileAsync(Stream stream, string fileName, string mimeType, CancellationToken cancellationToken = default)
     {
@@ -129,6 +154,24 @@ public class PromptEvaluator
             cancellationToken).ConfigureAwait(false);
 
         return uploaded.ID;
+    }
+
+    /// <summary>Deletes an uploaded Anthropic file by its file_id.</summary>
+    public async Task DeleteFileAsync(string fileId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(fileId))
+        {
+            return;
+        }
+
+        var client = CreateClient();
+        await client.Beta.Files.Delete(
+            new Anthropic.Models.Beta.Files.FileDeleteParams
+            {
+                FileID = fileId,
+                Betas = [AnthropicBeta.FilesApi2025_04_14],
+            },
+            cancellationToken).ConfigureAwait(false);
     }
 
     internal static string ExtractText(IReadOnlyList<Messages.ContentBlock> content)

@@ -52,19 +52,23 @@ document never leaves a stale passage behind.
 ## Cost breakdown
 
 The billed token categories are priced separately, using each model's published
-rates:
+rates. Cache rates are multiples of the input rate, and the multipliers differ by
+provider:
 
-| Component        | Rate                       |
-| ---------------- | -------------------------- |
-| Input (uncached) | model input rate           |
-| Cache write      | not billed separately      |
-| Cache read       | 0.25x the input rate       |
-| Output           | model output rate          |
+| Component        | OpenAI                | Anthropic            |
+| ---------------- | --------------------- | -------------------- |
+| Input (uncached) | model input rate      | model input rate     |
+| Cache write      | not billed separately | 1.25x the input rate |
+| Cache read       | 0.25x the input rate  | 0.1x the input rate  |
+| Output           | model output rate     | model output rate    |
 
-Rates live in [ModelPricing.cs](src/AiPromptEvaluator/ModelPricing.cs). A model
-that is not in the table still gets an estimate, and the UI labels it as
-estimated rather than implying it is exact. Embedding calls made during indexing
-and search are billed by the provider but are not shown in this breakdown.
+Rates live in [ModelPricing.cs](src/AiPromptEvaluator/ModelPricing.cs) and cover
+the current OpenAI models plus Claude Sonnet 5, Sonnet 4.6 and Haiku 4.5 — an
+OpenAI-compatible gateway commonly serves Anthropic models, so a run is priced
+whichever provider sits behind the configured base URL. A model that is not in
+the table still gets an estimate, and the UI labels it as estimated rather than
+implying it is exact. Embedding calls made during indexing and search are billed
+by the provider but are not shown in this breakdown.
 
 ## Project Structure
 

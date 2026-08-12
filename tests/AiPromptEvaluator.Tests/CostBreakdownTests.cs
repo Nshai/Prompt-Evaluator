@@ -34,6 +34,28 @@ public class CostBreakdownTests
         Assert.Equal(2.00m, CostBreakdown.Create("gpt-4.1", usage).TotalCost);
         Assert.Equal(2.50m, CostBreakdown.Create("gpt-4o", usage).TotalCost);
         Assert.Equal(0.02m, CostBreakdown.Create("text-embedding-3-small", usage).TotalCost);
+        Assert.Equal(1.00m, CostBreakdown.Create("claude-haiku-4-5", usage).TotalCost);
+        Assert.Equal(3.00m, CostBreakdown.Create("claude-sonnet-4-6", usage).TotalCost);
+        Assert.Equal(3.00m, CostBreakdown.Create("claude-sonnet-5", usage).TotalCost);
+    }
+
+    /// <summary>
+    /// Cache multipliers are per provider, not global: OpenAI doesn't bill a write and
+    /// serves cached input at 0.25x, Anthropic bills 1.25x to write and 0.1x to read.
+    /// </summary>
+    [Fact]
+    public void Create_PricesCacheTokensByProvider()
+    {
+        var usage = new TokenUsage(0, 0, CacheWriteTokens: 1_000_000, CacheReadTokens: 1_000_000);
+
+        var openAi = CostBreakdown.Create("gpt-4.1", usage);
+        Assert.Equal(0m, LineCost(openAi, "Cache write"));
+        Assert.Equal(0.50m, LineCost(openAi, "Cache read"));
+
+        // claude-sonnet-5: $3 input → $3.75 to write, $0.30 to read.
+        var anthropic = CostBreakdown.Create("claude-sonnet-5", usage);
+        Assert.Equal(3.75m, LineCost(anthropic, "Cache write"));
+        Assert.Equal(0.30m, LineCost(anthropic, "Cache read"));
     }
 
     [Fact]

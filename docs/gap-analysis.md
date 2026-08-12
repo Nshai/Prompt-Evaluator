@@ -1,9 +1,9 @@
 # Gap analysis — run of 2026-08-12, case ABC-99
 
 > **Status.** GAP 1 is addressed in code (citation verification, an `Indeterminate` outcome,
-> reasoning-before-verdict ordering, one call per requirement) and GAP 7 with it. GAP 2, 3, 4, 5
-> and 6 are open. The figures below describe the run as it was, and are the baseline the next
-> run should be measured against.
+> reasoning-before-verdict ordering, one call per requirement), and GAP 6's indexing failure with
+> it. GAP 2, 3, 4 and 5 remain open, as does the reporting half of GAP 6. The figures below
+> describe the run as it was, and are the baseline the next run should be measured against.
 
 Derived from the actual run recorded in [logs.md](logs.md), against the ten checks in
 [Assessment Checks & Prompts QA CA v1.0 (Checks).csv](QA-Checks/Assessment%20Checks%20&%20Prompts%20QA%20CA%20v1.0%20(Checks).csv),
@@ -277,19 +277,54 @@ and I, missing both B and C — every source of what the client was actually tol
 
 ---
 
-## GAP 6 — Two documents were never read
+## GAP 6 — Two documents were never in the store at all
 
-**Severity: low.** Of 29 converted documents, 27 were retrieved at least once. Two never were:
+**Severity: medium.** Of 29 converted documents, 27 were retrieved at least once. Two never were:
 
 - `[E] SW Charges Info 2.md`
 - `[E] Zurich Policy Info.md`
 
-Both are category E charge and policy documents, and both are relevant to CHK-007 (costs and
-charges) and CHK-009 (switch justification). They are crowded out by the ten other E documents
-rather than being irrelevant.
+My first reading of this was that they had been crowded out by the ten other category E
+documents. That was wrong, and the correction matters more than the original point.
 
-For contrast, the most-retrieved document (`Pension switch report - updated.md`, category G)
-appeared 81 times.
+**They failed to index.** The load reported:
+
+```
+BedrockException: Context Window Error — Malformed input request:
+expected maxLength: 50000, actual: 156384
+```
+
+The semantic chunker embeds a document's own elements to decide where to cut, so it hands the
+endpoint whatever the Markdown reader produced. For `Zurich Policy Info.md` the reader returned
+the entire file — 99 headings, 103 table rows — as **one element of 156,384 characters**, and it
+went to the embedding endpoint in a single call. The provider refused it, and the whole document
+was dropped rather than one passage of it.
+
+Two things follow, and the second is the more important:
+
+**The failure was reported and still invisible where it mattered.** `IndexAsync` catches
+per-document failures and returns them, so the load screen said so. But nothing carries that
+forward: a check that needed the Zurich policy saw no passage from it and had no way to
+distinguish "this evidence is not in the case file" from "this evidence exists and could not be
+indexed". Those mean opposite things — one is a finding about the advice, the other is a bug in
+the tool — and the assessor was shown neither.
+
+**A larger document is more likely to be lost.** The failure scales with exactly the documents
+most worth reading. `Terms and conditions (1).md` at 128,637 characters and
+`Peoples Pension Policy Info.md` at 92,043 sat just the right side of whatever the reader chose
+to do with them.
+
+**Fixed.** `ReadDocumentAsync` now measures what the reader returned rather than trusting it, and
+re-reads a document it could not break up as bounded plain text, splitting on line boundaries
+where it can. The bound is `AppSettings.MaxEmbeddingInputCharacters`, defaulting to 20,000 —
+clear of Amazon Titan's 50,000-character cap and of OpenAI's 8,192-token one. Losing the heading
+structure of one document costs something; losing the document costs more.
+
+`EveryConvertedCaseDocument_FitsTheEmbeddingLimit` walks all 29 documents of this case and fails
+if any element exceeds the limit, so this cannot come back quietly.
+
+**Still open:** the second point above. A check should be told which documents failed to index,
+so an evidence gap caused by the tool never reads as an evidence gap in the case.
 
 ---
 
@@ -318,8 +353,8 @@ Worth stating plainly, because the fixes above should not disturb it:
 | 3 | GAP 2 | Category filter on `CaseDocumentStore.SearchAsync` using the existing payload index | small |
 | 4 | GAP 3 | Minimum score threshold; let a group legitimately return no evidence | small |
 | 5 | GAP 4 | Populate `dateOfBirth` and the other 32 paths; surface `extractionReport` | medium |
-| 6 | GAP 5 | Re-measure after 3 and 4 — most of this should resolve itself | — |
-| 7 | GAP 6 | Re-measure after 3 | — |
+| 6 | GAP 6 | Tell each check which documents failed to index, so a tool failure never reads as an evidence gap in the case | small |
+| 7 | GAP 5 | Re-measure after 3 and 4 — most of this should resolve itself | — |
 
 GAP 1 is first despite GAP 2 being the larger structural defect. An assessor that will rewrite
 evidence to fit its conclusion makes better retrieval worse, not better: more evidence simply

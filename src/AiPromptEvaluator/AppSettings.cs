@@ -123,6 +123,23 @@ public class AppSettings
     public int MaxSearchResults { get; set; } = 8;
 
     /// <summary>
+    /// The largest piece of text handed to the embedding endpoint in one call.
+    ///
+    /// This is not about chunk size — chunks are bounded by <see cref="MaxTokensPerChunk"/> and
+    /// are never close to it. It is about the semantic chunker, which embeds the document's own
+    /// elements to decide where to cut, and will therefore hand over whatever the Markdown
+    /// reader produced. A converted policy document that the reader collapses into a single
+    /// element arrives as one 150,000-character call, and the provider rejects it — losing the
+    /// entire document rather than one passage of it.
+    ///
+    /// The default clears every mainstream provider's limit with room to spare: Amazon Titan
+    /// caps an input at 50,000 characters, and OpenAI's 8,192-token cap works out around 32,000.
+    /// Lower it for an endpoint stricter than either.
+    /// </summary>
+    [JsonPropertyName("maxEmbeddingInputCharacters")]
+    public int MaxEmbeddingInputCharacters { get; set; } = 20_000;
+
+    /// <summary>
     /// The canonical model JSON Schema the suitability report is extracted into. Leave empty
     /// to look for <see cref="DefaultCanonicalSchemaFileName"/> beside the executable.
     /// </summary>

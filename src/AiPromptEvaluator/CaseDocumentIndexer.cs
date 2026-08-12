@@ -159,6 +159,12 @@ public sealed class CaseDocumentIndexer
     /// document and category. The document's heading context is prefixed to the chunk text
     /// so a passage lifted out of the middle of a report still says what it is about.
     /// </summary>
+    /// <summary>
+    /// Fallback for callers that have no settings to hand. Matches
+    /// <see cref="AppSettings.MaxEmbeddingInputCharacters"/>, which is what the app uses.
+    /// </summary>
+    internal const int DefaultMaxElementCharacters = 20_000;
+
     private async Task<IReadOnlyList<CaseDocumentChunk>> ChunkAsync(
         MarkdownReader reader,
         IngestionChunker<string> chunker,
@@ -169,7 +175,8 @@ public sealed class CaseDocumentIndexer
     {
         var documentName = Path.GetFileName(filePath);
 
-        var document = await ReadDocumentAsync(reader, filePath, cancellationToken).ConfigureAwait(false);
+        var document = await ReadDocumentAsync(
+            reader, filePath, _settings.MaxEmbeddingInputCharacters, cancellationToken).ConfigureAwait(false);
 
         var chunks = new List<CaseDocumentChunk>();
         var index = 0;
@@ -206,7 +213,10 @@ public sealed class CaseDocumentIndexer
     /// than a document dropped from the case entirely.
     /// </summary>
     public static async Task<IngestionDocument> ReadDocumentAsync(
-        MarkdownReader reader, string filePath, CancellationToken cancellationToken = default)
+        MarkdownReader reader,
+        string filePath,
+        int maxElementCharacters = DefaultMaxElementCharacters,
+        CancellationToken cancellationToken = default)
     {
         var documentName = Path.GetFileName(filePath);
         var markdown = WebUtility.HtmlDecode(
@@ -215,9 +225,22 @@ public sealed class CaseDocumentIndexer
         try
         {
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(markdown));
-            return await reader
+            var document = await reader
                 .ReadAsync(stream, documentName, "text/markdown", cancellationToken)
                 .ConfigureAwait(false);
+
+            // The reader does not always find the structure a document appears to have. One
+            // converted policy document with 99 headings came back as a single element of
+            // 156,384 characters — which the chunker then tried to embed in one call, and the
+            // provider refused. The document was lost from the case entirely, and no check that
+            // needed it could say why.
+            //
+            // So the result is measured rather than trusted, and a document the reader could not
+            // break up is re-read as bounded plain text. Losing the heading structure costs
+            // something; losing the document costs more.
+            return LargestElement(document) <= maxElementCharacters
+                ? document
+                : AsPlainText(documentName, markdown, maxElementCharacters);
         }
         catch (OperationCanceledException)
         {
@@ -225,25 +248,51 @@ public sealed class CaseDocumentIndexer
         }
         catch (Exception)
         {
-            return AsPlainText(documentName, markdown);
+            return AsPlainText(documentName, markdown, maxElementCharacters);
+        }
+    }
+
+    /// <summary>The size of the largest leaf element — what actually gets sent as one embedding call.</summary>
+    internal static int LargestElement(IngestionDocument document) =>
+        document.Sections
+            .SelectMany(Leaves)
+            .Select(e => e.GetMarkdown()?.Length ?? 0)
+            .DefaultIfEmpty(0)
+            .Max();
+
+    private static IEnumerable<IngestionDocumentElement> Leaves(IngestionDocumentElement element)
+    {
+        if (element is not IngestionDocumentSection section)
+        {
+            yield return element;
+            yield break;
+        }
+
+        foreach (var leaf in section.Elements.SelectMany(Leaves))
+        {
+            yield return leaf;
         }
     }
 
     /// <summary>
     /// The last-resort document: blank-line-separated blocks as paragraphs, structure
     /// discarded. The semantic chunker still groups them by meaning.
+    ///
+    /// Blocks larger than the embedding limit are split again — a single table or a run of
+    /// unbroken prose can easily exceed it on its own, and one oversized paragraph fails the
+    /// whole document just as surely as one oversized element did.
     /// </summary>
-    private static IngestionDocument AsPlainText(string documentName, string markdown)
+    internal static IngestionDocument AsPlainText(
+        string documentName, string markdown, int maxElementCharacters = DefaultMaxElementCharacters)
     {
         var document = new IngestionDocument(documentName);
         var section = new IngestionDocumentSection();
 
         foreach (var block in markdown.Split("\n\n", StringSplitOptions.RemoveEmptyEntries))
         {
-            var text = block.Trim();
-            if (text.Length > 0)
+            foreach (var piece in SplitToFit(block.Trim(), maxElementCharacters))
             {
-                section.Elements.Add(new IngestionDocumentParagraph(text));
+                section.Elements.Add(new IngestionDocumentParagraph(piece));
             }
         }
 
@@ -254,6 +303,66 @@ public sealed class CaseDocumentIndexer
 
         document.Sections.Add(section);
         return document;
+    }
+
+    /// <summary>
+    /// Breaks text into pieces no larger than <paramref name="maxCharacters"/>, preferring line
+    /// boundaries so a split lands between table rows or sentences rather than mid-word. Text
+    /// with no usable boundary — one enormous line — is cut on length, because an awkward split
+    /// still indexes and no split does not.
+    /// </summary>
+    internal static IEnumerable<string> SplitToFit(string text, int maxCharacters)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            yield break;
+        }
+
+        if (text.Length <= maxCharacters)
+        {
+            yield return text;
+            yield break;
+        }
+
+        var current = new StringBuilder();
+
+        foreach (var line in text.Split('\n'))
+        {
+            foreach (var piece in HardSplit(line, maxCharacters))
+            {
+                // +1 for the newline that will rejoin them.
+                if (current.Length > 0 && current.Length + piece.Length + 1 > maxCharacters)
+                {
+                    yield return current.ToString();
+                    current.Clear();
+                }
+
+                if (current.Length > 0)
+                {
+                    current.Append('\n');
+                }
+
+                current.Append(piece);
+            }
+        }
+
+        if (current.Length > 0)
+        {
+            yield return current.ToString();
+        }
+    }
+
+    private static IEnumerable<string> HardSplit(string line, int maxCharacters)
+    {
+        for (var start = 0; start < line.Length; start += maxCharacters)
+        {
+            yield return line.Substring(start, Math.Min(maxCharacters, line.Length - start));
+        }
+
+        if (line.Length == 0)
+        {
+            yield return string.Empty;
+        }
     }
 
     /// <summary>

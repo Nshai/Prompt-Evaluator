@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Text;
 
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DataIngestion;
@@ -97,6 +99,11 @@ public sealed class CaseDocumentIndexer
         var markdown = allFiles.Where(IsIndexable).ToList();
         var skipped = allFiles.Where(f => !IsIndexable(f)).Select(Path.GetFileName).Select(n => n!).ToList();
 
+        // Prove the embedding endpoint answers, and answers with the width the collection is
+        // built for, before touching the store. Chunking embeds as it goes, so without this
+        // a misconfigured endpoint produces one identical failure per document and no index.
+        await VerifyEmbeddingsAsync(cancellationToken).ConfigureAwait(false);
+
         await _store.EnsureCollectionAsync(_settings.EmbeddingDimensions, cancellationToken).ConfigureAwait(false);
         await _store.DeleteCaseAsync(caseReference, _settings.TenantId, cancellationToken).ConfigureAwait(false);
 
@@ -162,9 +169,7 @@ public sealed class CaseDocumentIndexer
     {
         var documentName = Path.GetFileName(filePath);
 
-        var document = await reader
-            .ReadAsync(new FileInfo(filePath), documentName, "text/markdown", cancellationToken)
-            .ConfigureAwait(false);
+        var document = await ReadDocumentAsync(reader, filePath, cancellationToken).ConfigureAwait(false);
 
         var chunks = new List<CaseDocumentChunk>();
         var index = 0;
@@ -188,6 +193,114 @@ public sealed class CaseDocumentIndexer
         }
 
         return chunks;
+    }
+
+    /// <summary>
+    /// Parses one Markdown file into the structure the chunker walks.
+    ///
+    /// Two things get in the way of real-world converted documents. HTML entities
+    /// (<c>&amp;amp;</c>, <c>&amp;lt;</c>, <c>&amp;#124;</c>) parse to an inline node the reader
+    /// rejects outright, so they are decoded to the characters they stand for first — which is
+    /// what the text meant anyway. Anything the reader still refuses falls back to treating the
+    /// file as plain text: a document indexed as flat paragraphs is worth far more to a search
+    /// than a document dropped from the case entirely.
+    /// </summary>
+    public static async Task<IngestionDocument> ReadDocumentAsync(
+        MarkdownReader reader, string filePath, CancellationToken cancellationToken = default)
+    {
+        var documentName = Path.GetFileName(filePath);
+        var markdown = WebUtility.HtmlDecode(
+            await File.ReadAllTextAsync(filePath, cancellationToken).ConfigureAwait(false));
+
+        try
+        {
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(markdown));
+            return await reader
+                .ReadAsync(stream, documentName, "text/markdown", cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            return AsPlainText(documentName, markdown);
+        }
+    }
+
+    /// <summary>
+    /// The last-resort document: blank-line-separated blocks as paragraphs, structure
+    /// discarded. The semantic chunker still groups them by meaning.
+    /// </summary>
+    private static IngestionDocument AsPlainText(string documentName, string markdown)
+    {
+        var document = new IngestionDocument(documentName);
+        var section = new IngestionDocumentSection();
+
+        foreach (var block in markdown.Split("\n\n", StringSplitOptions.RemoveEmptyEntries))
+        {
+            var text = block.Trim();
+            if (text.Length > 0)
+            {
+                section.Elements.Add(new IngestionDocumentParagraph(text));
+            }
+        }
+
+        if (section.Elements.Count == 0)
+        {
+            throw new InvalidOperationException("The file is empty.");
+        }
+
+        document.Sections.Add(section);
+        return document;
+    }
+
+    /// <summary>
+    /// One probe embedding before any work starts. It catches the two configuration mistakes
+    /// that otherwise surface as a wall of identical per-document failures: an endpoint or
+    /// model that isn't there, and a model whose vectors are a different width than the
+    /// collection was created for.
+    /// </summary>
+    private async Task VerifyEmbeddingsAsync(CancellationToken cancellationToken)
+    {
+        ReadOnlyMemory<float> probe;
+        try
+        {
+            probe = await _embeddings
+                .GenerateVectorAsync("case document", cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var baseUrl = _settings.ResolveBaseUrl();
+
+            // A 404 here is nearly always the base URL missing its version segment: the client
+            // appends "/embeddings" to whatever is configured, so ".../v1" is what it needs.
+            var hint = ex.Message.Contains("404", StringComparison.Ordinal)
+                ? $"\n\nA 404 usually means the base URL is missing its version segment — try "
+                  + $"\"{baseUrl.TrimEnd('/')}/v1\" — or that the gateway does not serve this "
+                  + "embedding model."
+                : string.Empty;
+
+            throw new InvalidOperationException(
+                $"The embedding model \"{_settings.EmbeddingModel}\" could not be reached at "
+                + $"{baseUrl}. Check the base URL, API key and embedding model in Settings."
+                + $"{hint}\n\n{ex.Message.Trim()}", ex);
+        }
+
+        if (probe.Length != _settings.EmbeddingDimensions)
+        {
+            throw new InvalidOperationException(
+                $"\"{_settings.EmbeddingModel}\" returns {probe.Length}-dimension vectors, but the "
+                + $"configured embedding dimensions are {_settings.EmbeddingDimensions}. Set the "
+                + "dimensions to match in Settings; if the collection already exists at the old "
+                + "width, unload the case or use a new collection.");
+        }
     }
 
     /// <summary>Embeds the chunk texts in batches and writes them to the vector store.</summary>

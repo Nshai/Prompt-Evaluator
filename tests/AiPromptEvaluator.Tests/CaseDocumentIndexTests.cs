@@ -1,6 +1,7 @@
 using AiPromptEvaluator;
 
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DataIngestion;
 using Microsoft.Extensions.DataIngestion.Chunkers;
 
 using Xunit;
@@ -143,6 +144,60 @@ public class CaseDocumentIndexTests
     [InlineData("Z", "Z")]
     public void CategoryNames_MapCodesAndPassUnknownCodesThrough(string code, string expected) =>
         Assert.Equal(expected, DocumentCategory.NameForCode(code));
+
+    /// <summary>
+    /// Converted case documents are full of HTML entities — "Smith &amp; Jones", "&lt;1 year",
+    /// escaped pipes in tables. The Markdown reader rejects the inline node they parse to, so
+    /// they are decoded before parsing. Without this, most of a real case folder fails to index.
+    /// </summary>
+    [Fact]
+    public async Task ReadDocument_HandlesHtmlEntities()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"entities-{Guid.NewGuid():N}.md");
+        await File.WriteAllTextAsync(path,
+            """
+            # Pension &amp; Investment Review
+
+            Held for &lt;1 year with Smith &amp; Jones.
+
+            | Provider | Charge &#124; Notes |
+            | --- | --- |
+            | Aviva | 0.45% |
+            """);
+
+        try
+        {
+            var document = await CaseDocumentIndexer.ReadDocumentAsync(new MarkdownReader(), path);
+
+            var text = string.Join("\n", document.EnumerateContent().Select(e => e.GetMarkdown()));
+
+            Assert.Contains("Pension & Investment Review", text, StringComparison.Ordinal);
+            Assert.Contains("Smith & Jones", text, StringComparison.Ordinal);
+            Assert.DoesNotContain("&amp;", text, StringComparison.Ordinal);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    /// <summary>An empty file has nothing to index and should say so, not index a blank chunk.</summary>
+    [Fact]
+    public async Task ReadDocument_RejectsAnEmptyFile()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"empty-{Guid.NewGuid():N}.md");
+        await File.WriteAllTextAsync(path, "   \n\n  ");
+
+        try
+        {
+            var document = await CaseDocumentIndexer.ReadDocumentAsync(new MarkdownReader(), path);
+            Assert.Empty(document.EnumerateContent());
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
 
     /// <summary>Stands in for the embedding service; these tests never leave the process.</summary>
     private sealed class StubEmbeddingGenerator : IEmbeddingGenerator<string, Embedding<float>>

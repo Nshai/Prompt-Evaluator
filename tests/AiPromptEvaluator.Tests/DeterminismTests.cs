@@ -156,17 +156,22 @@ public class DeterminismTests
         }
     }
 
-    /// <summary>A group's severity is genuinely optional, so it is nullable rather than omitted.</summary>
+    /// <summary>
+    /// A group's severity is genuinely optional, so it is nullable rather than omitted. Encoded
+    /// as anyOf[enum, null] rather than type:["string","null"] with an enum alongside — Bedrock's
+    /// schema validator rejects an enum combined with a type array ("Enum value 'High' does not
+    /// match declared type ['string', 'null']"), so the nullability has to live in a separate
+    /// branch instead.
+    /// </summary>
     [Fact]
     public void FindingSchema_MakesUnsetValuesNullableRatherThanOptional()
     {
-        var severity = FindingSchema.Element
-            .GetProperty("properties").GetProperty("severity")
-            .GetProperty("type")
-            .EnumerateArray().Select(e => e.GetString())
-            .ToList();
+        var severity = FindingSchema.Element.GetProperty("properties").GetProperty("severity");
+        var branches = severity.GetProperty("anyOf").EnumerateArray().ToList();
 
-        Assert.Equal(["string", "null"], severity);
+        Assert.Equal(2, branches.Count);
+        Assert.Equal(["High", "Moderate", "Low"], branches[0].GetProperty("enum").EnumerateArray().Select(e => e.GetString()));
+        Assert.Equal("null", branches[1].GetProperty("type").GetString());
     }
 
     [Fact]

@@ -306,7 +306,12 @@ public static class FindingSchema
                 }
               }
             },
-            "severity": { "type": ["string", "null"], "enum": ["High", "Moderate", "Low", null] },
+            "severity": {
+              "anyOf": [
+                { "type": "string", "enum": ["High", "Moderate", "Low"] },
+                { "type": "null" }
+              ]
+            },
             "outcome": { "type": "string", "enum": ["NoIssue", "PotentialConcern", "NotApplicable"] }
           }
         }

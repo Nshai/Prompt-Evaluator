@@ -6,36 +6,101 @@ using Microsoft.Extensions.AI;
 
 namespace AiPromptEvaluator;
 
-/// <summary>The three outcomes the assessment checks allow.</summary>
+/// <summary>The outcomes a check can carry.</summary>
 public enum CheckOutcome
 {
     NoIssue,
     PotentialConcern,
     NotApplicable,
 
+    /// <summary>
+    /// The comparison could not be made — a value the requirement depends on was not available,
+    /// so there is nothing to compare.
+    ///
+    /// This exists because its absence was causing invented answers. Given only three outcomes,
+    /// an assessor missing the date of birth it was told to derive an age from has no way to say
+    /// so, and the observed behaviour was to manufacture a reconciliation instead. A schema with
+    /// no slot for "I cannot tell" guarantees that the space gets filled.
+    /// </summary>
+    Indeterminate,
+
     /// <summary>The run itself failed. Kept distinct so a broken run never reads as a pass.</summary>
     Error,
 }
 
-/// <summary>One cited piece of evidence behind a finding.</summary>
+/// <summary>
+/// One cited piece of evidence behind a finding.
+///
+/// <see cref="PassageId"/> is what makes a citation checkable: passages are handed to the
+/// assessor already numbered, so a citation names one rather than describing it, and the quote
+/// can be verified against that passage's actual text.
+/// </summary>
 public sealed record FindingCitation
 {
+    [JsonPropertyName("passageId")] public string? PassageId { get; init; }
     [JsonPropertyName("source")] public string Source { get; init; } = string.Empty;
     [JsonPropertyName("category")] public string? Category { get; init; }
     [JsonPropertyName("quote")] public string? Quote { get; init; }
 }
 
-/// <summary>What the assessor concluded about one group of the plan.</summary>
+/// <summary>
+/// What the assessor concluded about one group of the plan.
+///
+/// The property order is load-bearing. A JSON-schema response format emits properties in schema
+/// order, so the order here is the order the model generates in — and the model conditions on
+/// what it has already written. With the verdict first, everything after it is written to
+/// justify a token already committed, which is exactly how a contradiction gets explained away.
+///
+/// So the sequence is: state what each side says, list the discrepancies, declare whether the
+/// comparison could be made at all, reason, cite — and only then decide.
+/// </summary>
 public sealed record GroupFinding
 {
     [JsonPropertyName("groupId")] public string GroupId { get; init; } = string.Empty;
     [JsonPropertyName("requirement")] public string? Requirement { get; init; }
-    [JsonPropertyName("outcome")] public string Outcome { get; init; } = nameof(CheckOutcome.NoIssue);
-    [JsonPropertyName("severity")] public string? Severity { get; init; }
-    [JsonPropertyName("explanation")] public string Explanation { get; init; } = string.Empty;
-    [JsonPropertyName("citations")] public List<FindingCitation> Citations { get; init; } = [];
 
-    public CheckOutcome ParsedOutcome => CheckFinding.ParseOutcome(Outcome);
+    /// <summary>What the canonical model asserts, in the assessor's own words.</summary>
+    [JsonPropertyName("reportSays")] public string ReportSays { get; init; } = string.Empty;
+
+    /// <summary>What the retrieved passages evidence.</summary>
+    [JsonPropertyName("fileSays")] public string FileSays { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Every difference between the two sides, listed before any judgement is made about
+    /// whether they matter. Suppressing a finding then means omitting an item from a list
+    /// rather than softening a paragraph — a more conspicuous act, and an auditable one.
+    /// </summary>
+    [JsonPropertyName("discrepancies")] public List<string> Discrepancies { get; init; } = [];
+
+    /// <summary>False when a value the comparison depends on was not available.</summary>
+    [JsonPropertyName("comparisonPerformed")] public bool ComparisonPerformed { get; init; } = true;
+
+    /// <summary>What was missing, when <see cref="ComparisonPerformed"/> is false.</summary>
+    [JsonPropertyName("missingInputs")] public List<string> MissingInputs { get; init; } = [];
+
+    [JsonPropertyName("analysis")] public string Analysis { get; init; } = string.Empty;
+    [JsonPropertyName("citations")] public List<FindingCitation> Citations { get; init; } = [];
+    [JsonPropertyName("severity")] public string? Severity { get; init; }
+    [JsonPropertyName("outcome")] public string Outcome { get; init; } = nameof(CheckOutcome.NoIssue);
+
+    /// <summary>
+    /// Quotes that could not be found in the passages this group was given. Set by
+    /// <see cref="CitationVerifier"/> after the model has answered.
+    /// </summary>
+    [JsonIgnore] public IReadOnlyList<string> UnverifiedQuotes { get; init; } = [];
+
+    /// <summary>
+    /// The outcome as it stands after the deterministic checks, which can only ever move it
+    /// away from a pass:
+    ///
+    /// a comparison that could not be performed is Indeterminate whatever the model concluded;
+    /// and a finding resting on a quote that is not in its own evidence is a Potential Concern,
+    /// because the reasoning cannot be relied on even where the conclusion happens to be right.
+    /// </summary>
+    public CheckOutcome ParsedOutcome =>
+        !ComparisonPerformed ? CheckOutcome.Indeterminate
+        : UnverifiedQuotes.Count > 0 ? CheckOutcome.PotentialConcern
+        : CheckFinding.ParseOutcome(Outcome);
 }
 
 /// <summary>
@@ -79,6 +144,7 @@ public sealed record CheckFinding
             "noissue" or "noissues" or "pass" => CheckOutcome.NoIssue,
             "potentialconcern" or "concern" or "fail" => CheckOutcome.PotentialConcern,
             "na" or "notapplicable" => CheckOutcome.NotApplicable,
+            "indeterminate" or "cannotassess" or "unknown" => CheckOutcome.Indeterminate,
             "error" => CheckOutcome.Error,
 
             // Anything unrecognised is treated as a concern rather than a pass: an assessor
@@ -92,8 +158,95 @@ public sealed record CheckFinding
         CheckOutcome.NoIssue => "No Issue",
         CheckOutcome.PotentialConcern => "Potential Concern",
         CheckOutcome.NotApplicable => "N/A",
+        CheckOutcome.Indeterminate => "Indeterminate",
         _ => "Error",
     };
+
+    /// <summary>
+    /// Builds the check's finding from its groups.
+    ///
+    /// The check-level outcome is computed here rather than asked for. Previously the model
+    /// stated it — and because a schema emits properties in order, it stated it *before*
+    /// assessing a single group. Deriving it removes both the ordering problem and the
+    /// possibility of a check outcome that does not follow from its own groups.
+    ///
+    /// Precedence runs worst-first: any concern makes the check a concern; failing that, a
+    /// comparison that could not be made leaves the check Indeterminate rather than clear.
+    /// </summary>
+    public static CheckFinding FromGroups(
+        string checkId,
+        string checkName,
+        IReadOnlyList<GroupFinding> groups,
+        string? triggerNote = null)
+    {
+        var outcomes = groups.Select(g => g.ParsedOutcome).ToList();
+
+        var outcome =
+            outcomes.Contains(CheckOutcome.Error) ? CheckOutcome.Error
+            : outcomes.Contains(CheckOutcome.PotentialConcern) ? CheckOutcome.PotentialConcern
+            : outcomes.Contains(CheckOutcome.Indeterminate) ? CheckOutcome.Indeterminate
+            : outcomes.Count > 0 && outcomes.All(o => o == CheckOutcome.NotApplicable) ? CheckOutcome.NotApplicable
+            : CheckOutcome.NoIssue;
+
+        return new CheckFinding
+        {
+            CheckId = checkId,
+            CheckName = checkName,
+            Groups = [.. groups],
+            Summary = Summarise(groups, outcome, triggerNote),
+            Outcome = outcome.ToString(),
+        };
+    }
+
+    /// <summary>
+    /// The check's headline, composed from the groups rather than written by the model — so it
+    /// cannot say something the group findings do not support.
+    /// </summary>
+    private static string Summarise(
+        IReadOnlyList<GroupFinding> groups, CheckOutcome outcome, string? triggerNote)
+    {
+        var sb = new StringBuilder();
+
+        if (!string.IsNullOrWhiteSpace(triggerNote))
+        {
+            sb.Append(triggerNote!.Trim()).Append(' ');
+        }
+
+        var concerns = groups.Where(g => g.ParsedOutcome == CheckOutcome.PotentialConcern).ToList();
+        var indeterminate = groups.Where(g => g.ParsedOutcome == CheckOutcome.Indeterminate).ToList();
+
+        sb.Append(Describe(outcome)).Append(" across ").Append(groups.Count).Append(" requirement(s). ");
+
+        if (concerns.Count > 0)
+        {
+            sb.Append(concerns.Count).Append(" raised a concern (")
+              .Append(string.Join(", ", concerns.Select(g => g.GroupId))).Append("). ");
+
+            var discrepancies = concerns.SelectMany(g => g.Discrepancies).Take(3).ToList();
+
+            if (discrepancies.Count > 0)
+            {
+                sb.Append(string.Join(" ", discrepancies.Select(d => d.TrimEnd('.') + "."))).Append(' ');
+            }
+        }
+
+        if (indeterminate.Count > 0)
+        {
+            sb.Append(indeterminate.Count)
+              .Append(" could not be assessed for want of a value the comparison needs (")
+              .Append(string.Join(", ", indeterminate.Select(g => g.GroupId))).Append("). ");
+        }
+
+        var unverified = groups.Sum(g => g.UnverifiedQuotes.Count);
+
+        if (unverified > 0)
+        {
+            sb.Append(unverified)
+              .Append(" cited quote(s) could not be found in the evidence supplied and were rejected. ");
+        }
+
+        return sb.ToString().TrimEnd();
+    }
 
     public static CheckFinding Failed(string checkId, string checkName, string error, TimeSpan elapsed) => new()
     {
@@ -127,40 +280,34 @@ public static class FindingSchema
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["checkId", "checkName", "outcome", "summary", "groups"],
+          "required": ["groupId", "requirement", "reportSays", "fileSays", "discrepancies",
+                       "comparisonPerformed", "missingInputs", "analysis", "citations",
+                       "severity", "outcome"],
           "properties": {
-            "checkId": { "type": "string" },
-            "checkName": { "type": "string" },
-            "outcome": { "type": "string", "enum": ["NoIssue", "PotentialConcern", "NotApplicable"] },
-            "summary": { "type": "string" },
-            "groups": {
+            "groupId": { "type": "string" },
+            "requirement": { "type": "string" },
+            "reportSays": { "type": "string" },
+            "fileSays": { "type": "string" },
+            "discrepancies": { "type": "array", "items": { "type": "string" } },
+            "comparisonPerformed": { "type": "boolean" },
+            "missingInputs": { "type": "array", "items": { "type": "string" } },
+            "analysis": { "type": "string" },
+            "citations": {
               "type": "array",
               "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["groupId", "requirement", "outcome", "severity", "explanation", "citations"],
+                "required": ["passageId", "source", "category", "quote"],
                 "properties": {
-                  "groupId": { "type": "string" },
-                  "requirement": { "type": "string" },
-                  "outcome": { "type": "string", "enum": ["NoIssue", "PotentialConcern", "NotApplicable"] },
-                  "severity": { "type": ["string", "null"], "enum": ["High", "Moderate", "Low", null] },
-                  "explanation": { "type": "string" },
-                  "citations": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": ["source", "category", "quote"],
-                      "properties": {
-                        "source": { "type": "string" },
-                        "category": { "type": ["string", "null"] },
-                        "quote": { "type": ["string", "null"] }
-                      }
-                    }
-                  }
+                  "passageId": { "type": ["string", "null"] },
+                  "source": { "type": "string" },
+                  "category": { "type": ["string", "null"] },
+                  "quote": { "type": ["string", "null"] }
                 }
               }
-            }
+            },
+            "severity": { "type": ["string", "null"], "enum": ["High", "Moderate", "Low", null] },
+            "outcome": { "type": "string", "enum": ["NoIssue", "PotentialConcern", "NotApplicable"] }
           }
         }
         """;
@@ -168,13 +315,20 @@ public static class FindingSchema
     /// <summary>The schema as a <see cref="JsonElement"/>, parsed once.</summary>
     public static JsonElement Element { get; } = JsonDocument.Parse(Json).RootElement.Clone();
 
+    /// <summary>
+    /// The order the model will generate in — which is the order it reasons in, since each
+    /// property is written conditioned on the ones before it. Exposed so a test can pin it.
+    /// </summary>
+    public static IReadOnlyList<string> EmissionOrder { get; } = Element
+        .GetProperty("required").EnumerateArray().Select(e => e.GetString()!).ToList();
+
     /// <summary>The response format to send, or null when the endpoint should not be asked for one.</summary>
     public static ChatResponseFormat? ResponseFormat(bool enabled) =>
         enabled
             ? ChatResponseFormat.ForJsonSchema(
                 Element,
-                "qa_check_finding",
-                "The outcome of one QA check, with per-group detail and citations.")
+                "qa_group_finding",
+                "The assessment of one requirement: both sides, the discrepancies, then the outcome.")
             : null;
 }
 
@@ -205,7 +359,17 @@ public sealed record FindingsReport(
         $"{Count(CheckOutcome.PotentialConcern)} potential concern(s), "
         + $"{Count(CheckOutcome.NoIssue)} no issue, "
         + $"{Count(CheckOutcome.NotApplicable)} N/A"
+        + (Count(CheckOutcome.Indeterminate) > 0
+            ? $", {Count(CheckOutcome.Indeterminate)} not assessable"
+            : string.Empty)
         + (Count(CheckOutcome.Error) > 0 ? $", {Count(CheckOutcome.Error)} error(s)" : string.Empty);
+
+    /// <summary>
+    /// Group findings whose citations could not be traced back to the evidence they were given.
+    /// Surfaced at run level because one is a defect worth investigating and several is a
+    /// pattern worth stopping the run for.
+    /// </summary>
+    public int UnverifiedCitations => Findings.Sum(f => f.Groups.Sum(g => g.UnverifiedQuotes.Count));
 
     /// <summary>
     /// The full report. Concerns come first and in full; passes are summarised. A reviewer
@@ -249,8 +413,13 @@ public sealed record FindingsReport(
         sb.AppendLine();
 
         // Concerns and errors in full, in check order; everything else stays folded away.
+        // Indeterminate belongs here rather than with the cleared checks. A comparison that
+        // could not be made is not a pass, and a report that folds it away with the passes is
+        // how an unassessed requirement gets signed off as reviewed.
         var detailed = Findings
-            .Where(f => f.ParsedOutcome is CheckOutcome.PotentialConcern or CheckOutcome.Error)
+            .Where(f => f.ParsedOutcome is CheckOutcome.PotentialConcern
+                                        or CheckOutcome.Indeterminate
+                                        or CheckOutcome.Error)
             .ToList();
 
         if (detailed.Count > 0)
@@ -291,6 +460,13 @@ public sealed record FindingsReport(
             $"Tokens: {TotalUsage.TotalTokens:N0} "
             + $"(the suitability report was read once at extraction, not per check).");
 
+        if (UnverifiedCitations > 0)
+        {
+            sb.AppendLine(
+                $"Citations: {UnverifiedCitations} quote(s) could not be found in the evidence they "
+                + "were drawn from. Those findings were downgraded and should be read first.");
+        }
+
         return sb.ToString();
     }
 
@@ -322,12 +498,57 @@ public sealed record FindingsReport(
             sb.AppendLine($"  [{group.GroupId}] {group.Requirement}");
             sb.AppendLine($"  {CheckFinding.Describe(group.ParsedOutcome)}"
                 + (string.IsNullOrWhiteSpace(group.Severity) ? string.Empty : $" — severity {group.Severity}"));
-            sb.AppendLine(Indent(group.Explanation, "    "));
+
+            // Both sides before the reasoning, mirroring the order the assessor answered in —
+            // a reviewer checking a finding wants the two claims side by side first.
+            if (!string.IsNullOrWhiteSpace(group.ReportSays))
+            {
+                sb.AppendLine(Indent($"Report:   {group.ReportSays}", "    "));
+            }
+
+            if (!string.IsNullOrWhiteSpace(group.FileSays))
+            {
+                sb.AppendLine(Indent($"File:     {group.FileSays}", "    "));
+            }
+
+            if (group.Discrepancies.Count > 0)
+            {
+                sb.AppendLine("    Discrepancies:");
+                foreach (var discrepancy in group.Discrepancies)
+                {
+                    sb.AppendLine(Indent($"- {discrepancy}", "      "));
+                }
+            }
+
+            if (!group.ComparisonPerformed)
+            {
+                sb.AppendLine(
+                    "    NOT ASSESSED — the comparison needs a value that was not available: "
+                    + (group.MissingInputs.Count > 0 ? string.Join(", ", group.MissingInputs) : "unspecified"));
+            }
+
+            if (!string.IsNullOrWhiteSpace(group.Analysis))
+            {
+                sb.AppendLine(Indent(group.Analysis, "    "));
+            }
+
+            // The loudest thing on the page when it happens. A quote that is not in the evidence
+            // means the reasoning cannot be relied on, whatever conclusion it reached.
+            if (group.UnverifiedQuotes.Count > 0)
+            {
+                sb.AppendLine(
+                    $"    ** {group.UnverifiedQuotes.Count} QUOTE(S) NOT FOUND IN THE EVIDENCE SUPPLIED **");
+                foreach (var quote in group.UnverifiedQuotes)
+                {
+                    sb.AppendLine(Indent($"\"{quote}\"", "        "));
+                }
+            }
 
             foreach (var citation in group.Citations)
             {
                 var category = string.IsNullOrWhiteSpace(citation.Category) ? string.Empty : $" [{citation.Category}]";
-                sb.AppendLine($"      · {citation.Source}{category}");
+                var passage = string.IsNullOrWhiteSpace(citation.PassageId) ? string.Empty : $" ({citation.PassageId})";
+                sb.AppendLine($"      · {citation.Source}{category}{passage}");
 
                 if (!string.IsNullOrWhiteSpace(citation.Quote))
                 {

@@ -21,9 +21,12 @@ public sealed record CheckRunProgress(int Done, int Total, string CheckId, strin
 ///   Evidence side — what the rest of the case file holds — is retrieved from the vector
 ///   store using the plan's search text.
 ///
-/// Retrieval is deterministic: the plan decides which searches run, not the model. The model
-/// is called once per check, at the end, to judge an evidence pack it did not assemble. Two
+/// Retrieval is deterministic: the plan decides which searches run, not the model. The model is
+/// called once per requirement, at the end, to judge an evidence pack it did not assemble. Two
 /// runs of the same check over the same case therefore see exactly the same evidence.
+///
+/// The check's own outcome is never asked for. It is computed from the requirement findings, so
+/// it cannot disagree with them — and, more to the point, cannot be stated before they exist.
 /// </summary>
 public sealed class CheckPlanRunner
 {
@@ -109,25 +112,53 @@ public sealed class CheckPlanRunner
                 packs.Add(await GatherAsync(group, cancellationToken).ConfigureAwait(false));
             }
 
-            progress?.Report($"{plan.CheckId}: assessing");
-
+            // One call per requirement rather than one per check.
+            //
+            // A check with nine groups previously produced nine verdicts in a single generation
+            // of several thousand lines, where each group's reasoning was conditioned on every
+            // group written before it and none of them could be retried alone. Assessing one
+            // requirement at a time gives the model a pack small enough to attend to in full,
+            // isolates a failure to the group that caused it, and keeps the check header
+            // identical at the front of every prompt so the provider's prefix cache covers it.
             var systemPrompt = BuildSystemPrompt();
-            var userPrompt = BuildAssessmentPrompt(check, plan, trigger, packs);
+            var header = BuildCheckHeader(check, plan, trigger);
+            var usage = TokenUsage.Empty;
+            var findings = new List<GroupFinding>();
 
-            var result = await _evaluator
-                .RunRawAsync(
-                    systemPrompt,
-                    userPrompt,
-                    DecisionMaxTokens,
-                    FindingSchema.ResponseFormat(_settings.StructuredFindings),
-                    cancellationToken)
-                .ConfigureAwait(false);
+            foreach (var pack in packs)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                progress?.Report($"{plan.CheckId}: assessing {pack.Group.GroupId}");
 
-            _promptLog?.LogExchange(plan.CheckId, plan.CheckName, systemPrompt, userPrompt, result.Response);
+                var userPrompt = header + BuildGroupPrompt(pack);
+
+                var result = await _evaluator
+                    .RunRawAsync(
+                        systemPrompt,
+                        userPrompt,
+                        DecisionMaxTokens,
+                        FindingSchema.ResponseFormat(_settings.StructuredFindings),
+                        cancellationToken)
+                    .ConfigureAwait(false);
+
+                _promptLog?.LogExchange(
+                    $"{plan.CheckId}/{pack.Group.GroupId}", plan.CheckName,
+                    systemPrompt, userPrompt, result.Response);
+
+                usage = AddUsage(usage, result.Breakdown.Usage);
+
+                // Verified against the evidence this group was actually given — never against
+                // the whole check's evidence, or a quote lifted from a neighbouring group's
+                // passages would verify and the check would be worthless.
+                findings.Add(CitationVerifier.Verify(
+                    ParseGroup(result.Response, pack.Group), EvidenceTextOf(pack)));
+            }
 
             startedAt.Stop();
 
-            var finding = ParseFinding(result.Response, plan);
+            var finding = CheckFinding.FromGroups(
+                plan.CheckId, plan.CheckName, findings,
+                trigger.Applies ? null : "The trigger appears absent.");
 
             return finding with
             {
@@ -135,7 +166,7 @@ public sealed class CheckPlanRunner
                 PassagesRetrieved = trigger.Passages + packs.Sum(p => p.TotalPassages),
                 CanonicalPathsResolved = packs.Sum(p => p.Fragments.Count(f => f.Found)),
                 CanonicalPathsMissing = packs.Sum(p => p.Fragments.Count(f => !f.Found)),
-                Usage = result.Breakdown.Usage,
+                Usage = usage,
                 Elapsed = startedAt.Elapsed,
             };
         }
@@ -206,7 +237,7 @@ public sealed class CheckPlanRunner
         return new TriggerOutcome(applies, probe.ReturnsNotApplicable, detail.ToString(), searches, passages);
     }
 
-    private sealed record GroupEvidence(
+    internal sealed record GroupEvidence(
         PlanQueryGroup Group,
         IReadOnlyList<CanonicalFragment> Fragments,
         IReadOnlyList<CaseDocumentSearchMatch> Passages,
@@ -328,7 +359,7 @@ public sealed class CheckPlanRunner
 
     private static string BuildSystemPrompt() =>
         """
-        You are a financial services Quality Assurance assessor. You assess one QA check
+        You are a financial services Quality Assurance assessor. You assess ONE requirement
         against a pre-assembled evidence pack and return a structured finding.
 
         The pack has two sides, and the distinction matters:
@@ -337,40 +368,49 @@ public sealed class CheckPlanRunner
           report itself, so treat it as an accurate record of what the report says. It is not
           evidence that the assertion is true.
         - RETRIEVED PASSAGES — what the rest of the case file holds, quoted verbatim from the
-          supporting documents with their category. This is the evidence.
+          supporting documents, each with an id like [P3] and a category. This is the evidence.
 
         A consistency requirement is met when the report's assertion is corroborated by the
         evidence. It fails when they contradict each other, or when the report asserts
         something no document supports.
 
+        Answer the fields in the order they are given. That order is the order to think in:
+        set out what each side says, list every discrepancy you can see, establish whether the
+        comparison can be made at all, reason about it, cite — and decide last. Do not decide
+        first and explain afterwards.
+
         Rules:
         - Judge only on the pack. Do not use outside knowledge of the case, and do not assume
           a document exists because it usually would.
-        - "Not retrieved" and "not in the file" are different. The pack tells you which
-          searches found nothing; say which one you are relying on.
-        - Respect the false-positive guards given for each group. They describe specific ways
-          this comparison produces spurious mismatches, and a finding that one of them
-          explains is not a finding.
-        - An absent value in the canonical model means the report does not state it. That is
-          often the finding — say so plainly rather than treating it as an unknown.
-        - Cite the document name and category for every piece of evidence you rely on.
-        - Highlight every mismatch you identify explicitly and without masking it: do not soften,
-          hedge or omit a contradiction to make the finding read more favourably. Report it even
-          if it seems minor, and state outcome as Potential Concern rather than No Issue whenever
-          a genuine mismatch is found.
+        - Put EVERY difference between the two sides in "discrepancies", before you consider
+          whether any of them matters. A difference explained by a guard still goes in the list;
+          say in "analysis" which guard explains it.
+        - If a value the comparison depends on is not in the pack, set "comparisonPerformed" to
+          false and name what is missing. Do NOT estimate, derive around, or assume it. A
+          comparison you could not make is a legitimate answer; an invented one is not.
+        - Quote only text that appears in the passages given, verbatim, and name the passage id
+          it came from. Quotations are checked against the pack automatically. Do not adjust a
+          quotation to fit your reasoning: if the evidence contradicts the report, that is the
+          finding.
+        - Respect the false-positive guards. They describe specific ways this comparison
+          produces spurious mismatches, and a finding one of them explains is not a finding.
+        - Do not soften, hedge or omit a contradiction to make the finding read more favourably.
+          Where a genuine mismatch stands after the guards, the outcome is Potential Concern.
         - Return one JSON object and nothing else. No prose outside it, no markdown fences.
         """;
 
     /// <summary>
-    /// The evidence pack. Structure follows the plan: the check, then one block per group
-    /// carrying its requirement, what the report asserts, what the file evidences, and the
-    /// rules for comparing them.
+    /// The part of the prompt that is the same for every group of a check — the check itself,
+    /// the trigger, and how to decide.
+    ///
+    /// Built once and placed identically at the front of each group's prompt, so the provider's
+    /// prefix cache covers it. Assessing a nine-group check therefore costs nine short prompts
+    /// rather than nine long ones.
     /// </summary>
-    private string BuildAssessmentPrompt(
+    private string BuildCheckHeader(
         AssessmentCheck check,
         CheckQueryPlan plan,
-        TriggerOutcome trigger,
-        IReadOnlyList<GroupEvidence> packs)
+        TriggerOutcome trigger)
     {
         var sb = new StringBuilder();
 
@@ -427,49 +467,34 @@ public sealed class CheckPlanRunner
             sb.AppendLine();
         }
 
-        sb.AppendLine("## Evidence pack");
+        // What the extraction itself reported about its own gaps. Carried so the assessor can
+        // tell a report that is genuinely silent from one the extraction failed to read — the
+        // two look identical from an absent canonical path, and they mean opposite things.
+        var extraction = _accessor.Resolve("/extractionReport");
 
-        foreach (var pack in packs)
+        if (extraction.Found)
         {
-            AppendGroup(sb, pack);
+            sb.AppendLine("## What the extraction said about itself");
+            sb.AppendLine(
+                "Use this to tell report silence from extraction failure where a canonical path "
+                + "below is absent.");
+            sb.AppendLine("```json");
+            sb.AppendLine(Truncate(extraction.Json, 4000));
+            sb.AppendLine("```");
+            sb.AppendLine();
         }
-
-        sb.AppendLine();
-        sb.AppendLine("## Return");
-        sb.AppendLine(
-            """
-            Return this JSON object:
-
-            {
-              "checkId": "...",
-              "checkName": "...",
-              "outcome": "NoIssue" | "PotentialConcern" | "NotApplicable",
-              "summary": "Two or three sentences: the outcome and why, naming the decisive evidence.",
-              "groups": [
-                {
-                  "groupId": "...",
-                  "requirement": "...",
-                  "outcome": "NoIssue" | "PotentialConcern" | "NotApplicable",
-                  "severity": "High" | "Moderate" | "Low" | null,
-                  "explanation": "What the report asserts, what the file evidences, and whether they agree.",
-                  "citations": [ { "source": "document name or canonical path", "category": "B", "quote": "verbatim" } ]
-                }
-              ]
-            }
-
-            Include every group from the pack. The check outcome is Potential Concern if any
-            group is a Potential Concern; N/A only when the trigger is absent for the whole check.
-            """);
 
         return sb.ToString();
     }
 
-    private void AppendGroup(StringBuilder sb, GroupEvidence pack)
+    /// <summary>The one requirement being assessed, and everything bearing on it.</summary>
+    private string BuildGroupPrompt(GroupEvidence pack)
     {
+        var sb = new StringBuilder();
         var group = pack.Group;
 
+        sb.AppendLine("## The requirement to assess");
         sb.AppendLine();
-        sb.AppendLine(new string('-', 74));
         sb.AppendLine($"### [{group.GroupId}] {group.Requirement}");
         sb.AppendLine($"Limb: {group.Limb}");
 
@@ -498,8 +523,14 @@ public sealed class CheckPlanRunner
         {
             sb.AppendLine();
             sb.AppendLine(
-                "Not present in the model (the report does not state these): "
+                "Absent from the extracted model: "
                 + string.Join(", ", missing.Select(m => $"`{m.Path}`")));
+            sb.AppendLine(
+                "This means one of two things and they are not the same: the report is silent on "
+                + "the point, or the extraction failed to capture it. The extraction's own report "
+                + "above is the place to look. Where the comparison needs one of these values and "
+                + "you cannot establish it, set comparisonPerformed to false and name it in "
+                + "missingInputs rather than working around it.");
         }
 
         // Evidence side, from the vector store.
@@ -524,12 +555,15 @@ public sealed class CheckPlanRunner
         {
             sb.AppendLine($"#### What the case file evidences ({pack.Searches} search(es), {pack.TotalPassages} hit(s))");
             sb.AppendLine($"Categories represented: {string.Join(", ", pack.CategoriesFound)}");
+            sb.AppendLine("Cite by passage id. Quotes are checked against these passages.");
 
-            foreach (var passage in pack.Passages)
+            for (var i = 0; i < pack.Passages.Count; i++)
             {
+                var passage = pack.Passages[i];
                 var category = string.IsNullOrWhiteSpace(passage.CategoryCode) ? "-" : passage.CategoryCode;
                 sb.AppendLine();
-                sb.AppendLine($"[{category}] {passage.DocumentName} (score {passage.Score:0.000})");
+                sb.AppendLine(
+                    $"[{PassageId(i)}] [{category}] {passage.DocumentName} (score {passage.Score:0.000})");
                 sb.AppendLine(Truncate(passage.SearchedText, 2400));
             }
         }
@@ -576,7 +610,39 @@ public sealed class CheckPlanRunner
                 sb.AppendLine($"- Minimum corroborating categories: {min}");
             }
         }
+
+        sb.AppendLine();
+        sb.AppendLine("#### Return");
+        sb.AppendLine(
+            $"One JSON object for [{group.GroupId}] only. Fill the fields in the order given: "
+            + "reportSays, fileSays, discrepancies, comparisonPerformed, missingInputs, analysis, "
+            + "citations, severity, outcome. Decide last.");
+
+        return sb.ToString();
     }
+
+    /// <summary>
+    /// The id a passage is presented under. Stable within a group and derived from position, so
+    /// the same pack always numbers the same way and a citation can be checked against it.
+    /// </summary>
+    internal static string PassageId(int index) => $"P{index + 1}";
+
+    /// <summary>
+    /// The text a group's citations are checked against: the passages it was shown, plus the
+    /// canonical model fragments it was given, since a finding may legitimately quote the
+    /// report's own assertion.
+    /// </summary>
+    internal static IReadOnlyList<string> EvidenceTextOf(GroupEvidence pack) =>
+    [
+        .. pack.Passages.Select(p => p.SearchedText),
+        .. pack.Fragments.Where(f => f.Found).Select(f => f.Json),
+    ];
+
+    private static TokenUsage AddUsage(TokenUsage a, TokenUsage b) => new(
+        a.InputTokens + b.InputTokens,
+        a.OutputTokens + b.OutputTokens,
+        a.CacheWriteTokens + b.CacheWriteTokens,
+        a.CacheReadTokens + b.CacheReadTokens);
 
     private static void Append(StringBuilder sb, string label, string? value)
     {
@@ -590,51 +656,45 @@ public sealed class CheckPlanRunner
         text.Length <= max ? text : text[..max] + $"\n... [truncated, {text.Length - max:N0} more characters]";
 
     /// <summary>
-    /// Reads the assessor's reply. A reply that will not parse becomes an Error finding
-    /// carrying the raw text — never a pass, and never silently discarded.
+    /// Reads one group's reply. A reply that will not parse becomes a Potential Concern carrying
+    /// the raw text — never a pass, and never silently discarded.
     /// </summary>
-    private static CheckFinding ParseFinding(string response, CheckQueryPlan plan)
+    internal static GroupFinding ParseGroup(string response, PlanQueryGroup group)
     {
         var json = CanonicalModelExtractor.ParseObject(response);
 
         if (json is null)
         {
-            return new CheckFinding
-            {
-                CheckId = plan.CheckId,
-                CheckName = plan.CheckName,
-                Outcome = nameof(CheckOutcome.Error),
-                Summary = "The assessor did not return a parseable finding. Raw response:\n\n" + response.Trim(),
-                Error = "Unparseable response",
-            };
+            return Unreadable(group, "The assessor did not return a parseable finding.", response);
         }
 
         try
         {
-            var finding = json.Deserialize<CheckFinding>(FindingOptions);
+            var finding = json.Deserialize<GroupFinding>(FindingOptions)
+                ?? throw new JsonException("The finding deserialised to null.");
 
-            if (finding is null)
-            {
-                throw new JsonException("The finding deserialised to null.");
-            }
-
-            // The plan is the authority on which check this is; the model only echoes it.
+            // The plan is the authority on which requirement this is; the model only echoes it.
             return finding with
             {
-                CheckId = plan.CheckId,
-                CheckName = string.IsNullOrWhiteSpace(finding.CheckName) ? plan.CheckName : finding.CheckName,
+                GroupId = group.GroupId,
+                Requirement = string.IsNullOrWhiteSpace(finding.Requirement)
+                    ? group.Requirement
+                    : finding.Requirement,
             };
         }
         catch (JsonException ex)
         {
-            return new CheckFinding
-            {
-                CheckId = plan.CheckId,
-                CheckName = plan.CheckName,
-                Outcome = nameof(CheckOutcome.Error),
-                Summary = $"The finding could not be read ({ex.Message}). Raw response:\n\n{response.Trim()}",
-                Error = ex.Message,
-            };
+            return Unreadable(group, $"The finding could not be read ({ex.Message}).", response);
         }
     }
+
+    private static GroupFinding Unreadable(PlanQueryGroup group, string why, string response) => new()
+    {
+        GroupId = group.GroupId,
+        Requirement = group.Requirement,
+        Analysis = $"{why} Raw response:\n\n{response.Trim()}",
+        Outcome = nameof(CheckOutcome.PotentialConcern),
+        ComparisonPerformed = false,
+        MissingInputs = ["a readable answer from the assessor"],
+    };
 }

@@ -128,6 +128,35 @@ What none of this fixes is a check that is genuinely borderline. If a group stil
 with identical evidence and pinned sampling, its plan's `noIssue` / `potentialConcern`
 criteria do not partition the space, and the fix belongs in the plan text.
 
+### How a finding is kept honest
+
+A run over a real case cleared two checks it should have failed, and neither was a retrieval
+problem — the evidence was in the pack both times. One assessor changed a digit inside quotation
+marks so a file note agreed with the recommendation; the other, asked to compare an age with no
+date of birth available to derive it from, invented arithmetic in which the client got a year
+younger between September and October. Instructing the model not to do this had already been
+tried and was already in the prompt. Four changes followed, and only the first two are prompting:
+
+- **The verdict is written last.** A JSON-schema response format emits properties in schema
+  order, and the model conditions on what it has already written — so with `outcome` first, it
+  was committing to a verdict before analysing anything, and everything after was justification.
+  The order is now: what each side says, every discrepancy, whether the comparison could be made,
+  the reasoning, the citations, and only then the outcome. `FindingSchema.EmissionOrder` pins it.
+- **"I cannot tell" is expressible.** Given only *No Issue*, *Potential Concern* and *N/A*, an
+  assessor missing a value it needs has no way to say so, and the observed behaviour is to fill
+  the space. `comparisonPerformed: false` now yields an `Indeterminate` outcome that reports in
+  full alongside the concerns rather than folding away with the passes.
+- **Quotes are checked.** Passages are numbered `[P1]`, `[P2]`… and cited by id, and
+  [`CitationVerifier`](src/AiPromptEvaluator/CitationVerifier.cs) confirms every quote appears in
+  the passages *that group* was given. One that does not downgrades the finding. The match folds
+  away case, whitespace and typographic punctuation, and ignores quotes too short to be a claim,
+  because a false accusation of fabrication is its own kind of damage.
+- **One call per requirement, and the check outcome is computed.** A nine-group check used to
+  produce nine verdicts in one generation of several thousand lines. Each group is now assessed
+  against a pack small enough to attend to, and the check-level outcome is derived from its
+  groups rather than asserted — so it cannot disagree with them. The check header sits identically
+  at the front of every group's prompt, so the provider's prefix cache covers it.
+
 ### Design notes worth knowing
 
 - **The search tool cannot filter by document category.** Qdrant is filtered on

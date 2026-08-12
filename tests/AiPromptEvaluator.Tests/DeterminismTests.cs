@@ -161,8 +161,7 @@ public class DeterminismTests
     public void FindingSchema_MakesUnsetValuesNullableRatherThanOptional()
     {
         var severity = FindingSchema.Element
-            .GetProperty("properties").GetProperty("groups")
-            .GetProperty("items").GetProperty("properties").GetProperty("severity")
+            .GetProperty("properties").GetProperty("severity")
             .GetProperty("type")
             .EnumerateArray().Select(e => e.GetString())
             .ToList();

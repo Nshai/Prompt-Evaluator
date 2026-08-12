@@ -59,7 +59,7 @@ public class CheckFindingTests
                 Requirement = "A requirement",
                 Outcome = outcome.ToString(),
                 Severity = "High",
-                Explanation = "Because of the evidence.",
+                Analysis = "Because of the evidence.",
                 Citations = [new FindingCitation { Source = "Fact Find.md", Category = "B", Quote = "a quote" }],
             },
         ],

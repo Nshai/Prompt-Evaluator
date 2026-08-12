@@ -167,7 +167,7 @@ public partial class MainForm : Form
     {
         SetBusy(true);
         responseTextBox.Text = "Working...";
-        statusLabel.Text = "Calling the Anthropic API...";
+        statusLabel.Text = "Calling the model...";
 
         try
         {
@@ -230,7 +230,7 @@ public partial class MainForm : Form
 
         totalCostLabel.Text = breakdown.FormatTotal();
         costNoteLabel.Text = breakdown.RatesAreEstimated
-            ? $"'{breakdown.ModelId}' is not in the rate table; showing Opus-tier estimates."
-            : $"Rates for {breakdown.ModelId}. Cache writes bill at 1.25x input, reads at 0.1x.";
+            ? $"'{breakdown.ModelId}' is not in the rate table; the cost shown is an estimate."
+            : $"Rates for {breakdown.ModelId}. Cached input bills at 0.25x input.";
     }
 }

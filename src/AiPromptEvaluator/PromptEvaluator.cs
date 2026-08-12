@@ -1,11 +1,6 @@
-using System.Net.Http.Headers;
 using System.Text;
-using Anthropic;
-using Anthropic.Core;
-using Anthropic.Models.Beta;
-using Anthropic.Models.Beta.Messages;
-using BetaMessages = Anthropic.Models.Beta.Messages;
-using Messages = Anthropic.Models.Messages;
+
+using Microsoft.Extensions.AI;
 
 namespace AiPromptEvaluator;
 
@@ -13,8 +8,8 @@ namespace AiPromptEvaluator;
 public sealed record PromptResult(string Response, CostBreakdown Breakdown);
 
 /// <summary>
-/// UI-independent prompt execution: builds the prompt, calls the Anthropic API,
-/// and converts the reported usage into a cost breakdown.
+/// UI-independent prompt execution: builds the prompt, calls the configured
+/// <see cref="IChatClient"/>, and converts the reported usage into a cost breakdown.
 /// </summary>
 public class PromptEvaluator
 {
@@ -28,24 +23,13 @@ public class PromptEvaluator
     /// <summary>Sends <paramref name="rawPrompt"/> verbatim — no system preamble, no folder context injected.</summary>
     public async Task<PromptResult> RunRawAsync(string rawPrompt, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(_settings.AnthropicApiKey))
-        {
-            throw new InvalidOperationException("Please configure an Anthropic API key before running the prompt.");
-        }
+        using var client = AiClientFactory.CreateChatClient(_settings);
 
-        var client = CreateClient();
-        var parameters = new Messages.MessageCreateParams
-        {
-            Messages = [new Messages.MessageParam { Role = Messages.Role.User, Content = rawPrompt }],
-            MaxTokens = _settings.MaxTokens,
-            Model = _settings.SelectedModel,
-        };
+        var response = await client
+            .GetResponseAsync(rawPrompt, ChatOptions(), cancellationToken)
+            .ConfigureAwait(false);
 
-        var result = await client.Messages.Create(parameters, cancellationToken).ConfigureAwait(false);
-
-        var usage = ReadUsage(result.Usage);
-        var breakdown = CostBreakdown.Create(_settings.SelectedModel, usage);
-        return new PromptResult(ExtractText(result.Content), breakdown);
+        return ToResult(response);
     }
 
     public virtual async Task<PromptResult> RunAsync(string prompt, CancellationToken cancellationToken = default)
@@ -55,178 +39,81 @@ public class PromptEvaluator
             throw new InvalidOperationException("Please enter a prompt.");
         }
 
-        if (string.IsNullOrWhiteSpace(_settings.AnthropicApiKey))
-        {
-            throw new InvalidOperationException("Please configure an Anthropic API key before running the prompt.");
-        }
-
         var folderContext = DocumentContextBuilder.BuildContext(_settings.DocumentFolder, _settings.DocumentCategories);
-        var fullPrompt = BuildPrompt(prompt, folderContext);
 
-        var client = CreateClient();
-        var parameters = new Messages.MessageCreateParams
-        {
-            Messages = [new Messages.MessageParam { Role = Messages.Role.User, Content = fullPrompt }],
-            MaxTokens = _settings.MaxTokens,
-            Model = _settings.SelectedModel,
-        };
+        using var client = AiClientFactory.CreateChatClient(_settings);
 
-        var result = await client.Messages.Create(parameters, cancellationToken).ConfigureAwait(false);
+        var response = await client
+            .GetResponseAsync(BuildPrompt(prompt, folderContext), ChatOptions(), cancellationToken)
+            .ConfigureAwait(false);
 
-        var usage = ReadUsage(result.Usage);
-        var breakdown = CostBreakdown.Create(_settings.SelectedModel, usage);
-        return new PromptResult(ExtractText(result.Content), breakdown);
+        return ToResult(response);
     }
 
     /// <summary>
-    /// Sends <paramref name="textPrompt"/> alongside file-reference content blocks
-    /// (documents/images uploaded via the Files API). Requires the beta Messages endpoint.
+    /// Runs <paramref name="userPrompt"/> with tools available to the model. The chat client
+    /// is built with function invocation, so a tool call is executed and fed back
+    /// automatically — this returns once the model has finished with the tools and answered.
     /// </summary>
-    public async Task<PromptResult> RunWithFilesAsync(
-        string textPrompt,
-        IReadOnlyList<BetaContentBlockParam> fileBlocks,
+    public async Task<PromptResult> RunWithToolsAsync(
+        string systemPrompt,
+        string userPrompt,
+        IReadOnlyList<AITool> tools,
         CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(_settings.AnthropicApiKey))
+        using var client = AiClientFactory.CreateChatClient(_settings);
+
+        var messages = new List<ChatMessage>
         {
-            throw new InvalidOperationException("Please configure an Anthropic API key before running the prompt.");
-        }
-
-        var client = CreateClient();
-
-        var content = new List<BetaContentBlockParam> { new BetaTextBlockParam { Text = textPrompt } };
-        content.AddRange(fileBlocks);
-
-        var parameters = new BetaMessages.MessageCreateParams
-        {
-            Betas = [AnthropicBeta.FilesApi2025_04_14],
-            Messages = [new BetaMessageParam { Role = Role.User, Content = content }],
-            MaxTokens = _settings.MaxTokens,
-            Model = _settings.SelectedModel,
+            new(ChatRole.System, systemPrompt),
+            new(ChatRole.User, userPrompt),
         };
 
-        var result = await client.Beta.Messages.Create(parameters, cancellationToken).ConfigureAwait(false);
+        var options = ChatOptions();
+        options.Tools = [.. tools];
 
-        var usage = ReadUsage(result.Usage);
-        var breakdown = CostBreakdown.Create(_settings.SelectedModel, usage);
-        return new PromptResult(ExtractText(result.Content), breakdown);
+        var response = await client
+            .GetResponseAsync(messages, options, cancellationToken)
+            .ConfigureAwait(false);
+
+        return ToResult(response);
     }
 
-    /// <summary>
-    /// Counts the input tokens the given content blocks would bill if they were sent.
-    /// The count_tokens endpoint is itself free — this is an estimate, not a charge.
-    /// </summary>
-    public async Task<long> CountTokensAsync(
-        IReadOnlyList<BetaContentBlockParam> blocks,
-        CancellationToken cancellationToken = default)
+    private ChatOptions ChatOptions() => new()
     {
-        if (blocks.Count == 0)
-        {
-            return 0;
-        }
+        MaxOutputTokens = _settings.MaxTokens,
+        ModelId = _settings.SelectedModel,
+    };
 
-        var client = CreateClient();
-        var parameters = new BetaMessages.MessageCountTokensParams
-        {
-            Betas = [AnthropicBeta.FilesApi2025_04_14],
-            Messages = [new BetaMessageParam { Role = Role.User, Content = blocks.ToList() }],
-            Model = _settings.SelectedModel,
-        };
+    private PromptResult ToResult(ChatResponse response) =>
+        new(response.Text, CostBreakdown.Create(_settings.SelectedModel, ReadUsage(response.Usage)));
 
-        var result = await client.Beta.Messages.CountTokens(parameters, cancellationToken).ConfigureAwait(false);
-        return result.InputTokens;
-    }
-
-    /// <summary>Uploads a document/image file so its content can be referenced by file_id.</summary>
-    public async Task<string> UploadFileAsync(Stream stream, string fileName, string mimeType, CancellationToken cancellationToken = default)
-    {
-        var client = CreateClient();
-        var uploaded = await client.Beta.Files.Upload(
-            new Anthropic.Models.Beta.Files.FileUploadParams
-            {
-                File = new BinaryContent
-                {
-                    Stream = stream,
-                    FileName = fileName,
-                    ContentType = new MediaTypeHeaderValue(mimeType)
-                }
-            },
-            cancellationToken).ConfigureAwait(false);
-
-        return uploaded.ID;
-    }
-
-    /// <summary>Deletes an uploaded Anthropic file by its file_id.</summary>
-    public async Task DeleteFileAsync(string fileId, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrWhiteSpace(fileId))
-        {
-            return;
-        }
-
-        var client = CreateClient();
-        await client.Beta.Files.Delete(
-            new Anthropic.Models.Beta.Files.FileDeleteParams
-            {
-                FileID = fileId,
-                Betas = [AnthropicBeta.FilesApi2025_04_14],
-            },
-            cancellationToken).ConfigureAwait(false);
-    }
-
-    internal static string ExtractText(IReadOnlyList<Messages.ContentBlock> content)
-    {
-        var sb = new StringBuilder();
-        foreach (var block in content)
-        {
-            if (block.TryPickText(out var text))
-            {
-                sb.Append(text.Text);
-            }
-        }
-        return sb.ToString();
-    }
-
-    internal static string ExtractText(IReadOnlyList<BetaContentBlock> content)
-    {
-        var sb = new StringBuilder();
-        foreach (var block in content)
-        {
-            if (block.TryPickText(out var text))
-            {
-                sb.Append(text.Text);
-            }
-        }
-        return sb.ToString();
-    }
-
-    internal static TokenUsage ReadUsage(Messages.Usage? usage)
+    internal static TokenUsage ReadUsage(UsageDetails? usage)
     {
         if (usage is null)
         {
             return TokenUsage.Empty;
         }
 
-        return new TokenUsage(
-            InputTokens: usage.InputTokens,
-            OutputTokens: usage.OutputTokens,
-            CacheWriteTokens: usage.CacheCreationInputTokens ?? 0,
-            CacheReadTokens: usage.CacheReadInputTokens ?? 0);
-    }
+        // Providers that report a cached-input count expose it as additional usage; anything
+        // that doesn't simply prices the whole input at the uncached rate.
+        var cachedRead = ReadAdditionalCount(usage, "InputTokenDetails.CachedTokenCount")
+                      ?? ReadAdditionalCount(usage, "cached_tokens")
+                      ?? 0;
 
-    internal static TokenUsage ReadUsage(BetaUsage? usage)
-    {
-        if (usage is null)
-        {
-            return TokenUsage.Empty;
-        }
+        var input = usage.InputTokenCount ?? 0;
 
         return new TokenUsage(
-            InputTokens: usage.InputTokens,
-            OutputTokens: usage.OutputTokens,
-            CacheWriteTokens: usage.CacheCreationInputTokens ?? 0,
-            CacheReadTokens: usage.CacheReadInputTokens ?? 0);
+            InputTokens: Math.Max(0, input - cachedRead),
+            OutputTokens: usage.OutputTokenCount ?? 0,
+            CacheWriteTokens: 0,
+            CacheReadTokens: cachedRead);
     }
+
+    private static long? ReadAdditionalCount(UsageDetails usage, string key) =>
+        usage.AdditionalCounts is not null && usage.AdditionalCounts.TryGetValue(key, out var value)
+            ? value
+            : null;
 
     internal string BuildPrompt(string userPrompt, string folderContext)
     {
@@ -245,27 +132,5 @@ public class PromptEvaluator
         builder.AppendLine();
         builder.AppendLine($"User request: {userPrompt}");
         return builder.ToString();
-    }
-
-    private AnthropicClient CreateClient()
-    {
-        // HTTP/1.1 avoids connection resets from proxies that don't support HTTP/2.
-        var httpClient = new HttpClient(new HttpClientHandler())
-        {
-            DefaultRequestVersion = new Version(1, 1)
-        };
-
-        var options = new ClientOptions
-        {
-            ApiKey = _settings.AnthropicApiKey,
-            HttpClient = httpClient,
-        };
-
-        if (!string.IsNullOrWhiteSpace(_settings.AnthropicBaseUrl))
-        {
-            options.BaseUrl = _settings.AnthropicBaseUrl.TrimEnd('/');
-        }
-
-        return new AnthropicClient(options);
     }
 }

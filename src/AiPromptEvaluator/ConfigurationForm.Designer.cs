@@ -25,6 +25,26 @@ partial class ConfigurationForm
     private ComboBox selectedModelComboBox;
     private Label maxTokensLabel;
     private NumericUpDown maxTokensUpDown;
+    private Label embeddingModelLabel;
+    private TextBox embeddingModelTextBox;
+    private Label embeddingDimensionsLabel;
+    private NumericUpDown embeddingDimensionsUpDown;
+    private GroupBox vectorGroup;
+    private TableLayoutPanel vectorLayout;
+    private Label qdrantLabel;
+    private TextBox qdrantTextBox;
+    private Button qdrantTestButton;
+    private Label qdrantHintLabel;
+    private Label collectionLabel;
+    private TextBox collectionTextBox;
+    private Label tenantLabel;
+    private NumericUpDown tenantUpDown;
+    private Label chunkTokensLabel;
+    private NumericUpDown chunkTokensUpDown;
+    private Label chunkOverlapLabel;
+    private NumericUpDown chunkOverlapUpDown;
+    private Label searchResultsLabel;
+    private NumericUpDown searchResultsUpDown;
     private GroupBox contextGroup;
     private TableLayoutPanel contextLayout;
     private Label documentFolderLabel;
@@ -69,6 +89,26 @@ partial class ConfigurationForm
         selectedModelComboBox = new ComboBox();
         maxTokensLabel = new Label();
         maxTokensUpDown = new NumericUpDown();
+        embeddingModelLabel = new Label();
+        embeddingModelTextBox = new TextBox();
+        embeddingDimensionsLabel = new Label();
+        embeddingDimensionsUpDown = new NumericUpDown();
+        vectorGroup = new GroupBox();
+        vectorLayout = new TableLayoutPanel();
+        qdrantLabel = new Label();
+        qdrantTextBox = new TextBox();
+        qdrantTestButton = new Button();
+        qdrantHintLabel = new Label();
+        collectionLabel = new Label();
+        collectionTextBox = new TextBox();
+        tenantLabel = new Label();
+        tenantUpDown = new NumericUpDown();
+        chunkTokensLabel = new Label();
+        chunkTokensUpDown = new NumericUpDown();
+        chunkOverlapLabel = new Label();
+        chunkOverlapUpDown = new NumericUpDown();
+        searchResultsLabel = new Label();
+        searchResultsUpDown = new NumericUpDown();
         contextGroup = new GroupBox();
         contextLayout = new TableLayoutPanel();
         documentFolderLabel = new Label();
@@ -85,6 +125,13 @@ partial class ConfigurationForm
         modelsGroup.SuspendLayout();
         modelsLayout.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)maxTokensUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)embeddingDimensionsUpDown).BeginInit();
+        vectorGroup.SuspendLayout();
+        vectorLayout.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)tenantUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)chunkTokensUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)chunkOverlapUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)searchResultsUpDown).BeginInit();
         contextGroup.SuspendLayout();
         contextLayout.SuspendLayout();
         buttonPanel.SuspendLayout();
@@ -95,7 +142,9 @@ partial class ConfigurationForm
         rootLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         rootLayout.Dock = DockStyle.Fill;
         rootLayout.Padding = new Padding(10);
-        rootLayout.RowCount = 5;
+        rootLayout.AutoScroll = true;
+        rootLayout.RowCount = 6;
+        rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
@@ -103,9 +152,10 @@ partial class ConfigurationForm
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.Controls.Add(connectionGroup, 0, 0);
         rootLayout.Controls.Add(modelsGroup, 0, 1);
-        rootLayout.Controls.Add(contextGroup, 0, 2);
-        rootLayout.Controls.Add(clarificationCheckBox, 0, 3);
-        rootLayout.Controls.Add(buttonPanel, 0, 4);
+        rootLayout.Controls.Add(vectorGroup, 0, 2);
+        rootLayout.Controls.Add(contextGroup, 0, 3);
+        rootLayout.Controls.Add(clarificationCheckBox, 0, 4);
+        rootLayout.Controls.Add(buttonPanel, 0, 5);
         rootLayout.Name = "rootLayout";
 
         // connectionGroup
@@ -142,7 +192,7 @@ partial class ConfigurationForm
         apiKeyLabel.Anchor = AnchorStyles.Left;
         apiKeyLabel.AutoSize = true;
         apiKeyLabel.Name = "apiKeyLabel";
-        apiKeyLabel.Text = "Anthropic API key";
+        apiKeyLabel.Text = "API key";
 
         // apiKeyTextBox
         apiKeyTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
@@ -175,7 +225,7 @@ partial class ConfigurationForm
         baseUrlHintLabel.ForeColor = SystemColors.GrayText;
         baseUrlHintLabel.Margin = new Padding(0, 0, 8, 3);
         baseUrlHintLabel.Name = "baseUrlHintLabel";
-        baseUrlHintLabel.Text = "Leave empty for the default. Enter a base URL (e.g. https://litellm.example.com) or a full format string where {0}=version, {1}=endpoint.";
+        baseUrlHintLabel.Text = $"OpenAI-compatible endpoint — the official API, a gateway (e.g. https://litellm.example.com/v1) or a self-hosted server. Leave empty for {AppSettings.DefaultBaseUrl}.";
 
         // doclingLabel
         doclingLabel.Anchor = AnchorStyles.Left;
@@ -221,13 +271,17 @@ partial class ConfigurationForm
         modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
         modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         modelsLayout.Dock = DockStyle.Fill;
-        modelsLayout.RowCount = 3;
+        modelsLayout.RowCount = 5;
         modelsLayout.Controls.Add(availableModelsLabel, 0, 0);
         modelsLayout.Controls.Add(availableModelsTextBox, 1, 0);
         modelsLayout.Controls.Add(selectedModelLabel, 0, 1);
         modelsLayout.Controls.Add(selectedModelComboBox, 1, 1);
         modelsLayout.Controls.Add(maxTokensLabel, 0, 2);
         modelsLayout.Controls.Add(maxTokensUpDown, 1, 2);
+        modelsLayout.Controls.Add(embeddingModelLabel, 0, 3);
+        modelsLayout.Controls.Add(embeddingModelTextBox, 1, 3);
+        modelsLayout.Controls.Add(embeddingDimensionsLabel, 0, 4);
+        modelsLayout.Controls.Add(embeddingDimensionsUpDown, 1, 4);
         modelsLayout.Name = "modelsLayout";
 
         // availableModelsLabel
@@ -268,6 +322,165 @@ partial class ConfigurationForm
         maxTokensUpDown.Minimum = 256;
         maxTokensUpDown.Name = "maxTokensUpDown";
         maxTokensUpDown.Width = 120;
+
+        // embeddingModelLabel
+        embeddingModelLabel.Anchor = AnchorStyles.Left;
+        embeddingModelLabel.AutoSize = true;
+        embeddingModelLabel.Name = "embeddingModelLabel";
+        embeddingModelLabel.Text = "Embedding model";
+
+        // embeddingModelTextBox
+        embeddingModelTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        embeddingModelTextBox.Margin = new Padding(0, 3, 0, 3);
+        embeddingModelTextBox.Name = "embeddingModelTextBox";
+        embeddingModelTextBox.PlaceholderText = "text-embedding-3-small";
+
+        // embeddingDimensionsLabel
+        embeddingDimensionsLabel.Anchor = AnchorStyles.Left;
+        embeddingDimensionsLabel.AutoSize = true;
+        embeddingDimensionsLabel.Name = "embeddingDimensionsLabel";
+        embeddingDimensionsLabel.Text = "Embedding dimensions";
+
+        // embeddingDimensionsUpDown — defines the collection, so changing it means reloading docs
+        embeddingDimensionsUpDown.Anchor = AnchorStyles.Left;
+        embeddingDimensionsUpDown.Increment = 128;
+        embeddingDimensionsUpDown.Margin = new Padding(0, 3, 0, 3);
+        embeddingDimensionsUpDown.Maximum = 8192;
+        embeddingDimensionsUpDown.Minimum = 64;
+        embeddingDimensionsUpDown.Name = "embeddingDimensionsUpDown";
+        embeddingDimensionsUpDown.Width = 120;
+
+        // vectorGroup
+        vectorGroup.AutoSize = true;
+        vectorGroup.Controls.Add(vectorLayout);
+        vectorGroup.Dock = DockStyle.Fill;
+        vectorGroup.Margin = new Padding(0, 0, 0, 8);
+        vectorGroup.Name = "vectorGroup";
+        vectorGroup.Padding = new Padding(8);
+        vectorGroup.TabStop = false;
+        vectorGroup.Text = "Vector store (Qdrant)";
+
+        // vectorLayout
+        vectorLayout.AutoSize = true;
+        vectorLayout.ColumnCount = 3;
+        vectorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
+        vectorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        vectorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        vectorLayout.Dock = DockStyle.Fill;
+        vectorLayout.RowCount = 7;
+        vectorLayout.Controls.Add(qdrantLabel, 0, 0);
+        vectorLayout.Controls.Add(qdrantTextBox, 1, 0);
+        vectorLayout.Controls.Add(qdrantTestButton, 2, 0);
+        vectorLayout.Controls.Add(qdrantHintLabel, 1, 1);
+        vectorLayout.Controls.Add(collectionLabel, 0, 2);
+        vectorLayout.Controls.Add(collectionTextBox, 1, 2);
+        vectorLayout.Controls.Add(tenantLabel, 0, 3);
+        vectorLayout.Controls.Add(tenantUpDown, 1, 3);
+        vectorLayout.Controls.Add(chunkTokensLabel, 0, 4);
+        vectorLayout.Controls.Add(chunkTokensUpDown, 1, 4);
+        vectorLayout.Controls.Add(chunkOverlapLabel, 0, 5);
+        vectorLayout.Controls.Add(chunkOverlapUpDown, 1, 5);
+        vectorLayout.Controls.Add(searchResultsLabel, 0, 6);
+        vectorLayout.Controls.Add(searchResultsUpDown, 1, 6);
+        vectorLayout.Name = "vectorLayout";
+
+        // qdrantLabel
+        qdrantLabel.Anchor = AnchorStyles.Left;
+        qdrantLabel.AutoSize = true;
+        qdrantLabel.Name = "qdrantLabel";
+        qdrantLabel.Text = "Qdrant endpoint";
+
+        // qdrantTextBox
+        qdrantTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        qdrantTextBox.Margin = new Padding(0, 3, 8, 0);
+        qdrantTextBox.Name = "qdrantTextBox";
+        qdrantTextBox.PlaceholderText = AppSettings.DefaultQdrantEndpoint;
+
+        // qdrantTestButton
+        qdrantTestButton.Anchor = AnchorStyles.Left;
+        qdrantTestButton.AutoSize = true;
+        qdrantTestButton.Name = "qdrantTestButton";
+        qdrantTestButton.Text = "Test";
+        qdrantTestButton.UseVisualStyleBackColor = true;
+        qdrantTestButton.Click += QdrantTestButton_Click;
+
+        // qdrantHintLabel
+        qdrantHintLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        qdrantHintLabel.AutoSize = true;
+        qdrantHintLabel.ForeColor = SystemColors.GrayText;
+        qdrantHintLabel.Margin = new Padding(0, 0, 8, 3);
+        qdrantHintLabel.Name = "qdrantHintLabel";
+        qdrantHintLabel.Text = $"Docker host running Qdrant, holding the indexed case chunks. This is the gRPC port, not the 6333 dashboard. Leave empty for {AppSettings.DefaultQdrantEndpoint}.";
+
+        // collectionLabel
+        collectionLabel.Anchor = AnchorStyles.Left;
+        collectionLabel.AutoSize = true;
+        collectionLabel.Name = "collectionLabel";
+        collectionLabel.Text = "Collection";
+
+        // collectionTextBox
+        collectionTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        collectionTextBox.Margin = new Padding(0, 3, 8, 3);
+        collectionTextBox.Name = "collectionTextBox";
+        collectionTextBox.PlaceholderText = AppSettings.DefaultQdrantCollection;
+
+        // tenantLabel
+        tenantLabel.Anchor = AnchorStyles.Left;
+        tenantLabel.AutoSize = true;
+        tenantLabel.Name = "tenantLabel";
+        tenantLabel.Text = "Tenant id";
+
+        // tenantUpDown
+        tenantUpDown.Anchor = AnchorStyles.Left;
+        tenantUpDown.Margin = new Padding(0, 3, 0, 3);
+        tenantUpDown.Maximum = 1000000;
+        tenantUpDown.Minimum = 0;
+        tenantUpDown.Name = "tenantUpDown";
+        tenantUpDown.Width = 120;
+
+        // chunkTokensLabel
+        chunkTokensLabel.Anchor = AnchorStyles.Left;
+        chunkTokensLabel.AutoSize = true;
+        chunkTokensLabel.Name = "chunkTokensLabel";
+        chunkTokensLabel.Text = "Max tokens per chunk";
+
+        // chunkTokensUpDown
+        chunkTokensUpDown.Anchor = AnchorStyles.Left;
+        chunkTokensUpDown.Increment = 50;
+        chunkTokensUpDown.Margin = new Padding(0, 3, 0, 3);
+        chunkTokensUpDown.Maximum = 4000;
+        chunkTokensUpDown.Minimum = 64;
+        chunkTokensUpDown.Name = "chunkTokensUpDown";
+        chunkTokensUpDown.Width = 120;
+
+        // chunkOverlapLabel
+        chunkOverlapLabel.Anchor = AnchorStyles.Left;
+        chunkOverlapLabel.AutoSize = true;
+        chunkOverlapLabel.Name = "chunkOverlapLabel";
+        chunkOverlapLabel.Text = "Chunk overlap tokens";
+
+        // chunkOverlapUpDown
+        chunkOverlapUpDown.Anchor = AnchorStyles.Left;
+        chunkOverlapUpDown.Increment = 25;
+        chunkOverlapUpDown.Margin = new Padding(0, 3, 0, 3);
+        chunkOverlapUpDown.Maximum = 2000;
+        chunkOverlapUpDown.Minimum = 0;
+        chunkOverlapUpDown.Name = "chunkOverlapUpDown";
+        chunkOverlapUpDown.Width = 120;
+
+        // searchResultsLabel
+        searchResultsLabel.Anchor = AnchorStyles.Left;
+        searchResultsLabel.AutoSize = true;
+        searchResultsLabel.Name = "searchResultsLabel";
+        searchResultsLabel.Text = "Results per search";
+
+        // searchResultsUpDown
+        searchResultsUpDown.Anchor = AnchorStyles.Left;
+        searchResultsUpDown.Margin = new Padding(0, 3, 0, 3);
+        searchResultsUpDown.Maximum = 50;
+        searchResultsUpDown.Minimum = 1;
+        searchResultsUpDown.Name = "searchResultsUpDown";
+        searchResultsUpDown.Width = 120;
 
         // contextGroup
         contextGroup.AutoSize = true;
@@ -368,6 +581,15 @@ partial class ConfigurationForm
         contextLayout.PerformLayout();
         contextGroup.ResumeLayout(false);
         contextGroup.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)searchResultsUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)chunkOverlapUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)chunkTokensUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)tenantUpDown).EndInit();
+        vectorLayout.ResumeLayout(false);
+        vectorLayout.PerformLayout();
+        vectorGroup.ResumeLayout(false);
+        vectorGroup.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)embeddingDimensionsUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)maxTokensUpDown).EndInit();
         modelsLayout.ResumeLayout(false);
         modelsLayout.PerformLayout();

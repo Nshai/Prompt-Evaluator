@@ -1,39 +1,70 @@
 # AI Prompt Evaluator
 
-AI Prompt Evaluator is a Windows Forms desktop utility for sending prompts to
-Anthropic models, optionally enriching the prompt with local document context,
-and showing the response alongside a **per-component cost breakdown** on the main
-screen.
+AI Prompt Evaluator is a Windows Forms desktop utility for sending prompts to an
+OpenAI-compatible model, optionally enriching the prompt with local document
+context, and showing the response alongside a **per-component cost breakdown** on
+the main screen.
+
+Its second screen, the **Check Evaluator**, assesses a client case file against a
+catalogue of QA checks. Case documents are indexed into a Qdrant vector store and
+the model retrieves the passages it needs through a search tool, rather than
+having the whole case file attached to every check.
 
 ## Features
 
 - Prompt input and response display in a Windows Forms interface
-- **Cost breakdown on the main screen** — input, cache write, cache read, and
-  output tokens each shown with their token count, per-million rate, and dollar
-  cost, plus a running total
+- **Cost breakdown on the main screen** — input, cached input, and output tokens
+  each shown with their token count, per-million rate, and dollar cost, plus a
+  running total
 - Re-prices the last response instantly when you switch models
 - Optional local document folder ingestion for prompt context
-- Model selection, configurable API key, API URL format, and max output tokens
+- **Check Evaluator** — semantic indexing of a case folder and tool-driven,
+  retrieval-grounded assessment of each check
+- Any OpenAI-compatible endpoint: configurable base URL, API key, chat model and
+  embedding model
 - Configuration dialog with persistent app settings
-- xUnit tests for the pricing/cost logic and document context builder
+- xUnit tests for the pricing/cost logic, chunk metadata, and document context builder
 - MSI installer that opens in Visual Studio 2022 and 2026
+
+## How the Check Evaluator works
+
+1. **Load Docs** walks the case folder and indexes every Markdown file:
+   - [`MarkdownReader`](https://learn.microsoft.com/dotnet/ai/) parses the document
+     into sections and elements.
+   - `SemanticSimilarityChunker` splits it where the topic shifts, using the same
+     `IEmbeddingGenerator<string, Embedding<float>>` the search queries with, so
+     cut points and queries live in the same vector space.
+   - Each chunk is written to Qdrant with **case reference, tenant id, document
+     name and document category** as payload.
+2. **Run Check** sends the check's prompt to the model with one tool available,
+   `search_case_documents(searchText, caseReference?, tenantId?)`. Each call
+   embeds the search text, filters Qdrant by case and tenant, and returns the
+   matching passages — across as many documents as match — each with its case
+   reference, tenant id, document name and category.
+3. The model searches as many times as it needs, then states the finding, citing
+   the documents it relied on. The searches it ran are appended to the response so
+   the run can be audited.
+
+Only `.md` / `.markdown` files are indexed; other formats are listed as skipped.
+Re-loading a case clears its previously indexed chunks first, so an edited
+document never leaves a stale passage behind.
 
 ## Cost breakdown
 
-The four billed token categories are priced separately, using each model's
-published rates:
+The billed token categories are priced separately, using each model's published
+rates:
 
-| Component        | Rate                 |
-| ---------------- | -------------------- |
-| Input (uncached) | model input rate     |
-| Cache write      | 1.25x the input rate |
-| Cache read       | 0.1x the input rate  |
-| Output           | model output rate    |
+| Component        | Rate                       |
+| ---------------- | -------------------------- |
+| Input (uncached) | model input rate           |
+| Cache write      | not billed separately      |
+| Cache read       | 0.25x the input rate       |
+| Output           | model output rate          |
 
-Rates live in [ModelPricing.cs](src/AiPromptEvaluator/ModelPricing.cs) and cover
-the current Claude models. A model that is not in the table still gets an
-estimate (Opus-tier rates), and the UI labels it as estimated rather than
-implying it is exact.
+Rates live in [ModelPricing.cs](src/AiPromptEvaluator/ModelPricing.cs). A model
+that is not in the table still gets an estimate, and the UI labels it as
+estimated rather than implying it is exact. Embedding calls made during indexing
+and search are billed by the provider but are not shown in this breakdown.
 
 ## Project Structure
 
@@ -47,31 +78,51 @@ implying it is exact.
 - Windows
 - .NET 8 SDK
 - Visual Studio 2022 or 2026 with the .NET desktop development workload, or VS Code
+- An OpenAI-compatible API endpoint and key
+- Docker, for the Qdrant vector store (Check Evaluator only)
 
 ## Getting Started
 
 1. Clone the repository.
-2. Build the solution:
+2. Start Qdrant:
+   ```powershell
+   docker run -p 6333:6333 -p 6334:6334 -v qdrant_storage:/qdrant/storage qdrant/qdrant
+   ```
+   Port 6334 is the gRPC API the app talks to; 6333 serves the dashboard.
+3. Build the solution:
    ```powershell
    dotnet build AiPromptEvaluator.slnx -c Release
    ```
-3. Run the app:
+4. Run the app:
    ```powershell
    dotnet run --project src/AiPromptEvaluator/AiPromptEvaluator.csproj
    ```
-4. Open **Configuration...** and enter your Anthropic API key before running a prompt.
+5. Open **Configuration...**, enter your API key, and check the Qdrant endpoint
+   with **Test** before loading a case.
 
 ## Configuration
 
 Settings are stored in the user profile under
 `%LOCALAPPDATA%\AiPromptEvaluator\settings.json`:
 
-- Anthropic API key
-- API URL format (leave empty for the default; `{0}` is the API version, `{1}` the endpoint)
-- Available models (comma-separated) and the selected model
-- Max output tokens
-- Document context folder
-- Clarification prompt behavior
+| Setting | Purpose |
+| ------- | ------- |
+| API key | Credential for the OpenAI-compatible endpoint |
+| API base URL | The endpoint itself — the official API, a gateway, or a self-hosted server. Empty means `https://api.openai.com/v1` |
+| Available models / selected model | The chat model list and the one in use |
+| Max output tokens | Per-response output cap |
+| Embedding model / dimensions | Model used for chunking and search, and its vector width — the width defines the Qdrant collection |
+| Qdrant endpoint | gRPC endpoint of the vector store. Empty means `http://localhost:6334` |
+| Collection | Qdrant collection holding case chunks |
+| Tenant id | Stamped on every chunk and applied as a filter on every search (default 99) |
+| Max tokens per chunk / overlap | Upper bound on a chunk and how much of the previous one is repeated |
+| Results per search | How many passages one tool call may return |
+| Docling endpoint | Sidecar used to convert spreadsheets to Markdown |
+| Document context folder | Folder ingested for prompt context on the main screen |
+| Clarification prompt behavior | Whether ambiguous prompts get a clarifying question |
+
+Changing the embedding model or its dimensions changes the shape of the
+collection — clear the index (**Unload Docs**) and load the case again.
 
 ## Testing
 

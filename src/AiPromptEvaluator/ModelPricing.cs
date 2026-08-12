@@ -1,33 +1,33 @@
 namespace AiPromptEvaluator;
 
 /// <summary>
-/// Per-million-token rates for a model. Cache write/read are derived from the
-/// input rate: writes cost 1.25x input (5 minute TTL), reads cost 0.1x input.
+/// Per-million-token rates for a model. Cached input is derived from the input rate at
+/// 0.25x; writing to the cache is not billed separately, so that rate is zero.
 /// </summary>
 public sealed record ModelRates(string ModelId, decimal InputPerMillion, decimal OutputPerMillion)
 {
-    public decimal CacheWritePerMillion => InputPerMillion * 1.25m;
+    public decimal CacheWritePerMillion => 0m;
 
-    public decimal CacheReadPerMillion => InputPerMillion * 0.1m;
+    public decimal CacheReadPerMillion => InputPerMillion * 0.25m;
 }
 
 public static class ModelPricing
 {
     private const decimal Million = 1_000_000m;
 
-    private static readonly ModelRates Fallback = new("(unknown)", 5.00m, 25.00m);
+    private static readonly ModelRates Fallback = new("(unknown)", 2.50m, 10.00m);
 
     private static readonly Dictionary<string, ModelRates> Rates =
         new(StringComparer.OrdinalIgnoreCase)
         {
-            ["claude-fable-5"] = new("claude-fable-5", 10.00m, 50.00m),
-            ["claude-opus-5"] = new("claude-opus-5", 5.00m, 25.00m),
-            ["claude-opus-4-8"] = new("claude-opus-4-8", 5.00m, 25.00m),
-            ["claude-opus-4-7"] = new("claude-opus-4-7", 5.00m, 25.00m),
-            ["claude-opus-4-6"] = new("claude-opus-4-6", 5.00m, 25.00m),
-            ["claude-sonnet-5"] = new("claude-sonnet-5", 3.00m, 15.00m),
-            ["claude-sonnet-4-6"] = new("claude-sonnet-4-6", 3.00m, 15.00m),
-            ["claude-haiku-4-5"] = new("claude-haiku-4-5", 1.00m, 5.00m),
+            ["gpt-4.1"] = new("gpt-4.1", 2.00m, 8.00m),
+            ["gpt-4.1-mini"] = new("gpt-4.1-mini", 0.40m, 1.60m),
+            ["gpt-4.1-nano"] = new("gpt-4.1-nano", 0.10m, 0.40m),
+            ["gpt-4o"] = new("gpt-4o", 2.50m, 10.00m),
+            ["gpt-4o-mini"] = new("gpt-4o-mini", 0.15m, 0.60m),
+            ["o4-mini"] = new("o4-mini", 1.10m, 4.40m),
+            ["text-embedding-3-small"] = new("text-embedding-3-small", 0.02m, 0m),
+            ["text-embedding-3-large"] = new("text-embedding-3-large", 0.13m, 0m),
         };
 
     /// <summary>

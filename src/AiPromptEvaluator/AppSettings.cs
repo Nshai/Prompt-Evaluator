@@ -123,20 +123,33 @@ public class AppSettings
     public int MaxSearchResults { get; set; } = 8;
 
     /// <summary>
-    /// How many requests a check may have in flight at once.
+    /// How many requests the whole run may have in flight at once.
     ///
-    /// A check's requirements are assessed independently — that is what makes assessing them
-    /// separately worth doing — so they do not need to run one after another. Ten checks of six
-    /// requirements is sixty round trips, and sequentially that is a twenty-minute run for work
-    /// that has no ordering constraint in it.
+    /// A run-wide budget rather than a per-check one. Checks are assessed in parallel and so are
+    /// the requirements within them, and bounding each level separately multiplies: ten checks
+    /// four at a time, each assessing four requirements at a time, is sixteen requests from two
+    /// settings that both read "4". A provider's rate limit applies to the total, so this does
+    /// too — and a check with three requirements no longer leaves the budget idle, because
+    /// another check's requirements take the free slots.
     ///
-    /// Kept modest by default because the ceiling is usually the provider's rate limit rather
-    /// than the local machine, and a run that trips a 429 is slower than one that never tried.
-    /// Results are collected by position, so this changes how long a run takes and never what
-    /// it concludes.
+    /// Six is a deliberate default: enough to keep a run moving, low enough that most gateways
+    /// will not rate-limit it. Raise it if yours tolerates more — this is the dial that decides
+    /// how long a run takes. Results are collected by position, so it changes the duration of a
+    /// run and never its conclusions.
     /// </summary>
     [JsonPropertyName("maxParallelRequests")]
-    public int MaxParallelRequests { get; set; } = 4;
+    public int MaxParallelRequests { get; set; } = 6;
+
+    /// <summary>
+    /// How many checks may be in progress at once.
+    ///
+    /// This is not a second concurrency budget — <see cref="MaxParallelRequests"/> is the only
+    /// thing bounding actual requests. It bounds how many checks are part-finished at any moment,
+    /// which is a readability question rather than a throughput one: a screen showing ten checks
+    /// all half-done tells you less than one showing four progressing and six waiting.
+    /// </summary>
+    [JsonPropertyName("maxParallelChecks")]
+    public int MaxParallelChecks { get; set; } = 4;
 
     /// <summary>
     /// The largest piece of text handed to the embedding endpoint in one call.

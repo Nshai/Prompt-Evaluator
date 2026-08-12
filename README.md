@@ -157,10 +157,18 @@ tried and was already in the prompt. Four changes followed, and only the first t
   groups rather than asserted — so it cannot disagree with them. The check header sits identically
   at the front of every group's prompt, so the provider's prefix cache covers it.
 
-  Requirements are independent, so they are retrieved and assessed **concurrently**, up to
-  `Max parallel requests` at a time — sequentially, sixty round trips is a twenty-minute run for
-  work with no ordering constraint in it. Results are collected by position rather than appended,
-  so concurrency changes how long a run takes and never what it concludes.
+  Checks and the requirements within them are all independent, so both run **concurrently**.
+  The bound is a single run-wide budget (`Max parallel requests`) rather than one per level:
+  bounding each level separately multiplies, and a provider's rate limit applies to the total.
+  It also means a check with three requirements no longer leaves the budget idle while another
+  check waits its turn. Results are collected by position rather than appended, so concurrency
+  changes how long a run takes and never what it concludes.
+
+  While a run is in progress the response window shows a **fixed list of every check**, each line
+  updating in place with its state and stage. An append-as-they-finish log was actively
+  misleading once checks stopped running in order: lines arrived in completion order, nothing was
+  said about the checks in flight, and a run of ten looked like a run of however many had
+  finished. The full findings replace the list once every check has settled.
 
 ### Design notes worth knowing
 
@@ -296,7 +304,8 @@ Settings are stored in the user profile under
 | Tenant id | Stamped on every chunk and applied as a filter on every search (default 99) |
 | Max tokens per chunk / overlap | Upper bound on a chunk and how much of the previous one is repeated |
 | Results per search | How many passages one search may return |
-| Max parallel requests | How many of a check's requirements are retrieved and assessed at once (default 4). Raise it for a faster run, lower it if the provider rate-limits |
+| Max parallel requests | The run-wide budget for concurrent requests (default 6), shared across every check and requirement. This is the dial that decides how long a run takes — raise it if the provider tolerates it, lower it if it rate-limits |
+| Max parallel checks | How many checks are part-finished at once (default 4). A readability bound, not a second concurrency budget |
 | Max embedding input characters | Largest text sent to the embedding endpoint in one call (default 20,000). A document the Markdown reader cannot break up is re-read as bounded plain text rather than being rejected whole |
 | Model schema | The canonical model JSON Schema used for extraction. Empty means the copy deployed beside the app |
 | Check plan folder | Where the `CHK-*.query-plan.json` files live. Empty means the `check-plan` folder beside the app |

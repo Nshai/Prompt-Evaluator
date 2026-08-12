@@ -902,9 +902,9 @@ public partial class CheckEvaluatorForm : Form
         UsageTrackingEmbeddingGenerator? embeddings = null;
         PromptLogWriter? promptLog = null;
 
-        // The check currently in flight, so a run that stops early does not leave it showing
-        // the running glyph forever.
-        AssessmentCheck? active = null;
+        // Declared outside the try so a run that stops early can mark the checks that were
+        // still in flight — with several running at once, there is no single "current" one.
+        CheckRunBoard? board = null;
 
         using var store = new CaseDocumentStore(_settings);
         try
@@ -918,66 +918,117 @@ public partial class CheckEvaluatorForm : Form
                 AiClientFactory.CreateEmbeddingGenerator(_settings));
 
             var searchTool = new CaseDocumentSearchTool(_settings, embeddings, store, caseReference);
-            var runner = new CheckPlanRunner(_settings, _evaluator, searchTool, _model, promptLog);
 
-            var findings = new List<CheckFinding>();
+            // One budget for the whole run. Checks and their requirements both fan out, and
+            // bounding each level separately would multiply into a request count neither
+            // setting names.
+            using var modelCalls = new ConcurrencyGate(_settings.MaxParallelRequests);
+            using var searches = new ConcurrencyGate(_settings.MaxParallelRequests);
+            using var runner = new CheckPlanRunner(
+                _settings, _evaluator, searchTool, _model, promptLog, modelCalls, searches);
+
             var skipped = new List<string>();
-            var done = 0;
 
             // Only the checks in this run are marked, so a single-check run leaves the other
             // rows blank rather than implying they were queued and cleared.
             MarkQueued(checks);
 
-            // The runner reports a check's requirements as they finish, which is what makes the
-            // concurrency legible: without it a check with six requirements sits on one line for
-            // half a minute and looks stuck.
-            var progress = new Progress<string>(stage =>
-            {
-                statusLabel.Text = stage;
+            board = new CheckRunBoard(checks);
+            responseTextBox.Text = board.Render();
 
-                if (active is not null)
+            // Every UI update from here is funnelled through IProgress, which posts to the
+            // thread that created it. The work below runs on the pool, and a ListView touched
+            // from there is a crash rather than a glitch.
+            // Set once the run is over. Progress callbacks are posted to the UI message queue,
+            // so one queued by the last check can still be waiting when the findings are
+            // written — and would paint the progress board back over them.
+            var settled = false;
+
+            var ui = new Progress<Action>(update =>
+            {
+                if (!settled)
                 {
-                    MarkRunning(active, stage);
+                    update();
                 }
             });
 
-            foreach (var check in checks)
+            void Post(Action update) => ((IProgress<Action>)ui).Report(update);
+
+            void Refresh(AssessmentCheck check)
             {
-                _cts.Token.ThrowIfCancellationRequested();
+                var row = board.Row(check);
 
-                var checkId = CheckQueryPlanLoader.NormaliseCheckId(check.CheckId);
-
-                // A check with no plan is reported rather than improvised: the whole point of
-                // the plan is that retrieval is decided in advance, not by the model.
-                if (!plans.TryGetValue(checkId, out var plan))
+                Post(() =>
                 {
-                    skipped.Add($"{checkId} — no query plan in {planFolder}");
-                    promptLog.LogSkipped(checkId, $"No query plan in {planFolder}");
-                    MarkSkipped(check, $"No query plan in {planFolder}");
-                    continue;
-                }
+                    responseTextBox.Text = board.Render();
+                    statusLabel.Text = board.Headline;
 
-                done++;
-                active = check;
-                statusLabel.Text = $"Assessing {checkId} ({done}/{checks.Count})...";
-                MarkRunning(check, $"Assessing ({done}/{checks.Count})", scrollIntoView: true);
-
-                var finding = await runner
-                    .RunAsync(check, plan, progress, _cts.Token)
-                    .ConfigureAwait(true);
-
-                active = null;
-                MarkFinished(check, finding);
-
-                findings.Add(finding);
-                usage = AddUsage(usage, finding.Usage);
-
-                AppendResponseLine(
-                    $"[{done,2}/{checks.Count}] {finding.CheckId,-9} "
-                    + $"{CheckFinding.Describe(finding.ParsedOutcome),-18} "
-                    + $"{finding.SearchesRun,3} search(es), {finding.PassagesRetrieved,3} passage(s), "
-                    + $"{finding.Elapsed.TotalSeconds:0.0}s");
+                    switch (row.State)
+                    {
+                        case CheckRunState.Running:
+                            MarkRunning(check, row.Detail);
+                            break;
+                        case CheckRunState.Finished when row.Finding is not null:
+                            MarkFinished(check, row.Finding);
+                            break;
+                        case CheckRunState.Skipped:
+                            MarkSkipped(check, row.Detail);
+                            break;
+                    }
+                });
             }
+
+            var findingsByIndex = new CheckFinding?[checks.Count];
+
+            // Checks run concurrently. They share nothing: each reads the same canonical model
+            // and the same vector store, and writes only its own slot. What made them sequential
+            // was never a dependency, only the shape of the loop.
+            await CheckPlanRunner.ForEachAsync(
+                checks.Count,
+                Math.Max(1, _settings.MaxParallelChecks),
+                async (i, token) =>
+                {
+                    var check = checks[i];
+                    var checkId = CheckQueryPlanLoader.NormaliseCheckId(check.CheckId);
+
+                    // A check with no plan is reported rather than improvised: the whole point
+                    // of the plan is that retrieval is decided in advance, not by the model.
+                    if (!plans.TryGetValue(checkId, out var plan))
+                    {
+                        lock (skipped)
+                        {
+                            skipped.Add($"{checkId} — no query plan in {planFolder}");
+                        }
+
+                        promptLog.LogSkipped(checkId, $"No query plan in {planFolder}");
+                        board.Skip(check, $"No query plan in {planFolder}");
+                        Refresh(check);
+                        return;
+                    }
+
+                    board.Start(check);
+                    Refresh(check);
+
+                    var stages = new Progress<string>(stage =>
+                    {
+                        board.Progress(check, stage);
+                        Refresh(check);
+                    });
+
+                    var finding = await runner.RunAsync(check, plan, stages, token).ConfigureAwait(false);
+
+                    findingsByIndex[i] = finding;
+                    board.Finish(check, finding);
+                    Refresh(check);
+                },
+                _cts.Token).ConfigureAwait(true);
+
+            // Collected by position, so the report reads in the order the checks were listed
+            // however the run happened to interleave them.
+            settled = true;
+
+            var findings = findingsByIndex.Where(f => f is not null).Select(f => f!).ToList();
+            usage = findings.Aggregate(TokenUsage.Empty, (total, f) => AddUsage(total, f.Usage));
 
             var report = new FindingsReport(
                 caseReference, _settings.TenantId, _settings.SelectedModel,
@@ -1013,9 +1064,15 @@ public partial class CheckEvaluatorForm : Form
             statusLabel.Text = "Cancelled.";
             AppendResponseLine("Cancelled.");
 
-            if (active is not null)
+            foreach (var check in board?.StopOutstanding("Cancelled before this check finished")
+                                  ?? [])
             {
-                MarkSkipped(active, "Cancelled before this check finished");
+                MarkSkipped(check, "Cancelled before this check finished");
+            }
+
+            if (board is not null)
+            {
+                responseTextBox.Text = board.Render();
             }
         }
         catch (Exception ex)

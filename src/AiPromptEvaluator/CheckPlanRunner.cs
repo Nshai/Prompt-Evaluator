@@ -28,7 +28,7 @@ public sealed record CheckRunProgress(int Done, int Total, string CheckId, strin
 /// The check's own outcome is never asked for. It is computed from the requirement findings, so
 /// it cannot disagree with them — and, more to the point, cannot be stated before they exist.
 /// </summary>
-public sealed class CheckPlanRunner
+public sealed class CheckPlanRunner : IDisposable
 {
     private static readonly JsonSerializerOptions FindingOptions = new()
     {
@@ -53,13 +53,24 @@ public sealed class CheckPlanRunner
     private readonly CanonicalModelDocument _model;
     private readonly CanonicalModelAccessor _accessor;
     private readonly PromptLogWriter? _promptLog;
+    private readonly ConcurrencyGate _modelCalls;
+    private readonly ConcurrencyGate _searches;
+    private readonly bool _ownsGates;
 
+    /// <param name="modelCalls">
+    /// The run-wide budget for assessment calls. Shared across every check so the total in
+    /// flight is bounded once, rather than once per level of parallelism. One is created for
+    /// this runner alone when none is given.
+    /// </param>
+    /// <param name="searches">The same, for retrieval.</param>
     public CheckPlanRunner(
         AppSettings settings,
         PromptEvaluator evaluator,
         CaseDocumentSearchTool search,
         CanonicalModelDocument model,
-        PromptLogWriter? promptLog = null)
+        PromptLogWriter? promptLog = null,
+        ConcurrencyGate? modelCalls = null,
+        ConcurrencyGate? searches = null)
     {
         _settings = settings;
         _evaluator = evaluator;
@@ -67,6 +78,10 @@ public sealed class CheckPlanRunner
         _model = model;
         _accessor = new CanonicalModelAccessor(model.Json);
         _promptLog = promptLog;
+
+        _ownsGates = modelCalls is null && searches is null;
+        _modelCalls = modelCalls ?? new ConcurrencyGate(settings.MaxParallelRequests);
+        _searches = searches ?? new ConcurrencyGate(settings.MaxParallelRequests);
     }
 
     /// <summary>Assesses one check and returns its finding.</summary>
@@ -112,7 +127,10 @@ public sealed class CheckPlanRunner
 
             await ForEachAsync(plan.QueryGroups.Count, async (i, token) =>
             {
-                packs[i] = await GatherAsync(plan.QueryGroups[i], token).ConfigureAwait(false);
+                packs[i] = await _searches
+                    .RunAsync(t => GatherAsync(plan.QueryGroups[i], t), token)
+                    .ConfigureAwait(false);
+
                 progress?.Report(
                     $"{plan.CheckId}: retrieved {Interlocked.Increment(ref retrieved)}/{packs.Length}");
             }, cancellationToken).ConfigureAwait(false);
@@ -141,13 +159,13 @@ public sealed class CheckPlanRunner
                 var pack = packs[i];
                 var userPrompt = header + BuildGroupPrompt(pack);
 
-                var result = await _evaluator
-                    .RunRawAsync(
+                var result = await _modelCalls
+                    .RunAsync(t => _evaluator.RunRawAsync(
                         systemPrompt,
                         userPrompt,
                         DecisionMaxTokens,
                         FindingSchema.ResponseFormat(_settings.StructuredFindings),
-                        token)
+                        t), token)
                     .ConfigureAwait(false);
 
                 _promptLog?.LogExchange(
@@ -661,8 +679,14 @@ public sealed class CheckPlanRunner
     /// here more than usual, since a good deal of work has gone into making two runs of the
     /// same check agree with each other.
     /// </summary>
-    private Task ForEachAsync(int count, Func<int, CancellationToken, Task> body, CancellationToken cancellationToken) =>
-        ForEachAsync(count, _settings.MaxParallelRequests, body, cancellationToken);
+    /// <summary>
+    /// Fans out over a check's requirements without bounding them. The bound lives in the gates
+    /// instead, so a check with three requirements does not hold three slots of a budget of six
+    /// while another check waits its turn.
+    /// </summary>
+    private static Task ForEachAsync(
+        int count, Func<int, CancellationToken, Task> body, CancellationToken cancellationToken) =>
+        ForEachAsync(count, count, body, cancellationToken);
 
     internal static Task ForEachAsync(
         int count,
@@ -726,6 +750,18 @@ public sealed class CheckPlanRunner
         {
             return Unreadable(group, $"The finding could not be read ({ex.Message}).", response);
         }
+    }
+
+    /// <summary>Releases the gates, but only the ones this runner created for itself.</summary>
+    public void Dispose()
+    {
+        if (!_ownsGates)
+        {
+            return;
+        }
+
+        _modelCalls.Dispose();
+        _searches.Dispose();
     }
 
     private static GroupFinding Unreadable(PlanQueryGroup group, string why, string response) => new()

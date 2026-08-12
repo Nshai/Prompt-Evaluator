@@ -123,6 +123,22 @@ public class AppSettings
     public int MaxSearchResults { get; set; } = 8;
 
     /// <summary>
+    /// How many requests a check may have in flight at once.
+    ///
+    /// A check's requirements are assessed independently — that is what makes assessing them
+    /// separately worth doing — so they do not need to run one after another. Ten checks of six
+    /// requirements is sixty round trips, and sequentially that is a twenty-minute run for work
+    /// that has no ordering constraint in it.
+    ///
+    /// Kept modest by default because the ceiling is usually the provider's rate limit rather
+    /// than the local machine, and a run that trips a 429 is slower than one that never tried.
+    /// Results are collected by position, so this changes how long a run takes and never what
+    /// it concludes.
+    /// </summary>
+    [JsonPropertyName("maxParallelRequests")]
+    public int MaxParallelRequests { get; set; } = 4;
+
+    /// <summary>
     /// The largest piece of text handed to the embedding endpoint in one call.
     ///
     /// This is not about chunk size — chunks are bounded by <see cref="MaxTokensPerChunk"/> and

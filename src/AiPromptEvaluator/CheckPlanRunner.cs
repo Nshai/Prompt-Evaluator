@@ -104,13 +104,18 @@ public sealed class CheckPlanRunner
                 };
             }
 
-            var packs = new List<GroupEvidence>();
-            foreach (var group in plan.QueryGroups)
+            // Retrieval for one group has nothing to do with retrieval for another, so it does
+            // not wait for it. Results land in an array by position, which keeps the pack order
+            // identical to the plan's however the searches happen to finish.
+            var packs = new GroupEvidence[plan.QueryGroups.Count];
+            var retrieved = 0;
+
+            await ForEachAsync(plan.QueryGroups.Count, async (i, token) =>
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                progress?.Report($"{plan.CheckId}: {group.GroupId}");
-                packs.Add(await GatherAsync(group, cancellationToken).ConfigureAwait(false));
-            }
+                packs[i] = await GatherAsync(plan.QueryGroups[i], token).ConfigureAwait(false);
+                progress?.Report(
+                    $"{plan.CheckId}: retrieved {Interlocked.Increment(ref retrieved)}/{packs.Length}");
+            }, cancellationToken).ConfigureAwait(false);
 
             // One call per requirement rather than one per check.
             //
@@ -122,14 +127,18 @@ public sealed class CheckPlanRunner
             // identical at the front of every prompt so the provider's prefix cache covers it.
             var systemPrompt = BuildSystemPrompt();
             var header = BuildCheckHeader(check, plan, trigger);
-            var usage = TokenUsage.Empty;
-            var findings = new List<GroupFinding>();
 
-            foreach (var pack in packs)
+            // Likewise the assessments. Each judges one requirement against its own pack and
+            // knows nothing of the others, so the only thing serialising them bought was a
+            // longer run. Findings and usage are collected by position for the same reason as
+            // above: the report reads in plan order whatever order the answers arrive in.
+            var findings = new GroupFinding[packs.Length];
+            var usages = new TokenUsage[packs.Length];
+            var assessed = 0;
+
+            await ForEachAsync(packs.Length, async (i, token) =>
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                progress?.Report($"{plan.CheckId}: assessing {pack.Group.GroupId}");
-
+                var pack = packs[i];
                 var userPrompt = header + BuildGroupPrompt(pack);
 
                 var result = await _evaluator
@@ -138,21 +147,26 @@ public sealed class CheckPlanRunner
                         userPrompt,
                         DecisionMaxTokens,
                         FindingSchema.ResponseFormat(_settings.StructuredFindings),
-                        cancellationToken)
+                        token)
                     .ConfigureAwait(false);
 
                 _promptLog?.LogExchange(
                     $"{plan.CheckId}/{pack.Group.GroupId}", plan.CheckName,
                     systemPrompt, userPrompt, result.Response);
 
-                usage = AddUsage(usage, result.Breakdown.Usage);
+                usages[i] = result.Breakdown.Usage;
 
                 // Verified against the evidence this group was actually given — never against
                 // the whole check's evidence, or a quote lifted from a neighbouring group's
                 // passages would verify and the check would be worthless.
-                findings.Add(CitationVerifier.Verify(
-                    ParseGroup(result.Response, pack.Group), EvidenceTextOf(pack)));
-            }
+                findings[i] = CitationVerifier.Verify(
+                    ParseGroup(result.Response, pack.Group), EvidenceTextOf(pack));
+
+                progress?.Report(
+                    $"{plan.CheckId}: assessed {Interlocked.Increment(ref assessed)}/{packs.Length}");
+            }, cancellationToken).ConfigureAwait(false);
+
+            var usage = usages.Aggregate(TokenUsage.Empty, AddUsage);
 
             startedAt.Stop();
 
@@ -637,6 +651,32 @@ public sealed class CheckPlanRunner
         .. pack.Passages.Select(p => p.SearchedText),
         .. pack.Fragments.Where(f => f.Found).Select(f => f.Json),
     ];
+
+    /// <summary>
+    /// Runs <paramref name="body"/> for each index, up to
+    /// <see cref="AppSettings.MaxParallelRequests"/> at a time.
+    ///
+    /// Callers write results into an array by index rather than appending to a list, so
+    /// concurrency changes how long the run takes and never what it produces — which matters
+    /// here more than usual, since a good deal of work has gone into making two runs of the
+    /// same check agree with each other.
+    /// </summary>
+    private Task ForEachAsync(int count, Func<int, CancellationToken, Task> body, CancellationToken cancellationToken) =>
+        ForEachAsync(count, _settings.MaxParallelRequests, body, cancellationToken);
+
+    internal static Task ForEachAsync(
+        int count,
+        int maxParallelism,
+        Func<int, CancellationToken, Task> body,
+        CancellationToken cancellationToken) =>
+        Parallel.ForEachAsync(
+            Enumerable.Range(0, count),
+            new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Math.Max(1, maxParallelism),
+                CancellationToken = cancellationToken,
+            },
+            async (index, token) => await body(index, token).ConfigureAwait(false));
 
     private static TokenUsage AddUsage(TokenUsage a, TokenUsage b) => new(
         a.InputTokens + b.InputTokens,

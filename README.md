@@ -157,6 +157,11 @@ tried and was already in the prompt. Four changes followed, and only the first t
   groups rather than asserted — so it cannot disagree with them. The check header sits identically
   at the front of every group's prompt, so the provider's prefix cache covers it.
 
+  Requirements are independent, so they are retrieved and assessed **concurrently**, up to
+  `Max parallel requests` at a time — sequentially, sixty round trips is a twenty-minute run for
+  work with no ordering constraint in it. Results are collected by position rather than appended,
+  so concurrency changes how long a run takes and never what it concludes.
+
 ### Design notes worth knowing
 
 - **The search tool cannot filter by document category.** Qdrant is filtered on
@@ -291,6 +296,8 @@ Settings are stored in the user profile under
 | Tenant id | Stamped on every chunk and applied as a filter on every search (default 99) |
 | Max tokens per chunk / overlap | Upper bound on a chunk and how much of the previous one is repeated |
 | Results per search | How many passages one search may return |
+| Max parallel requests | How many of a check's requirements are retrieved and assessed at once (default 4). Raise it for a faster run, lower it if the provider rate-limits |
+| Max embedding input characters | Largest text sent to the embedding endpoint in one call (default 20,000). A document the Markdown reader cannot break up is re-read as bounded plain text rather than being rejected whole |
 | Model schema | The canonical model JSON Schema used for extraction. Empty means the copy deployed beside the app |
 | Check plan folder | Where the `CHK-*.query-plan.json` files live. Empty means the `check-plan` folder beside the app |
 | Model database | SQLite file holding extracted canonical models. Empty means `canonical-models.db` in `%LOCALAPPDATA%\AiPromptEvaluator` |

@@ -49,18 +49,21 @@ public sealed class CheckPlanRunner
     private readonly CaseDocumentSearchTool _search;
     private readonly CanonicalModelDocument _model;
     private readonly CanonicalModelAccessor _accessor;
+    private readonly PromptLogWriter? _promptLog;
 
     public CheckPlanRunner(
         AppSettings settings,
         PromptEvaluator evaluator,
         CaseDocumentSearchTool search,
-        CanonicalModelDocument model)
+        CanonicalModelDocument model,
+        PromptLogWriter? promptLog = null)
     {
         _settings = settings;
         _evaluator = evaluator;
         _search = search;
         _model = model;
         _accessor = new CanonicalModelAccessor(model.Json);
+        _promptLog = promptLog;
     }
 
     /// <summary>Assesses one check and returns its finding.</summary>
@@ -108,13 +111,14 @@ public sealed class CheckPlanRunner
 
             progress?.Report($"{plan.CheckId}: assessing");
 
+            var systemPrompt = BuildSystemPrompt();
+            var userPrompt = BuildAssessmentPrompt(check, plan, trigger, packs);
+
             var result = await _evaluator
-                .RunRawAsync(
-                    BuildSystemPrompt(),
-                    BuildAssessmentPrompt(check, plan, trigger, packs),
-                    DecisionMaxTokens,
-                    cancellationToken)
+                .RunRawAsync(systemPrompt, userPrompt, DecisionMaxTokens, cancellationToken)
                 .ConfigureAwait(false);
+
+            _promptLog?.LogExchange(plan.CheckId, plan.CheckName, systemPrompt, userPrompt, result.Response);
 
             startedAt.Stop();
 
@@ -313,6 +317,10 @@ public sealed class CheckPlanRunner
         - An absent value in the canonical model means the report does not state it. That is
           often the finding — say so plainly rather than treating it as an unknown.
         - Cite the document name and category for every piece of evidence you rely on.
+        - Highlight every mismatch you identify explicitly and without masking it: do not soften,
+          hedge or omit a contradiction to make the finding read more favourably. Report it even
+          if it seems minor, and state outcome as Potential Concern rather than No Issue whenever
+          a genuine mismatch is found.
         - Return one JSON object and nothing else. No prose outside it, no markdown fences.
         """;
 

@@ -157,6 +157,16 @@ public class AppSettings
     /// <summary>The folder name looked for beside the executable when no plan folder is set.</summary>
     public const string DefaultCheckPlanFolderName = "check-plan";
 
+    /// <summary>Where prompts sent to the LLM are logged by default, one file per run.</summary>
+    public const string DefaultPromptLogFolder = @"C:\logs\apipromptevaluator";
+
+    /// <summary>
+    /// Folder every run's prompt log is written to. Leave empty to use
+    /// <see cref="DefaultPromptLogFolder"/>.
+    /// </summary>
+    [JsonPropertyName("promptLogFolder")]
+    public string PromptLogFolder { get; set; } = string.Empty;
+
     /// <summary>
     /// The configured schema path, or the copy deployed beside the executable. Returns the
     /// resolved path whether or not it exists — the caller reports a missing file with the
@@ -172,6 +182,12 @@ public class AppSettings
         string.IsNullOrWhiteSpace(CheckPlanFolder)
             ? Path.Combine(AppContext.BaseDirectory, DefaultCheckPlanFolderName)
             : CheckPlanFolder.Trim();
+
+    /// <summary>The configured prompt log folder, or <see cref="DefaultPromptLogFolder"/>.</summary>
+    public string ResolvePromptLogFolder() =>
+        string.IsNullOrWhiteSpace(PromptLogFolder)
+            ? DefaultPromptLogFolder
+            : PromptLogFolder.Trim();
 
     /// <summary>
     /// Where the canonical model database lives. The default sits next to settings.json so

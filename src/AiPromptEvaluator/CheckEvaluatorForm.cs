@@ -797,21 +797,26 @@ public partial class CheckEvaluatorForm : Form
 
         _cts = new CancellationTokenSource();
         var usage = TokenUsage.Empty;
+        var runStartedAt = DateTimeOffset.Now;
 
         // Declared outside the try so a cancelled or failed run can still report the
         // embeddings it had already paid for by the time it stopped.
         UsageTrackingEmbeddingGenerator? embeddings = null;
+        PromptLogWriter? promptLog = null;
 
         using var store = new CaseDocumentStore(_settings);
         try
         {
+            promptLog = new PromptLogWriter(_settings.ResolvePromptLogFolder(), caseReference, runStartedAt);
+            AppendResponseLine($"Logging prompts to {promptLog.FilePath}");
+
             // Each planned search embeds its text, so a run over ten checks is a few hundred
             // small embedding calls alongside the chat spend.
             embeddings = new UsageTrackingEmbeddingGenerator(
                 AiClientFactory.CreateEmbeddingGenerator(_settings));
 
             var searchTool = new CaseDocumentSearchTool(_settings, embeddings, store, caseReference);
-            var runner = new CheckPlanRunner(_settings, _evaluator, searchTool, _model);
+            var runner = new CheckPlanRunner(_settings, _evaluator, searchTool, _model, promptLog);
 
             var progress = new Progress<string>(stage => statusLabel.Text = stage);
             var findings = new List<CheckFinding>();
@@ -829,6 +834,7 @@ public partial class CheckEvaluatorForm : Form
                 if (!plans.TryGetValue(checkId, out var plan))
                 {
                     skipped.Add($"{checkId} — no query plan in {planFolder}");
+                    promptLog.LogSkipped(checkId, $"No query plan in {planFolder}");
                     continue;
                 }
 
@@ -892,6 +898,7 @@ public partial class CheckEvaluatorForm : Form
         finally
         {
             embeddings?.Dispose();
+            promptLog?.Dispose();
             _cts.Dispose();
             _cts = null;
             SetBusy(false);

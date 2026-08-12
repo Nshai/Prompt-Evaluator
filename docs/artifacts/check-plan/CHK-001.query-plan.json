@@ -4,7 +4,7 @@
   "checkName": "Suitability completeness against client information",
   "appliesTo": "All advised investment and pension cases",
   "regulatoryBasis": "Not required for this check",
-  "primaryCategories": ["A", "B", "C", "I"],
+  "primaryCategories": ["A", "B", "C", "E", "I"],
 
   "tool": {
     "name": "search_case_documents",
@@ -20,7 +20,8 @@
     ],
     "presentWhen": "At least one category I document is returned.",
     "absentWhen": "No category I passage exists in the case.",
-    "onAbsent": "ReturnNA"
+    "onAbsent": "ReturnNA",
+    "note": "Scope is factual consistency only. Do not assess suitability of recommendations, attitude to risk, capacity for loss, knowledge and experience, investment suitability or product selection rationale — those are CHK-002 to CHK-004 and CHK-006 to CHK-009."
   },
 
   "queryGroups": [
@@ -154,23 +155,26 @@
 
     {
       "groupId": "G1.7",
-      "requirement": "Existing products (pensions and investments) are consistent with the evidence",
+      "requirement": "Existing products (pensions, investments and protection plans) are consistent with the evidence",
       "limb": "Consistency",
-      "canonicalPaths": ["/existingArrangements[]/provider", "/existingArrangements[]/policyNumber", "/existingArrangements[]/currentValue", "/existingArrangements[]/transferValue", "/existingArrangements[]/contributions[]"],
+      "canonicalPaths": ["/existingArrangements[]/provider", "/existingArrangements[]/policyNumber", "/existingArrangements[]/currentValue", "/existingArrangements[]/transferValue", "/existingArrangements[]/contributions[]", "/existingArrangements[]/planType"],
       "expectedCategories": { "assertion": ["I"], "evidence": ["B", "E"] },
       "queries": [
         { "id": "Q1.7.1", "text": "existing arrangements table provider policy number fund value transfer value", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["Provider", "Policy number", "Fund Value", "Transfer Value"], "priority": "Core" },
         { "id": "Q1.7.2", "text": "policy information current fund value as at valuation date plan number", "side": "Evidence", "targetCategories": ["E"], "expectSignals": ["Plan number", "Policy number", "value as at", "Fund value"], "priority": "Core" },
         { "id": "Q1.7.3", "text": "transfer value quotation surrender value cash equivalent", "side": "Evidence", "targetCategories": ["E"], "expectSignals": ["Transfer value", "Surrender value", "CETV", "as at"], "canonicalPaths": ["/existingArrangements[]/transferValue"], "priority": "Core" },
         { "id": "Q1.7.4", "text": "regular contributions paid by member and employer per month annual", "side": "Either", "targetCategories": ["E", "I", "B"], "expectSignals": ["contribution", "employer pays", "you pay", "per annum", "monthly"], "canonicalPaths": ["/existingArrangements[]/contributions[]"], "priority": "Core" },
-        { "id": "Q1.7.5", "text": "total combined pension value across all plans", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["combined", "total", "approximately £"], "priority": "Core", "note": "Cross-foots the narrative total against the per-plan table. Discrepancies here are pure internal inconsistencies and need no external evidence." }
+        { "id": "Q1.7.5", "text": "total combined pension value across all plans", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["combined", "total", "approximately £"], "priority": "Core", "note": "Cross-foots the narrative total against the per-plan table. Discrepancies here are pure internal inconsistencies and need no external evidence." },
+        { "id": "Q1.7.6", "text": "existing life cover income protection critical illness policy sum assured premium", "side": "Either", "targetCategories": ["E", "I", "B"], "expectSignals": ["life cover", "sum assured", "income protection", "critical illness", "premium", "£"], "canonicalPaths": ["/existingArrangements[]/planType", "/existingArrangements[]/currentValue"], "priority": "Core", "note": "Protection plans are named explicitly alongside pensions and investments; check sum assured and premium the same way a pension's fund value is checked." },
+        { "id": "Q1.7.7", "text": "fund holdings underlying investments within the existing plan percentage allocation", "side": "Evidence", "targetCategories": ["E"], "expectSignals": ["fund", "holding", "allocation", "%", "ISIN"], "canonicalPaths": ["/existingArrangements[]/holdings[]"], "priority": "Supplementary", "note": "Reconciles named holdings in the report against the plan's holdings statement, not just the top-line value." }
       ],
       "comparison": {
         "method": "ValueMatch",
         "tolerance": "Plan values must match the provider statement to the penny where the same as-at date is used; otherwise flag the date gap, not the value.",
         "falsePositiveGuards": [
           "Fund value and transfer value are different figures; a report quoting one against a statement quoting the other is not automatically a mismatch.",
-          "Values move between the provider statement date and the report date — check both dates before flagging."
+          "Values move between the provider statement date and the report date — check both dates before flagging.",
+          "A protection plan has no fund value to reconcile — compare sum assured and premium instead."
         ]
       },
       "sufficiency": {
@@ -196,12 +200,32 @@
         "falsePositiveGuards": ["A figure quoted 'as at' an earlier date is not an inconsistency; look for a stated date before flagging."]
       },
       "sufficiency": { "ifBothAbsent": "No finding.", "ifEvidenceAbsent": "Not applicable — this group compares the report against itself." }
+    },
+
+    {
+      "groupId": "G1.9",
+      "requirement": "Emergency fund figures stated in the report are consistent with the evidence",
+      "limb": "Consistency",
+      "canonicalPaths": ["/financialPosition/emergencyFund"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B"] },
+      "queries": [
+        { "id": "Q1.9.1", "text": "you hold an emergency fund of in cash instant access savings", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["emergency fund", "£", "held in cash", "instant access"], "canonicalPaths": ["/financialPosition/emergencyFund/heldAmount"], "priority": "Core", "note": "This tests only whether the figure the report states matches the fact find — CHK-005 separately tests whether the amount is adequate." },
+        { "id": "Q1.9.2", "text": "cash savings balance instant access account statement balance", "side": "Evidence", "targetCategories": ["B"], "expectSignals": ["balance", "savings account", "instant access", "£"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "falsePositiveGuards": [
+          "Cash held for a known planned purchase is not part of the emergency fund even if it sits in the same account — check the stated purpose before comparing totals.",
+          "Do not assess whether the emergency fund is sufficient here — that is CHK-005; only test whether the report's figure matches the evidenced balance."
+        ]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Potential Concern: an emergency fund figure asserted with no supporting account statement or fact find record." }
     }
   ],
 
   "decision": {
     "noIssue": "Every group with an assertion side found corroborating evidence in at least one of categories A, B, C or E, values reconcile within tolerance, and no internal arithmetic contradiction was found.",
-    "potentialConcern": "Any material client fact, financial figure or plan value asserted in the report either contradicts the evidence or has no supporting document; or the report contradicts itself on a figure it relies on.",
+    "potentialConcern": "Any material client fact, financial figure, plan value or holding asserted in the report either contradicts the evidence or has no supporting document; or the report contradicts itself on a figure it relies on. Do not raise a finding on the suitability of recommendations, attitude to risk, capacity for loss, knowledge and experience, investment suitability or product selection rationale — those are CHK-002 to CHK-004 and CHK-006 to CHK-009.",
     "notApplicable": "No category I document exists for this case.",
     "severityHints": [
       "Highest: a figure that drives the recommendation (transfer value, charge, income need) contradicts the provider or fact-find evidence.",
@@ -211,5 +235,5 @@
     ]
   },
 
-  "budget": { "coreQueries": 20, "supplementaryQueries": 6, "estimatedPassages": 208 }
+  "budget": { "coreQueries": 24, "supplementaryQueries": 7, "estimatedPassages": 248 }
 }

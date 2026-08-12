@@ -154,8 +154,26 @@ the current OpenAI models plus Claude Sonnet 5, Sonnet 4.6 and Haiku 4.5 — an
 OpenAI-compatible gateway commonly serves Anthropic models, so a run is priced
 whichever provider sits behind the configured base URL. A model that is not in
 the table still gets an estimate, and the UI labels it as estimated rather than
-implying it is exact. Embedding calls made during indexing and search are billed
-by the provider but are not shown in this breakdown.
+implying it is exact.
+
+**Embeddings are priced separately, on their own model's rate.** They are a
+different model on a different rate card, and a run can be almost entirely one or
+the other: indexing a case is pure embedding spend, extracting the canonical model
+is pure chat. The breakdown carries an `Embeddings (model)` row alongside the chat
+components and the total shows the split:
+
+```
+Total: $0.1043 for 1,284,500 tokens — chat $0.0987 (49,350 tokens) · embeddings $0.0056 (1,235,150 tokens)
+```
+
+The count comes from a delegating generator wrapped around the embedding client,
+so it also captures the calls `SemanticSimilarityChunker` makes internally while
+deciding where to cut each document — usually the larger half of what indexing
+costs, and previously invisible. **Load Docs** used to report a cost of zero; it
+now reports what it actually spent, including when a load is cancelled partway.
+
+Providers are not obliged to return usage on an embeddings response. When one
+doesn't, the cost is reported as unknown rather than as zero.
 
 ## Project Structure
 

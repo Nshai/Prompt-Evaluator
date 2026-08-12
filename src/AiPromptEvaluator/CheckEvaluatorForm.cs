@@ -194,6 +194,10 @@ public partial class CheckEvaluatorForm : Form
         var elapsed = Stopwatch.StartNew();
         _cts = new CancellationTokenSource();
 
+        // Outside the try: indexing a large case is the most expensive thing the app does,
+        // and cancelling halfway through does not refund what has already been embedded.
+        UsageTrackingEmbeddingGenerator? embeddings = null;
+
         using var store = new CaseDocumentStore(_settings);
         try
         {
@@ -206,7 +210,12 @@ public partial class CheckEvaluatorForm : Form
                 return;
             }
 
-            using var embeddings = AiClientFactory.CreateEmbeddingGenerator(_settings);
+            // Wrapped so the chunker's own embedding calls are counted too: it embeds every
+            // element of every document to find the cut points, which is the larger half of
+            // what indexing actually costs.
+            embeddings = new UsageTrackingEmbeddingGenerator(
+                AiClientFactory.CreateEmbeddingGenerator(_settings));
+
             var indexer = new CaseDocumentIndexer(_settings, embeddings, store);
 
             AppendResponseLine($"Chunking: {indexer.ChunkingDescription}");
@@ -233,8 +242,12 @@ public partial class CheckEvaluatorForm : Form
             AppendResponseLine(new string('-', 72));
             AppendResponseLine(summary);
 
-            _lastBreakdown = CostBreakdown.Empty(_settings.SelectedModel);
+            // Indexing bills no chat tokens at all, so the whole cost of this run is the
+            // embeddings — which is precisely what used to be reported as nothing.
+            _lastBreakdown = CostBreakdown.Create(
+                _settings.SelectedModel, TokenUsage.Empty, EmbeddingUsageOf(embeddings));
             ShowBreakdown(_lastBreakdown);
+            AppendResponseLine(_lastBreakdown.FormatTotal());
             statusLabel.Text = summary;
 
             ReportSkippedAndFailed(result);
@@ -249,18 +262,39 @@ public partial class CheckEvaluatorForm : Form
         {
             statusLabel.Text = "Indexing cancelled.";
             AppendResponseLine("Cancelled.");
+            ReportPartialEmbeddingSpend(embeddings);
         }
         catch (Exception ex)
         {
             statusLabel.Text = $"Failed to index documents: {ex.Message}";
             AppendResponseLine($"Failed: {ex.Message}");
+            ReportPartialEmbeddingSpend(embeddings);
         }
         finally
         {
+            embeddings?.Dispose();
             _cts.Dispose();
             _cts = null;
             SetBusy(false);
         }
+    }
+
+    /// <summary>
+    /// Shows what a stopped index had already spent. Cancelling does not refund the
+    /// embeddings that were generated before the cancellation landed, and a run that
+    /// reported nothing would leave the user thinking it had cost nothing.
+    /// </summary>
+    private void ReportPartialEmbeddingSpend(UsageTrackingEmbeddingGenerator? embeddings)
+    {
+        var usage = EmbeddingUsageOf(embeddings);
+        if (!usage.IsPresent)
+        {
+            return;
+        }
+
+        _lastBreakdown = CostBreakdown.Create(_settings.SelectedModel, TokenUsage.Empty, usage);
+        ShowBreakdown(_lastBreakdown);
+        AppendResponseLine(_lastBreakdown.FormatTotal());
     }
 
     /// <summary>One line per indexed document: position, category, name, and how it was split.</summary>
@@ -764,10 +798,18 @@ public partial class CheckEvaluatorForm : Form
         _cts = new CancellationTokenSource();
         var usage = TokenUsage.Empty;
 
+        // Declared outside the try so a cancelled or failed run can still report the
+        // embeddings it had already paid for by the time it stopped.
+        UsageTrackingEmbeddingGenerator? embeddings = null;
+
         using var store = new CaseDocumentStore(_settings);
         try
         {
-            using var embeddings = AiClientFactory.CreateEmbeddingGenerator(_settings);
+            // Each planned search embeds its text, so a run over ten checks is a few hundred
+            // small embedding calls alongside the chat spend.
+            embeddings = new UsageTrackingEmbeddingGenerator(
+                AiClientFactory.CreateEmbeddingGenerator(_settings));
+
             var searchTool = new CaseDocumentSearchTool(_settings, embeddings, store, caseReference);
             var runner = new CheckPlanRunner(_settings, _evaluator, searchTool, _model);
 
@@ -823,13 +865,18 @@ public partial class CheckEvaluatorForm : Form
                 }
             }
 
-            _lastBreakdown = CostBreakdown.Create(_settings.SelectedModel, usage);
+            _lastBreakdown = CostBreakdown.Create(
+                _settings.SelectedModel, usage, EmbeddingUsageOf(embeddings));
             ShowBreakdown(_lastBreakdown);
-            statusLabel.Text = $"Done. {report.Headline}. {usage.TotalTokens:N0} tokens billed.";
+            statusLabel.Text =
+                $"Done. {report.Headline}. {_lastBreakdown.TotalTokens:N0} tokens billed.";
         }
         catch (OperationCanceledException)
         {
-            _lastBreakdown = CostBreakdown.Create(_settings.SelectedModel, usage);
+            // A cancelled run has still spent whatever it spent before stopping, so the
+            // breakdown carries the searches that did run rather than resetting to zero.
+            _lastBreakdown = CostBreakdown.Create(
+                _settings.SelectedModel, usage, EmbeddingUsageOf(embeddings));
             ShowBreakdown(_lastBreakdown);
             statusLabel.Text = "Cancelled.";
             AppendResponseLine("Cancelled.");
@@ -837,17 +884,29 @@ public partial class CheckEvaluatorForm : Form
         catch (Exception ex)
         {
             responseTextBox.Text = $"Error: {ex.Message}";
-            _lastBreakdown = CostBreakdown.Empty(_settings.SelectedModel);
+            _lastBreakdown = CostBreakdown.Create(
+                _settings.SelectedModel, usage, EmbeddingUsageOf(embeddings));
             ShowBreakdown(_lastBreakdown);
             statusLabel.Text = "The run failed.";
         }
         finally
         {
+            embeddings?.Dispose();
             _cts.Dispose();
             _cts = null;
             SetBusy(false);
         }
     }
+
+    /// <summary>
+    /// What a tracker actually recorded, or nothing when the run never got as far as
+    /// creating one. Null means no embeddings were generated, which is different from
+    /// embeddings that reported no usage.
+    /// </summary>
+    private EmbeddingUsage EmbeddingUsageOf(UsageTrackingEmbeddingGenerator? embeddings) =>
+        embeddings is null || embeddings.Calls == 0
+            ? EmbeddingUsage.None
+            : new EmbeddingUsage(_settings.EmbeddingModel, embeddings.TotalTokens, embeddings.UsageReported);
 
     private static TokenUsage AddUsage(TokenUsage a, TokenUsage b) => new(
         a.InputTokens + b.InputTokens,
@@ -966,9 +1025,36 @@ public partial class CheckEvaluatorForm : Form
         }
 
         totalCostLabel.Text = breakdown.FormatTotal();
-        costNoteLabel.Text = breakdown.RatesAreEstimated
-            ? $"'{breakdown.ModelId}' is not in the rate table; the cost shown is an estimate."
-            : $"Rates for {breakdown.ModelId}. Embedding calls are billed separately and not shown here.";
+        costNoteLabel.Text = DescribeRates(breakdown);
+    }
+
+    /// <summary>
+    /// The line under the cost table. It has to name both models when both were used, and
+    /// say plainly when a figure is an estimate or when embeddings were billed without the
+    /// provider reporting a token count.
+    /// </summary>
+    private static string DescribeRates(CostBreakdown breakdown)
+    {
+        if (breakdown.RatesAreEstimated)
+        {
+            return $"A model in this run is not in the rate table; the cost shown is an estimate. "
+                 + $"Chat: {breakdown.ModelId}."
+                 + (breakdown.Embeddings.IsPresent ? $" Embeddings: {breakdown.Embeddings.ModelId}." : string.Empty);
+        }
+
+        if (!breakdown.Embeddings.IsPresent)
+        {
+            return $"Rates for {breakdown.ModelId}. This run made no embedding calls.";
+        }
+
+        if (!breakdown.Embeddings.UsageReported)
+        {
+            return $"Rates for {breakdown.ModelId} and {breakdown.Embeddings.ModelId}. The embedding "
+                 + "endpoint returned no token count, so that cost is unknown rather than zero.";
+        }
+
+        return $"Chat priced at {breakdown.ModelId} rates, embeddings at "
+             + $"{breakdown.Embeddings.ModelId} rates. Embeddings cover indexing, chunking and search.";
     }
 
     private void OpenPromptEvaluatorButton_Click(object? sender, EventArgs e)

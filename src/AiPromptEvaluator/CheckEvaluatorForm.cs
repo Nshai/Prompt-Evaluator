@@ -118,7 +118,11 @@ public partial class CheckEvaluatorForm : Form
         checksListView.Items.Clear();
         foreach (var check in _checks)
         {
-            var item = new ListViewItem(check.CheckId.Replace("\n", "").Trim());
+            // Column 0 is the run status glyph, so the item's own text is that rather than the
+            // check id. UseItemStyleForSubItems lets the glyph be coloured without tinting the
+            // whole row, which would make a list of ten checks hard to read.
+            var item = new ListViewItem(string.Empty) { UseItemStyleForSubItems = false };
+            item.SubItems.Add(check.CheckId.Replace("\n", "").Trim());
             item.SubItems.Add(check.CheckName);
             item.SubItems.Add(check.CategoryCodes.Count > 0
                 ? string.Join(", ", check.CategoryCodes)
@@ -128,6 +132,96 @@ public partial class CheckEvaluatorForm : Form
         }
         checksListView.EndUpdate();
     }
+
+    // ──────────────────────────────────────────────
+    // Per-check run status
+    // ──────────────────────────────────────────────
+
+    /// <summary>
+    /// How a check's state shows in the list. Glyphs rather than an ImageList: they carry
+    /// meaning at a glance, scale with the user's font, and need no assets.
+    /// </summary>
+    private static readonly Color RunningColour = Color.FromArgb(0, 102, 204);
+    private static readonly Color PassColour = Color.FromArgb(0, 128, 0);
+    private static readonly Color ConcernColour = Color.FromArgb(176, 96, 0);
+    private static readonly Color ErrorColour = Color.FromArgb(180, 0, 0);
+
+    private void SetCheckStatus(
+        AssessmentCheck check, string glyph, Color colour, string tooltip, bool scrollIntoView = false)
+    {
+        foreach (ListViewItem item in checksListView.Items)
+        {
+            if (!ReferenceEquals(item.Tag, check))
+            {
+                continue;
+            }
+
+            item.SubItems[0].Text = glyph;
+            item.SubItems[0].ForeColor = colour;
+            item.ToolTipText = tooltip;
+
+            // A long list scrolls past the visible rows, so the check being worked on is brought
+            // into view — but only when it starts, never on the progress ticks within it, or the
+            // list would jerk under the reader a dozen times per check.
+            if (scrollIntoView)
+            {
+                item.EnsureVisible();
+            }
+
+            return;
+        }
+    }
+
+    /// <summary>Clears every glyph, so a second run does not read as the first one's results.</summary>
+    private void ResetCheckStatuses()
+    {
+        checksListView.BeginUpdate();
+
+        foreach (ListViewItem item in checksListView.Items)
+        {
+            item.SubItems[0].Text = string.Empty;
+            item.SubItems[0].ForeColor = checksListView.ForeColor;
+            item.ToolTipText = string.Empty;
+        }
+
+        checksListView.EndUpdate();
+    }
+
+    /// <summary>Waiting its turn — distinct from "not part of this run", which stays blank.</summary>
+    private void MarkQueued(IEnumerable<AssessmentCheck> checks)
+    {
+        foreach (var check in checks)
+        {
+            SetCheckStatus(check, "·", SystemColors.GrayText, "Queued");
+        }
+    }
+
+    private void MarkRunning(AssessmentCheck check, string detail, bool scrollIntoView = false) =>
+        SetCheckStatus(check, "▶", RunningColour, detail, scrollIntoView);
+
+    /// <summary>
+    /// The finished state. Indeterminate gets its own glyph rather than borrowing the pass one:
+    /// a requirement nobody could assess is not a requirement that passed.
+    /// </summary>
+    private void MarkFinished(AssessmentCheck check, CheckFinding finding)
+    {
+        var (glyph, colour) = finding.ParsedOutcome switch
+        {
+            CheckOutcome.NoIssue => ("✓", PassColour),
+            CheckOutcome.PotentialConcern => ("!", ConcernColour),
+            CheckOutcome.NotApplicable => ("–", SystemColors.GrayText),
+            CheckOutcome.Indeterminate => ("?", ConcernColour),
+            _ => ("✕", ErrorColour),
+        };
+
+        SetCheckStatus(
+            check, glyph, colour,
+            $"{CheckFinding.Describe(finding.ParsedOutcome)} — {finding.Groups.Count} requirement(s), "
+            + $"{finding.Elapsed.TotalSeconds:0.0}s");
+    }
+
+    private void MarkSkipped(AssessmentCheck check, string why) =>
+        SetCheckStatus(check, "–", SystemColors.GrayText, why);
 
     // ──────────────────────────────────────────────
     // Case folder
@@ -782,11 +876,15 @@ public partial class CheckEvaluatorForm : Form
 
         SetBusy(true);
         responseTextBox.Clear();
+        ResetCheckStatuses();
         AppendResponseLine($"Assessing case {caseReference} (tenant {_settings.TenantId})");
         AppendResponseLine(
             $"Canonical model extracted {_model.ExtractedAt:yyyy-MM-dd HH:mm} from "
             + $"{string.Join(", ", _model.SourceDocuments)}");
         AppendResponseLine($"Query plans: {plans.Count} loaded from {planFolder}");
+        AppendResponseLine(
+            "Status column:  ·  queued    ▶  running    ✓  no issue    !  potential concern    "
+            + "?  not assessable    –  N/A or skipped    ✕  error");
 
         foreach (var (file, error) in planFailures)
         {
@@ -804,6 +902,10 @@ public partial class CheckEvaluatorForm : Form
         UsageTrackingEmbeddingGenerator? embeddings = null;
         PromptLogWriter? promptLog = null;
 
+        // The check currently in flight, so a run that stops early does not leave it showing
+        // the running glyph forever.
+        AssessmentCheck? active = null;
+
         using var store = new CaseDocumentStore(_settings);
         try
         {
@@ -818,10 +920,26 @@ public partial class CheckEvaluatorForm : Form
             var searchTool = new CaseDocumentSearchTool(_settings, embeddings, store, caseReference);
             var runner = new CheckPlanRunner(_settings, _evaluator, searchTool, _model, promptLog);
 
-            var progress = new Progress<string>(stage => statusLabel.Text = stage);
             var findings = new List<CheckFinding>();
             var skipped = new List<string>();
             var done = 0;
+
+            // Only the checks in this run are marked, so a single-check run leaves the other
+            // rows blank rather than implying they were queued and cleared.
+            MarkQueued(checks);
+
+            // The runner reports a check's requirements as they finish, which is what makes the
+            // concurrency legible: without it a check with six requirements sits on one line for
+            // half a minute and looks stuck.
+            var progress = new Progress<string>(stage =>
+            {
+                statusLabel.Text = stage;
+
+                if (active is not null)
+                {
+                    MarkRunning(active, stage);
+                }
+            });
 
             foreach (var check in checks)
             {
@@ -835,15 +953,21 @@ public partial class CheckEvaluatorForm : Form
                 {
                     skipped.Add($"{checkId} — no query plan in {planFolder}");
                     promptLog.LogSkipped(checkId, $"No query plan in {planFolder}");
+                    MarkSkipped(check, $"No query plan in {planFolder}");
                     continue;
                 }
 
                 done++;
+                active = check;
                 statusLabel.Text = $"Assessing {checkId} ({done}/{checks.Count})...";
+                MarkRunning(check, $"Assessing ({done}/{checks.Count})", scrollIntoView: true);
 
                 var finding = await runner
                     .RunAsync(check, plan, progress, _cts.Token)
                     .ConfigureAwait(true);
+
+                active = null;
+                MarkFinished(check, finding);
 
                 findings.Add(finding);
                 usage = AddUsage(usage, finding.Usage);
@@ -888,6 +1012,11 @@ public partial class CheckEvaluatorForm : Form
             ShowBreakdown(_lastBreakdown);
             statusLabel.Text = "Cancelled.";
             AppendResponseLine("Cancelled.");
+
+            if (active is not null)
+            {
+                MarkSkipped(active, "Cancelled before this check finished");
+            }
         }
         catch (Exception ex)
         {

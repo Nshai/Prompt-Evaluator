@@ -21,6 +21,7 @@ partial class CheckEvaluatorForm
     // Left panel
     private GroupBox checksGroup;
     private ListView checksListView;
+    private ColumnHeader statusColumn;
     private ColumnHeader checkIdColumn;
     private ColumnHeader checkNameColumn;
     private ColumnHeader codesColumn;
@@ -91,6 +92,7 @@ partial class CheckEvaluatorForm
         mainSplit = new SplitContainer();
         checksGroup = new GroupBox();
         checksListView = new ListView();
+        statusColumn = new ColumnHeader();
         checkIdColumn = new ColumnHeader();
         checkNameColumn = new ColumnHeader();
         codesColumn = new ColumnHeader();
@@ -250,17 +252,23 @@ partial class CheckEvaluatorForm
         checksGroup.Text = "Checks";
 
         // checksListView
-        checksListView.Columns.AddRange(new[] { checkIdColumn, checkNameColumn, codesColumn });
+        checksListView.Columns.AddRange(new[] { statusColumn, checkIdColumn, checkNameColumn, codesColumn });
         checksListView.Dock = DockStyle.Fill;
         checksListView.FullRowSelect = true;
         checksListView.GridLines = true;
         checksListView.HideSelection = false;
         checksListView.MultiSelect = false;
+        // The status glyph is terse by design; the tooltip carries the detail behind it.
+        checksListView.ShowItemToolTips = true;
         checksListView.Name = "checksListView";
         checksListView.UseCompatibleStateImageBehavior = false;
         checksListView.View = View.Details;
         checksListView.SelectedIndexChanged += ChecksListView_SelectedIndexChanged;
 
+        // The run status glyph. Narrow and unlabelled: it is read by shape and colour at a
+        // glance, and a header would take more room than the column it names.
+        statusColumn.Text = string.Empty;
+        statusColumn.Width = 30;
         checkIdColumn.Text = "ID";
         checkIdColumn.Width = 70;
         checkNameColumn.Text = "Check Name";

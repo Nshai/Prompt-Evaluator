@@ -180,6 +180,60 @@ public partial class ConfigurationForm : Form
     }
 
     /// <summary>
+    /// Sends one minimal chat request as typed, without saving — a rejected key, a wrong base
+    /// URL, or a model/gateway that rejects a sampling parameter is then caught here with its
+    /// exact error text, rather than surfacing as an identical "Error" on all ten checks with
+    /// nothing to go on.
+    /// </summary>
+    private async void ChatTestButton_Click(object? sender, EventArgs e)
+    {
+        var model = selectedModelComboBox.Text.Trim();
+        if (string.IsNullOrEmpty(model))
+        {
+            MessageBox.Show(this, "Please select or enter a model first.", "Chat model",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        var probe = new AppSettings
+        {
+            OpenAiApiKey = apiKeyTextBox.Text.Trim(),
+            OpenAiBaseUrl = baseUrlTextBox.Text.Trim(),
+            SelectedModel = model,
+            MaxTokens = 16,
+            PinTemperature = pinTemperatureCheckBox.Checked,
+            Temperature = (float)temperatureUpDown.Value,
+            PinTopP = pinTopPCheckBox.Checked,
+            TopP = (float)topPUpDown.Value,
+            PinSeed = pinSeedCheckBox.Checked,
+            SamplingSeed = (long)seedUpDown.Value,
+        };
+
+        chatTestButton.Enabled = false;
+        chatTestButton.Text = "Testing...";
+        try
+        {
+            var evaluator = new PromptEvaluator(probe);
+            var result = await evaluator
+                .RunRawAsync("Reply with the single word: ready", CancellationToken.None)
+                .ConfigureAwait(true);
+
+            MessageBox.Show(this,
+                $"{model} responded at {probe.ResolveBaseUrl()}.\n\nReply: {result.Response.Trim()}",
+                "Chat model", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Chat model", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        finally
+        {
+            chatTestButton.Text = "Test";
+            chatTestButton.Enabled = true;
+        }
+    }
+
+    /// <summary>
     /// Probes Qdrant as typed, without saving — a wrong port (6333 instead of 6334 is the
     /// usual one) is then caught here rather than partway through indexing a case.
     /// </summary>

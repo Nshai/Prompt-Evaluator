@@ -24,6 +24,7 @@ partial class ConfigurationForm
     private TextBox availableModelsTextBox;
     private Label selectedModelLabel;
     private ComboBox selectedModelComboBox;
+    private Button chatTestButton;
     private Label embeddingModelLabel;
     private TextBox embeddingModelTextBox;
     private FlowLayoutPanel modelsNumericRow;
@@ -118,6 +119,7 @@ partial class ConfigurationForm
         availableModelsTextBox = new TextBox();
         selectedModelLabel = new Label();
         selectedModelComboBox = new ComboBox();
+        chatTestButton = new Button();
         embeddingModelLabel = new Label();
         embeddingModelTextBox = new TextBox();
         modelsNumericRow = new FlowLayoutPanel();
@@ -303,6 +305,7 @@ partial class ConfigurationForm
         baseUrlHintLabel.AutoSize = true;
         baseUrlHintLabel.ForeColor = SystemColors.GrayText;
         baseUrlHintLabel.Margin = new Padding(0, 0, 8, 3);
+        baseUrlHintLabel.MaximumSize = new Size(500, 0);
         baseUrlHintLabel.Name = "baseUrlHintLabel";
         baseUrlHintLabel.Text = $"OpenAI-compatible endpoint — the official API, a gateway (e.g. https://litellm.example.com/v1) or a self-hosted server. Leave empty for {AppSettings.DefaultBaseUrl}.";
 
@@ -331,6 +334,7 @@ partial class ConfigurationForm
         doclingHintLabel.AutoSize = true;
         doclingHintLabel.ForeColor = SystemColors.GrayText;
         doclingHintLabel.Margin = new Padding(0, 0, 8, 3);
+        doclingHintLabel.MaximumSize = new Size(500, 0);
         doclingHintLabel.Name = "doclingHintLabel";
         doclingHintLabel.Text = $"Docker host running docling-serve, used to convert spreadsheets to Markdown. Leave empty for {AppSettings.DefaultDoclingEndpoint}.";
 
@@ -346,23 +350,32 @@ partial class ConfigurationForm
 
         // modelsLayout
         modelsLayout.AutoSize = true;
-        modelsLayout.ColumnCount = 2;
+        modelsLayout.ColumnCount = 3;
         modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
         modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         modelsLayout.Dock = DockStyle.Fill;
         modelsLayout.RowCount = 4;
         modelsLayout.Controls.Add(availableModelsLabel, 0, 0);
         modelsLayout.Controls.Add(availableModelsTextBox, 1, 0);
+        modelsLayout.SetColumnSpan(availableModelsTextBox, 2);
         modelsLayout.Controls.Add(selectedModelLabel, 0, 1);
         modelsLayout.Controls.Add(selectedModelComboBox, 1, 1);
+        modelsLayout.Controls.Add(chatTestButton, 2, 1);
         modelsLayout.Controls.Add(embeddingModelLabel, 0, 2);
         modelsLayout.Controls.Add(embeddingModelTextBox, 1, 2);
+        modelsLayout.SetColumnSpan(embeddingModelTextBox, 2);
         modelsLayout.Controls.Add(modelsNumericRow, 0, 3);
-        modelsLayout.SetColumnSpan(modelsNumericRow, 2);
+        modelsLayout.SetColumnSpan(modelsNumericRow, 3);
         modelsLayout.Name = "modelsLayout";
 
         // modelsNumericRow — max output tokens and embedding dimensions are both short numeric
-        // fields, so they sit side by side instead of each claiming a full-width row.
+        // fields, so they sit side by side instead of each claiming a full-width row. Anchor
+        // (not Dock) takes the width from the parent cell while AutoSize computes the panel's
+        // own height from however many rows WrapContents produces — the combination a wrapping
+        // FlowLayoutPanel needs; Dock on an AutoSize row was clipping content against the
+        // group border because the two AutoSize computations fought each other.
+        modelsNumericRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
         modelsNumericRow.AutoSize = true;
         modelsNumericRow.Controls.Add(maxTokensLabel);
         modelsNumericRow.Controls.Add(maxTokensUpDown);
@@ -393,8 +406,17 @@ partial class ConfigurationForm
         // selectedModelComboBox
         selectedModelComboBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
         selectedModelComboBox.DropDownStyle = ComboBoxStyle.DropDown;
-        selectedModelComboBox.Margin = new Padding(0, 3, 0, 3);
+        selectedModelComboBox.Margin = new Padding(0, 3, 8, 3);
         selectedModelComboBox.Name = "selectedModelComboBox";
+
+        // chatTestButton — sends one minimal chat request as typed, without saving, so a
+        // gateway or model rejection surfaces here rather than after running all ten checks.
+        chatTestButton.Anchor = AnchorStyles.Left;
+        chatTestButton.AutoSize = true;
+        chatTestButton.Name = "chatTestButton";
+        chatTestButton.Text = "Test";
+        chatTestButton.UseVisualStyleBackColor = true;
+        chatTestButton.Click += ChatTestButton_Click;
 
         // maxTokensLabel
         maxTokensLabel.AutoSize = true;
@@ -469,7 +491,9 @@ partial class ConfigurationForm
 
         // vectorNumericRow — tenant id, chunk size, overlap and result count are all short
         // numeric fields; grouping them side by side (wrapping as the form narrows) avoids a
-        // full-width row each and cuts the group's height by four rows.
+        // full-width row each and cuts the group's height by four rows. Anchor, not Dock — see
+        // modelsNumericRow.
+        vectorNumericRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
         vectorNumericRow.AutoSize = true;
         vectorNumericRow.Controls.Add(tenantLabel);
         vectorNumericRow.Controls.Add(tenantUpDown);
@@ -621,7 +645,9 @@ partial class ConfigurationForm
         structuredFindingsCheckBox.UseVisualStyleBackColor = true;
 
         // samplingRow — temperature, top-p and seed are each independently pinnable, since a
-        // gateway or model can reject one of the three without objecting to the others.
+        // gateway or model can reject one of the three without objecting to the others. Anchor,
+        // not Dock — see modelsNumericRow.
+        samplingRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
         samplingRow.AutoSize = true;
         samplingRow.Controls.Add(pinTemperatureCheckBox);
         samplingRow.Controls.Add(temperatureUpDown);
@@ -718,6 +744,7 @@ partial class ConfigurationForm
         qdrantHintLabel.AutoSize = true;
         qdrantHintLabel.ForeColor = SystemColors.GrayText;
         qdrantHintLabel.Margin = new Padding(0, 0, 8, 3);
+        qdrantHintLabel.MaximumSize = new Size(500, 0);
         qdrantHintLabel.Name = "qdrantHintLabel";
         qdrantHintLabel.Text = $"Docker host running Qdrant, holding the indexed case chunks. This is the gRPC port, not the 6333 dashboard. Leave empty for {AppSettings.DefaultQdrantEndpoint}.";
 

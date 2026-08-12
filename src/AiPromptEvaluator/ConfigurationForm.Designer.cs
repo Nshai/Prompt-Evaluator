@@ -4,6 +4,7 @@ partial class ConfigurationForm
 {
     private System.ComponentModel.IContainer components = null;
 
+    private Panel scrollPanel;
     private TableLayoutPanel rootLayout;
     private GroupBox connectionGroup;
     private TableLayoutPanel connectionLayout;
@@ -23,10 +24,11 @@ partial class ConfigurationForm
     private TextBox availableModelsTextBox;
     private Label selectedModelLabel;
     private ComboBox selectedModelComboBox;
-    private Label maxTokensLabel;
-    private NumericUpDown maxTokensUpDown;
     private Label embeddingModelLabel;
     private TextBox embeddingModelTextBox;
+    private FlowLayoutPanel modelsNumericRow;
+    private Label maxTokensLabel;
+    private NumericUpDown maxTokensUpDown;
     private Label embeddingDimensionsLabel;
     private NumericUpDown embeddingDimensionsUpDown;
     private GroupBox vectorGroup;
@@ -40,6 +42,7 @@ partial class ConfigurationForm
     private Label caseReferenceLabel;
     private TextBox caseReferenceTextBox;
     private Label caseReferenceHintLabel;
+    private FlowLayoutPanel vectorNumericRow;
     private Label tenantLabel;
     private NumericUpDown tenantUpDown;
     private Label chunkTokensLabel;
@@ -63,9 +66,13 @@ partial class ConfigurationForm
     private NumericUpDown extractionTokensUpDown;
     private GroupBox reproducibilityGroup;
     private TableLayoutPanel reproducibilityLayout;
-    private CheckBox deterministicCheckBox;
     private CheckBox structuredFindingsCheckBox;
-    private Label seedLabel;
+    private FlowLayoutPanel samplingRow;
+    private CheckBox pinTemperatureCheckBox;
+    private NumericUpDown temperatureUpDown;
+    private CheckBox pinTopPCheckBox;
+    private NumericUpDown topPUpDown;
+    private CheckBox pinSeedCheckBox;
     private NumericUpDown seedUpDown;
     private Label reproducibilityHintLabel;
     private GroupBox contextGroup;
@@ -91,6 +98,7 @@ partial class ConfigurationForm
     private void InitializeComponent()
     {
         components = new System.ComponentModel.Container();
+        scrollPanel = new Panel();
         rootLayout = new TableLayoutPanel();
         connectionGroup = new GroupBox();
         connectionLayout = new TableLayoutPanel();
@@ -110,10 +118,11 @@ partial class ConfigurationForm
         availableModelsTextBox = new TextBox();
         selectedModelLabel = new Label();
         selectedModelComboBox = new ComboBox();
-        maxTokensLabel = new Label();
-        maxTokensUpDown = new NumericUpDown();
         embeddingModelLabel = new Label();
         embeddingModelTextBox = new TextBox();
+        modelsNumericRow = new FlowLayoutPanel();
+        maxTokensLabel = new Label();
+        maxTokensUpDown = new NumericUpDown();
         embeddingDimensionsLabel = new Label();
         embeddingDimensionsUpDown = new NumericUpDown();
         vectorGroup = new GroupBox();
@@ -127,6 +136,7 @@ partial class ConfigurationForm
         caseReferenceLabel = new Label();
         caseReferenceTextBox = new TextBox();
         caseReferenceHintLabel = new Label();
+        vectorNumericRow = new FlowLayoutPanel();
         tenantLabel = new Label();
         tenantUpDown = new NumericUpDown();
         chunkTokensLabel = new Label();
@@ -150,9 +160,13 @@ partial class ConfigurationForm
         extractionTokensUpDown = new NumericUpDown();
         reproducibilityGroup = new GroupBox();
         reproducibilityLayout = new TableLayoutPanel();
-        deterministicCheckBox = new CheckBox();
         structuredFindingsCheckBox = new CheckBox();
-        seedLabel = new Label();
+        samplingRow = new FlowLayoutPanel();
+        pinTemperatureCheckBox = new CheckBox();
+        temperatureUpDown = new NumericUpDown();
+        pinTopPCheckBox = new CheckBox();
+        topPUpDown = new NumericUpDown();
+        pinSeedCheckBox = new CheckBox();
         seedUpDown = new NumericUpDown();
         reproducibilityHintLabel = new Label();
         contextGroup = new GroupBox();
@@ -165,6 +179,7 @@ partial class ConfigurationForm
         saveButton = new Button();
         cancelButton = new Button();
 
+        scrollPanel.SuspendLayout();
         rootLayout.SuspendLayout();
         connectionGroup.SuspendLayout();
         connectionLayout.SuspendLayout();
@@ -183,26 +198,35 @@ partial class ConfigurationForm
         ((System.ComponentModel.ISupportInitialize)extractionTokensUpDown).BeginInit();
         reproducibilityGroup.SuspendLayout();
         reproducibilityLayout.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)temperatureUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)topPUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)seedUpDown).BeginInit();
         contextGroup.SuspendLayout();
         contextLayout.SuspendLayout();
         buttonPanel.SuspendLayout();
         SuspendLayout();
 
+        // scrollPanel — everything but the Save/Cancel buttons scrolls here, so the form stays
+        // usable when it is resized smaller than its content, and the buttons stay reachable.
+        scrollPanel.AutoScroll = true;
+        scrollPanel.Controls.Add(rootLayout);
+        scrollPanel.Dock = DockStyle.Fill;
+        scrollPanel.Name = "scrollPanel";
+
         // rootLayout
         rootLayout.ColumnCount = 1;
         rootLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-        rootLayout.Dock = DockStyle.Fill;
+        rootLayout.AutoSize = true;
+        rootLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        rootLayout.Dock = DockStyle.Top;
         rootLayout.Padding = new Padding(10);
-        rootLayout.AutoScroll = true;
-        rootLayout.RowCount = 8;
+        rootLayout.RowCount = 7;
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        rootLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.Controls.Add(connectionGroup, 0, 0);
         rootLayout.Controls.Add(modelsGroup, 0, 1);
@@ -211,7 +235,6 @@ partial class ConfigurationForm
         rootLayout.Controls.Add(reproducibilityGroup, 0, 4);
         rootLayout.Controls.Add(contextGroup, 0, 5);
         rootLayout.Controls.Add(clarificationCheckBox, 0, 6);
-        rootLayout.Controls.Add(buttonPanel, 0, 7);
         rootLayout.Name = "rootLayout";
 
         // connectionGroup
@@ -327,18 +350,27 @@ partial class ConfigurationForm
         modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
         modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         modelsLayout.Dock = DockStyle.Fill;
-        modelsLayout.RowCount = 5;
+        modelsLayout.RowCount = 4;
         modelsLayout.Controls.Add(availableModelsLabel, 0, 0);
         modelsLayout.Controls.Add(availableModelsTextBox, 1, 0);
         modelsLayout.Controls.Add(selectedModelLabel, 0, 1);
         modelsLayout.Controls.Add(selectedModelComboBox, 1, 1);
-        modelsLayout.Controls.Add(maxTokensLabel, 0, 2);
-        modelsLayout.Controls.Add(maxTokensUpDown, 1, 2);
-        modelsLayout.Controls.Add(embeddingModelLabel, 0, 3);
-        modelsLayout.Controls.Add(embeddingModelTextBox, 1, 3);
-        modelsLayout.Controls.Add(embeddingDimensionsLabel, 0, 4);
-        modelsLayout.Controls.Add(embeddingDimensionsUpDown, 1, 4);
+        modelsLayout.Controls.Add(embeddingModelLabel, 0, 2);
+        modelsLayout.Controls.Add(embeddingModelTextBox, 1, 2);
+        modelsLayout.Controls.Add(modelsNumericRow, 0, 3);
+        modelsLayout.SetColumnSpan(modelsNumericRow, 2);
         modelsLayout.Name = "modelsLayout";
+
+        // modelsNumericRow — max output tokens and embedding dimensions are both short numeric
+        // fields, so they sit side by side instead of each claiming a full-width row.
+        modelsNumericRow.AutoSize = true;
+        modelsNumericRow.Controls.Add(maxTokensLabel);
+        modelsNumericRow.Controls.Add(maxTokensUpDown);
+        modelsNumericRow.Controls.Add(embeddingDimensionsLabel);
+        modelsNumericRow.Controls.Add(embeddingDimensionsUpDown);
+        modelsNumericRow.Margin = new Padding(0, 3, 0, 0);
+        modelsNumericRow.Name = "modelsNumericRow";
+        modelsNumericRow.WrapContents = true;
 
         // availableModelsLabel
         availableModelsLabel.Anchor = AnchorStyles.Left;
@@ -365,19 +397,18 @@ partial class ConfigurationForm
         selectedModelComboBox.Name = "selectedModelComboBox";
 
         // maxTokensLabel
-        maxTokensLabel.Anchor = AnchorStyles.Left;
         maxTokensLabel.AutoSize = true;
+        maxTokensLabel.Margin = new Padding(0, 6, 6, 0);
         maxTokensLabel.Name = "maxTokensLabel";
         maxTokensLabel.Text = "Max output tokens";
 
         // maxTokensUpDown
-        maxTokensUpDown.Anchor = AnchorStyles.Left;
         maxTokensUpDown.Increment = 256;
-        maxTokensUpDown.Margin = new Padding(0, 3, 0, 3);
+        maxTokensUpDown.Margin = new Padding(0, 3, 16, 3);
         maxTokensUpDown.Maximum = 64000;
         maxTokensUpDown.Minimum = 256;
         maxTokensUpDown.Name = "maxTokensUpDown";
-        maxTokensUpDown.Width = 120;
+        maxTokensUpDown.Width = 100;
 
         // embeddingModelLabel
         embeddingModelLabel.Anchor = AnchorStyles.Left;
@@ -392,19 +423,18 @@ partial class ConfigurationForm
         embeddingModelTextBox.PlaceholderText = "text-embedding-3-small";
 
         // embeddingDimensionsLabel
-        embeddingDimensionsLabel.Anchor = AnchorStyles.Left;
         embeddingDimensionsLabel.AutoSize = true;
+        embeddingDimensionsLabel.Margin = new Padding(0, 6, 6, 0);
         embeddingDimensionsLabel.Name = "embeddingDimensionsLabel";
         embeddingDimensionsLabel.Text = "Embedding dimensions";
 
         // embeddingDimensionsUpDown — defines the collection, so changing it means reloading docs
-        embeddingDimensionsUpDown.Anchor = AnchorStyles.Left;
         embeddingDimensionsUpDown.Increment = 128;
         embeddingDimensionsUpDown.Margin = new Padding(0, 3, 0, 3);
         embeddingDimensionsUpDown.Maximum = 8192;
         embeddingDimensionsUpDown.Minimum = 64;
         embeddingDimensionsUpDown.Name = "embeddingDimensionsUpDown";
-        embeddingDimensionsUpDown.Width = 120;
+        embeddingDimensionsUpDown.Width = 100;
 
         // vectorGroup
         vectorGroup.AutoSize = true;
@@ -423,7 +453,7 @@ partial class ConfigurationForm
         vectorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         vectorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         vectorLayout.Dock = DockStyle.Fill;
-        vectorLayout.RowCount = 9;
+        vectorLayout.RowCount = 6;
         vectorLayout.Controls.Add(qdrantLabel, 0, 0);
         vectorLayout.Controls.Add(qdrantTextBox, 1, 0);
         vectorLayout.Controls.Add(qdrantTestButton, 2, 0);
@@ -433,15 +463,25 @@ partial class ConfigurationForm
         vectorLayout.Controls.Add(caseReferenceLabel, 0, 3);
         vectorLayout.Controls.Add(caseReferenceTextBox, 1, 3);
         vectorLayout.Controls.Add(caseReferenceHintLabel, 1, 4);
-        vectorLayout.Controls.Add(tenantLabel, 0, 5);
-        vectorLayout.Controls.Add(tenantUpDown, 1, 5);
-        vectorLayout.Controls.Add(chunkTokensLabel, 0, 6);
-        vectorLayout.Controls.Add(chunkTokensUpDown, 1, 6);
-        vectorLayout.Controls.Add(chunkOverlapLabel, 0, 7);
-        vectorLayout.Controls.Add(chunkOverlapUpDown, 1, 7);
-        vectorLayout.Controls.Add(searchResultsLabel, 0, 8);
-        vectorLayout.Controls.Add(searchResultsUpDown, 1, 8);
+        vectorLayout.Controls.Add(vectorNumericRow, 0, 5);
+        vectorLayout.SetColumnSpan(vectorNumericRow, 3);
         vectorLayout.Name = "vectorLayout";
+
+        // vectorNumericRow — tenant id, chunk size, overlap and result count are all short
+        // numeric fields; grouping them side by side (wrapping as the form narrows) avoids a
+        // full-width row each and cuts the group's height by four rows.
+        vectorNumericRow.AutoSize = true;
+        vectorNumericRow.Controls.Add(tenantLabel);
+        vectorNumericRow.Controls.Add(tenantUpDown);
+        vectorNumericRow.Controls.Add(chunkTokensLabel);
+        vectorNumericRow.Controls.Add(chunkTokensUpDown);
+        vectorNumericRow.Controls.Add(chunkOverlapLabel);
+        vectorNumericRow.Controls.Add(chunkOverlapUpDown);
+        vectorNumericRow.Controls.Add(searchResultsLabel);
+        vectorNumericRow.Controls.Add(searchResultsUpDown);
+        vectorNumericRow.Margin = new Padding(0, 3, 0, 0);
+        vectorNumericRow.Name = "vectorNumericRow";
+        vectorNumericRow.WrapContents = true;
 
         // canonicalGroup — where the schema, the query plans and the extracted models live
         canonicalGroup.AutoSize = true;
@@ -564,27 +604,14 @@ partial class ConfigurationForm
 
         // reproducibilityLayout
         reproducibilityLayout.AutoSize = true;
-        reproducibilityLayout.ColumnCount = 2;
-        reproducibilityLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
+        reproducibilityLayout.ColumnCount = 1;
         reproducibilityLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         reproducibilityLayout.Dock = DockStyle.Fill;
-        reproducibilityLayout.RowCount = 4;
-        reproducibilityLayout.Controls.Add(deterministicCheckBox, 0, 0);
-        reproducibilityLayout.SetColumnSpan(deterministicCheckBox, 2);
-        reproducibilityLayout.Controls.Add(structuredFindingsCheckBox, 0, 1);
-        reproducibilityLayout.SetColumnSpan(structuredFindingsCheckBox, 2);
-        reproducibilityLayout.Controls.Add(seedLabel, 0, 2);
-        reproducibilityLayout.Controls.Add(seedUpDown, 1, 2);
-        reproducibilityLayout.Controls.Add(reproducibilityHintLabel, 0, 3);
-        reproducibilityLayout.SetColumnSpan(reproducibilityHintLabel, 2);
+        reproducibilityLayout.RowCount = 3;
+        reproducibilityLayout.Controls.Add(structuredFindingsCheckBox, 0, 0);
+        reproducibilityLayout.Controls.Add(samplingRow, 0, 1);
+        reproducibilityLayout.Controls.Add(reproducibilityHintLabel, 0, 2);
         reproducibilityLayout.Name = "reproducibilityLayout";
-
-        // deterministicCheckBox
-        deterministicCheckBox.AutoSize = true;
-        deterministicCheckBox.Margin = new Padding(0, 3, 0, 3);
-        deterministicCheckBox.Name = "deterministicCheckBox";
-        deterministicCheckBox.Text = "Pin sampling (temperature 0, top-p 1, fixed seed)";
-        deterministicCheckBox.UseVisualStyleBackColor = true;
 
         // structuredFindingsCheckBox
         structuredFindingsCheckBox.AutoSize = true;
@@ -593,19 +620,67 @@ partial class ConfigurationForm
         structuredFindingsCheckBox.Text = "Constrain findings to the response schema";
         structuredFindingsCheckBox.UseVisualStyleBackColor = true;
 
-        // seedLabel
-        seedLabel.Anchor = AnchorStyles.Left;
-        seedLabel.AutoSize = true;
-        seedLabel.Name = "seedLabel";
-        seedLabel.Text = "Sampling seed";
+        // samplingRow — temperature, top-p and seed are each independently pinnable, since a
+        // gateway or model can reject one of the three without objecting to the others.
+        samplingRow.AutoSize = true;
+        samplingRow.Controls.Add(pinTemperatureCheckBox);
+        samplingRow.Controls.Add(temperatureUpDown);
+        samplingRow.Controls.Add(pinTopPCheckBox);
+        samplingRow.Controls.Add(topPUpDown);
+        samplingRow.Controls.Add(pinSeedCheckBox);
+        samplingRow.Controls.Add(seedUpDown);
+        samplingRow.Margin = new Padding(0, 3, 0, 3);
+        samplingRow.Name = "samplingRow";
+        samplingRow.WrapContents = true;
+
+        // pinTemperatureCheckBox
+        pinTemperatureCheckBox.AutoSize = true;
+        pinTemperatureCheckBox.Margin = new Padding(0, 6, 4, 0);
+        pinTemperatureCheckBox.Name = "pinTemperatureCheckBox";
+        pinTemperatureCheckBox.Text = "Temperature";
+        pinTemperatureCheckBox.UseVisualStyleBackColor = true;
+        pinTemperatureCheckBox.CheckedChanged += PinTemperatureCheckBox_CheckedChanged;
+
+        // temperatureUpDown
+        temperatureUpDown.DecimalPlaces = 1;
+        temperatureUpDown.Increment = 0.1m;
+        temperatureUpDown.Margin = new Padding(0, 3, 16, 3);
+        temperatureUpDown.Maximum = 2m;
+        temperatureUpDown.Minimum = 0m;
+        temperatureUpDown.Name = "temperatureUpDown";
+        temperatureUpDown.Width = 70;
+
+        // pinTopPCheckBox
+        pinTopPCheckBox.AutoSize = true;
+        pinTopPCheckBox.Margin = new Padding(0, 6, 4, 0);
+        pinTopPCheckBox.Name = "pinTopPCheckBox";
+        pinTopPCheckBox.Text = "Top-p";
+        pinTopPCheckBox.UseVisualStyleBackColor = true;
+        pinTopPCheckBox.CheckedChanged += PinTopPCheckBox_CheckedChanged;
+
+        // topPUpDown
+        topPUpDown.DecimalPlaces = 2;
+        topPUpDown.Increment = 0.05m;
+        topPUpDown.Margin = new Padding(0, 3, 16, 3);
+        topPUpDown.Maximum = 1m;
+        topPUpDown.Minimum = 0m;
+        topPUpDown.Name = "topPUpDown";
+        topPUpDown.Width = 70;
+
+        // pinSeedCheckBox
+        pinSeedCheckBox.AutoSize = true;
+        pinSeedCheckBox.Margin = new Padding(0, 6, 4, 0);
+        pinSeedCheckBox.Name = "pinSeedCheckBox";
+        pinSeedCheckBox.Text = "Seed";
+        pinSeedCheckBox.UseVisualStyleBackColor = true;
+        pinSeedCheckBox.CheckedChanged += PinSeedCheckBox_CheckedChanged;
 
         // seedUpDown
-        seedUpDown.Anchor = AnchorStyles.Left;
         seedUpDown.Margin = new Padding(0, 3, 0, 3);
         seedUpDown.Maximum = int.MaxValue;
         seedUpDown.Minimum = 0;
         seedUpDown.Name = "seedUpDown";
-        seedUpDown.Width = 120;
+        seedUpDown.Width = 100;
 
         // reproducibilityHintLabel
         reproducibilityHintLabel.AutoSize = true;
@@ -613,9 +688,10 @@ partial class ConfigurationForm
         reproducibilityHintLabel.Margin = new Padding(0, 6, 0, 0);
         reproducibilityHintLabel.Name = "reproducibilityHintLabel";
         reproducibilityHintLabel.Text =
-            "Two runs of the same check over the same case should reach the same finding. Clear these only\r\n"
-            + "for an endpoint that rejects them. Changing the seed samples a second opinion; the findings\r\n"
-            + "report records both, so a difference between runs can be traced to what actually changed.";
+            "Two runs of the same check over the same case should reach the same finding. Uncheck a\r\n"
+            + "parameter only for an endpoint that rejects it. Changing the seed samples a second opinion;\r\n"
+            + "the findings report records what was pinned, so a difference between runs can be traced to\r\n"
+            + "what actually changed.";
 
         // qdrantLabel
         qdrantLabel.Anchor = AnchorStyles.Left;
@@ -678,62 +754,58 @@ partial class ConfigurationForm
         caseReferenceHintLabel.Text = "Stamped on every indexed chunk and used to scope every search. Leave empty to use the case folder's name.";
 
         // tenantLabel
-        tenantLabel.Anchor = AnchorStyles.Left;
         tenantLabel.AutoSize = true;
+        tenantLabel.Margin = new Padding(0, 6, 6, 0);
         tenantLabel.Name = "tenantLabel";
         tenantLabel.Text = "Tenant id";
 
         // tenantUpDown
-        tenantUpDown.Anchor = AnchorStyles.Left;
-        tenantUpDown.Margin = new Padding(0, 3, 0, 3);
+        tenantUpDown.Margin = new Padding(0, 3, 16, 3);
         tenantUpDown.Maximum = 1000000;
         tenantUpDown.Minimum = 0;
         tenantUpDown.Name = "tenantUpDown";
-        tenantUpDown.Width = 120;
+        tenantUpDown.Width = 90;
 
         // chunkTokensLabel
-        chunkTokensLabel.Anchor = AnchorStyles.Left;
         chunkTokensLabel.AutoSize = true;
+        chunkTokensLabel.Margin = new Padding(0, 6, 6, 0);
         chunkTokensLabel.Name = "chunkTokensLabel";
-        chunkTokensLabel.Text = "Max tokens per chunk";
+        chunkTokensLabel.Text = "Max tokens/chunk";
 
         // chunkTokensUpDown
-        chunkTokensUpDown.Anchor = AnchorStyles.Left;
         chunkTokensUpDown.Increment = 50;
-        chunkTokensUpDown.Margin = new Padding(0, 3, 0, 3);
+        chunkTokensUpDown.Margin = new Padding(0, 3, 16, 3);
         chunkTokensUpDown.Maximum = 4000;
         chunkTokensUpDown.Minimum = 64;
         chunkTokensUpDown.Name = "chunkTokensUpDown";
-        chunkTokensUpDown.Width = 120;
+        chunkTokensUpDown.Width = 90;
 
         // chunkOverlapLabel
-        chunkOverlapLabel.Anchor = AnchorStyles.Left;
         chunkOverlapLabel.AutoSize = true;
+        chunkOverlapLabel.Margin = new Padding(0, 6, 6, 0);
         chunkOverlapLabel.Name = "chunkOverlapLabel";
-        chunkOverlapLabel.Text = "Chunk overlap tokens";
+        chunkOverlapLabel.Text = "Chunk overlap";
 
         // chunkOverlapUpDown
-        chunkOverlapUpDown.Anchor = AnchorStyles.Left;
         chunkOverlapUpDown.Increment = 25;
-        chunkOverlapUpDown.Margin = new Padding(0, 3, 0, 3);
+        chunkOverlapUpDown.Margin = new Padding(0, 3, 16, 3);
         chunkOverlapUpDown.Maximum = 2000;
         chunkOverlapUpDown.Minimum = 0;
         chunkOverlapUpDown.Name = "chunkOverlapUpDown";
-        chunkOverlapUpDown.Width = 120;
+        chunkOverlapUpDown.Width = 90;
 
         // searchResultsLabel
-        searchResultsLabel.Anchor = AnchorStyles.Left;
         searchResultsLabel.AutoSize = true;
+        searchResultsLabel.Margin = new Padding(0, 6, 6, 0);
         searchResultsLabel.Name = "searchResultsLabel";
-        searchResultsLabel.Text = "Results per search";
+        searchResultsLabel.Text = "Results/search";
 
         // searchResultsUpDown
-        searchResultsUpDown.Anchor = AnchorStyles.Left;
         searchResultsUpDown.Margin = new Padding(0, 3, 0, 3);
         searchResultsUpDown.Maximum = 50;
         searchResultsUpDown.Minimum = 1;
         searchResultsUpDown.Name = "searchResultsUpDown";
-        searchResultsUpDown.Width = 120;
+        searchResultsUpDown.Width = 90;
 
         // contextGroup
         contextGroup.AutoSize = true;
@@ -785,11 +857,12 @@ partial class ConfigurationForm
         clarificationCheckBox.Text = "Ask for clarification when the prompt is ambiguous";
         clarificationCheckBox.UseVisualStyleBackColor = true;
 
-        // buttonPanel
+        // buttonPanel — docked to the form itself, not the scrolling area, so Save/Cancel are
+        // always reachable regardless of scroll position.
         buttonPanel.AutoSize = true;
-        buttonPanel.Dock = DockStyle.Fill;
+        buttonPanel.Dock = DockStyle.Bottom;
         buttonPanel.FlowDirection = FlowDirection.RightToLeft;
-        buttonPanel.Margin = new Padding(0);
+        buttonPanel.Padding = new Padding(10);
         buttonPanel.Controls.Add(cancelButton);
         buttonPanel.Controls.Add(saveButton);
         buttonPanel.Name = "buttonPanel";
@@ -818,7 +891,8 @@ partial class ConfigurationForm
         AutoScaleMode = AutoScaleMode.Font;
         CancelButton = cancelButton;
         ClientSize = new Size(720, 460);
-        Controls.Add(rootLayout);
+        Controls.Add(scrollPanel);
+        Controls.Add(buttonPanel);
         FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = false;
         MinimizeBox = false;
@@ -840,6 +914,10 @@ partial class ConfigurationForm
         canonicalGroup.ResumeLayout(false);
         canonicalGroup.PerformLayout();
         ((System.ComponentModel.ISupportInitialize)seedUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)topPUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)temperatureUpDown).EndInit();
+        samplingRow.ResumeLayout(false);
+        samplingRow.PerformLayout();
         reproducibilityLayout.ResumeLayout(false);
         reproducibilityLayout.PerformLayout();
         reproducibilityGroup.ResumeLayout(false);
@@ -848,12 +926,16 @@ partial class ConfigurationForm
         ((System.ComponentModel.ISupportInitialize)chunkOverlapUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)chunkTokensUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)tenantUpDown).EndInit();
+        vectorNumericRow.ResumeLayout(false);
+        vectorNumericRow.PerformLayout();
         vectorLayout.ResumeLayout(false);
         vectorLayout.PerformLayout();
         vectorGroup.ResumeLayout(false);
         vectorGroup.PerformLayout();
         ((System.ComponentModel.ISupportInitialize)embeddingDimensionsUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)maxTokensUpDown).EndInit();
+        modelsNumericRow.ResumeLayout(false);
+        modelsNumericRow.PerformLayout();
         modelsLayout.ResumeLayout(false);
         modelsLayout.PerformLayout();
         modelsGroup.ResumeLayout(false);
@@ -864,6 +946,8 @@ partial class ConfigurationForm
         connectionGroup.PerformLayout();
         rootLayout.ResumeLayout(false);
         rootLayout.PerformLayout();
+        scrollPanel.ResumeLayout(false);
+        scrollPanel.PerformLayout();
         ResumeLayout(false);
         PerformLayout();
     }

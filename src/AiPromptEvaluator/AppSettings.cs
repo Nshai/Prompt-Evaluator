@@ -152,20 +152,37 @@ public class AppSettings
     public int ExtractionMaxTokens { get; set; } = 16000;
 
     /// <summary>
-    /// Pins sampling so the same evidence pack produces the same finding: temperature 0,
-    /// top-p 1, and a fixed seed. Not an absolute guarantee — expert routing and batched
-    /// floating-point arithmetic still admit variation — but it is the single largest source
-    /// of run-to-run disagreement, because the provider default is a creative temperature.
-    ///
-    /// Turn it off for a model that rejects the parameters; some reasoning models do.
+    /// Pins temperature so the same evidence pack produces the same finding — the provider
+    /// default is a creative temperature, which is the single largest source of run-to-run
+    /// disagreement. Turn it off for a model that rejects a fixed temperature; some do (a
+    /// Bedrock inference profile for Claude Sonnet 5 accepts only temperature 1, for instance).
     /// </summary>
-    [JsonPropertyName("deterministicSampling")]
-    public bool DeterministicSampling { get; set; } = true;
+    [JsonPropertyName("pinTemperature")]
+    public bool PinTemperature { get; set; } = true;
+
+    /// <summary>Temperature sent with every call when <see cref="PinTemperature"/> is on. 0 is fully deterministic.</summary>
+    [JsonPropertyName("temperature")]
+    public float Temperature { get; set; } = 0f;
+
+    /// <summary>Pins top-p (nucleus sampling) the same way <see cref="PinTemperature"/> pins temperature.</summary>
+    [JsonPropertyName("pinTopP")]
+    public bool PinTopP { get; set; } = true;
+
+    /// <summary>Top-p sent with every call when <see cref="PinTopP"/> is on.</summary>
+    [JsonPropertyName("topP")]
+    public float TopP { get; set; } = 1f;
 
     /// <summary>
-    /// The seed sent with every call when <see cref="DeterministicSampling"/> is on. Its value
-    /// does not matter; holding it constant does. Change it deliberately to sample a second
-    /// opinion on a check that keeps flipping.
+    /// Pins the seed the same way <see cref="PinTemperature"/> pins temperature. Turn it off
+    /// for a gateway that rejects the parameter outright; Bedrock's Anthropic route does.
+    /// </summary>
+    [JsonPropertyName("pinSeed")]
+    public bool PinSeed { get; set; } = true;
+
+    /// <summary>
+    /// The seed sent with every call when <see cref="PinSeed"/> is on. Its value does not
+    /// matter; holding it constant does. Change it deliberately to sample a second opinion on
+    /// a check that keeps flipping.
     /// </summary>
     [JsonPropertyName("samplingSeed")]
     public long SamplingSeed { get; set; } = 1;

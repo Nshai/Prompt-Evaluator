@@ -95,9 +95,12 @@ public class PromptEvaluator
     }
 
     /// <summary>
-    /// Options for every call. Sampling is pinned by default: a QA finding is a judgement that
-    /// should not change because the sampler rolled differently, and the provider default is a
-    /// creative temperature rather than a neutral one.
+    /// Options for every call. Temperature, top-p and seed are pinned independently: a QA
+    /// finding is a judgement that should not change because the sampler rolled differently,
+    /// and the provider default is a creative temperature rather than a neutral one. Each is
+    /// releasable on its own because a gateway or model can reject one parameter without
+    /// objecting to the others — Bedrock's Anthropic route rejects seed outright, and some
+    /// Bedrock inference profiles accept only temperature 1.
     /// </summary>
     internal ChatOptions ChatOptions()
     {
@@ -107,10 +110,18 @@ public class PromptEvaluator
             ModelId = _settings.SelectedModel,
         };
 
-        if (_settings.DeterministicSampling)
+        if (_settings.PinTemperature)
         {
-            options.Temperature = 0f;
-            options.TopP = 1f;
+            options.Temperature = _settings.Temperature;
+        }
+
+        if (_settings.PinTopP)
+        {
+            options.TopP = _settings.TopP;
+        }
+
+        if (_settings.PinSeed)
+        {
             options.Seed = _settings.SamplingSeed;
         }
 

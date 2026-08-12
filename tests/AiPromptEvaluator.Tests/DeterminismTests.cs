@@ -44,19 +44,47 @@ public class DeterminismTests
     }
 
     /// <summary>
-    /// Some reasoning models reject these parameters outright, so the pin has to be
-    /// releasable — a run that errors is worse than a run that varies.
+    /// Some models reject these parameters outright, so each pin has to be releasable on its
+    /// own — a run that errors is worse than a run that varies.
     /// </summary>
     [Fact]
     public void ChatOptions_SendNothing_WhenSamplingIsNotPinned()
     {
-        var settings = new AppSettings { DeterministicSampling = false };
+        var settings = new AppSettings { PinTemperature = false, PinTopP = false, PinSeed = false };
 
         var options = new PromptEvaluator(settings).ChatOptions();
 
         Assert.Null(options.Temperature);
         Assert.Null(options.TopP);
         Assert.Null(options.Seed);
+    }
+
+    /// <summary>
+    /// The reason each parameter has its own checkbox: a gateway can reject one of the three
+    /// without objecting to the others (a Bedrock inference profile rejecting temperature=0
+    /// while still accepting top-p and seed, for instance), so the pins are independent.
+    /// </summary>
+    [Fact]
+    public void ChatOptions_PinsEachSamplingParameterIndependently()
+    {
+        var settings = new AppSettings { PinTemperature = false, PinTopP = true, PinSeed = false };
+
+        var options = new PromptEvaluator(settings).ChatOptions();
+
+        Assert.Null(options.Temperature);
+        Assert.Equal(1f, options.TopP);
+        Assert.Null(options.Seed);
+    }
+
+    [Fact]
+    public void ChatOptions_UsesTheConfiguredTemperatureAndTopP()
+    {
+        var settings = new AppSettings { Temperature = 1f, TopP = 0.9f };
+
+        var options = new PromptEvaluator(settings).ChatOptions();
+
+        Assert.Equal(1f, options.Temperature);
+        Assert.Equal(0.9f, options.TopP);
     }
 
     // ──────────────────────────────────────────────
@@ -347,11 +375,19 @@ public class DeterminismTests
     [Fact]
     public void Fingerprint_SaysWhenSamplingIsNotPinned()
     {
-        var settings = new AppSettings { DeterministicSampling = false, StructuredFindings = false };
+        var settings = new AppSettings
+        {
+            PinTemperature = false,
+            PinTopP = false,
+            PinSeed = false,
+            StructuredFindings = false,
+        };
 
         var text = RunFingerprint.For(settings, null, "x", 0, 12).Format();
 
-        Assert.Contains("not pinned", text);
+        Assert.Contains("temperature default", text);
+        Assert.Contains("top-p default", text);
+        Assert.Contains("seed not pinned", text);
         Assert.Contains("free-form", text);
         Assert.Contains("model none", text);
     }

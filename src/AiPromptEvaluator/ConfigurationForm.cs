@@ -32,9 +32,16 @@ public partial class ConfigurationForm : Form
         canonicalDbTextBox.Text = _settings.CanonicalModelDbPath;
         extractionTokensUpDown.Value = Clamp(extractionTokensUpDown, _settings.ExtractionMaxTokens);
 
-        deterministicCheckBox.Checked = _settings.DeterministicSampling;
         structuredFindingsCheckBox.Checked = _settings.StructuredFindings;
+
+        pinTemperatureCheckBox.Checked = _settings.PinTemperature;
+        temperatureUpDown.Value = Clamp(temperatureUpDown, _settings.Temperature);
+        pinTopPCheckBox.Checked = _settings.PinTopP;
+        topPUpDown.Value = Clamp(topPUpDown, _settings.TopP);
+        pinSeedCheckBox.Checked = _settings.PinSeed;
         seedUpDown.Value = Math.Clamp(_settings.SamplingSeed, (long)seedUpDown.Minimum, (long)seedUpDown.Maximum);
+
+        UpdateSamplingEnablement();
 
         RefreshModelChoices();
         selectedModelComboBox.Text = _settings.SelectedModel;
@@ -43,6 +50,27 @@ public partial class ConfigurationForm : Form
     /// <summary>Keeps a stored value inside the control's range, so a hand-edited settings file can't throw.</summary>
     private static decimal Clamp(NumericUpDown control, int value) =>
         Math.Clamp(value, control.Minimum, control.Maximum);
+
+    /// <summary>As above, for the decimal-valued sampling controls (temperature, top-p).</summary>
+    private static decimal Clamp(NumericUpDown control, float value) =>
+        Math.Clamp((decimal)value, control.Minimum, control.Maximum);
+
+    /// <summary>
+    /// Greys out each pinned value alongside its checkbox — a seed the user cannot edit when
+    /// "pin seed" is off is a clearer signal than a value that quietly stops applying.
+    /// </summary>
+    private void UpdateSamplingEnablement()
+    {
+        temperatureUpDown.Enabled = pinTemperatureCheckBox.Checked;
+        topPUpDown.Enabled = pinTopPCheckBox.Checked;
+        seedUpDown.Enabled = pinSeedCheckBox.Checked;
+    }
+
+    private void PinTemperatureCheckBox_CheckedChanged(object? sender, EventArgs e) => UpdateSamplingEnablement();
+
+    private void PinTopPCheckBox_CheckedChanged(object? sender, EventArgs e) => UpdateSamplingEnablement();
+
+    private void PinSeedCheckBox_CheckedChanged(object? sender, EventArgs e) => UpdateSamplingEnablement();
 
     private void CanonicalSchemaBrowseButton_Click(object? sender, EventArgs e)
     {
@@ -256,8 +284,13 @@ public partial class ConfigurationForm : Form
         _settings.CanonicalModelDbPath = canonicalDbTextBox.Text.Trim();
         _settings.ExtractionMaxTokens = (int)extractionTokensUpDown.Value;
 
-        _settings.DeterministicSampling = deterministicCheckBox.Checked;
         _settings.StructuredFindings = structuredFindingsCheckBox.Checked;
+
+        _settings.PinTemperature = pinTemperatureCheckBox.Checked;
+        _settings.Temperature = (float)temperatureUpDown.Value;
+        _settings.PinTopP = pinTopPCheckBox.Checked;
+        _settings.TopP = (float)topPUpDown.Value;
+        _settings.PinSeed = pinSeedCheckBox.Checked;
         _settings.SamplingSeed = (long)seedUpDown.Value;
 
         try

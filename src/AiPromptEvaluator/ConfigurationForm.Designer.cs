@@ -37,6 +37,9 @@ partial class ConfigurationForm
     private Label qdrantHintLabel;
     private Label collectionLabel;
     private TextBox collectionTextBox;
+    private Label caseReferenceLabel;
+    private TextBox caseReferenceTextBox;
+    private Label caseReferenceHintLabel;
     private Label tenantLabel;
     private NumericUpDown tenantUpDown;
     private Label chunkTokensLabel;
@@ -101,6 +104,9 @@ partial class ConfigurationForm
         qdrantHintLabel = new Label();
         collectionLabel = new Label();
         collectionTextBox = new TextBox();
+        caseReferenceLabel = new Label();
+        caseReferenceTextBox = new TextBox();
+        caseReferenceHintLabel = new Label();
         tenantLabel = new Label();
         tenantUpDown = new NumericUpDown();
         chunkTokensLabel = new Label();
@@ -367,21 +373,24 @@ partial class ConfigurationForm
         vectorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         vectorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         vectorLayout.Dock = DockStyle.Fill;
-        vectorLayout.RowCount = 7;
+        vectorLayout.RowCount = 9;
         vectorLayout.Controls.Add(qdrantLabel, 0, 0);
         vectorLayout.Controls.Add(qdrantTextBox, 1, 0);
         vectorLayout.Controls.Add(qdrantTestButton, 2, 0);
         vectorLayout.Controls.Add(qdrantHintLabel, 1, 1);
         vectorLayout.Controls.Add(collectionLabel, 0, 2);
         vectorLayout.Controls.Add(collectionTextBox, 1, 2);
-        vectorLayout.Controls.Add(tenantLabel, 0, 3);
-        vectorLayout.Controls.Add(tenantUpDown, 1, 3);
-        vectorLayout.Controls.Add(chunkTokensLabel, 0, 4);
-        vectorLayout.Controls.Add(chunkTokensUpDown, 1, 4);
-        vectorLayout.Controls.Add(chunkOverlapLabel, 0, 5);
-        vectorLayout.Controls.Add(chunkOverlapUpDown, 1, 5);
-        vectorLayout.Controls.Add(searchResultsLabel, 0, 6);
-        vectorLayout.Controls.Add(searchResultsUpDown, 1, 6);
+        vectorLayout.Controls.Add(caseReferenceLabel, 0, 3);
+        vectorLayout.Controls.Add(caseReferenceTextBox, 1, 3);
+        vectorLayout.Controls.Add(caseReferenceHintLabel, 1, 4);
+        vectorLayout.Controls.Add(tenantLabel, 0, 5);
+        vectorLayout.Controls.Add(tenantUpDown, 1, 5);
+        vectorLayout.Controls.Add(chunkTokensLabel, 0, 6);
+        vectorLayout.Controls.Add(chunkTokensUpDown, 1, 6);
+        vectorLayout.Controls.Add(chunkOverlapLabel, 0, 7);
+        vectorLayout.Controls.Add(chunkOverlapUpDown, 1, 7);
+        vectorLayout.Controls.Add(searchResultsLabel, 0, 8);
+        vectorLayout.Controls.Add(searchResultsUpDown, 1, 8);
         vectorLayout.Name = "vectorLayout";
 
         // qdrantLabel
@@ -423,6 +432,26 @@ partial class ConfigurationForm
         collectionTextBox.Margin = new Padding(0, 3, 8, 3);
         collectionTextBox.Name = "collectionTextBox";
         collectionTextBox.PlaceholderText = AppSettings.DefaultQdrantCollection;
+
+        // caseReferenceLabel
+        caseReferenceLabel.Anchor = AnchorStyles.Left;
+        caseReferenceLabel.AutoSize = true;
+        caseReferenceLabel.Name = "caseReferenceLabel";
+        caseReferenceLabel.Text = "Case reference";
+
+        // caseReferenceTextBox
+        caseReferenceTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        caseReferenceTextBox.Margin = new Padding(0, 3, 8, 0);
+        caseReferenceTextBox.Name = "caseReferenceTextBox";
+        caseReferenceTextBox.PlaceholderText = "(the case folder's name)";
+
+        // caseReferenceHintLabel
+        caseReferenceHintLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        caseReferenceHintLabel.AutoSize = true;
+        caseReferenceHintLabel.ForeColor = SystemColors.GrayText;
+        caseReferenceHintLabel.Margin = new Padding(0, 0, 8, 3);
+        caseReferenceHintLabel.Name = "caseReferenceHintLabel";
+        caseReferenceHintLabel.Text = "Stamped on every indexed chunk and used to scope every search. Leave empty to use the case folder's name.";
 
         // tenantLabel
         tenantLabel.Anchor = AnchorStyles.Left;

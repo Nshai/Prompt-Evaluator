@@ -97,6 +97,39 @@ public class CaseDocumentStoreTests
         await store.DeleteCaseAsync("CASE-A", 100);
     }
 
+    /// <summary>
+    /// What "Unload Docs" does: delete by case reference and tenant. Another tenant holding
+    /// the same case reference must keep its embeddings.
+    /// </summary>
+    [Fact]
+    public async Task Delete_RemovesOneCaseForOneTenantOnly()
+    {
+        var settings = Settings();
+        using var store = new CaseDocumentStore(settings);
+
+        if (!await store.IsAvailableAsync())
+        {
+            _output.WriteLine($"Skipped: no Qdrant at {store.Endpoint}.");
+            return;
+        }
+
+        await store.EnsureCollectionAsync(Dimensions);
+
+        var vector = new List<ReadOnlyMemory<float>> { Vector(1f, 0f, 0f) };
+        await store.UpsertAsync([Chunk("CASE-DEL", "a.md", "B", 0, "ours")], vector);
+        await store.UpsertAsync([Chunk("CASE-DEL", "a.md", "B", 0, "theirs", tenant: 100)], vector);
+        await store.UpsertAsync([Chunk("CASE-KEEP", "a.md", "B", 0, "other case")], vector);
+
+        await store.DeleteCaseAsync("CASE-DEL", 99);
+
+        Assert.Equal(0ul, await store.CountAsync("CASE-DEL", 99));
+        Assert.Equal(1ul, await store.CountAsync("CASE-DEL", 100));
+        Assert.Equal(1ul, await store.CountAsync("CASE-KEEP", 99));
+
+        await store.DeleteCaseAsync("CASE-DEL", 100);
+        await store.DeleteCaseAsync("CASE-KEEP", 99);
+    }
+
     /// <summary>Re-indexing an unchanged case must replace its chunks, not double them.</summary>
     [Fact]
     public async Task Upsert_IsIdempotentForTheSameChunk()

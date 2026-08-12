@@ -47,7 +47,13 @@ having the whole case file attached to every check.
 
 Only `.md` / `.markdown` files are indexed; other formats are listed as skipped.
 Re-loading a case clears its previously indexed chunks first, so an edited
-document never leaves a stale passage behind.
+document never leaves a stale passage behind. **Unload Docs** deletes the
+embeddings for the current case reference and tenant — other cases, and the same
+case under another tenant, are untouched.
+
+The case reference defaults to the case folder's name and can be set explicitly
+in Configuration, which is what you want when the folder is a working copy rather
+than named after the case.
 
 ## Cost breakdown
 
@@ -118,6 +124,7 @@ Settings are stored in the user profile under
 | Embedding model / dimensions | Model used for chunking and search, and its vector width — the width defines the Qdrant collection |
 | Qdrant endpoint | gRPC endpoint of the vector store. Empty means `http://localhost:6334` |
 | Collection | Qdrant collection holding case chunks |
+| Case reference | Stamped on every chunk and used to scope every search. Empty means the case folder's name |
 | Tenant id | Stamped on every chunk and applied as a filter on every search (default 99) |
 | Max tokens per chunk / overlap | Upper bound on a chunk and how much of the previous one is repeated |
 | Results per search | How many passages one tool call may return |

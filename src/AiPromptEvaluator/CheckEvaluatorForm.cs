@@ -167,7 +167,7 @@ public partial class CheckEvaluatorForm : Form
             return;
         }
 
-        var caseReference = CaseDocumentIndexer.CaseReferenceFor(caseFolder);
+        var caseReference = _settings.ResolveCaseReference(caseFolder);
 
         SetBusy(true);
         statusLabel.Text = "Indexing documents...";
@@ -327,7 +327,7 @@ public partial class CheckEvaluatorForm : Form
             return;
         }
 
-        var caseReference = CaseDocumentIndexer.CaseReferenceFor(caseFolder);
+        var caseReference = _settings.ResolveCaseReference(caseFolder);
 
         try
         {
@@ -360,7 +360,7 @@ public partial class CheckEvaluatorForm : Form
             return null;
         }
 
-        var caseReference = CaseDocumentIndexer.CaseReferenceFor(caseFolder);
+        var caseReference = _settings.ResolveCaseReference(caseFolder);
         return string.Equals(caseReference, _indexedCase, StringComparison.OrdinalIgnoreCase)
             ? caseReference
             : null;
@@ -530,39 +530,53 @@ public partial class CheckEvaluatorForm : Form
     private async void UnloadDocsButton_Click(object? sender, EventArgs e)
     {
         var caseFolder = caseFolderTextBox.Text.Trim();
-        if (!Directory.Exists(caseFolder))
+        if (string.IsNullOrWhiteSpace(_settings.CaseReference) && !Directory.Exists(caseFolder))
         {
-            statusLabel.Text = "Select the case folder whose index should be cleared.";
+            statusLabel.Text =
+                "Select the case folder whose index should be cleared, or set a case reference in Settings.";
             return;
         }
 
-        var caseReference = CaseDocumentIndexer.CaseReferenceFor(caseFolder);
+        var caseReference = _settings.ResolveCaseReference(caseFolder);
+        var tenantId = _settings.TenantId;
 
         if (MessageBox.Show(this,
-                $"Delete the indexed chunks for case {caseReference} (tenant {_settings.TenantId})?\n\n"
-                + "The next \"Load Docs\" will index them again.",
+                $"Delete the embeddings indexed for case {caseReference}, tenant {tenantId}?\n\n"
+                + $"They will be removed from the \"{_settings.ResolveCollection()}\" collection. "
+                + "Other cases and other tenants are untouched, and the next \"Load Docs\" indexes this "
+                + "case again.",
                 "Unload documents", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
         {
             return;
         }
 
         SetBusy(true);
-        statusLabel.Text = "Clearing indexed chunks...";
+        statusLabel.Text = "Deleting embeddings...";
 
         _cts = new CancellationTokenSource();
 
         using var store = new CaseDocumentStore(_settings);
         try
         {
-            var before = await store.CountAsync(caseReference, _settings.TenantId, _cts.Token).ConfigureAwait(true);
-            await store.DeleteCaseAsync(caseReference, _settings.TenantId, _cts.Token).ConfigureAwait(true);
+            var before = await store.CountAsync(caseReference, tenantId, _cts.Token).ConfigureAwait(true);
+            await store.DeleteCaseAsync(caseReference, tenantId, _cts.Token).ConfigureAwait(true);
+
+            // Deletion is by payload filter, so confirm the filter actually emptied the case
+            // rather than reporting success on the strength of the call not throwing.
+            var after = await store.CountAsync(caseReference, tenantId, _cts.Token).ConfigureAwait(true);
 
             _indexedCase = null;
             UpdateRunAvailability();
             responseTextBox.Clear();
             ShowBreakdown(CostBreakdown.Empty(_settings.SelectedModel));
 
-            statusLabel.Text = $"Cleared {before:N0} chunk(s) for case {caseReference}.";
+            statusLabel.Text = (before, after) switch
+            {
+                (0, _) => $"Nothing was indexed for case {caseReference} (tenant {tenantId}).",
+                (_, 0) => $"Deleted {before:N0} embedding(s) for case {caseReference} (tenant {tenantId}).",
+                _ => $"Deleted {before - after:N0} of {before:N0} embedding(s) for case {caseReference} "
+                   + $"(tenant {tenantId}); {after:N0} remain.",
+            };
         }
         catch (OperationCanceledException)
         {
@@ -717,6 +731,12 @@ public partial class CheckEvaluatorForm : Form
         if (form.ShowDialog(this) == DialogResult.OK)
         {
             ShowBreakdown(CostBreakdown.Empty(_settings.SelectedModel));
+
+            // The case reference, tenant or collection may have changed, which means a
+            // different set of chunks — re-ask the store what is actually indexed now.
+            _indexedCase = null;
+            UpdateRunAvailability();
+            _ = DetectExistingIndexAsync();
         }
     }
 
@@ -762,9 +782,12 @@ public partial class CheckEvaluatorForm : Form
         loadDocsButton.Enabled = !_busy && !indexed;
         loadDocsButton.Text = indexed ? "Docs Indexed" : "Load Docs";
 
-        // Unloading stays available whenever a case folder is selected — the chunks may have
-        // been indexed in an earlier session, which this instance knows nothing about.
-        unloadDocsButton.Enabled = !_busy && Directory.Exists(caseFolderTextBox.Text.Trim());
+        // Unloading stays available as soon as the case is identifiable — by a configured
+        // reference, or by the selected folder. The chunks may have been indexed in an
+        // earlier session, which this instance knows nothing about.
+        unloadDocsButton.Enabled = !_busy &&
+            (!string.IsNullOrWhiteSpace(_settings.CaseReference) ||
+             Directory.Exists(caseFolderTextBox.Text.Trim()));
     }
 
     private sealed class DocumentItem(string label, string fullPath)

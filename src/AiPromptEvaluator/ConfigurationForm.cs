@@ -21,6 +21,7 @@ public partial class ConfigurationForm : Form
         embeddingDimensionsUpDown.Value = Clamp(embeddingDimensionsUpDown, _settings.EmbeddingDimensions);
         qdrantTextBox.Text = _settings.QdrantEndpoint;
         collectionTextBox.Text = _settings.QdrantCollection;
+        caseReferenceTextBox.Text = _settings.CaseReference;
         tenantUpDown.Value = Clamp(tenantUpDown, _settings.TenantId);
         chunkTokensUpDown.Value = Clamp(chunkTokensUpDown, _settings.MaxTokensPerChunk);
         chunkOverlapUpDown.Value = Clamp(chunkOverlapUpDown, _settings.ChunkOverlapTokens);
@@ -192,6 +193,7 @@ public partial class ConfigurationForm : Form
         _settings.EmbeddingDimensions = (int)embeddingDimensionsUpDown.Value;
         _settings.QdrantEndpoint = qdrantTextBox.Text.Trim();
         _settings.QdrantCollection = collectionTextBox.Text.Trim();
+        _settings.CaseReference = caseReferenceTextBox.Text.Trim();
         _settings.TenantId = (int)tenantUpDown.Value;
         _settings.MaxTokensPerChunk = (int)chunkTokensUpDown.Value;
         _settings.ChunkOverlapTokens = (int)chunkOverlapUpDown.Value;

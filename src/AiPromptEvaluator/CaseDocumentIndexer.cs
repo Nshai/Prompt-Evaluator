@@ -54,7 +54,11 @@ public sealed class CaseDocumentIndexer
         Path.GetExtension(filePath).Equals(".md", StringComparison.OrdinalIgnoreCase) ||
         Path.GetExtension(filePath).Equals(".markdown", StringComparison.OrdinalIgnoreCase);
 
-    /// <summary>The case reference stamped on every chunk: the case folder's own name.</summary>
+    /// <summary>
+    /// The case folder's own name, used as the case reference when Settings doesn't specify
+    /// one. Callers should go through <see cref="AppSettings.ResolveCaseReference"/> rather
+    /// than calling this directly, so a configured reference is honoured.
+    /// </summary>
     public static string CaseReferenceFor(string caseFolder) =>
         new DirectoryInfo(caseFolder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).Name;
 

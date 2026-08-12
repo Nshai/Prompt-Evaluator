@@ -87,6 +87,15 @@ public class AppSettings
     [JsonPropertyName("tenantId")]
     public int TenantId { get; set; } = 99;
 
+    /// <summary>
+    /// The case reference stamped on every chunk and used to scope every search. Leave empty
+    /// to derive it from the case folder's name, which is right when the folder is named
+    /// after the case and wrong when it isn't — a working copy called "case-files" would
+    /// otherwise index and search under that name.
+    /// </summary>
+    [JsonPropertyName("caseReference")]
+    public string CaseReference { get; set; } = string.Empty;
+
     /// <summary>Upper bound on a chunk; the semantic chunker splits earlier when the topic shifts.</summary>
     [JsonPropertyName("maxTokensPerChunk")]
     public int MaxTokensPerChunk { get; set; } = 600;
@@ -110,6 +119,15 @@ public class AppSettings
     /// <summary>The configured OpenAI-compatible base URL, or the default.</summary>
     public string ResolveBaseUrl() =>
         Resolve(OpenAiBaseUrl, DefaultBaseUrl);
+
+    /// <summary>
+    /// The configured case reference, or the case folder's name when none is set. This is the
+    /// single answer to "which case is this", so indexing and searching can't disagree.
+    /// </summary>
+    public string ResolveCaseReference(string caseFolder) =>
+        string.IsNullOrWhiteSpace(CaseReference)
+            ? CaseDocumentIndexer.CaseReferenceFor(caseFolder)
+            : CaseReference.Trim();
 
     public string ResolveCollection() =>
         string.IsNullOrWhiteSpace(QdrantCollection) ? DefaultQdrantCollection : QdrantCollection.Trim();

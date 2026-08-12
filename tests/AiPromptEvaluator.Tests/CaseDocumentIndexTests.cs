@@ -56,6 +56,30 @@ public class CaseDocumentIndexTests
     }
 
     /// <summary>
+    /// A configured case reference overrides the folder name — a working copy called
+    /// "case-files" would otherwise be indexed and searched under that name.
+    /// </summary>
+    [Fact]
+    public void ResolveCaseReference_PrefersTheConfiguredValue()
+    {
+        var caseFolder = Path.Combine("C:", "cases", "case-files");
+
+        Assert.Equal("CASE-001", new AppSettings { CaseReference = "CASE-001" }.ResolveCaseReference(caseFolder));
+        Assert.Equal("CASE-001", new AppSettings { CaseReference = "  CASE-001  " }.ResolveCaseReference(caseFolder));
+    }
+
+    /// <summary>Left blank, the folder name still decides — nothing has to be configured to work.</summary>
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void ResolveCaseReference_FallsBackToTheFolderName(string configured)
+    {
+        var caseFolder = Path.Combine("C:", "cases", "CASE-042");
+
+        Assert.Equal("CASE-042", new AppSettings { CaseReference = configured }.ResolveCaseReference(caseFolder));
+    }
+
+    /// <summary>
     /// Point ids come from the chunk's natural key, so re-indexing an unchanged case
     /// overwrites its rows instead of doubling them.
     /// </summary>

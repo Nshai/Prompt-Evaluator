@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://canonical-model/suitability/v1.0/check-plan/query-plan.schema.json",
+  "title": "Check Query Plan v1.0",
+  "description": "A pre-computed semantic-search programme for one QA check, executed against AiPromptEvaluator's search_case_documents tool (CaseDocumentSearchTool.cs). Derived from artifacts/check-coverage-matrix.csv. Each query group corresponds to one matrix row; each group pairs an assertion-side query (worded as the suitability report writes it) with an evidence-side query (worded as the source document writes it), because the tool cannot filter by document category.",
+  "type": "object",
+  "required": ["planVersion", "checkId", "checkName", "tool", "queryGroups", "decision"],
+  "additionalProperties": false,
+  "properties": {
+    "planVersion": { "const": "1.0" },
+    "checkId": { "type": "string" },
+    "checkName": { "type": "string" },
+    "appliesTo": { "type": "string" },
+    "regulatoryBasis": { "type": "string" },
+    "primaryCategories": {
+      "type": "array",
+      "description": "Category codes named in the check's Primary Document Categories column.",
+      "items": { "$ref": "#/$defs/CategoryCode" }
+    },
+
+    "tool": {
+      "type": "object",
+      "description": "Runtime contract the plan is written against.",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "const": "search_case_documents" },
+        "parameters": {
+          "type": "array",
+          "items": { "enum": ["searchText", "caseReference", "tenantId"] },
+          "description": "caseReference and tenantId default to the loaded case; pass searchText only."
+        },
+        "resultsPerCall": { "type": "integer", "description": "AppSettings.MaxSearchResults, default 8." },
+        "categoryFilterAvailable": {
+          "const": false,
+          "description": "CaseDocumentStore.SearchAsync filters on tenant_id and case_reference only. categoryCode is returned on each hit and must be applied as a post-filter."
+        }
+      }
+    },
+
+    "triggerProbe": {
+      "type": "object",
+      "description": "Runs first. Establishes whether the check applies at all, so 'N/A: trigger absent' is evidenced rather than assumed.",
+      "additionalProperties": false,
+      "properties": {
+        "triggerField": { "type": "string", "description": "checkTriggers field in the canonical model this probe sets." },
+        "queries": { "type": "array", "items": { "$ref": "#/$defs/Query" } },
+        "presentWhen": { "type": "string" },
+        "absentWhen": { "type": "string" },
+        "onAbsent": { "enum": ["ReturnNA", "ContinueWithReducedScope", "Continue"] },
+        "note": { "type": "string" }
+      }
+    },
+
+    "queryGroups": { "type": "array", "items": { "$ref": "#/$defs/QueryGroup" } },
+
+    "decision": {
+      "type": "object",
+      "description": "How group outcomes roll up to the check's three-way finding.",
+      "additionalProperties": false,
+      "properties": {
+        "noIssue": { "type": "string" },
+        "potentialConcern": { "type": "string" },
+        "notApplicable": { "type": "string" },
+        "severityHints": { "type": "array", "items": { "type": "string" } },
+        "overlayInstruction": {
+          "type": "string",
+          "description": "For overlay checks (CHK-010): what to re-evaluate in the other checks once this one has been decided."
+        }
+      }
+    },
+
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "coreQueries": { "type": "integer" },
+        "supplementaryQueries": { "type": "integer" },
+        "estimatedPassages": { "type": "integer", "description": "Upper bound: total queries x resultsPerCall, before de-duplication." }
+      }
+    }
+  },
+
+  "$defs": {
+    "CategoryCode": {
+      "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+      "description": "A Client Authority; B Know Your Client; C Meetings & Communications; D Risk, Capacity & Experience; E Existing Plans & Portfolios; F Needs Analysis; G Research; H Solution Design; I Recommendations & Advice."
+    },
+
+    "Query": {
+      "type": "object",
+      "required": ["id", "text", "side"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "text": {
+          "type": "string",
+          "description": "The searchText argument, verbatim. Written in the vocabulary of the target document, not the vocabulary of the check — the embedding matches document language."
+        },
+        "side": {
+          "enum": ["Assertion", "Evidence", "Either"],
+          "description": "Assertion = what the suitability report claims (expect category I). Evidence = what the file holds (expect categories A-H). Either = the phrasing retrieves both."
+        },
+        "targetCategories": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CategoryCode" },
+          "description": "Categories a useful hit should carry. Applied as a post-filter on the returned categoryCode; hits outside this set are context, not evidence."
+        },
+        "expectSignals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Concrete values or phrases that indicate the query landed. Absence of all of these across every hit means the data point is not in the file."
+        },
+        "canonicalPaths": { "type": "array", "items": { "type": "string" } },
+        "priority": { "enum": ["Core", "Supplementary"] },
+        "note": { "type": "string" }
+      }
+    },
+
+    "QueryGroup": {
+      "type": "object",
+      "required": ["groupId", "requirement", "limb", "queries"],
+      "additionalProperties": false,
+      "properties": {
+        "groupId": { "type": "string" },
+        "requirement": { "type": "string", "description": "The 'What to Look For' item from check-coverage-matrix.csv this group answers." },
+        "limb": { "enum": ["Consistency", "Appropriateness", "Both"] },
+        "canonicalPaths": { "type": "array", "items": { "type": "string" } },
+        "expectedCategories": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "assertion": { "type": "array", "items": { "$ref": "#/$defs/CategoryCode" } },
+            "evidence": { "type": "array", "items": { "$ref": "#/$defs/CategoryCode" } }
+          }
+        },
+        "queries": { "type": "array", "items": { "$ref": "#/$defs/Query" } },
+        "comparison": {
+          "type": "object",
+          "description": "How the assertion side and evidence side are compared once both have been retrieved.",
+          "additionalProperties": false,
+          "properties": {
+            "method": { "enum": ["ValueMatch", "SetCoverage", "PresenceOnly", "RangeMatch", "NarrativeAlignment"] },
+            "tolerance": { "type": "string" },
+            "falsePositiveGuards": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Known ways this comparison produces spurious mismatches (gross vs net, different as-at dates, incompatible provider risk scales)."
+            }
+          }
+        },
+        "sufficiency": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "minEvidenceCategories": { "type": "integer" },
+            "ifAssertionAbsent": { "type": "string" },
+            "ifEvidenceAbsent": { "type": "string" },
+            "ifBothAbsent": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

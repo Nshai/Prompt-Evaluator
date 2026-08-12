@@ -1,0 +1,162 @@
+{
+  "planVersion": "1.0",
+  "checkId": "CHK-005",
+  "checkName": "Financial Resilience, Affordability and Liquidity",
+  "appliesTo": "All cases involving capital, contributions, withdrawals or charges",
+  "regulatoryBasis": "COBS 9.2.1R–9.2.2R; COBS 9A.2.1R–9A.2.2R; PRIN 2A",
+  "primaryCategories": ["B", "F", "I"],
+
+  "tool": {
+    "name": "search_case_documents",
+    "parameters": ["searchText"],
+    "resultsPerCall": 8,
+    "categoryFilterAvailable": false
+  },
+
+  "triggerProbe": {
+    "triggerField": "checkTriggers.hasCapitalContributionsOrWithdrawals",
+    "queries": [
+      { "id": "T5.1", "text": "amount to be invested regular contributions withdrawals and adviser charges", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["invest", "contribution", "withdrawal", "charge", "fee", "£"], "priority": "Core" }
+    ],
+    "presentWhen": "The case involves capital being invested, contributions, withdrawals or chargeable advice.",
+    "absentWhen": "No capital, contribution, withdrawal or charge arises.",
+    "onAbsent": "ReturnNA"
+  },
+
+  "queryGroups": [
+    {
+      "groupId": "G5.1",
+      "requirement": "Affordability of initial and ongoing commitments",
+      "limb": "Consistency",
+      "canonicalPaths": ["/financialPosition/affordabilityAssessment"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"] },
+      "queries": [
+        { "id": "Q5.1.1", "text": "initial adviser fee and ongoing annual charge in monetary terms payable by you", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["initial", "ongoing", "£", "%", "per annum"], "canonicalPaths": ["/financialPosition/affordabilityAssessment/initialCommitment"], "priority": "Core" },
+        { "id": "Q5.1.2", "text": "monthly contribution you will pay into the plan regular premium", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["per month", "monthly", "contribution", "premium"], "priority": "Core" },
+        { "id": "Q5.1.3", "text": "the contributions are affordable based on your income and expenditure", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["afford", "affordable", "sustainable", "within your means"], "priority": "Core" },
+        { "id": "Q5.1.4", "text": "disposable income surplus available each month after expenditure", "side": "Evidence", "targetCategories": ["B", "F"], "expectSignals": ["surplus", "disposable", "available", "left over"], "priority": "Core" },
+        { "id": "Q5.1.5", "text": "fees will be paid from the plan rather than directly by the client facilitated", "side": "Either", "targetCategories": ["I", "A"], "expectSignals": ["facilitated", "deducted from", "paid via", "from the plan"], "priority": "Core", "note": "A facilitated fee is not an income commitment; this materially changes what affordability means for the case." }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "falsePositiveGuards": [
+          "Fees taken from the fund reduce the investment, not the client's income — do not test them against monthly surplus.",
+          "A one-off transfer of existing pension money is not a new affordability commitment."
+        ]
+      },
+      "sufficiency": {
+        "ifAssertionAbsent": "Note as a gap where a new ongoing commitment is created from income.",
+        "ifEvidenceAbsent": "Potential Concern: affordability asserted with no income and expenditure record."
+      }
+    },
+
+    {
+      "groupId": "G5.2",
+      "requirement": "Financial situation plus cashflow supports the recommendation",
+      "limb": "Consistency",
+      "canonicalPaths": ["/financialPosition/totals", "/needsAnalysis/scenarios[]", "/needsAnalysis/assumptions[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"] },
+      "queries": [
+        { "id": "Q5.2.1", "text": "cashflow modelling projection of income and expenditure year on year to age", "side": "Either", "targetCategories": ["I", "F"], "expectSignals": ["cashflow", "projection", "modelled", "to age", "forecast"], "priority": "Core" },
+        { "id": "Q5.2.2", "text": "cashflow assumptions inflation rate growth rate used in the plan", "side": "Either", "targetCategories": ["F", "I"], "expectSignals": ["inflation", "growth rate", "assumption", "%"], "canonicalPaths": ["/needsAnalysis/assumptions[]"], "priority": "Core" },
+        { "id": "Q5.2.3", "text": "figures entered into the cashflow model income sources and expenditure", "side": "Either", "targetCategories": ["F", "I"], "expectSignals": ["we have input", "entered", "included", "per week", "per annum"], "priority": "Core", "note": "The inputs listed in the report are directly comparable with the fact find figures retrieved by CHK-001 G1.4." },
+        { "id": "Q5.2.4", "text": "no shortfall projected throughout your lifetime funds last", "side": "Either", "targetCategories": ["I", "F"], "expectSignals": ["shortfall", "no shortfall", "sustainable", "run out", "last"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "tolerance": "Every figure the report says was modelled must match the fact find within 5%.",
+        "falsePositiveGuards": [
+          "Growth assumptions differ legitimately between a cashflow model and a provider illustration — flag only where the report relies on both without explanation.",
+          "Charts are not reliably parsable; do not conclude from a chart caption alone."
+        ]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Note that cashflow conclusions are asserted with no modelling output on file." }
+    },
+
+    {
+      "groupId": "G5.3",
+      "requirement": "Emergency fund and liquidity needs, foreseeable and unforeseeable",
+      "limb": "Consistency",
+      "canonicalPaths": ["/financialPosition/emergencyFund", "/financialPosition/liquidityAndAccessNeeds[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"] },
+      "queries": [
+        { "id": "Q5.3.1", "text": "you retain sufficient liquid capital to cover unexpected emergencies", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["emergency", "liquid", "sufficient", "retain", "instant access"], "priority": "Core" },
+        { "id": "Q5.3.2", "text": "emergency fund amount held in cash instant access savings", "side": "Evidence", "targetCategories": ["B"], "expectSignals": ["emergency fund", "cash", "savings", "instant access", "£"], "priority": "Core" },
+        { "id": "Q5.3.3", "text": "how many months of expenditure should be held in reserve recommended emergency fund", "side": "Either", "targetCategories": ["B", "F", "I"], "expectSignals": ["months", "reserve", "recommended", "should hold"], "canonicalPaths": ["/financialPosition/emergencyFund/requiredAmount"], "priority": "Core" },
+        { "id": "Q5.3.4", "text": "how long it takes to access funds working days disinvestment", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["working days", "access", "disinvest", "10-15"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "falsePositiveGuards": [
+          "An asserted sufficiency with no quantified requirement cannot be verified — record it as unquantified rather than as a contradiction.",
+          "Cash held may be earmarked elsewhere in the file; check for competing claims on the same money."
+        ]
+      },
+      "sufficiency": { "ifBothAbsent": "Potential Concern: emergency fund and liquidity are named explicitly by this check." }
+    },
+
+    {
+      "groupId": "G5.4",
+      "requirement": "Initial and ongoing commitments are unaffordable based on income, expenditure and cashflow",
+      "limb": "Appropriateness",
+      "canonicalPaths": ["/financialPosition/affordabilityAssessment", "/financialPosition/totals/monthlySurplusOrDeficit"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"] },
+      "queries": [
+        { "id": "Q5.4.1", "text": "impact of the charges on your fund value each year in monetary terms", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["£", "per annum", "charge", "reduce"], "priority": "Core" },
+        { "id": "Q5.4.2", "text": "can the client sustain the payments if income reduces or stops", "side": "Evidence", "targetCategories": ["F", "C"], "expectSignals": ["sustain", "if income", "reduce", "stop", "afford"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "RangeMatch",
+        "tolerance": "Flag where an ongoing income commitment exceeds evidenced monthly surplus.",
+        "falsePositiveGuards": ["Employment income due to cease within the term should be excluded from the surplus used for a long-term commitment."]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Assess on the report alone and record that no surplus figure was available to test against." }
+    },
+
+    {
+      "groupId": "G5.5",
+      "requirement": "Emergency funds not taken into account, or depleted or unavailable when required",
+      "limb": "Appropriateness",
+      "canonicalPaths": ["/financialPosition/emergencyFund/shortfall", "/financialPosition/liquidityAndAccessNeeds[]/fundedFrom"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"] },
+      "queries": [
+        { "id": "Q5.5.1", "text": "all of your available capital is being invested leaving nothing accessible", "side": "Either", "targetCategories": ["I", "F"], "expectSignals": ["all", "entire", "remaining", "left", "retain"], "priority": "Core" },
+        { "id": "Q5.5.2", "text": "money withdrawn from the pension will be placed into your savings account", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["savings account", "withdraw", "place", "into your"], "priority": "Supplementary" }
+      ],
+      "comparison": { "method": "NarrativeAlignment", "falsePositiveGuards": ["A transfer between pension wrappers does not deplete an emergency fund — only new money from cash does."] },
+      "sufficiency": { "ifBothAbsent": "No finding where no capital is being drawn from liquid savings." }
+    },
+
+    {
+      "groupId": "G5.6",
+      "requirement": "Liquidity mismatch with access needs",
+      "limb": "Appropriateness",
+      "canonicalPaths": ["/financialPosition/liquidityAndAccessNeeds[]/requiredFrom", "/solution/recommendedPlans[]/wrapper", "/solution/recommendedPlans[]/selectedRetirementAge"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["F", "H"] },
+      "queries": [
+        { "id": "Q5.6.1", "text": "you cannot access this money until age 55 rising to 57 restrictions on withdrawal", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["age 55", "age 57", "cannot access", "locked", "until"], "priority": "Core" },
+        { "id": "Q5.6.2", "text": "notice period penalty for early withdrawal fixed term investment", "side": "Either", "targetCategories": ["H", "E", "I"], "expectSignals": ["notice", "penalty", "fixed term", "early"], "priority": "Core" },
+        { "id": "Q5.6.3", "text": "when the client expects to need this capital and where it will come from", "side": "Evidence", "targetCategories": ["F", "B"], "expectSignals": ["need", "require", "planned", "from"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "RangeMatch",
+        "falsePositiveGuards": ["Pension access restrictions are irrelevant where the client is already over the minimum pension age — check age before flagging."]
+      },
+      "sufficiency": { "ifAssertionAbsent": "Potential Concern where an access need falls inside a period the recommended wrapper restricts." }
+    }
+  ],
+
+  "decision": {
+    "noIssue": "Commitments are quantified and supported by evidenced income, expenditure and cashflow; the emergency fund is addressed; and the recommended wrapper permits access when the client needs it.",
+    "potentialConcern": "Affordability is asserted without figures, cashflow inputs contradict the fact find, the emergency fund is unquantified or depleted, or capital is locked beyond a stated access date.",
+    "notApplicable": "The case involves no capital, contributions, withdrawals or charges.",
+    "severityHints": [
+      "Highest: capital inaccessible when the client has an evidenced need for it.",
+      "High: ongoing commitment exceeds evidenced surplus, or emergency reserves are consumed by the recommendation.",
+      "Moderate: cashflow inputs differ from the fact find figures.",
+      "Low: emergency fund asserted as sufficient but never quantified."
+    ]
+  },
+
+  "budget": { "coreQueries": 17, "supplementaryQueries": 4, "estimatedPassages": 168 }
+}

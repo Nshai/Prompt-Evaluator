@@ -18,6 +18,15 @@ public partial class CheckEvaluatorForm : Form
     /// <summary>The case whose chunks are in the vector store, or null when nothing is loaded.</summary>
     private string? _indexedCase;
 
+    /// <summary>
+    /// The canonical model for the current case, once it has been extracted or found in the
+    /// store. Checks read the suitability report's assertions from here rather than parsing
+    /// the report again, so a run without one cannot proceed.
+    /// </summary>
+    private CanonicalModelDocument? _model;
+
+    private readonly CanonicalModelStore _modelStore;
+
     private CostBreakdown _lastBreakdown;
 
     public CheckEvaluatorForm(AppSettings settings)
@@ -27,6 +36,7 @@ public partial class CheckEvaluatorForm : Form
         _evaluator = new PromptEvaluator(_settings);
         // Read the endpoint lazily so editing it in Settings takes effect without a restart.
         _docling = new DoclingClient(() => _settings.ResolveDoclingEndpoint());
+        _modelStore = new CanonicalModelStore(_settings);
 
         caseFolderTextBox.Text = _settings.DocumentFolder;
 
@@ -48,9 +58,10 @@ public partial class CheckEvaluatorForm : Form
             detailDocSplit.Panel2MinSize = 160;
             detailDocSplit.SplitterDistance = (int)(detailDocSplit.Width * 0.62);
 
-            // A case indexed in an earlier session is still in Qdrant — find out before the
-            // user is told to load documents that are already there.
+            // A case indexed in an earlier session is still in Qdrant, and its canonical
+            // model is still in SQLite — find out before the user is told to redo either.
             _ = DetectExistingIndexAsync();
+            _ = DetectExistingModelAsync();
         });
 
         // Restore last-used CSV path from settings if present
@@ -138,10 +149,13 @@ public partial class CheckEvaluatorForm : Form
         if (dlg.ShowDialog(this) == DialogResult.OK)
         {
             caseFolderTextBox.Text = dlg.SelectedPath;
-            // A different folder is a different case — whatever is indexed no longer applies.
+            // A different folder is a different case — whatever is indexed or extracted no
+            // longer applies until the new case has been probed for both.
             _indexedCase = null;
+            _model = null;
             UpdateRunAvailability();
             _ = DetectExistingIndexAsync();
+            _ = DetectExistingModelAsync();
         }
     }
 
@@ -351,6 +365,219 @@ public partial class CheckEvaluatorForm : Form
         }
     }
 
+    // ──────────────────────────────────────────────
+    // Canonical model
+    // ──────────────────────────────────────────────
+
+    /// <summary>
+    /// Parses the case's suitability report into the canonical model and stores it against
+    /// the case reference and tenant.
+    ///
+    /// This is the only time the report is read by a model. Every check afterwards works
+    /// from what is captured here, so a report of any template shape is normalised once and
+    /// assessed many times.
+    /// </summary>
+    private async void ExtractModelButton_Click(object? sender, EventArgs e)
+    {
+        var caseFolder = caseFolderTextBox.Text.Trim();
+        if (!Directory.Exists(caseFolder))
+        {
+            MessageBox.Show(this, "Please select a valid case folder first.", "No case folder",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_settings.OpenAiApiKey))
+        {
+            MessageBox.Show(this, "Please configure an API key first.", "No API key",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        var caseReference = _settings.ResolveCaseReference(caseFolder);
+
+        // Re-extracting is how a bad parse is corrected, but it costs real tokens and
+        // replaces a model the user may not realise is there.
+        if (_model is not null &&
+            MessageBox.Show(this,
+                $"A canonical model for case {caseReference} was extracted on "
+                + $"{_model.ExtractedAt:yyyy-MM-dd HH:mm}. Extract again and replace it?",
+                "Model already extracted",
+                MessageBoxButtons.OKCancel, MessageBoxIcon.Question) != DialogResult.OK)
+        {
+            return;
+        }
+
+        SetBusy(true);
+        statusLabel.Text = "Extracting the canonical model...";
+
+        responseTextBox.Clear();
+        AppendResponseLine($"Extracting the canonical model for case {caseReference} (tenant {_settings.TenantId})");
+        AppendResponseLine($"Schema: {_settings.ResolveCanonicalSchemaPath()}");
+        AppendResponseLine($"Store:  {_modelStore.DatabasePath}");
+
+        var reportFiles = CanonicalModelExtractor.FindReportFiles(caseFolder);
+        foreach (var file in reportFiles)
+        {
+            AppendResponseLine($"Report: {Path.GetFileName(file)}");
+        }
+
+        AppendResponseLine(new string('-', 72));
+
+        var elapsed = Stopwatch.StartNew();
+        _cts = new CancellationTokenSource();
+
+        try
+        {
+            var extractor = new CanonicalModelExtractor(_settings, _evaluator);
+
+            var progress = new Progress<ExtractionProgress>(p =>
+            {
+                var outcome = p.Error is not null
+                    ? $"FAILED — {p.Error}"
+                    : $"{p.JsonLength:N0} chars";
+
+                AppendResponseLine(
+                    $"[{p.Done,2}/{p.Total}] {p.SectionName,-36} {outcome} ({p.Elapsed.TotalSeconds:0.0}s)");
+                statusLabel.Text = $"Extracting {p.Done}/{p.Total}...";
+            });
+
+            var result = await extractor
+                .ExtractAsync(caseFolder, caseReference, progress, _cts.Token)
+                .ConfigureAwait(true);
+
+            await _modelStore.SaveAsync(result.Document, _cts.Token).ConfigureAwait(true);
+
+            elapsed.Stop();
+            _model = result.Document;
+
+            AppendResponseLine(new string('-', 72));
+
+            var accessor = new CanonicalModelAccessor(result.Document.Json);
+            AppendResponseLine(
+                $"Stored {result.Document.JsonLength:N0} characters of canonical model for case {caseReference} "
+                + $"in {elapsed.Elapsed.TotalSeconds:0.0}s.");
+            AppendResponseLine($"Sections populated: {string.Join(", ", accessor.PopulatedSections)}");
+
+            if (result.Failures.Count > 0)
+            {
+                AppendResponseLine(string.Empty);
+                AppendResponseLine($"{result.Failures.Count} section(s) failed and are missing from the model:");
+                foreach (var (section, error) in result.Failures)
+                {
+                    AppendResponseLine($"  {section} — {error}");
+                }
+
+                AppendResponseLine(
+                    "Extract again to retry them; checks that rely on a missing section will report "
+                    + "the data as absent.");
+            }
+
+            _lastBreakdown = result.Breakdown;
+            ShowBreakdown(_lastBreakdown);
+            statusLabel.Text =
+                $"Canonical model stored for case {caseReference} ({result.Breakdown.Usage.TotalTokens:N0} tokens).";
+        }
+        catch (OperationCanceledException)
+        {
+            statusLabel.Text = "Extraction cancelled.";
+            AppendResponseLine("Cancelled — nothing was stored.");
+        }
+        catch (Exception ex)
+        {
+            statusLabel.Text = $"Extraction failed: {ex.Message}";
+            AppendResponseLine($"Failed: {ex.Message}");
+        }
+        finally
+        {
+            _cts.Dispose();
+            _cts = null;
+            SetBusy(false);
+        }
+    }
+
+    /// <summary>Deletes the stored canonical model for the current case.</summary>
+    private async void DeleteModelButton_Click(object? sender, EventArgs e)
+    {
+        var caseFolder = caseFolderTextBox.Text.Trim();
+        var caseReference = _settings.ResolveCaseReference(
+            Directory.Exists(caseFolder) ? caseFolder : string.Empty);
+
+        if (string.IsNullOrWhiteSpace(caseReference))
+        {
+            statusLabel.Text = "No case is selected, so there is no model to delete.";
+            return;
+        }
+
+        if (MessageBox.Show(this,
+                $"Delete the stored canonical model for case {caseReference} (tenant {_settings.TenantId})?\n\n"
+                + "The indexed document chunks are not affected. Extracting again re-reads the "
+                + "suitability report and costs tokens.",
+                "Delete canonical model",
+                MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK)
+        {
+            return;
+        }
+
+        SetBusy(true);
+
+        try
+        {
+            var deleted = await _modelStore
+                .DeleteAsync(caseReference, _settings.TenantId)
+                .ConfigureAwait(true);
+
+            _model = null;
+
+            statusLabel.Text = deleted
+                ? $"Deleted the canonical model for case {caseReference} (tenant {_settings.TenantId})."
+                : $"No canonical model was stored for case {caseReference} (tenant {_settings.TenantId}).";
+        }
+        catch (Exception ex)
+        {
+            statusLabel.Text = $"Could not delete the model: {ex.Message}";
+        }
+        finally
+        {
+            SetBusy(false);
+        }
+    }
+
+    /// <summary>
+    /// Looks for a model extracted in an earlier session, so the buttons and the run path
+    /// reflect what is actually in the store rather than what this instance has done.
+    /// </summary>
+    private async Task DetectExistingModelAsync()
+    {
+        var caseFolder = caseFolderTextBox.Text.Trim();
+        if (!Directory.Exists(caseFolder))
+        {
+            return;
+        }
+
+        var caseReference = _settings.ResolveCaseReference(caseFolder);
+
+        try
+        {
+            _model = await _modelStore.LoadAsync(caseReference, _settings.TenantId).ConfigureAwait(true);
+
+            if (_model is not null)
+            {
+                statusLabel.Text =
+                    $"Canonical model for case {caseReference} extracted {_model.ExtractedAt:yyyy-MM-dd HH:mm} "
+                    + $"from {string.Join(", ", _model.SourceDocuments)}.";
+            }
+        }
+        catch (Exception ex)
+        {
+            statusLabel.Text = $"Could not read the canonical model store: {ex.Message}";
+        }
+        finally
+        {
+            UpdateRunAvailability();
+        }
+    }
+
     /// <summary>The indexed case reference, but only while it still matches the case folder in the text box.</summary>
     private string? CurrentCaseReference()
     {
@@ -444,15 +671,43 @@ public partial class CheckEvaluatorForm : Form
     // Run
     // ──────────────────────────────────────────────
 
-    private async void RunButton_Click(object? sender, EventArgs e)
+    private Task RunButton_ClickAsync() =>
+        checksListView.SelectedItems.Count == 0
+            ? ShowNoSelectionAsync()
+            : RunChecksAsync([(AssessmentCheck)checksListView.SelectedItems[0].Tag!]);
+
+    private async void RunButton_Click(object? sender, EventArgs e) => await RunButton_ClickAsync();
+
+    /// <summary>Runs every loaded check, in CSV order, into one consolidated report.</summary>
+    private async void RunAllButton_Click(object? sender, EventArgs e)
     {
-        if (checksListView.SelectedItems.Count == 0)
+        if (_checks.Count == 0)
         {
-            MessageBox.Show(this, "Please select a check to run.", "No check selected",
+            MessageBox.Show(this, "Load an assessment checks CSV first.", "No checks loaded",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
 
+        await RunChecksAsync(_checks);
+    }
+
+    private Task ShowNoSelectionAsync()
+    {
+        MessageBox.Show(this, "Please select a check to run.", "No check selected",
+            MessageBoxButtons.OK, MessageBoxIcon.Information);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Assesses one or more checks from their query plans and writes a consolidated findings
+    /// report.
+    ///
+    /// The suitability report is not read here. Its assertions come from the stored canonical
+    /// model, and only the supporting evidence is retrieved — which is why a run costs the
+    /// same whether it covers one check or ten, plus one decision call each.
+    /// </summary>
+    private async Task RunChecksAsync(IReadOnlyList<AssessmentCheck> checks)
+    {
         if (string.IsNullOrWhiteSpace(_settings.OpenAiApiKey))
         {
             MessageBox.Show(this, "Please configure an API key first.", "No API key",
@@ -469,45 +724,122 @@ public partial class CheckEvaluatorForm : Form
             return;
         }
 
-        var check = (AssessmentCheck)checksListView.SelectedItems[0].Tag!;
+        if (_model is null)
+        {
+            MessageBox.Show(this,
+                "Extract the canonical model first — click \"Extract Model\" to parse the suitability "
+                + "report into the store.\n\nChecks read what the report asserts from that model rather "
+                + "than parsing the report again.",
+                "No canonical model", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        var planFolder = _settings.ResolveCheckPlanFolder();
+        var (plans, planFailures) = CheckQueryPlanLoader.Load(planFolder);
+
+        if (plans.Count == 0)
+        {
+            MessageBox.Show(this,
+                $"No query plans were found in \"{planFolder}\".\n\nSet the check plan folder in "
+                + "Settings, or place the CHK-*.query-plan.json files beside the executable.",
+                "No query plans", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
 
         SetBusy(true);
-        responseTextBox.Text = "Working...";
-        statusLabel.Text = "Searching the case file and assessing the check...";
+        responseTextBox.Clear();
+        AppendResponseLine($"Assessing case {caseReference} (tenant {_settings.TenantId})");
+        AppendResponseLine(
+            $"Canonical model extracted {_model.ExtractedAt:yyyy-MM-dd HH:mm} from "
+            + $"{string.Join(", ", _model.SourceDocuments)}");
+        AppendResponseLine($"Query plans: {plans.Count} loaded from {planFolder}");
+
+        foreach (var (file, error) in planFailures)
+        {
+            AppendResponseLine($"  Plan skipped — {file}: {error}");
+        }
+
+        AppendResponseLine(new string('-', 72));
 
         _cts = new CancellationTokenSource();
+        var usage = TokenUsage.Empty;
 
         using var store = new CaseDocumentStore(_settings);
         try
         {
             using var embeddings = AiClientFactory.CreateEmbeddingGenerator(_settings);
             var searchTool = new CaseDocumentSearchTool(_settings, embeddings, store, caseReference);
+            var runner = new CheckPlanRunner(_settings, _evaluator, searchTool, _model);
 
-            var result = await _evaluator.RunWithToolsAsync(
-                BuildSystemPrompt(caseReference),
-                BuildCheckPromptText(check, caseReference),
-                [searchTool.AsAIFunction()],
-                _cts.Token).ConfigureAwait(true);
+            var progress = new Progress<string>(stage => statusLabel.Text = stage);
+            var findings = new List<CheckFinding>();
+            var skipped = new List<string>();
+            var done = 0;
 
-            responseTextBox.Text = ComposeRunReport(result.Response, searchTool.Calls);
-            _lastBreakdown = result.Breakdown;
+            foreach (var check in checks)
+            {
+                _cts.Token.ThrowIfCancellationRequested();
+
+                var checkId = CheckQueryPlanLoader.NormaliseCheckId(check.CheckId);
+
+                // A check with no plan is reported rather than improvised: the whole point of
+                // the plan is that retrieval is decided in advance, not by the model.
+                if (!plans.TryGetValue(checkId, out var plan))
+                {
+                    skipped.Add($"{checkId} — no query plan in {planFolder}");
+                    continue;
+                }
+
+                done++;
+                statusLabel.Text = $"Assessing {checkId} ({done}/{checks.Count})...";
+
+                var finding = await runner
+                    .RunAsync(check, plan, progress, _cts.Token)
+                    .ConfigureAwait(true);
+
+                findings.Add(finding);
+                usage = AddUsage(usage, finding.Usage);
+
+                AppendResponseLine(
+                    $"[{done,2}/{checks.Count}] {finding.CheckId,-9} "
+                    + $"{CheckFinding.Describe(finding.ParsedOutcome),-18} "
+                    + $"{finding.SearchesRun,3} search(es), {finding.PassagesRetrieved,3} passage(s), "
+                    + $"{finding.Elapsed.TotalSeconds:0.0}s");
+            }
+
+            var report = new FindingsReport(
+                caseReference, _settings.TenantId, _settings.SelectedModel,
+                DateTimeOffset.Now, findings, _model);
+
+            responseTextBox.Text = report.Format();
+
+            if (skipped.Count > 0)
+            {
+                AppendResponseLine(string.Empty);
+                AppendResponseLine($"{skipped.Count} check(s) had no query plan and were not assessed:");
+                foreach (var line in skipped)
+                {
+                    AppendResponseLine($"  {line}");
+                }
+            }
+
+            _lastBreakdown = CostBreakdown.Create(_settings.SelectedModel, usage);
             ShowBreakdown(_lastBreakdown);
-            statusLabel.Text =
-                $"Done. {searchTool.Calls.Count} search(es), {result.Breakdown.Usage.TotalTokens:N0} tokens billed.";
+            statusLabel.Text = $"Done. {report.Headline}. {usage.TotalTokens:N0} tokens billed.";
         }
         catch (OperationCanceledException)
         {
-            responseTextBox.Text = string.Empty;
-            _lastBreakdown = CostBreakdown.Empty(_settings.SelectedModel);
+            _lastBreakdown = CostBreakdown.Create(_settings.SelectedModel, usage);
             ShowBreakdown(_lastBreakdown);
             statusLabel.Text = "Cancelled.";
+            AppendResponseLine("Cancelled.");
         }
         catch (Exception ex)
         {
             responseTextBox.Text = $"Error: {ex.Message}";
             _lastBreakdown = CostBreakdown.Empty(_settings.SelectedModel);
             ShowBreakdown(_lastBreakdown);
-            statusLabel.Text = "The request failed.";
+            statusLabel.Text = "The run failed.";
         }
         finally
         {
@@ -516,6 +848,12 @@ public partial class CheckEvaluatorForm : Form
             SetBusy(false);
         }
     }
+
+    private static TokenUsage AddUsage(TokenUsage a, TokenUsage b) => new(
+        a.InputTokens + b.InputTokens,
+        a.OutputTokens + b.OutputTokens,
+        a.CacheWriteTokens + b.CacheWriteTokens,
+        a.CacheReadTokens + b.CacheReadTokens);
 
     private void CancelButton_Click(object? sender, EventArgs e)
     {
@@ -606,87 +944,6 @@ public partial class CheckEvaluatorForm : Form
         statusLabel.Text = "Response and cost copied to clipboard.";
     }
 
-    // ──────────────────────────────────────────────
-    // Prompt builder
-    // ──────────────────────────────────────────────
-
-    /// <summary>
-    /// The assessor's standing instructions. The case file is never attached — the model has
-    /// to search for its evidence, so the prompt is explicit that an unsearched claim is not
-    /// a finding.
-    /// </summary>
-    private string BuildSystemPrompt(string caseReference) =>
-        $"""
-        You are a financial services Quality Assurance assessor. You evaluate a client case file
-        against one QA check at a time.
-
-        You cannot see the case file directly. Use the search_case_documents tool to retrieve
-        passages from it. The loaded case reference is "{caseReference}" and the tenant is
-        {_settings.TenantId}; the tool defaults to both, so you normally pass only the search text.
-
-        How to work:
-        - Search before you conclude. Run several searches with different wordings — the
-          terminology in the file rarely matches the wording of the check.
-        - The same point may be evidenced in more than one document; the tool returns matches
-          across documents, and corroboration matters.
-        - Base findings only on returned passages. If searching turns up nothing relevant, say
-          the evidence is absent rather than inferring it.
-        - Cite the document name and category for each piece of evidence you rely on.
-        """;
-
-    private static string BuildCheckPromptText(AssessmentCheck check, string caseReference)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine($"Assess case {caseReference} against this check.");
-        sb.AppendLine();
-        sb.AppendLine($"## Check: {check.CheckId.Replace("\n", "").Trim()} — {check.CheckName}");
-        sb.AppendLine();
-        if (!string.IsNullOrWhiteSpace(check.RegulatoryBasis))
-        {
-            sb.AppendLine($"Regulatory Basis: {check.RegulatoryBasis}");
-            sb.AppendLine();
-        }
-        sb.AppendLine("### Prompt");
-        sb.AppendLine(check.Prompt);
-        sb.AppendLine();
-        sb.AppendLine("### What to Look For");
-        sb.AppendLine(check.WhatToLookFor);
-        sb.AppendLine();
-        sb.AppendLine("### Decision Logic");
-        sb.AppendLine(check.DecisionLogic);
-        sb.AppendLine();
-        sb.AppendLine(
-            "State your finding as one of: **No Issue**, **Potential Concern**, or **N/A**, then give a "
-            + "concise explanation quoting the specific evidence and naming the document it came from.");
-        return sb.ToString();
-    }
-
-    /// <summary>
-    /// The finding, plus the searches that produced it — the run is only as good as what it
-    /// retrieved, so the searches belong in the record next to the conclusion.
-    /// </summary>
-    private static string ComposeRunReport(string response, IReadOnlyList<CaseSearchCall> calls)
-    {
-        var sb = new StringBuilder(response.TrimEnd());
-
-        sb.AppendLine();
-        sb.AppendLine();
-        sb.AppendLine(new string('-', 72));
-
-        if (calls.Count == 0)
-        {
-            sb.AppendLine("No searches were run — the finding above is not grounded in the case file.");
-            return sb.ToString();
-        }
-
-        sb.AppendLine($"Evidence gathered from {calls.Count} search(es):");
-        foreach (var call in calls)
-        {
-            sb.AppendLine($"  \"{call.SearchText}\" → {call.Matches} passage(s)");
-        }
-
-        return sb.ToString();
-    }
 
     private void ShowBreakdown(CostBreakdown breakdown)
     {
@@ -765,6 +1022,21 @@ public partial class CheckEvaluatorForm : Form
     }
 
     /// <summary>
+    /// Whether a run can proceed: a check needs both halves of its evidence, and they come
+    /// from different stores. The indexed chunks supply what the case file evidences; the
+    /// canonical model supplies what the suitability report asserts.
+    /// </summary>
+    private (bool CanRun, string Reason) RunReadiness()
+    {
+        if (CurrentCaseReference() is null)
+        {
+            return (false, "load docs first");
+        }
+
+        return _model is null ? (false, "extract model first") : (true, string.Empty);
+    }
+
+    /// <summary>
     /// A check can only run once the case documents are in the vector store — the model
     /// retrieves its evidence and never receives the documents directly.
     ///
@@ -775,12 +1047,23 @@ public partial class CheckEvaluatorForm : Form
     private void UpdateRunAvailability()
     {
         var indexed = CurrentCaseReference() is not null;
+        var (canRun, reason) = RunReadiness();
 
-        runButton.Enabled = !_busy && indexed;
-        runButton.Text = indexed ? "Run Check" : "Run Check (load docs first)";
+        runButton.Enabled = !_busy && canRun;
+        runButton.Text = canRun ? "Run Check" : $"Run Check ({reason})";
+
+        runAllButton.Enabled = !_busy && canRun && _checks.Count > 0;
+        runAllButton.Text = canRun ? "Run All Checks" : "Run All Checks";
 
         loadDocsButton.Enabled = !_busy && !indexed;
         loadDocsButton.Text = indexed ? "Docs Indexed" : "Load Docs";
+
+        // Extraction reads the report, not the index, so it does not wait on Load Docs — the
+        // two can be done in either order.
+        extractModelButton.Enabled = !_busy && Directory.Exists(caseFolderTextBox.Text.Trim());
+        extractModelButton.Text = _model is null ? "Extract Model" : "Re-extract Model";
+
+        deleteModelButton.Enabled = !_busy && _model is not null;
 
         // Unloading stays available as soon as the case is identifiable — by a configured
         // reference, or by the selected folder. The chunks may have been indexed in an

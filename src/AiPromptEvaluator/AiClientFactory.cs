@@ -18,8 +18,9 @@ namespace AiPromptEvaluator;
 public static class AiClientFactory
 {
     /// <summary>
-    /// A chat client with automatic function invocation, so a tool the model calls is
-    /// executed and fed back without the caller driving the loop.
+    /// A plain chat client. Nothing passes tools any more: a check's retrieval is driven by
+    /// its query plan rather than by the model calling a search function, so there is no
+    /// tool-invocation loop to wrap.
     /// </summary>
     public static IChatClient CreateChatClient(AppSettings settings)
     {
@@ -27,10 +28,7 @@ public static class AiClientFactory
 
         return CreateOpenAiClient(settings)
             .GetChatClient(RequireModel(settings.SelectedModel, "chat model"))
-            .AsIChatClient()
-            .AsBuilder()
-            .UseFunctionInvocation()
-            .Build();
+            .AsIChatClient();
     }
 
     public static IEmbeddingGenerator<string, Embedding<float>> CreateEmbeddingGenerator(AppSettings settings)

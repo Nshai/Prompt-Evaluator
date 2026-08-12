@@ -6,9 +6,10 @@ context, and showing the response alongside a **per-component cost breakdown** o
 the main screen.
 
 Its second screen, the **Check Evaluator**, assesses a client case file against a
-catalogue of QA checks. Case documents are indexed into a Qdrant vector store and
-the model retrieves the passages it needs through a search tool, rather than
-having the whole case file attached to every check.
+catalogue of QA checks. The suitability report is parsed once into a canonical
+data model; the supporting documents are indexed into a Qdrant vector store. Each
+check then compares what the report *asserts* against what the case file
+*evidences*, retrieving only what a pre-computed query plan asks for.
 
 ## Features
 
@@ -18,15 +19,50 @@ having the whole case file attached to every check.
   running total
 - Re-prices the last response instantly when you switch models
 - Optional local document folder ingestion for prompt context
-- **Check Evaluator** — semantic indexing of a case folder and tool-driven,
-  retrieval-grounded assessment of each check
+- **Check Evaluator** — canonical extraction of the suitability report, semantic
+  indexing of the case folder, and plan-driven, retrieval-grounded assessment of
+  each check into a consolidated findings report
 - Any OpenAI-compatible endpoint: configurable base URL, API key, chat model and
   embedding model
 - Configuration dialog with persistent app settings
-- xUnit tests for the pricing/cost logic, chunk metadata, and document context builder
+- xUnit tests for the pricing/cost logic, chunk metadata, document context builder,
+  canonical model store and accessor, schema slicing, and the shipped query plans
 - MSI installer that opens in Visual Studio 2022 and 2026
 
 ## How the Check Evaluator works
+
+### The shape of the problem
+
+Nine of the ten QA checks ask the same question in different words:
+
+> *"Where the Suitability Report includes X, is it consistent with the evidence provided?"*
+
+That is not one question but two, and the check definitions label them: a
+**consistency** limb, which is a comparison between the report and the file, and
+an **appropriateness** limb, which is a judgement over the facts. The consistency
+limb is the bulk of the work, and it needs both sides of a comparison to be
+available at once.
+
+Two design decisions follow.
+
+**The suitability report is parsed once, into a canonical model.** Suitability
+report templates vary by firm; the underlying advice case does not. So the report
+is normalised into a schema describing the *case* — client, money, goals, risk,
+existing plans, recommendation, costs — rather than the document. Every value
+carries provenance (page, verbatim quote, confidence) and an `assertionStatus` of
+`Stated` / `Inferred` / `Derived` / **`Absent`**, because "the report never says
+this" is itself the finding for most checks. The model is stored in SQLite against
+the case reference and tenant, and **the report is never sent to a model again** —
+ten checks cost one parse, not ten.
+
+**Retrieval is decided in advance, by a query plan.** Each check has a plan under
+[docs/artifacts/check-plan/](docs/artifacts/check-plan/) whose query groups map
+one-to-one onto the rows of the check coverage matrix. The plan chooses the
+searches; the model does not. Two runs of the same check over the same case
+therefore retrieve the same evidence, which is what makes a finding reproducible
+and a regression visible.
+
+### The flow
 
 1. **Load Docs** walks the case folder and indexes every Markdown file:
    - [`MarkdownReader`](https://learn.microsoft.com/dotnet/ai/) parses the document
@@ -36,24 +72,69 @@ having the whole case file attached to every check.
      cut points and queries live in the same vector space.
    - Each chunk is written to Qdrant with **case reference, tenant id, document
      name and document category** as payload.
-2. **Run Check** sends the check's prompt to the model with one tool available,
-   `search_case_documents(searchText, caseReference?, tenantId?)`. Each call
-   embeds the search text, filters Qdrant by case and tenant, and returns the
-   matching passages — across as many documents as match — each with its case
-   reference, tenant id, document name and category.
-3. The model searches as many times as it needs, then states the finding, citing
-   the documents it relied on. The searches it ran are appended to the response so
-   the run can be audited.
+2. **Extract Model** parses the case's category I documents into the canonical
+   model and stores it. This runs a section at a time — a full model is tens of
+   thousands of tokens of JSON, and a response truncated mid-array is unparseable
+   rather than partially useful. Sections are also the retry unit, so one failure
+   costs one pass. `JsonSchemaSlicer` walks the schema's `$ref` graph and sends
+   each pass only the definitions it reaches (7–29% of the full schema), and the
+   report sits identically at the front of every prompt so the provider's prefix
+   cache covers the expensive part.
+3. **Run Check** / **Run All Checks** executes the plan:
+   - The **trigger probe** runs first, reading the model's own `checkTriggers` and
+     corroborating it by search. A missing trigger settles the check as *N/A*
+     without a retrieval pass.
+   - For each group, `side: "Assertion"` queries are resolved from the **stored
+     canonical model** by canonical path; `Evidence` and `Either` queries are
+     **searched in Qdrant**, de-duplicated, and ranked with the plan's
+     `targetCategories` applied as a post-filter.
+   - One decision call per check judges a pack it did not assemble, and returns a
+     structured finding per group with citations.
+4. The consolidated **findings report** lists every outcome, details the concerns
+   in full with their evidence, folds cleared checks to a line each, and closes
+   with what retrieval actually found — because *No Issue* from a run that found
+   nothing is not the same claim as one corroborated across three categories.
+
+### Design notes worth knowing
+
+- **The search tool cannot filter by document category.** Qdrant is filtered on
+  tenant and case only, so every search competes across the whole case file. The
+  plans compensate by pairing an assertion-side query worded as a report writes it
+  with an evidence-side query worded as the source document writes it, and the
+  runner applies `targetCategories` to the results.
+- **Query text is written in document vocabulary, not check vocabulary.** No
+  report contains the phrase "risk reconciliation"; the plan searches *"we agreed
+  a risk rating rather than the questionnaire result"* instead.
+- **Failures point toward concern, never toward a pass.** An unreadable outcome
+  becomes *Potential Concern*; unparseable JSON becomes *Error* carrying the raw
+  response. A QA tool that turns confusion into a pass is worse than no tool.
+- **Three query groups are assertion-only by design** — internal contradictions,
+  charge arithmetic and the prominence of a risk section all compare the report
+  against itself. The runner says so explicitly, so an empty evidence section is
+  never mistaken for a gap.
 
 Only `.md` / `.markdown` files are indexed; other formats are listed as skipped.
 Re-loading a case clears its previously indexed chunks first, so an edited
 document never leaves a stale passage behind. **Unload Docs** deletes the
-embeddings for the current case reference and tenant — other cases, and the same
-case under another tenant, are untouched.
+embeddings for the current case reference and tenant; **Delete Model** removes the
+stored canonical model. The two are deliberately separate — re-indexing documents
+should not silently discard an extraction that cost real tokens to produce.
 
 The case reference defaults to the case folder's name and can be set explicitly
 in Configuration, which is what you want when the folder is a working copy rather
 than named after the case.
+
+## The canonical model
+
+The schema, the query plans and the design rationale behind them live in
+[docs/artifacts/](docs/artifacts/) — start with
+[canonical-suitability-model.md](docs/artifacts/canonical-suitability-model.md).
+
+The schema and the plans are **data the app reads at run time**, not documentation.
+`AiPromptEvaluator.csproj` copies them beside the executable on build, so a fresh
+clone works with no configuration and editing a query plan changes what the next
+check run retrieves. Both locations are overridable under **Configuration →
+Canonical model**.
 
 ## Cost breakdown
 
@@ -81,6 +162,8 @@ by the provider but are not shown in this breakdown.
 - [src/AiPromptEvaluator/](src/AiPromptEvaluator/) — Windows Forms application
 - [src/installer/](src/installer/) — MSI installer project
 - [tests/AiPromptEvaluator.Tests/](tests/AiPromptEvaluator.Tests/) — xUnit tests
+- [docs/artifacts/](docs/artifacts/) — the canonical model schema and the per-check
+  query plans, deployed with the app and read at run time
 - `AiPromptEvaluator.slnx` — solution file
 
 ## Requirements
@@ -127,7 +210,11 @@ Settings are stored in the user profile under
 | Case reference | Stamped on every chunk and used to scope every search. Empty means the case folder's name |
 | Tenant id | Stamped on every chunk and applied as a filter on every search (default 99) |
 | Max tokens per chunk / overlap | Upper bound on a chunk and how much of the previous one is repeated |
-| Results per search | How many passages one tool call may return |
+| Results per search | How many passages one search may return |
+| Model schema | The canonical model JSON Schema used for extraction. Empty means the copy deployed beside the app |
+| Check plan folder | Where the `CHK-*.query-plan.json` files live. Empty means the `check-plan` folder beside the app |
+| Model database | SQLite file holding extracted canonical models. Empty means `canonical-models.db` in `%LOCALAPPDATA%\AiPromptEvaluator` |
+| Extraction max tokens | Output cap for one extraction pass. Higher than the response cap because a truncated JSON section is unusable rather than merely short |
 | Docling endpoint | Sidecar used to convert spreadsheets to Markdown |
 | Document context folder | Folder ingested for prompt context on the main screen |
 | Clarification prompt behavior | Whether ambiguous prompts get a clarifying question |

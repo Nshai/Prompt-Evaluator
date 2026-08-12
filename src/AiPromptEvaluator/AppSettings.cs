@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.Json.Serialization;
 
 namespace AiPromptEvaluator;
@@ -35,6 +36,19 @@ public class AppSettings
     /// <summary>The model used to embed document chunks and search text.</summary>
     [JsonPropertyName("embeddingModel")]
     public string EmbeddingModel { get; set; } = "text-embedding-3-small";
+
+    /// <summary>
+    /// Where embeddings are generated, when that isn't the same service as the chat model.
+    /// Anthropic serves no embeddings endpoint, for instance, so a setup that runs checks on
+    /// Claude has to embed somewhere else — OpenAI, Voyage, or a local Ollama.
+    /// Leave empty to use <see cref="OpenAiBaseUrl"/>.
+    /// </summary>
+    [JsonPropertyName("embeddingBaseUrl")]
+    public string EmbeddingBaseUrl { get; set; } = string.Empty;
+
+    /// <summary>Key for the embedding service. Leave empty to use <see cref="OpenAiApiKey"/>.</summary>
+    [JsonPropertyName("embeddingApiKey")]
+    public string EmbeddingApiKey { get; set; } = string.Empty;
 
     /// <summary>
     /// Vector width of <see cref="EmbeddingModel"/>. It defines the Qdrant collection, so
@@ -108,6 +122,69 @@ public class AppSettings
     [JsonPropertyName("maxSearchResults")]
     public int MaxSearchResults { get; set; } = 8;
 
+    /// <summary>
+    /// The canonical model JSON Schema the suitability report is extracted into. Leave empty
+    /// to look for <see cref="DefaultCanonicalSchemaFileName"/> beside the executable.
+    /// </summary>
+    [JsonPropertyName("canonicalSchemaPath")]
+    public string CanonicalSchemaPath { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Folder holding the per-check query plans (CHK-*.query-plan.json). Leave empty to look
+    /// for a "check-plan" folder beside the executable.
+    /// </summary>
+    [JsonPropertyName("checkPlanFolder")]
+    public string CheckPlanFolder { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Where extracted canonical models are kept. Leave empty for a file in the app's local
+    /// data folder, so models survive a restart without the user choosing a location.
+    /// </summary>
+    [JsonPropertyName("canonicalModelDbPath")]
+    public string CanonicalModelDbPath { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Output cap for one extraction pass. Extraction returns a JSON section rather than
+    /// prose, and a truncated section is unusable, so it needs far more headroom than a
+    /// check response — the app extracts a section at a time to stay inside this.
+    /// </summary>
+    [JsonPropertyName("extractionMaxTokens")]
+    public int ExtractionMaxTokens { get; set; } = 16000;
+
+    /// <summary>The file name looked for beside the executable when no schema path is set.</summary>
+    public const string DefaultCanonicalSchemaFileName = "canonical-suitability-model.schema.json";
+
+    /// <summary>The folder name looked for beside the executable when no plan folder is set.</summary>
+    public const string DefaultCheckPlanFolderName = "check-plan";
+
+    /// <summary>
+    /// The configured schema path, or the copy deployed beside the executable. Returns the
+    /// resolved path whether or not it exists — the caller reports a missing file with the
+    /// path it looked for, which is more useful than an empty string.
+    /// </summary>
+    public string ResolveCanonicalSchemaPath() =>
+        string.IsNullOrWhiteSpace(CanonicalSchemaPath)
+            ? Path.Combine(AppContext.BaseDirectory, DefaultCanonicalSchemaFileName)
+            : CanonicalSchemaPath.Trim();
+
+    /// <summary>The configured plan folder, or the one deployed beside the executable.</summary>
+    public string ResolveCheckPlanFolder() =>
+        string.IsNullOrWhiteSpace(CheckPlanFolder)
+            ? Path.Combine(AppContext.BaseDirectory, DefaultCheckPlanFolderName)
+            : CheckPlanFolder.Trim();
+
+    /// <summary>
+    /// Where the canonical model database lives. The default sits next to settings.json so
+    /// an extracted model is found again after a restart without any configuration.
+    /// </summary>
+    public string ResolveCanonicalModelDbPath() =>
+        string.IsNullOrWhiteSpace(CanonicalModelDbPath)
+            ? Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "AiPromptEvaluator",
+                "canonical-models.db")
+            : CanonicalModelDbPath.Trim();
+
     /// <summary>The configured Docling endpoint, or the default, with any trailing slash removed.</summary>
     public string ResolveDoclingEndpoint() =>
         Resolve(DoclingEndpoint, DefaultDoclingEndpoint);
@@ -119,6 +196,21 @@ public class AppSettings
     /// <summary>The configured OpenAI-compatible base URL, or the default.</summary>
     public string ResolveBaseUrl() =>
         Resolve(OpenAiBaseUrl, DefaultBaseUrl);
+
+    /// <summary>Where embeddings are generated — its own endpoint when set, else the chat one.</summary>
+    public string ResolveEmbeddingBaseUrl() =>
+        string.IsNullOrWhiteSpace(EmbeddingBaseUrl) ? ResolveBaseUrl() : Resolve(EmbeddingBaseUrl, DefaultBaseUrl);
+
+    /// <summary>The embedding service's key, falling back to the chat key when they're the same service.</summary>
+    public string ResolveEmbeddingApiKey() =>
+        string.IsNullOrWhiteSpace(EmbeddingApiKey) ? OpenAiApiKey.Trim() : EmbeddingApiKey.Trim();
+
+    /// <summary>
+    /// True when embeddings are pointed at a service that has no embeddings endpoint. Worth
+    /// saying plainly: no base path or model name makes that call work.
+    /// </summary>
+    public bool EmbeddingEndpointCannotEmbed() =>
+        ResolveEmbeddingBaseUrl().Contains("api.anthropic.com", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// The configured case reference, or the case folder's name when none is set. This is the

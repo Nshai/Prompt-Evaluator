@@ -1,0 +1,595 @@
+using System.Diagnostics;
+using System.Text;
+using System.Text.Json;
+
+using Microsoft.Extensions.AI;
+
+namespace AiPromptEvaluator;
+
+/// <summary>Progress for one check in a run.</summary>
+public sealed record CheckRunProgress(int Done, int Total, string CheckId, string Stage);
+
+/// <summary>
+/// Runs a check from its query plan.
+///
+/// The plan splits every requirement into two sides, and this executes them from two
+/// different places:
+///
+///   Assertion side — what the suitability report claims — is read out of the stored
+///   canonical model by canonical path. The report is never sent to the model again.
+///
+///   Evidence side — what the rest of the case file holds — is retrieved from the vector
+///   store using the plan's search text.
+///
+/// Retrieval is deterministic: the plan decides which searches run, not the model. The model
+/// is called once per check, at the end, to judge an evidence pack it did not assemble. Two
+/// runs of the same check over the same case therefore see exactly the same evidence.
+/// </summary>
+public sealed class CheckPlanRunner
+{
+    private static readonly JsonSerializerOptions FindingOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        AllowTrailingCommas = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+    };
+
+    /// <summary>
+    /// How many passages of one group's retrieval are shown to the assessor. The searches in
+    /// a group overlap heavily by design, and past a dozen passages the pack is mostly the
+    /// same text scored slightly differently.
+    /// </summary>
+    private const int MaxPassagesPerGroup = 12;
+
+    /// <summary>Output cap for a decision. Enough for a structured finding across every group.</summary>
+    private const int DecisionMaxTokens = 8000;
+
+    private readonly AppSettings _settings;
+    private readonly PromptEvaluator _evaluator;
+    private readonly CaseDocumentSearchTool _search;
+    private readonly CanonicalModelDocument _model;
+    private readonly CanonicalModelAccessor _accessor;
+
+    public CheckPlanRunner(
+        AppSettings settings,
+        PromptEvaluator evaluator,
+        CaseDocumentSearchTool search,
+        CanonicalModelDocument model)
+    {
+        _settings = settings;
+        _evaluator = evaluator;
+        _search = search;
+        _model = model;
+        _accessor = new CanonicalModelAccessor(model.Json);
+    }
+
+    /// <summary>Assesses one check and returns its finding.</summary>
+    public async Task<CheckFinding> RunAsync(
+        AssessmentCheck check,
+        CheckQueryPlan plan,
+        IProgress<string>? progress = null,
+        CancellationToken cancellationToken = default)
+    {
+        var startedAt = Stopwatch.StartNew();
+
+        try
+        {
+            progress?.Report($"{plan.CheckId}: retrieving evidence");
+
+            var trigger = await ProbeTriggerAsync(plan, cancellationToken).ConfigureAwait(false);
+
+            // A plan that says a missing trigger settles the check is taken at its word. This
+            // is the cheapest possible outcome and the most commonly wrong one to guess at,
+            // which is exactly why the plan states it rather than leaving it to the model.
+            if (trigger is { Applies: false, Settles: true })
+            {
+                startedAt.Stop();
+                return new CheckFinding
+                {
+                    CheckId = plan.CheckId,
+                    CheckName = plan.CheckName,
+                    Outcome = nameof(CheckOutcome.NotApplicable),
+                    Summary =
+                        $"Trigger absent: {plan.TriggerProbe?.AbsentWhen ?? "the check does not apply to this case"}. "
+                        + $"{trigger.Detail}",
+                    SearchesRun = trigger.Searches,
+                    PassagesRetrieved = trigger.Passages,
+                    Elapsed = startedAt.Elapsed,
+                };
+            }
+
+            var packs = new List<GroupEvidence>();
+            foreach (var group in plan.QueryGroups)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                progress?.Report($"{plan.CheckId}: {group.GroupId}");
+                packs.Add(await GatherAsync(group, cancellationToken).ConfigureAwait(false));
+            }
+
+            progress?.Report($"{plan.CheckId}: assessing");
+
+            var result = await _evaluator
+                .RunRawAsync(
+                    BuildSystemPrompt(),
+                    BuildAssessmentPrompt(check, plan, trigger, packs),
+                    DecisionMaxTokens,
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            startedAt.Stop();
+
+            var finding = ParseFinding(result.Response, plan);
+
+            return finding with
+            {
+                SearchesRun = trigger.Searches + packs.Sum(p => p.Searches),
+                PassagesRetrieved = trigger.Passages + packs.Sum(p => p.TotalPassages),
+                CanonicalPathsResolved = packs.Sum(p => p.Fragments.Count(f => f.Found)),
+                CanonicalPathsMissing = packs.Sum(p => p.Fragments.Count(f => !f.Found)),
+                Usage = result.Breakdown.Usage,
+                Elapsed = startedAt.Elapsed,
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            startedAt.Stop();
+            return CheckFinding.Failed(plan.CheckId, plan.CheckName, ex.Message.Trim(), startedAt.Elapsed);
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    // Retrieval
+    // ──────────────────────────────────────────────
+
+    private sealed record TriggerOutcome(bool Applies, bool Settles, string Detail, int Searches, int Passages);
+
+    /// <summary>
+    /// Establishes whether the check applies. The canonical model's own checkTriggers field
+    /// is consulted first — it was derived when the report was read in full, which is better
+    /// evidence than a similarity search — and searching is only used to corroborate it.
+    /// </summary>
+    private async Task<TriggerOutcome> ProbeTriggerAsync(CheckQueryPlan plan, CancellationToken cancellationToken)
+    {
+        var probe = plan.TriggerProbe;
+        if (probe is null)
+        {
+            return new TriggerOutcome(true, false, "No trigger probe in the plan; the check always applies.", 0, 0);
+        }
+
+        var detail = new StringBuilder();
+        bool? fromModel = null;
+
+        if (!string.IsNullOrWhiteSpace(probe.TriggerField))
+        {
+            var fragment = _accessor.Resolve("/" + probe.TriggerField.Replace('.', '/'));
+            if (fragment.Found)
+            {
+                fromModel = fragment.Json.Trim().Equals("true", StringComparison.OrdinalIgnoreCase);
+                detail.Append($"Canonical model {probe.TriggerField} = {fragment.Json.Trim()}. ");
+            }
+            else
+            {
+                detail.Append($"Canonical model has no value for {probe.TriggerField}. ");
+            }
+        }
+
+        var searches = 0;
+        var passages = 0;
+
+        foreach (var query in probe.Queries.Where(q => q.IsEvidenceSearch))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var hits = await SearchAsync(query, cancellationToken).ConfigureAwait(false);
+            searches++;
+            passages += hits.Count;
+        }
+
+        detail.Append($"{passages} corroborating passage(s) from {searches} probe search(es).");
+
+        // The model's trigger field decides when it has one; otherwise fall back to whether
+        // the probe searches found anything at all.
+        var applies = fromModel ?? passages > 0;
+
+        return new TriggerOutcome(applies, probe.ReturnsNotApplicable, detail.ToString(), searches, passages);
+    }
+
+    private sealed record GroupEvidence(
+        PlanQueryGroup Group,
+        IReadOnlyList<CanonicalFragment> Fragments,
+        IReadOnlyList<CaseDocumentSearchMatch> Passages,
+        int Searches,
+        int TotalPassages,
+        IReadOnlyList<string> CategoriesFound,
+        IReadOnlyList<string> MissedSignals);
+
+    /// <summary>
+    /// Assembles one group's evidence: the assertion side from the stored model, the evidence
+    /// side from the vector store, de-duplicated and trimmed to what is worth reading.
+    /// </summary>
+    private async Task<GroupEvidence> GatherAsync(PlanQueryGroup group, CancellationToken cancellationToken)
+    {
+        var fragments = _accessor.Resolve(group.AllCanonicalPaths);
+
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var passages = new List<CaseDocumentSearchMatch>();
+        var searches = 0;
+        var total = 0;
+        var missedSignals = new List<string>();
+
+        foreach (var query in group.Queries.Where(q => q.IsEvidenceSearch))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var hits = await SearchAsync(query, cancellationToken).ConfigureAwait(false);
+            searches++;
+            total += hits.Count;
+
+            // The same chunk comes back for several wordings of the same question; keep the
+            // first and drop the rest so the pack is evidence rather than repetition.
+            foreach (var hit in hits)
+            {
+                if (seen.Add($"{hit.DocumentName}|{hit.SearchedText.GetHashCode()}"))
+                {
+                    passages.Add(hit);
+                }
+            }
+
+            if (query.ExpectSignals.Count > 0 && !SignalPresent(query, hits))
+            {
+                missedSignals.Add(query.Id);
+            }
+        }
+
+        // The search tool cannot filter by document category, so the plan's targetCategories
+        // are applied here instead: a passage from a category this group is looking for
+        // outranks a better-scoring one from a category it is not.
+        var targeted = group.Queries
+            .Where(q => q.IsEvidenceSearch)
+            .SelectMany(q => q.TargetCategories)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var ranked = passages
+            .OrderByDescending(p => targeted.Count == 0 || targeted.Contains(p.CategoryCode) ? 1 : 0)
+            .ThenByDescending(p => p.Score)
+            .Take(MaxPassagesPerGroup)
+            .ToList();
+
+        var categories = ranked
+            .Select(p => p.CategoryCode)
+            .Where(c => !string.IsNullOrWhiteSpace(c))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return new GroupEvidence(group, fragments, ranked, searches, total, categories, missedSignals);
+    }
+
+    private async Task<IReadOnlyList<CaseDocumentSearchMatch>> SearchAsync(
+        PlannedQuery query, CancellationToken cancellationToken) =>
+        await _search.SearchAsync(query.Text, cancellationToken).ConfigureAwait(false);
+
+    /// <summary>
+    /// Whether any of a query's expected signals turned up. Where none do across every hit,
+    /// the data point is genuinely absent from the case file rather than merely unretrieved —
+    /// which for most checks is the finding, so it is reported to the assessor explicitly.
+    /// </summary>
+    private static bool SignalPresent(PlannedQuery query, IReadOnlyList<CaseDocumentSearchMatch> hits) =>
+        hits.Any(hit => query.ExpectSignals.Any(signal =>
+            hit.SearchedText.Contains(signal, StringComparison.OrdinalIgnoreCase)));
+
+    // ──────────────────────────────────────────────
+    // Prompting
+    // ──────────────────────────────────────────────
+
+    private static string BuildSystemPrompt() =>
+        """
+        You are a financial services Quality Assurance assessor. You assess one QA check
+        against a pre-assembled evidence pack and return a structured finding.
+
+        The pack has two sides, and the distinction matters:
+
+        - CANONICAL MODEL — what the suitability report asserts. It was extracted from the
+          report itself, so treat it as an accurate record of what the report says. It is not
+          evidence that the assertion is true.
+        - RETRIEVED PASSAGES — what the rest of the case file holds, quoted verbatim from the
+          supporting documents with their category. This is the evidence.
+
+        A consistency requirement is met when the report's assertion is corroborated by the
+        evidence. It fails when they contradict each other, or when the report asserts
+        something no document supports.
+
+        Rules:
+        - Judge only on the pack. Do not use outside knowledge of the case, and do not assume
+          a document exists because it usually would.
+        - "Not retrieved" and "not in the file" are different. The pack tells you which
+          searches found nothing; say which one you are relying on.
+        - Respect the false-positive guards given for each group. They describe specific ways
+          this comparison produces spurious mismatches, and a finding that one of them
+          explains is not a finding.
+        - An absent value in the canonical model means the report does not state it. That is
+          often the finding — say so plainly rather than treating it as an unknown.
+        - Cite the document name and category for every piece of evidence you rely on.
+        - Return one JSON object and nothing else. No prose outside it, no markdown fences.
+        """;
+
+    /// <summary>
+    /// The evidence pack. Structure follows the plan: the check, then one block per group
+    /// carrying its requirement, what the report asserts, what the file evidences, and the
+    /// rules for comparing them.
+    /// </summary>
+    private string BuildAssessmentPrompt(
+        AssessmentCheck check,
+        CheckQueryPlan plan,
+        TriggerOutcome trigger,
+        IReadOnlyList<GroupEvidence> packs)
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine($"# Check {plan.CheckId} — {plan.CheckName}");
+        sb.AppendLine();
+        sb.AppendLine($"Case: {_model.CaseReference}    Tenant: {_model.TenantId}");
+
+        if (!string.IsNullOrWhiteSpace(check.RegulatoryBasis))
+        {
+            sb.AppendLine($"Regulatory basis: {check.RegulatoryBasis}");
+        }
+
+        sb.AppendLine();
+        sb.AppendLine("## The check");
+        sb.AppendLine(check.Prompt);
+        sb.AppendLine();
+        sb.AppendLine("### What to look for");
+        sb.AppendLine(check.WhatToLookFor);
+        sb.AppendLine();
+        sb.AppendLine("### Decision logic");
+        sb.AppendLine(check.DecisionLogic);
+        sb.AppendLine();
+
+        sb.AppendLine("## Trigger");
+        sb.AppendLine(trigger.Detail);
+        sb.AppendLine(trigger.Applies
+            ? "The check applies to this case."
+            : "The trigger appears absent; say so if the evidence below bears that out.");
+        sb.AppendLine();
+
+        if (plan.Decision is not null)
+        {
+            sb.AppendLine("## How to decide");
+            Append(sb, "No Issue", plan.Decision.NoIssue);
+            Append(sb, "Potential Concern", plan.Decision.PotentialConcern);
+            Append(sb, "N/A", plan.Decision.NotApplicable);
+
+            if (plan.Decision.SeverityHints.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine("Severity guidance:");
+                foreach (var hint in plan.Decision.SeverityHints)
+                {
+                    sb.AppendLine($"- {hint}");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(plan.Decision.OverlayInstruction))
+            {
+                sb.AppendLine();
+                sb.AppendLine($"Overlay: {plan.Decision.OverlayInstruction}");
+            }
+
+            sb.AppendLine();
+        }
+
+        sb.AppendLine("## Evidence pack");
+
+        foreach (var pack in packs)
+        {
+            AppendGroup(sb, pack);
+        }
+
+        sb.AppendLine();
+        sb.AppendLine("## Return");
+        sb.AppendLine(
+            """
+            Return this JSON object:
+
+            {
+              "checkId": "...",
+              "checkName": "...",
+              "outcome": "NoIssue" | "PotentialConcern" | "NotApplicable",
+              "summary": "Two or three sentences: the outcome and why, naming the decisive evidence.",
+              "groups": [
+                {
+                  "groupId": "...",
+                  "requirement": "...",
+                  "outcome": "NoIssue" | "PotentialConcern" | "NotApplicable",
+                  "severity": "High" | "Moderate" | "Low" | null,
+                  "explanation": "What the report asserts, what the file evidences, and whether they agree.",
+                  "citations": [ { "source": "document name or canonical path", "category": "B", "quote": "verbatim" } ]
+                }
+              ]
+            }
+
+            Include every group from the pack. The check outcome is Potential Concern if any
+            group is a Potential Concern; N/A only when the trigger is absent for the whole check.
+            """);
+
+        return sb.ToString();
+    }
+
+    private void AppendGroup(StringBuilder sb, GroupEvidence pack)
+    {
+        var group = pack.Group;
+
+        sb.AppendLine();
+        sb.AppendLine(new string('-', 74));
+        sb.AppendLine($"### [{group.GroupId}] {group.Requirement}");
+        sb.AppendLine($"Limb: {group.Limb}");
+
+        // Assertion side, from the stored model.
+        sb.AppendLine();
+        sb.AppendLine("#### What the suitability report asserts (canonical model)");
+
+        var found = pack.Fragments.Where(f => f.Found).ToList();
+        var missing = pack.Fragments.Where(f => !f.Found).ToList();
+
+        if (found.Count == 0)
+        {
+            sb.AppendLine("The canonical model holds no value at any of this group's paths.");
+        }
+
+        foreach (var fragment in found)
+        {
+            sb.AppendLine();
+            sb.AppendLine($"`{fragment.Path}`:");
+            sb.AppendLine("```json");
+            sb.AppendLine(Truncate(fragment.Json, 6000));
+            sb.AppendLine("```");
+        }
+
+        if (missing.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine(
+                "Not present in the model (the report does not state these): "
+                + string.Join(", ", missing.Select(m => $"`{m.Path}`")));
+        }
+
+        // Evidence side, from the vector store.
+        sb.AppendLine();
+
+        if (group.IsModelOnly)
+        {
+            sb.AppendLine("#### What the case file evidences");
+            sb.AppendLine(
+                "This requirement is assessed from the report alone — it compares the report against "
+                + "itself, so there is no supporting document to corroborate it and none was searched "
+                + "for. Do not treat the absence of passages here as an evidence gap.");
+        }
+        else if (pack.Passages.Count == 0)
+        {
+            sb.AppendLine($"#### What the case file evidences ({pack.Searches} search(es), 0 hit(s))");
+            sb.AppendLine(
+                "Nothing was retrieved. The searches ran and returned no relevant passage, so treat "
+                + "this as the case file not evidencing the point.");
+        }
+        else
+        {
+            sb.AppendLine($"#### What the case file evidences ({pack.Searches} search(es), {pack.TotalPassages} hit(s))");
+            sb.AppendLine($"Categories represented: {string.Join(", ", pack.CategoriesFound)}");
+
+            foreach (var passage in pack.Passages)
+            {
+                var category = string.IsNullOrWhiteSpace(passage.CategoryCode) ? "-" : passage.CategoryCode;
+                sb.AppendLine();
+                sb.AppendLine($"[{category}] {passage.DocumentName} (score {passage.Score:0.000})");
+                sb.AppendLine(Truncate(passage.SearchedText, 2400));
+            }
+        }
+
+        if (pack.MissedSignals.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine(
+                $"Searches that returned nothing carrying their expected signals: {string.Join(", ", pack.MissedSignals)}. "
+                + "Treat those data points as absent from the case file, not merely unretrieved.");
+        }
+
+        if (group.Comparison is { } comparison)
+        {
+            sb.AppendLine();
+            sb.AppendLine("#### How to compare");
+
+            if (!string.IsNullOrWhiteSpace(comparison.Method))
+            {
+                sb.AppendLine($"Method: {comparison.Method}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(comparison.Tolerance))
+            {
+                sb.AppendLine($"Tolerance: {comparison.Tolerance}");
+            }
+
+            foreach (var guard in comparison.FalsePositiveGuards)
+            {
+                sb.AppendLine($"- Guard: {guard}");
+            }
+        }
+
+        if (group.Sufficiency is { } sufficiency)
+        {
+            sb.AppendLine();
+            sb.AppendLine("#### If evidence is missing");
+            Append(sb, "Assertion absent", sufficiency.IfAssertionAbsent);
+            Append(sb, "Evidence absent", sufficiency.IfEvidenceAbsent);
+            Append(sb, "Both absent", sufficiency.IfBothAbsent);
+
+            if (sufficiency.MinEvidenceCategories is { } min)
+            {
+                sb.AppendLine($"- Minimum corroborating categories: {min}");
+            }
+        }
+    }
+
+    private static void Append(StringBuilder sb, string label, string? value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            sb.AppendLine($"- {label}: {value}");
+        }
+    }
+
+    private static string Truncate(string text, int max) =>
+        text.Length <= max ? text : text[..max] + $"\n... [truncated, {text.Length - max:N0} more characters]";
+
+    /// <summary>
+    /// Reads the assessor's reply. A reply that will not parse becomes an Error finding
+    /// carrying the raw text — never a pass, and never silently discarded.
+    /// </summary>
+    private static CheckFinding ParseFinding(string response, CheckQueryPlan plan)
+    {
+        var json = CanonicalModelExtractor.ParseObject(response);
+
+        if (json is null)
+        {
+            return new CheckFinding
+            {
+                CheckId = plan.CheckId,
+                CheckName = plan.CheckName,
+                Outcome = nameof(CheckOutcome.Error),
+                Summary = "The assessor did not return a parseable finding. Raw response:\n\n" + response.Trim(),
+                Error = "Unparseable response",
+            };
+        }
+
+        try
+        {
+            var finding = json.Deserialize<CheckFinding>(FindingOptions);
+
+            if (finding is null)
+            {
+                throw new JsonException("The finding deserialised to null.");
+            }
+
+            // The plan is the authority on which check this is; the model only echoes it.
+            return finding with
+            {
+                CheckId = plan.CheckId,
+                CheckName = string.IsNullOrWhiteSpace(finding.CheckName) ? plan.CheckName : finding.CheckName,
+            };
+        }
+        catch (JsonException ex)
+        {
+            return new CheckFinding
+            {
+                CheckId = plan.CheckId,
+                CheckName = plan.CheckName,
+                Outcome = nameof(CheckOutcome.Error),
+                Summary = $"The finding could not be read ({ex.Message}). Raw response:\n\n{response.Trim()}",
+                Error = ex.Message,
+            };
+        }
+    }
+}

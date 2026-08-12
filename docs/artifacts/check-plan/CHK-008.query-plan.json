@@ -1,0 +1,153 @@
+{
+  "planVersion": "1.0",
+  "checkId": "CHK-008",
+  "checkName": "Disadvantages, Risks and Customer Understanding",
+  "appliesTo": "All advised investment and pension cases",
+  "regulatoryBasis": "COBS 9.4.7R; COBS 4.2.1R; PRIN 2A.5; COBS 2.1.1R",
+  "primaryCategories": ["B", "C", "G", "H", "I"],
+
+  "tool": {
+    "name": "search_case_documents",
+    "parameters": ["searchText"],
+    "resultsPerCall": 8,
+    "categoryFilterAvailable": false
+  },
+
+  "triggerProbe": {
+    "triggerField": "checkTriggers.isAdvisedCase",
+    "queries": [
+      { "id": "T8.1", "text": "risks and disadvantages of the recommendation you should be aware", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["risk", "disadvantage", "you should", "be aware", "however"], "priority": "Core" }
+    ],
+    "presentWhen": "Always — the check applies to all advised cases.",
+    "absentWhen": "Never.",
+    "onAbsent": "Continue"
+  },
+
+  "queryGroups": [
+    {
+      "groupId": "G8.1",
+      "requirement": "Material disadvantages, risk factors and limitations of the recommendation",
+      "limb": "Consistency",
+      "canonicalPaths": ["/riskWarningsAndDisadvantages/materialDisadvantages[]", "/riskWarningsAndDisadvantages/limitations[]", "/recommendations[]/disadvantages[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H"] },
+      "queries": [
+        { "id": "Q8.1.1", "text": "disadvantages of this recommendation you should note the following drawbacks", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["disadvantage", "drawback", "you should note", "however", "downside"], "priority": "Core" },
+        { "id": "Q8.1.2", "text": "other considerations of switching things to bear in mind", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["other considerations", "bear in mind", "please note", "important"], "priority": "Core" },
+        { "id": "Q8.1.3", "text": "time out of the market while the transfer is pending could be financially disadvantaged", "side": "Either", "targetCategories": ["I", "G"], "expectSignals": ["out of the market", "pending", "disadvantaged", "rise or fall"], "priority": "Core" },
+        { "id": "Q8.1.4", "text": "delays in accessing funds working days for disinvestment and banking", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["working days", "delay", "access", "disinvestment"], "priority": "Core" },
+        { "id": "Q8.1.5", "text": "previous provider is not obliged to take the plan back cancellation limitations", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["not obliged", "cannot return", "cancellation", "30 days"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "SetCoverage",
+        "tolerance": "Every material disadvantage identified in research or product literature should appear in the report.",
+        "falsePositiveGuards": [
+          "Disadvantages may be spread across several sections rather than collected under one heading — retrieve broadly before concluding they are absent.",
+          "A risk disclosed in the illustration but omitted from the report is a report gap only where it is material to this client."
+        ]
+      },
+      "sufficiency": {
+        "ifAssertionAbsent": "Potential Concern: a report presenting only benefits is not fair, clear and not misleading.",
+        "ifEvidenceAbsent": "Assess on the report alone; note the absence of research or product literature to test completeness against."
+      }
+    },
+
+    {
+      "groupId": "G8.2",
+      "requirement": "Product-specific and investment-specific risks explained",
+      "limb": "Consistency",
+      "canonicalPaths": ["/riskWarningsAndDisadvantages/productSpecificRisks[]", "/riskWarningsAndDisadvantages/investmentRisks[]", "/recommendations[]/risks[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H"] },
+      "queries": [
+        { "id": "Q8.2.1", "text": "the value of your investment can fall as well as rise you may get back less than invested", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["fall as well as rise", "may get back less", "no guarantee", "capital at risk"], "priority": "Core" },
+        { "id": "Q8.2.2", "text": "past performance is not a guide to future returns no guarantee of outperformance", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["past performance", "no guarantee", "not a guide"], "priority": "Core" },
+        { "id": "Q8.2.3", "text": "risk factors listed in the key features document and KIID for this fund", "side": "Evidence", "targetCategories": ["H"], "expectSignals": ["risk", "Key Features", "KIID", "risk indicator", "warning"], "priority": "Core", "note": "The source list against which the report's risk coverage is tested." },
+        { "id": "Q8.2.4", "text": "risks specific to drawdown income sustainability capital erosion longevity", "side": "Either", "targetCategories": ["I", "H", "G"], "expectSignals": ["drawdown", "erosion", "sustainab", "longevity", "run out"], "priority": "Core" },
+        { "id": "Q8.2.5", "text": "inflation risk interest rate risk currency risk concentration risk", "side": "Either", "targetCategories": ["H", "G", "I"], "expectSignals": ["inflation", "interest rate", "currency", "concentration", "liquidity risk"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "SetCoverage",
+        "falsePositiveGuards": [
+          "Standard capital-at-risk wording satisfies the general warning but not product-specific risks — test them separately.",
+          "Deferring risk disclosure to product literature ('all other risks are detailed in the literature provided') is a limitation on the report, and should be recorded as such."
+        ]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Note that no product literature is on file to verify risk coverage against." }
+    },
+
+    {
+      "groupId": "G8.3",
+      "requirement": "Tax consequences of the recommendation",
+      "limb": "Consistency",
+      "canonicalPaths": ["/taxTreatment/consequencesStated[]", "/recommendations[]/taxImplications[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H"] },
+      "queries": [
+        { "id": "Q8.3.1", "text": "tax implications of this recommendation income tax on withdrawals marginal rate", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["tax", "marginal rate", "taxable", "tax free", "25%"], "priority": "Core" },
+        { "id": "Q8.3.2", "text": "inheritance tax treatment of pensions on death before and after age 75", "side": "Either", "targetCategories": ["I", "G"], "expectSignals": ["inheritance tax", "IHT", "age 75", "death benefit", "estate"], "priority": "Core" },
+        { "id": "Q8.3.3", "text": "tax analysis of the recommended action carried out in research", "side": "Evidence", "targetCategories": ["G"], "expectSignals": ["tax", "analysis", "liability", "efficient"], "priority": "Core" },
+        { "id": "Q8.3.4", "text": "triggering the money purchase annual allowance by taking taxable income", "side": "Either", "targetCategories": ["I", "G"], "expectSignals": ["MPAA", "trigger", "£10,000", "annual allowance"], "priority": "Core", "note": "A withdrawal recommendation that does not address MPAA consequences is a common omission." }
+      ],
+      "comparison": {
+        "method": "SetCoverage",
+        "falsePositiveGuards": [
+          "Generic legislative explanation is not the same as stating the consequence for this client — distinguish the two.",
+          "A tax consequence stated without the client's tax band established (see CHK-001 G1.2) is unverifiable, not necessarily wrong."
+        ]
+      },
+      "sufficiency": { "ifAssertionAbsent": "Potential Concern where the recommendation has a tax consequence (encashment, crystallisation, contribution)." }
+    },
+
+    {
+      "groupId": "G8.4",
+      "requirement": "Loss scenarios illustrated",
+      "limb": "Consistency",
+      "canonicalPaths": ["/riskWarningsAndDisadvantages/lossScenariosIllustrated[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["F", "H"] },
+      "queries": [
+        { "id": "Q8.4.1", "text": "what would happen if your investment fell by twenty or thirty percent", "side": "Either", "targetCategories": ["I", "F"], "expectSignals": ["fell", "fall of", "%", "loss", "crash", "downturn"], "priority": "Core" },
+        { "id": "Q8.4.2", "text": "stress test market crash scenario modelled in the cashflow", "side": "Either", "targetCategories": ["F", "I"], "expectSignals": ["stress test", "crash", "scenario", "-30%", "modelled"], "priority": "Core" },
+        { "id": "Q8.4.3", "text": "illustration showing lower growth rate projected value", "side": "Evidence", "targetCategories": ["H"], "expectSignals": ["low growth", "projected", "0%", "lower"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "PresenceOnly",
+        "falsePositiveGuards": ["A stress test in a cashflow model is a loss scenario even if not labelled as one in the risk section."]
+      },
+      "sufficiency": { "ifBothAbsent": "Potential Concern: loss scenarios are explicitly named by this check." }
+    },
+
+    {
+      "groupId": "G8.5",
+      "requirement": "Disadvantages and risks are fairly and prominently presented",
+      "limb": "Consistency",
+      "canonicalPaths": ["/riskWarningsAndDisadvantages/prominence"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["I"] },
+      "queries": [
+        { "id": "Q8.5.1", "text": "risk warnings section heading important information you should read", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["Risk warnings", "Important", "please read", "heading"], "priority": "Core" },
+        { "id": "Q8.5.2", "text": "appendix technical notes assumptions and definitions", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["Appendix", "assumptions", "definitions", "notes"], "priority": "Core", "note": "Establishes whether material risk content sits only in an appendix, which is the prominence test in COBS 4.2.1R." },
+        { "id": "Q8.5.3", "text": "benefits of the recommendation summarised positively", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["benefit", "you will benefit", "advantages", "positive"], "priority": "Supplementary", "note": "Retrieved to compare the weight and placement of benefits against disadvantages." }
+      ],
+      "comparison": {
+        "method": "NarrativeAlignment",
+        "falsePositiveGuards": [
+          "Chunk ordering does not reliably reflect page position — rely on explicit section headings and page markers, not retrieval order.",
+          "A dedicated risk section is not mandatory; disadvantages distributed but clearly stated can still be prominent."
+        ]
+      },
+      "sufficiency": { "ifAssertionAbsent": "Record that no dedicated risk or disadvantages section exists and note where risk content was found instead." }
+    }
+  ],
+
+  "decision": {
+    "noIssue": "Material disadvantages, product and investment risks, tax consequences and at least one loss scenario are stated in the report, consistent with the research and product literature, and presented where the client will see them.",
+    "potentialConcern": "A material disadvantage or risk identified in the file is absent from the report, tax consequences are unaddressed, no loss scenario is given, or risk content appears only in an appendix while benefits are prominent.",
+    "notApplicable": "Not applicable — this check applies to all advised investment and pension cases.",
+    "severityHints": [
+      "Highest: a material disadvantage present in research or product literature and omitted entirely from the report.",
+      "High: no disadvantages stated at all, or risk disclosure wholly delegated to product literature.",
+      "High: a recommendation with a tax cost whose consequence is never explained.",
+      "Moderate: risks stated only in generic boilerplate with nothing product-specific.",
+      "Low: risk content present but scattered rather than collected."
+    ]
+  },
+
+  "budget": { "coreQueries": 16, "supplementaryQueries": 4, "estimatedPassages": 160 }
+}

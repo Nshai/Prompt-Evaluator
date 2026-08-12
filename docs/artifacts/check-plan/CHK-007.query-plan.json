@@ -1,0 +1,189 @@
+{
+  "planVersion": "1.0",
+  "checkId": "CHK-007",
+  "checkName": "Costs, Charges and Value of the Recommendation",
+  "appliesTo": "All advised investment and pension cases",
+  "regulatoryBasis": "COBS 6.1ZA (where applicable); COBS 6.1; COBS 9.2.2R; PRIN 2A.4",
+  "primaryCategories": ["B", "C", "E", "F", "G", "H", "I"],
+
+  "tool": {
+    "name": "search_case_documents",
+    "parameters": ["searchText"],
+    "resultsPerCall": 8,
+    "categoryFilterAvailable": false
+  },
+
+  "triggerProbe": {
+    "triggerField": "checkTriggers.hasCostsAndChargesSection",
+    "queries": [
+      { "id": "T7.1", "text": "summary of plan charges annual recurring charges our charges", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["charges", "%", "£", "annual", "total charge"], "priority": "Core" }
+    ],
+    "presentWhen": "The report contains a costs and charges section or table.",
+    "absentWhen": "No costs or charges are disclosed anywhere in the report.",
+    "onAbsent": "ContinueWithReducedScope"
+  },
+
+  "queryGroups": [
+    {
+      "groupId": "G7.1",
+      "requirement": "All material costs disclosed — product, platform, fund, transaction, advice",
+      "limb": "Consistency",
+      "canonicalPaths": ["/costsAndCharges/disclosureCompleteness", "/costsAndCharges/recommended/lines[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["E", "G", "H"] },
+      "queries": [
+        { "id": "Q7.1.1", "text": "platform charge product charge percentage per annum on the recommended plan", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["platform", "product charge", "%", "per annum"], "canonicalPaths": ["/costsAndCharges/recommended/lines[]"], "priority": "Core" },
+        { "id": "Q7.1.2", "text": "fund ongoing charges figure OCF investment management charge", "side": "Either", "targetCategories": ["H", "G", "I"], "expectSignals": ["OCF", "ongoing charges figure", "AMC", "fund charge", "%"], "priority": "Core" },
+        { "id": "Q7.1.3", "text": "transaction costs of the underlying funds excluded from these figures", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["transaction cost", "exclude", "broker", "trading"], "priority": "Core", "note": "Transaction costs are the most commonly omitted layer; retrieve the exclusion wording as well as any figure." },
+        { "id": "Q7.1.4", "text": "discretionary fund manager charge DFM model portfolio management fee", "side": "Either", "targetCategories": ["H", "G", "I"], "expectSignals": ["DFM", "discretionary", "management fee", "model"], "priority": "Supplementary" },
+        { "id": "Q7.1.5", "text": "total annual charge combining platform investment and adviser fees all in cost", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["total", "combined", "all", "%", "£"], "canonicalPaths": ["/costsAndCharges/recommended/totalOngoingPercentage"], "priority": "Core", "note": "Tests aggregatedTotalDisclosed. A 'total' that omits the adviser fee is not an aggregated total." },
+        { "id": "Q7.1.6", "text": "illustration charges schedule effect of charges on the projected value", "side": "Evidence", "targetCategories": ["H"], "expectSignals": ["illustration", "effect of charges", "projected", "deduction"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "SetCoverage",
+        "tolerance": "Every cost layer present in the illustration or factsheets must appear in the report.",
+        "falsePositiveGuards": [
+          "A stated exclusion (transaction costs excluded, with reasons) is a disclosure, not an omission — but record it as excluded rather than disclosed.",
+          "Charge figures in an illustration may include the adviser fee while the report's table excludes it; reconcile the basis before flagging."
+        ]
+      },
+      "sufficiency": {
+        "ifAssertionAbsent": "Potential Concern: no charges disclosed on an advised investment case.",
+        "ifEvidenceAbsent": "Potential Concern: charge figures asserted with no illustration or factsheet to support them.",
+        "minEvidenceCategories": 1
+      }
+    },
+
+    {
+      "groupId": "G7.2",
+      "requirement": "Initial and ongoing adviser fees, consistent with the client agreement",
+      "limb": "Consistency",
+      "canonicalPaths": ["/costsAndCharges/adviserFees[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["A", "H"] },
+      "queries": [
+        { "id": "Q7.2.1", "text": "our charges initial advice fee percentage of the amount invested in monetary terms", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["initial", "advice fee", "%", "£", "of the amount invested"], "priority": "Core" },
+        { "id": "Q7.2.2", "text": "ongoing service fee per annum based on the value of your investments", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["ongoing", "per annum", "%", "£", "annual"], "priority": "Core" },
+        { "id": "Q7.2.3", "text": "client agreement fee tariff initial and ongoing charging structure", "side": "Evidence", "targetCategories": ["A"], "expectSignals": ["fee", "tariff", "initial", "ongoing", "%", "agreement"], "canonicalPaths": ["/costsAndCharges/adviserFees[]/matchesClientAgreement"], "priority": "Core", "note": "The only place the agreed fee basis can be verified. Category A is named in the matrix specifically for this comparison." },
+        { "id": "Q7.2.4", "text": "how the adviser fee will be paid facilitated from the product or paid directly", "side": "Either", "targetCategories": ["I", "A"], "expectSignals": ["facilitated", "deducted", "paid by", "directly", "from the plan"], "priority": "Core" },
+        { "id": "Q7.2.5", "text": "VAT treatment of the advice fee", "side": "Either", "targetCategories": ["A", "I"], "expectSignals": ["VAT", "plus VAT", "exempt"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "tolerance": "Percentages must match the client agreement exactly; monetary amounts must be that percentage of the stated investment.",
+        "falsePositiveGuards": [
+          "Agreements often state a maximum; a lower charged rate is compliant, a higher one is not.",
+          "The monetary fee moves with the transfer value — check the stated basis before treating a difference as an error."
+        ]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Potential Concern: fees charged with no client agreement on file establishing the basis." }
+    },
+
+    {
+      "groupId": "G7.3",
+      "requirement": "Cumulative impact of costs and charges",
+      "limb": "Consistency",
+      "canonicalPaths": ["/costsAndCharges/reductionInYield[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["H"] },
+      "queries": [
+        { "id": "Q7.3.1", "text": "reduction in yield effect of charges over the term critical yield", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["reduction in yield", "RIY", "critical yield", "%"], "priority": "Core" },
+        { "id": "Q7.3.2", "text": "projected value at retirement age at low mid and high growth rates", "side": "Either", "targetCategories": ["H", "I"], "expectSignals": ["projected value", "growth rate", "low", "mid", "high", "at age"], "priority": "Core" },
+        { "id": "Q7.3.3", "text": "effect of switching on the maturity value decrease over the term", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["effect of switching", "decrease", "£", "%"], "priority": "Core" },
+        { "id": "Q7.3.4", "text": "cumulative effect of charges on your investment returns over time", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["cumulative", "over time", "compound", "effect"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "falsePositiveGuards": [
+          "Illustration growth rates are prescribed and will differ from cashflow assumptions; that is not an inconsistency by itself.",
+          "Real-terms and nominal projections are not comparable — check which basis each figure uses."
+        ]
+      },
+      "sufficiency": { "ifAssertionAbsent": "Potential Concern: cumulative impact is explicitly named by this check and is the clearest expression of long-term cost." }
+    },
+
+    {
+      "groupId": "G7.4",
+      "requirement": "Cost comparison with alternative options",
+      "limb": "Consistency",
+      "canonicalPaths": ["/costsAndCharges/comparison"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["E", "G"] },
+      "queries": [
+        { "id": "Q7.4.1", "text": "comparison of the annual recurring charge of the existing plan against the recommended alternative", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["existing", "recommended", "difference", "%", "£", "impact"], "priority": "Core" },
+        { "id": "Q7.4.2", "text": "like for like cost comparison the new plan is cheaper or more expensive than your current plans", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["like for like", "less expensive", "more expensive", "cheaper", "%"], "priority": "Core" },
+        { "id": "Q7.4.3", "text": "existing plan charges annual management charge policy fee from the provider", "side": "Evidence", "targetCategories": ["E"], "expectSignals": ["AMC", "annual management charge", "policy fee", "%", "charge"], "canonicalPaths": ["/costsAndCharges/existing"], "priority": "Core" },
+        { "id": "Q7.4.4", "text": "cost comparison of alternative providers and products considered in research", "side": "Evidence", "targetCategories": ["G"], "expectSignals": ["comparison", "cheaper", "cost", "versus", "alternative"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "tolerance": "Each existing-plan charge in the comparison table must match the provider documentation and be arithmetically consistent with the plan's value.",
+        "falsePositiveGuards": [
+          "Recompute: a monetary charge that is not the stated percentage of the stated plan value indicates transposed or erroneous rows.",
+          "Comparisons on different bases (with and without adviser fees) are both legitimate; check which basis each conclusion uses before calling it a contradiction."
+        ]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Potential Concern: existing charges quoted with no provider documentation." }
+    },
+
+    {
+      "groupId": "G7.5",
+      "requirement": "Benefit versus cost — fair value",
+      "limb": "Consistency",
+      "canonicalPaths": ["/costsAndCharges/valueAssessment"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H"] },
+      "queries": [
+        { "id": "Q7.5.1", "text": "what you receive in return for these charges benefits of the ongoing service", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["benefit", "in return", "service includes", "you will receive"], "priority": "Core" },
+        { "id": "Q7.5.2", "text": "the plan would need to outperform by in order to justify the additional cost", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["outperform", "need to grow", "in order to", "%", "£"], "priority": "Core" },
+        { "id": "Q7.5.3", "text": "past performance of the recommended funds compared with the existing funds", "side": "Either", "targetCategories": ["G", "H", "I"], "expectSignals": ["performance", "5 years", "cumulative", "%", "annualised"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "NarrativeAlignment",
+        "falsePositiveGuards": ["An assertion that required outperformance 'is achievable' is a claim, not an analysis; require supporting performance data before accepting it."]
+      },
+      "sufficiency": { "ifAssertionAbsent": "Potential Concern under PRIN 2A.4 where the recommendation increases cost." }
+    },
+
+    {
+      "groupId": "G7.6",
+      "requirement": "Costs are excessive relative to the benefits provided",
+      "limb": "Appropriateness",
+      "canonicalPaths": ["/costsAndCharges/valueAssessment/requiredOutperformancePercentage", "/costsAndCharges/comparison/differencePercentage"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H"] },
+      "queries": [
+        { "id": "Q7.6.1", "text": "the recommended plan is more expensive than the existing arrangement including our fees", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["more expensive", "additional cost", "%", "including"], "priority": "Core" },
+        { "id": "Q7.6.2", "text": "initial fee in monetary terms deducted from the transferred funds", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["initial", "£", "deducted", "reducing the investment"], "priority": "Core", "note": "Compare the initial fee against the annual saving claimed for the switch; the payback period is the core fair-value test." }
+      ],
+      "comparison": {
+        "method": "RangeMatch",
+        "falsePositiveGuards": ["A higher cost is not automatically poor value — test against the stated benefits before concluding."]
+      },
+      "sufficiency": { "ifBothAbsent": "No finding where the recommendation reduces cost and the comparison is evidenced." }
+    },
+
+    {
+      "groupId": "G7.7",
+      "requirement": "Alternatives provide better cost or benefit to the client",
+      "limb": "Appropriateness",
+      "canonicalPaths": ["/recommendations[]/alternativesConsidered[]/comparativeCost"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G"] },
+      "queries": [
+        { "id": "Q7.7.1", "text": "cheaper alternative available but not recommended reason", "side": "Either", "targetCategories": ["I", "G"], "expectSignals": ["cheaper", "lower cost", "less expensive", "not recommend"], "priority": "Core" },
+        { "id": "Q7.7.2", "text": "cost of leaving the existing plan in place and switching funds internally", "side": "Either", "targetCategories": ["I", "G", "E"], "expectSignals": ["internal", "in situ", "leave", "existing", "switch funds"], "priority": "Core" }
+      ],
+      "comparison": { "method": "ValueMatch", "falsePositiveGuards": ["A cheaper option rejected for evidenced non-cost reasons (fund range, access, servicing) is a valid outcome."] },
+      "sufficiency": { "ifEvidenceAbsent": "Assess on the report alone; note that no comparative cost research was available." }
+    }
+  ],
+
+  "decision": {
+    "noIssue": "Every material cost layer is disclosed or explicitly excluded with reasons, adviser fees match the client agreement, cumulative impact and a cost comparison are present and arithmetically sound, and the benefits are set against the cost.",
+    "potentialConcern": "A cost layer is silently omitted, no aggregated total is given, charge figures do not reconcile with plan values or provider documentation, adviser fees differ from the client agreement, or a cost increase is unexplained.",
+    "notApplicable": "Not applicable — this check applies to all advised investment and pension cases.",
+    "severityHints": [
+      "Highest: a charge figure that is arithmetically impossible against the stated plan value, or fees exceeding the client agreement.",
+      "High: no aggregated all-in cost, or cumulative impact never shown.",
+      "High: the report claims a cost saving that its own comparison table contradicts.",
+      "Moderate: transaction costs excluded with reasons but never estimated.",
+      "Low: rounding differences between the report table and the illustration."
+    ]
+  },
+
+  "budget": { "coreQueries": 22, "supplementaryQueries": 3, "estimatedPassages": 200 }
+}

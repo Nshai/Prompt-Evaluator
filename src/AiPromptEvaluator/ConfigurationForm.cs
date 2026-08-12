@@ -27,6 +27,11 @@ public partial class ConfigurationForm : Form
         chunkOverlapUpDown.Value = Clamp(chunkOverlapUpDown, _settings.ChunkOverlapTokens);
         searchResultsUpDown.Value = Clamp(searchResultsUpDown, _settings.MaxSearchResults);
 
+        canonicalSchemaTextBox.Text = _settings.CanonicalSchemaPath;
+        checkPlanTextBox.Text = _settings.CheckPlanFolder;
+        canonicalDbTextBox.Text = _settings.CanonicalModelDbPath;
+        extractionTokensUpDown.Value = Clamp(extractionTokensUpDown, _settings.ExtractionMaxTokens);
+
         RefreshModelChoices();
         selectedModelComboBox.Text = _settings.SelectedModel;
     }
@@ -34,6 +39,49 @@ public partial class ConfigurationForm : Form
     /// <summary>Keeps a stored value inside the control's range, so a hand-edited settings file can't throw.</summary>
     private static decimal Clamp(NumericUpDown control, int value) =>
         Math.Clamp(value, control.Minimum, control.Maximum);
+
+    private void CanonicalSchemaBrowseButton_Click(object? sender, EventArgs e)
+    {
+        using var dlg = new OpenFileDialog
+        {
+            Title = "Select the canonical model JSON Schema",
+            Filter = "JSON schema (*.json)|*.json|All files (*.*)|*.*",
+        };
+
+        // Start where the current setting points, or where the deployed copy lives — the
+        // user is nearly always looking for a sibling of one or the other.
+        var current = _settings.ResolveCanonicalSchemaPath();
+        if (File.Exists(current))
+        {
+            dlg.InitialDirectory = Path.GetDirectoryName(current);
+            dlg.FileName = Path.GetFileName(current);
+        }
+
+        if (dlg.ShowDialog(this) == DialogResult.OK)
+        {
+            canonicalSchemaTextBox.Text = dlg.FileName;
+        }
+    }
+
+    private void CheckPlanBrowseButton_Click(object? sender, EventArgs e)
+    {
+        using var dlg = new FolderBrowserDialog
+        {
+            Description = "Select the folder holding the CHK-*.query-plan.json files",
+            UseDescriptionForTitle = true,
+        };
+
+        var current = _settings.ResolveCheckPlanFolder();
+        if (Directory.Exists(current))
+        {
+            dlg.SelectedPath = current;
+        }
+
+        if (dlg.ShowDialog(this) == DialogResult.OK)
+        {
+            checkPlanTextBox.Text = dlg.SelectedPath;
+        }
+    }
 
     private void ShowKeyCheckBox_CheckedChanged(object? sender, EventArgs e)
     {
@@ -198,6 +246,11 @@ public partial class ConfigurationForm : Form
         _settings.MaxTokensPerChunk = (int)chunkTokensUpDown.Value;
         _settings.ChunkOverlapTokens = (int)chunkOverlapUpDown.Value;
         _settings.MaxSearchResults = (int)searchResultsUpDown.Value;
+
+        _settings.CanonicalSchemaPath = canonicalSchemaTextBox.Text.Trim();
+        _settings.CheckPlanFolder = checkPlanTextBox.Text.Trim();
+        _settings.CanonicalModelDbPath = canonicalDbTextBox.Text.Trim();
+        _settings.ExtractionMaxTokens = (int)extractionTokensUpDown.Value;
 
         try
         {

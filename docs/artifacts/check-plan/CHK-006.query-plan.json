@@ -1,0 +1,135 @@
+{
+  "planVersion": "1.0",
+  "checkId": "CHK-006",
+  "checkName": "Recommendation Rationale and Suitable Alternatives",
+  "appliesTo": "All cases requiring a suitability report",
+  "regulatoryBasis": "COBS 9.4.1R–9.4.2R; COBS 9A.3.1R–9A.3.3R where applicable; PRIN 2A",
+  "primaryCategories": ["B", "C", "F", "G", "I"],
+
+  "tool": {
+    "name": "search_case_documents",
+    "parameters": ["searchText"],
+    "resultsPerCall": 8,
+    "categoryFilterAvailable": false
+  },
+
+  "triggerProbe": {
+    "triggerField": "checkTriggers.isAdvisedCase",
+    "queries": [
+      { "id": "T6.1", "text": "I recommend that you my recommendation is", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["I recommend", "my recommendation", "we recommend"], "priority": "Core" }
+    ],
+    "presentWhen": "The report makes at least one recommendation.",
+    "absentWhen": "No recommendation is made.",
+    "onAbsent": "ReturnNA"
+  },
+
+  "queryGroups": [
+    {
+      "groupId": "G6.1",
+      "requirement": "Client-specific rationale for each recommendation, linked to specified goals",
+      "limb": "Consistency",
+      "canonicalPaths": ["/recommendations[]/rationale[]/text", "/recommendations[]/rationale[]/isClientSpecific", "/recommendations[]/linkedObjectiveIds"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "C", "F", "G"] },
+      "queries": [
+        { "id": "Q6.1.1", "text": "I have recommended this because it meets your objective and is in your best interests", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["because", "in your best interests", "meets your", "for the following reasons"], "priority": "Core" },
+        { "id": "Q6.1.2", "text": "this recommendation is suitable for you given your circumstances and what you told me", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["suitable", "your circumstances", "you told me", "you confirmed", "you said"], "priority": "Core", "note": "Second wording deliberately targets personalised language for the isClientSpecific judgement." },
+        { "id": "Q6.1.3", "text": "adviser rationale for the recommendation recorded in the file note or planning notes", "side": "Evidence", "targetCategories": ["C", "F", "G"], "expectSignals": ["rationale", "reason", "because", "decided", "concluded"], "priority": "Core" },
+        { "id": "Q6.1.4", "text": "one recommendation per existing plan retain switch encash advice given", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["Retain", "Switch", "Encash", "Advice", "Transfer"], "priority": "Core", "note": "Enumerates the discrete recommendations so each can be tested for its own rationale — a report with five actions and one generic rationale block fails this group." }
+      ],
+      "comparison": {
+        "method": "NarrativeAlignment",
+        "falsePositiveGuards": [
+          "Identical rationale bullets repeated verbatim across several recommendations are boilerplate — count them once and mark isClientSpecific false.",
+          "A rationale that names the client's actual figures, plans or stated words is client-specific even if the sentence structure is templated."
+        ]
+      },
+      "sufficiency": {
+        "ifAssertionAbsent": "Potential Concern: a recommendation with no stated reason cannot demonstrate suitability.",
+        "ifEvidenceAbsent": "Note that the rationale is unsupported by any research or meeting record, and weight by how specific the rationale is.",
+        "minEvidenceCategories": 1
+      }
+    },
+
+    {
+      "groupId": "G6.2",
+      "requirement": "Justification for the particular product, provider, wrapper and investment",
+      "limb": "Consistency",
+      "canonicalPaths": ["/solution/providerSelection/rationale[]", "/solution/investmentStrategy/rationale[]", "/solution/recommendedPlans[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H"] },
+      "queries": [
+        { "id": "Q6.2.1", "text": "why this provider has been recommended platform financial strength service charges", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["provider", "platform", "recommended because", "financial strength"], "priority": "Core" },
+        { "id": "Q6.2.2", "text": "I have recommended a personal pension for the following reasons wrapper choice", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["personal pension", "SIPP", "ISA", "wrapper", "for the following reasons"], "priority": "Core" },
+        { "id": "Q6.2.3", "text": "why these funds have been selected investment strategy rationale diversification", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["funds", "selected", "diversif", "blend", "strategy"], "priority": "Core" },
+        { "id": "Q6.2.4", "text": "provider and platform comparison research whole of market panel selection", "side": "Evidence", "targetCategories": ["G"], "expectSignals": ["comparison", "research", "panel", "whole of market", "shortlist"], "priority": "Core", "note": "Tests whether the provider rationale is comparative (research-backed) or merely descriptive." },
+        { "id": "Q6.2.5", "text": "centralised investment proposition investment committee approved fund list", "side": "Either", "targetCategories": ["G", "I"], "expectSignals": ["CIP", "investment committee", "panel", "approved list"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "NarrativeAlignment",
+        "falsePositiveGuards": [
+          "A provider's marketing strengths stated in isolation are not a justification for selecting it over alternatives — distinguish absolute claims from comparative ones.",
+          "Firm panel or CIP membership is a legitimate justification if the report says so; do not require a fresh whole-of-market search where a documented panel process exists."
+        ]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Potential Concern where the report asserts a comparison was carried out but no research document exists." }
+    },
+
+    {
+      "groupId": "G6.3",
+      "requirement": "Personalised language linked to individual circumstances",
+      "limb": "Consistency",
+      "canonicalPaths": ["/recommendations[]/rationale[]/isClientSpecific"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "C"] },
+      "queries": [
+        { "id": "Q6.3.1", "text": "you have told me that you want and this is why the recommendation reflects that", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["you have told me", "you want", "you prefer", "you requested", "as you"], "priority": "Core" },
+        { "id": "Q6.3.2", "text": "generic explanation of how the product works aims and benefits", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["is a type of", "typically", "generally", "designed to"], "priority": "Core", "note": "Deliberately retrieves boilerplate so the ratio of personalised to generic rationale can be judged rather than guessed." },
+        { "id": "Q6.3.3", "text": "specific client preference recorded such as simplicity consolidation adviser involvement", "side": "Evidence", "targetCategories": ["B", "C"], "expectSignals": ["prefer", "wants", "asked for", "important to"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "NarrativeAlignment",
+        "falsePositiveGuards": ["Standard regulatory wording (tax caveats, past-performance warnings) must be present and is not evidence of impersonal advice."]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Where personalised claims cite preferences that appear nowhere in the file, treat as unsupported personalisation." }
+    },
+
+    {
+      "groupId": "G6.4",
+      "requirement": "Alternatives considered and reasons for rejection",
+      "limb": "Consistency",
+      "canonicalPaths": ["/recommendations[]/alternativesConsidered[]", "/research/optionsConsidered[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G"] },
+      "queries": [
+        { "id": "Q6.4.1", "text": "options considered leave existing plan switch funds internally set up a new plan", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["Option 1", "options", "considered", "alternative"], "priority": "Core" },
+        { "id": "Q6.4.2", "text": "I do not recommend this option because reasons for rejection", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["do not recommend", "discounted", "rejected", "not suitable", "however"], "priority": "Core" },
+        { "id": "Q6.4.3", "text": "alternative solutions stakeholder pension considered but not recommended", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["stakeholder", "alternative", "not recommend", "more suitable"], "priority": "Core" },
+        { "id": "Q6.4.4", "text": "investment pathways considered and why they are not appropriate for you", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["investment pathway", "pathways", "discounted", "not appropriate"], "priority": "Core", "note": "Required consideration for drawdown cases; frequently appears only as an appendix." },
+        { "id": "Q6.4.5", "text": "comparison of alternative products and providers considered during research", "side": "Evidence", "targetCategories": ["G"], "expectSignals": ["compared", "alternative", "shortlist", "versus", "option"], "priority": "Core" },
+        { "id": "Q6.4.6", "text": "do nothing option leaving things as they are was considered", "side": "Either", "targetCategories": ["I", "G"], "expectSignals": ["do nothing", "leave", "no action", "untouched", "status quo"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "SetCoverage",
+        "falsePositiveGuards": [
+          "Options listed without individual rejection reasons are a partial answer — the check asks for reasons, not just the list.",
+          "An alternative rejected in the research file but never mentioned in the report is a report gap, not a research gap."
+        ]
+      },
+      "sufficiency": {
+        "ifAssertionAbsent": "Potential Concern: no alternatives presented to the client.",
+        "ifEvidenceAbsent": "Where the report claims options were assessed but no research document exists, treat the claim as unsupported."
+      }
+    }
+  ],
+
+  "decision": {
+    "noIssue": "Each discrete recommendation carries its own client-specific rationale naming an objective; product, provider, wrapper and investment choices are justified; and alternatives are presented with reasons for rejection, corroborated by research.",
+    "potentialConcern": "Rationale is boilerplate or shared verbatim across different recommendations, a recommendation names no objective, provider or wrapper choice is asserted without comparison, or alternatives are absent or listed without reasons.",
+    "notApplicable": "No recommendation is made in the case.",
+    "severityHints": [
+      "Highest: a recommendation with no rationale at all, or rationale that contradicts the case facts (e.g. 'lower costs' where the charge comparison shows an increase).",
+      "High: no alternatives considered on a case where research shows options were compared.",
+      "Moderate: rationale present but wholly generic across all recommendations.",
+      "Low: an alternative listed with a brief rather than reasoned rejection."
+    ]
+  },
+
+  "budget": { "coreQueries": 17, "supplementaryQueries": 1, "estimatedPassages": 144 }
+}

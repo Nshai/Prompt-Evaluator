@@ -32,6 +32,35 @@ public class PromptEvaluator
         return ToResult(response);
     }
 
+    /// <summary>
+    /// A system-plus-user call with no tools and its own output cap. Extraction and check
+    /// decisions both return JSON rather than prose, where the default response cap is the
+    /// wrong size: a truncated JSON document is unusable, not merely short.
+    /// </summary>
+    public virtual async Task<PromptResult> RunRawAsync(
+        string systemPrompt,
+        string userPrompt,
+        int maxOutputTokens,
+        CancellationToken cancellationToken = default)
+    {
+        using var client = AiClientFactory.CreateChatClient(_settings);
+
+        var messages = new List<ChatMessage>
+        {
+            new(ChatRole.System, systemPrompt),
+            new(ChatRole.User, userPrompt),
+        };
+
+        var options = ChatOptions();
+        options.MaxOutputTokens = Math.Max(1, maxOutputTokens);
+
+        var response = await client
+            .GetResponseAsync(messages, options, cancellationToken)
+            .ConfigureAwait(false);
+
+        return ToResult(response);
+    }
+
     public virtual async Task<PromptResult> RunAsync(string prompt, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(prompt))
@@ -45,35 +74,6 @@ public class PromptEvaluator
 
         var response = await client
             .GetResponseAsync(BuildPrompt(prompt, folderContext), ChatOptions(), cancellationToken)
-            .ConfigureAwait(false);
-
-        return ToResult(response);
-    }
-
-    /// <summary>
-    /// Runs <paramref name="userPrompt"/> with tools available to the model. The chat client
-    /// is built with function invocation, so a tool call is executed and fed back
-    /// automatically — this returns once the model has finished with the tools and answered.
-    /// </summary>
-    public async Task<PromptResult> RunWithToolsAsync(
-        string systemPrompt,
-        string userPrompt,
-        IReadOnlyList<AITool> tools,
-        CancellationToken cancellationToken = default)
-    {
-        using var client = AiClientFactory.CreateChatClient(_settings);
-
-        var messages = new List<ChatMessage>
-        {
-            new(ChatRole.System, systemPrompt),
-            new(ChatRole.User, userPrompt),
-        };
-
-        var options = ChatOptions();
-        options.Tools = [.. tools];
-
-        var response = await client
-            .GetResponseAsync(messages, options, cancellationToken)
             .ConfigureAwait(false);
 
         return ToResult(response);

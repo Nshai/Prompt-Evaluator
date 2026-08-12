@@ -56,8 +56,11 @@ partial class CheckEvaluatorForm
     // Action bar
     private TableLayoutPanel actionPanel;
     private Button runButton;
+    private Button runAllButton;
     private Button cancelRunButton;
     private Button unloadDocsButton;
+    private Button extractModelButton;
+    private Button deleteModelButton;
     private Label statusLabel;
     private Button openPromptEvaluatorButton;
     private Button openConfigButton;
@@ -111,8 +114,11 @@ partial class CheckEvaluatorForm
         totalCostLabel = new Label();
         costNoteLabel = new Label();
         runButton = new Button();
+        runAllButton = new Button();
         cancelRunButton = new Button();
         unloadDocsButton = new Button();
+        extractModelButton = new Button();
+        deleteModelButton = new Button();
         statusLabel = new Label();
         openPromptEvaluatorButton = new Button();
         openConfigButton = new Button();
@@ -392,26 +398,33 @@ partial class CheckEvaluatorForm
         totalCostLabel.Text = "Total: $0.0000 for 0 tokens";
         totalCostLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-        // actionPanel — left: Run + Cancel + status; right: Prompt Evaluator + Configuration + Save
+        // actionPanel — left: Run + Run All + Cancel + model/index buttons + status;
+        // right: Prompt Evaluator + Configuration + Save
         actionPanel.AutoSize = true;
-        actionPanel.ColumnCount = 8;
+        actionPanel.ColumnCount = 11;
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 0 Run
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 1 Cancel
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 2 Unload Docs
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 3 status (stretches)
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 4 Prompt Evaluator
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 5 Configuration
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 6 Save Settings
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 1 Run All
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 2 Cancel
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 3 Extract Model
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 4 Delete Model
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 5 Unload Docs
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 6 status (stretches)
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 7 Prompt Evaluator
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 8 Configuration
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 9 Save Settings
         actionPanel.Dock = DockStyle.Fill;
         actionPanel.Margin = new Padding(0);
         actionPanel.RowCount = 1;
         actionPanel.Controls.Add(runButton, 0, 0);
-        actionPanel.Controls.Add(cancelRunButton, 1, 0);
-        actionPanel.Controls.Add(unloadDocsButton, 2, 0);
-        actionPanel.Controls.Add(statusLabel, 3, 0);
-        actionPanel.Controls.Add(openPromptEvaluatorButton, 4, 0);
-        actionPanel.Controls.Add(openConfigButton, 5, 0);
-        actionPanel.Controls.Add(saveSettingsButton, 6, 0);
+        actionPanel.Controls.Add(runAllButton, 1, 0);
+        actionPanel.Controls.Add(cancelRunButton, 2, 0);
+        actionPanel.Controls.Add(extractModelButton, 3, 0);
+        actionPanel.Controls.Add(deleteModelButton, 4, 0);
+        actionPanel.Controls.Add(unloadDocsButton, 5, 0);
+        actionPanel.Controls.Add(statusLabel, 6, 0);
+        actionPanel.Controls.Add(openPromptEvaluatorButton, 7, 0);
+        actionPanel.Controls.Add(openConfigButton, 8, 0);
+        actionPanel.Controls.Add(saveSettingsButton, 9, 0);
         actionPanel.Name = "actionPanel";
 
         // runButton
@@ -422,6 +435,34 @@ partial class CheckEvaluatorForm
         runButton.Text = "Run Check";
         runButton.UseVisualStyleBackColor = true;
         runButton.Click += RunButton_Click;
+
+        // runAllButton — every check that has a query plan, in one pass
+        runAllButton.AutoSize = true;
+        runAllButton.Margin = new Padding(0, 0, 8, 0);
+        runAllButton.Name = "runAllButton";
+        runAllButton.Padding = new Padding(12, 4, 12, 4);
+        runAllButton.Text = "Run All Checks";
+        runAllButton.UseVisualStyleBackColor = true;
+        runAllButton.Click += RunAllButton_Click;
+
+        // extractModelButton — parses the category I report into the canonical model store
+        extractModelButton.AutoSize = true;
+        extractModelButton.Margin = new Padding(0, 0, 8, 0);
+        extractModelButton.Name = "extractModelButton";
+        extractModelButton.Padding = new Padding(12, 4, 12, 4);
+        extractModelButton.Text = "Extract Model";
+        extractModelButton.UseVisualStyleBackColor = true;
+        extractModelButton.Click += ExtractModelButton_Click;
+
+        // deleteModelButton — drops the stored canonical model for this case
+        deleteModelButton.AutoSize = true;
+        deleteModelButton.Enabled = false;
+        deleteModelButton.Margin = new Padding(0, 0, 12, 0);
+        deleteModelButton.Name = "deleteModelButton";
+        deleteModelButton.Padding = new Padding(12, 4, 12, 4);
+        deleteModelButton.Text = "Delete Model";
+        deleteModelButton.UseVisualStyleBackColor = true;
+        deleteModelButton.Click += DeleteModelButton_Click;
 
         // cancelRunButton
         cancelRunButton.AutoSize = true;

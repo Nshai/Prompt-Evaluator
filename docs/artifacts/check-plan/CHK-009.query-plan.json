@@ -1,0 +1,193 @@
+{
+  "planVersion": "1.0",
+  "checkId": "CHK-009",
+  "checkName": "Replacement or Switch Justification",
+  "appliesTo": "Replacement/switch cases only; N/A otherwise",
+  "regulatoryBasis": "COBS 9.2.2R; COBS 9.2.5R; COBS 9A.2.18R where applicable; COBS 2.1.1R",
+  "primaryCategories": ["B", "E", "F", "G", "H", "I"],
+
+  "tool": {
+    "name": "search_case_documents",
+    "parameters": ["searchText"],
+    "resultsPerCall": 8,
+    "categoryFilterAvailable": false
+  },
+
+  "triggerProbe": {
+    "triggerField": "checkTriggers.hasReplacementOrSwitch",
+    "queries": [
+      { "id": "T9.1", "text": "switch your existing pension into a new plan transfer the value across", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["switch", "transfer", "move", "consolidate", "into a new"], "priority": "Core" },
+      { "id": "T9.2", "text": "encash surrender or close the existing policy", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["encash", "surrender", "close", "withdraw the full"], "priority": "Core" },
+      { "id": "T9.3", "text": "existing scheme advice retain switch transfer table", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["EXISTING SCHEME", "ADVICE", "Retain", "Switch"], "priority": "Core", "note": "Enumerates the ceding plans. Every plan with a non-Retain action needs its own instance of the groups below." }
+    ],
+    "presentWhen": "At least one existing plan is being switched, transferred, encashed or surrendered.",
+    "absentWhen": "All existing plans are retained, or there are no existing plans.",
+    "onAbsent": "ReturnNA"
+  },
+
+  "queryGroups": [
+    {
+      "groupId": "G9.1",
+      "requirement": "Comparison of existing versus recommended product and investments",
+      "limb": "Consistency",
+      "canonicalPaths": ["/replacementAnalysis[]/comparison[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["E", "G", "H"] },
+      "queries": [
+        { "id": "Q9.1.1", "text": "comparison of your existing plan with the recommended scheme features charges fund range", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["existing", "recommended", "compared", "versus", "better"], "priority": "Core" },
+        { "id": "Q9.1.2", "text": "pension switch analysis report existing scheme versus proposed scheme", "side": "Evidence", "targetCategories": ["G"], "expectSignals": ["switch analysis", "ceding", "receiving", "comparison", "existing scheme"], "priority": "Core" },
+        { "id": "Q9.1.3", "text": "number of funds available in the existing scheme and the new scheme", "side": "Either", "targetCategories": ["E", "G", "I"], "expectSignals": ["funds available", "fund range", "over", "choice"], "priority": "Core" },
+        { "id": "Q9.1.4", "text": "retirement options available flexi access drawdown UFPLS annuity in each scheme", "side": "Either", "targetCategories": ["E", "I", "G"], "expectSignals": ["FAD", "UFPLS", "drawdown", "annuity", "options at retirement"], "priority": "Core" },
+        { "id": "Q9.1.5", "text": "whether the scheme allows a servicing adviser and adviser charge facilitation", "side": "Either", "targetCategories": ["E", "I"], "expectSignals": ["servicing adviser", "adviser charge", "facilitat", "allows"], "priority": "Core" },
+        { "id": "Q9.1.6", "text": "performance of the existing fund compared with the recommended fund over five years", "side": "Either", "targetCategories": ["G", "I", "H"], "expectSignals": ["performance", "5 years", "cumulative", "%", "volatility"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "SetCoverage",
+        "tolerance": "Each dimension the report compares must be supported by provider or research documentation.",
+        "falsePositiveGuards": [
+          "Provider fund-range and option data changes over time; check the date of the research before treating a difference as an error.",
+          "Where the existing scheme is better on a dimension, the report must say so — a one-sided comparison is a finding in itself."
+        ]
+      },
+      "sufficiency": {
+        "ifAssertionAbsent": "Potential Concern: a switch recommended with no comparison of what is being left behind.",
+        "ifEvidenceAbsent": "Potential Concern: comparison asserted with no switch analysis or provider data on file.",
+        "minEvidenceCategories": 1
+      }
+    },
+
+    {
+      "groupId": "G9.2",
+      "requirement": "Benefits and costs of switching, including where benefits outweigh higher costs",
+      "limb": "Consistency",
+      "canonicalPaths": ["/replacementAnalysis[]/benefitsOfSwitching[]", "/replacementAnalysis[]/costsOfSwitching"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["E", "G", "H"] },
+      "queries": [
+        { "id": "Q9.2.1", "text": "this switch is in your best interests for the following reasons", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["best interests", "reasons", "benefit", "lower costs", "greater choice"], "priority": "Core" },
+        { "id": "Q9.2.2", "text": "cost of switching initial adviser charge deducted from the transfer", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["initial", "charge", "£", "deducted", "cost of"], "priority": "Core" },
+        { "id": "Q9.2.3", "text": "difference in annual charges between the existing plan and the recommended plan per plan", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["difference", "%", "£", "impact", "annual recurring"], "priority": "Core", "note": "Per-plan charge impact is the arithmetic against which the per-plan benefit claim is tested." },
+        { "id": "Q9.2.4", "text": "exit penalty early surrender charge market value reduction on transfer", "side": "Either", "targetCategories": ["E", "G", "I"], "expectSignals": ["penalty", "exit charge", "MVR", "surrender charge", "no charges for transfer"], "priority": "Core" },
+        { "id": "Q9.2.5", "text": "critical yield required growth to match the existing plan value", "side": "Either", "targetCategories": ["I", "G", "H"], "expectSignals": ["critical yield", "required", "%", "match", "grow by"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "tolerance": "Benefit claims must reconcile with the charge comparison for the same plan.",
+        "falsePositiveGuards": [
+          "A benefit claimed at solution level may not hold for every ceding plan — test per plan, not in aggregate.",
+          "Higher cost is acceptable where the report explains why the benefits outweigh it; look for that explanation before flagging."
+        ]
+      },
+      "sufficiency": { "ifAssertionAbsent": "Potential Concern: costs of switching not disclosed." }
+    },
+
+    {
+      "groupId": "G9.3",
+      "requirement": "Details of lost features and guarantees",
+      "limb": "Consistency",
+      "canonicalPaths": ["/replacementAnalysis[]/featuresOrGuaranteesLost[]", "/existingArrangements[]/safeguardedBenefits"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["E", "G"] },
+      "queries": [
+        { "id": "Q9.3.1", "text": "safeguarded benefits guaranteed annuity rate guaranteed minimum pension enhanced tax free cash", "side": "Either", "targetCategories": ["E", "G", "I"], "expectSignals": ["safeguarded", "GAR", "GMP", "guaranteed", "enhanced tax free cash", "does not contain"], "priority": "Core", "note": "Highest-severity group in the plan. Both a positive statement and an explicit negative ('does not contain any safeguarded benefits') are valid findings; silence is not." },
+        { "id": "Q9.3.2", "text": "protected pension age protected tax free cash percentage above 25%", "side": "Either", "targetCategories": ["E", "G"], "expectSignals": ["protected", "pension age", "tax free cash", "over 25%"], "priority": "Core" },
+        { "id": "Q9.3.3", "text": "with profits bonus loyalty bonus terminal bonus lost on transfer", "side": "Either", "targetCategories": ["E", "G"], "expectSignals": ["with profits", "bonus", "loyalty", "terminal"], "priority": "Core" },
+        { "id": "Q9.3.4", "text": "life cover waiver of premium or other benefits attached to the existing policy", "side": "Either", "targetCategories": ["E", "G"], "expectSignals": ["life cover", "waiver", "attached benefit", "death benefit"], "priority": "Core" },
+        { "id": "Q9.3.5", "text": "policy schedule scheme booklet terms of the existing arrangement", "side": "Evidence", "targetCategories": ["E"], "expectSignals": ["schedule", "booklet", "terms", "benefits", "conditions"], "priority": "Core" },
+        { "id": "Q9.3.6", "text": "employer contributions would be lost if you transfer away from the workplace scheme", "side": "Either", "targetCategories": ["I", "E", "G"], "expectSignals": ["employer contribution", "workplace", "lost", "miss out"], "canonicalPaths": ["/replacementAnalysis[]/employerContributionsLost"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "SetCoverage",
+        "falsePositiveGuards": [
+          "An explicit 'no safeguarded benefits' statement in the report must still be corroborated by the policy documentation — the report asserting it is not evidence of it.",
+          "Absence of a guarantee in a policy summary is not proof of absence; look for the scheme booklet or provider confirmation."
+        ]
+      },
+      "sufficiency": {
+        "ifAssertionAbsent": "Potential Concern: the report never addresses whether anything is being given up.",
+        "ifEvidenceAbsent": "Potential Concern of the highest severity where a switch proceeds with no provider documentation confirming the absence of guarantees.",
+        "minEvidenceCategories": 1
+      }
+    },
+
+    {
+      "groupId": "G9.4",
+      "requirement": "Alternatives to the switch considered",
+      "limb": "Consistency",
+      "canonicalPaths": ["/replacementAnalysis[]/alternativesConsidered[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G"] },
+      "queries": [
+        { "id": "Q9.4.1", "text": "leaving the existing scheme untouched or switching funds within the existing plan", "side": "Either", "targetCategories": ["I", "G"], "expectSignals": ["leave", "untouched", "internal", "in situ", "within the existing"], "priority": "Core" },
+        { "id": "Q9.4.2", "text": "consolidating into the employer scheme or another existing plan instead", "side": "Either", "targetCategories": ["I", "G"], "expectSignals": ["employer scheme", "another existing", "consolidate into", "workplace"], "priority": "Core" },
+        { "id": "Q9.4.3", "text": "why the alternative option was not recommended for this particular plan", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["do not recommend", "not suitable", "because", "discounted"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "SetCoverage",
+        "falsePositiveGuards": ["Options assessed once for the whole case may legitimately cover several plans — check whether the rejection reasoning is plan-specific where the plans differ materially."]
+      },
+      "sufficiency": { "ifAssertionAbsent": "Potential Concern: switching recommended without considering leaving the plan in place." }
+    },
+
+    {
+      "groupId": "G9.5",
+      "requirement": "Switching costs exceed the benefits",
+      "limb": "Appropriateness",
+      "canonicalPaths": ["/replacementAnalysis[]/costsOfSwitching", "/replacementAnalysis[]/benefitsOfSwitching[]", "/costsAndCharges/reductionInYield[]/criticalYieldPercentage"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H"] },
+      "queries": [
+        { "id": "Q9.5.1", "text": "the new plan would need to outperform the existing plan by in the first year", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["outperform", "first year", "£", "%", "need to"], "priority": "Core" },
+        { "id": "Q9.5.2", "text": "effect of switching reduction in the projected value at retirement", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["effect of switching", "decrease", "reduction", "£", "%"], "priority": "Core" },
+        { "id": "Q9.5.3", "text": "annual saving from the switch in monetary terms for this plan", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["saving", "£", "per annum", "less expensive"], "priority": "Core", "note": "Set against the initial fee attributable to the same plan; a saving that takes decades to repay the fee is a fair-value concern." }
+      ],
+      "comparison": {
+        "method": "RangeMatch",
+        "falsePositiveGuards": ["Non-financial benefits (access, servicing, risk alignment) can justify a net cost increase where the report argues it explicitly."]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Assess on the report's own figures; note the absence of independent switch analysis." }
+    },
+
+    {
+      "groupId": "G9.6",
+      "requirement": "Lost guarantees or benefits disadvantage the client",
+      "limb": "Appropriateness",
+      "canonicalPaths": ["/existingArrangements[]/safeguardedBenefits/isBeingGivenUp", "/existingArrangements[]/exitPenalties"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["E", "G"] },
+      "queries": [
+        { "id": "Q9.6.1", "text": "value of the guarantee being given up and why it is not needed", "side": "Either", "targetCategories": ["I", "G"], "expectSignals": ["guarantee", "value", "giving up", "not required", "outweigh"], "priority": "Core" },
+        { "id": "Q9.6.2", "text": "cost of replacing the lost benefit elsewhere", "side": "Either", "targetCategories": ["G", "I"], "expectSignals": ["replace", "cost", "equivalent", "elsewhere"], "priority": "Supplementary" }
+      ],
+      "comparison": { "method": "NarrativeAlignment", "falsePositiveGuards": ["Only applies where G9.3 identified a benefit actually being given up."] },
+      "sufficiency": { "ifBothAbsent": "Not applicable where no safeguarded benefits exist and that is evidenced." }
+    },
+
+    {
+      "groupId": "G9.7",
+      "requirement": "Other alternatives provide better outcomes for the client",
+      "limb": "Appropriateness",
+      "canonicalPaths": ["/replacementAnalysis[]/alternativesConsidered[]", "/research/optionsConsidered[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G"] },
+      "queries": [
+        { "id": "Q9.7.1", "text": "an internal fund switch would achieve the same outcome at lower cost", "side": "Either", "targetCategories": ["G", "I"], "expectSignals": ["internal", "same outcome", "lower cost", "without transferring"], "priority": "Core" },
+        { "id": "Q9.7.2", "text": "the existing scheme already offers the features the client needs", "side": "Either", "targetCategories": ["E", "G"], "expectSignals": ["already", "existing scheme offers", "available within"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "NarrativeAlignment",
+        "falsePositiveGuards": ["Consolidation for its own sake is a valid client objective where the client asked for it — check CHK-002 objectives before treating simplification as an insufficient reason."]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "No finding where the research supports the chosen route." }
+    }
+  ],
+
+  "decision": {
+    "noIssue": "For every ceding plan the report compares existing against recommended, discloses the costs and benefits of switching, addresses safeguarded benefits and penalties, and considers alternatives — all corroborated by categories E and G.",
+    "potentialConcern": "Any ceding plan lacks a comparison, lost features or guarantees are unaddressed or unevidenced, switching costs are not disclosed, the claimed benefit contradicts the charge analysis, or no alternative to switching was considered.",
+    "notApplicable": "No plan is being switched, transferred, encashed or surrendered.",
+    "severityHints": [
+      "Highest: safeguarded benefits given up with no analysis, or no provider documentation confirming none exist.",
+      "Highest: employer contributions lost on a transfer from a live workplace scheme without that being addressed.",
+      "High: a switch justified on cost savings that the report's own comparison table contradicts.",
+      "High: the largest ceding plan by value has no plan-specific cost/benefit analysis.",
+      "Moderate: alternatives considered case-wide but not for a materially different plan.",
+      "Low: comparison present but a minor dimension omitted."
+    ]
+  },
+
+  "budget": { "coreQueries": 26, "supplementaryQueries": 1, "estimatedPassages": 216 }
+}

@@ -1,0 +1,1495 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://canonical-model/suitability/v1.0/canonical-suitability-model.schema.json",
+  "title": "Canonical Suitability Model (CSM) v1.0",
+  "description": "Template-agnostic canonical model for facts asserted by, or extractable from, an advice case. Populated by an LLM from a suitability report/letter (category I) and, using the same shapes, from supporting evidence (categories A-H) so that QA checks CHK-001..CHK-010 reduce to field-level comparisons between two instances of this model. Field names and enumerations are aligned to Intelliflo Office (consolidated-swagger.json) resources wherever an equivalent resource exists.",
+  "type": "object",
+  "required": ["modelVersion", "source", "case"],
+  "additionalProperties": false,
+
+  "properties": {
+    "modelVersion": { "const": "1.0" },
+
+    "source": { "$ref": "#/$defs/SourceDescriptor" },
+
+    "case": { "$ref": "#/$defs/AdviceCase" },
+
+    "parties": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "clients": { "type": "array", "items": { "$ref": "#/$defs/Client" } },
+        "dependants": { "type": "array", "items": { "$ref": "#/$defs/Dependant" } },
+        "professionalContacts": { "type": "array", "items": { "$ref": "#/$defs/ProfessionalContact" } }
+      }
+    },
+
+    "clientAuthority": { "$ref": "#/$defs/ClientAuthority" },
+
+    "financialPosition": { "$ref": "#/$defs/FinancialPosition" },
+
+    "objectives": {
+      "type": "array",
+      "description": "Demands and needs / goals. CHK-002 primary payload.",
+      "items": { "$ref": "#/$defs/Objective" }
+    },
+
+    "riskAssessment": { "$ref": "#/$defs/RiskAssessment" },
+
+    "knowledgeAndExperience": { "$ref": "#/$defs/KnowledgeAndExperience" },
+
+    "vulnerability": { "$ref": "#/$defs/VulnerabilityAssessment" },
+
+    "existingArrangements": {
+      "type": "array",
+      "description": "Existing plans/policies described in the report. CHK-001/003/007/009.",
+      "items": { "$ref": "#/$defs/ExistingArrangement" }
+    },
+
+    "needsAnalysis": { "$ref": "#/$defs/NeedsAnalysis" },
+
+    "research": { "$ref": "#/$defs/Research" },
+
+    "recommendations": {
+      "type": "array",
+      "description": "One entry per discrete recommended action. CHK-006 primary payload.",
+      "items": { "$ref": "#/$defs/Recommendation" }
+    },
+
+    "solution": { "$ref": "#/$defs/Solution" },
+
+    "costsAndCharges": { "$ref": "#/$defs/CostsAndCharges" },
+
+    "replacementAnalysis": {
+      "type": "array",
+      "description": "One entry per plan being replaced/switched/transferred. CHK-009 trigger and payload.",
+      "items": { "$ref": "#/$defs/ReplacementAnalysis" }
+    },
+
+    "riskWarningsAndDisadvantages": { "$ref": "#/$defs/RiskWarningsAndDisadvantages" },
+
+    "taxTreatment": { "$ref": "#/$defs/TaxTreatment" },
+
+    "ongoingService": { "$ref": "#/$defs/OngoingService" },
+
+    "checkTriggers": { "$ref": "#/$defs/CheckTriggers" },
+
+    "extractionReport": { "$ref": "#/$defs/ExtractionReport" }
+  },
+
+  "$defs": {
+
+    "___SECTION_PRIMITIVES___": { "description": "Cross-cutting primitives" },
+
+    "Provenance": {
+      "type": "object",
+      "description": "Attach to every extracted entity or statement. This is what makes the model auditable: a QA finding must be able to cite where in the document the asserted fact came from.",
+      "additionalProperties": false,
+      "required": ["assertionStatus"],
+      "properties": {
+        "assertionStatus": {
+          "enum": ["Stated", "Inferred", "Derived", "Absent"],
+          "description": "Stated = explicit in the document. Inferred = the LLM concluded it from narrative prose. Derived = calculated from other extracted values. Absent = the model expected it and could not find it."
+        },
+        "documentId": { "type": "string", "description": "Identifier of the source document within the case bundle." },
+        "documentCategory": { "$ref": "#/$defs/DocumentCategory" },
+        "pageNumbers": { "type": "array", "items": { "type": "integer", "minimum": 1 } },
+        "sectionHeading": { "type": "string" },
+        "quote": { "type": "string", "description": "Verbatim supporting text, trimmed. Required whenever assertionStatus is Stated or Inferred." },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "extractionNote": { "type": "string", "description": "Why the LLM read the text this way; ambiguity flags." }
+      }
+    },
+
+    "Evidenced": {
+      "type": "object",
+      "description": "Mixin applied to entities: 'provenance' documents where the entity came from.",
+      "properties": { "provenance": { "$ref": "#/$defs/Provenance" } }
+    },
+
+    "Money": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office CurrencyValue.",
+      "additionalProperties": false,
+      "properties": {
+        "currency": { "type": "string", "default": "GBP" },
+        "amount": { "type": ["number", "null"] },
+        "basis": { "enum": ["Gross", "Net", "Unspecified"] },
+        "asAt": { "type": ["string", "null"], "format": "date" },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "Percentage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": ["number", "null"], "description": "Percentage points, e.g. 0.44 means 0.44%." },
+        "basis": { "type": "string", "description": "What the percentage is of, e.g. 'of fund value pa'." },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "Frequency": {
+      "enum": ["Monthly", "Weekly", "Fortnightly", "FourWeekly", "Quarterly", "HalfYearly", "Annually", "OneOff", "Unspecified"],
+      "description": "Intelliflo Office frequency enum plus OneOff/Unspecified."
+    },
+
+    "DocumentCategory": {
+      "enum": [
+        "A_ClientAuthority",
+        "B_KnowYourClient",
+        "C_MeetingsAndCommunications",
+        "D_RiskCapacityAndExperience",
+        "E_ExistingPlansAndPortfolios",
+        "F_NeedsAnalysis",
+        "G_Research",
+        "H_SolutionDesign",
+        "I_RecommendationsAndAdvice"
+      ],
+      "description": "Quality-check document taxonomy (Document Categories v1)."
+    },
+
+    "Statement": {
+      "type": "object",
+      "description": "A narrative assertion the report makes that a check must test for presence, specificity and consistency (rationale bullets, risk warnings, disadvantages, explanations).",
+      "additionalProperties": false,
+      "required": ["text"],
+      "properties": {
+        "text": { "type": "string" },
+        "topic": { "type": "string", "description": "Short normalised label, e.g. 'LowerCosts', 'LossOfGuarantee', 'MarketRisk'." },
+        "isClientSpecific": { "type": ["boolean", "null"], "description": "False where the wording is generic boilerplate. Direct input to CHK-006 personalisation and CHK-008 prominence." },
+        "linkedObjectiveIds": { "type": "array", "items": { "type": "string" } },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "SourceDescriptor": {
+      "type": "object",
+      "description": "What was parsed to produce this instance.",
+      "additionalProperties": false,
+      "required": ["documentId", "documentCategory"],
+      "properties": {
+        "documentId": { "type": "string" },
+        "fileName": { "type": "string" },
+        "documentCategory": { "$ref": "#/$defs/DocumentCategory" },
+        "documentType": {
+          "enum": ["SuitabilityReport", "ReviewReport", "FactFind", "FileNote", "RiskProfileReport", "PolicyInformation", "Illustration", "ResearchReport", "CashflowOutput", "ClientAgreement", "KeyFeatures", "FundFactsheet", "Other"]
+        },
+        "producedOn": { "type": ["string", "null"], "format": "date" },
+        "pageCount": { "type": ["integer", "null"] },
+        "extractedAt": { "type": "string", "format": "date-time" },
+        "extractorModel": { "type": "string" }
+      }
+    },
+
+    "AdviceCase": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office ServiceCase.",
+      "additionalProperties": false,
+      "properties": {
+        "caseReference": { "type": ["string", "null"] },
+        "reportDate": { "type": ["string", "null"], "format": "date" },
+        "adviceType": {
+          "type": "array",
+          "items": { "enum": ["PensionAccumulation", "PensionDecumulation", "PensionSwitch", "PensionTransferDB", "Investment", "ISA", "Protection", "Mortgage", "EquityRelease", "EstatePlanning", "Retirement", "Other"] }
+        },
+        "adviceBasis": { "enum": ["Independent", "RestrictedWholeOfMarket", "Restricted", "Unspecified"] },
+        "serviceType": { "enum": ["Advised", "InformationOnly", "Execution", "Unspecified"] },
+        "isJoint": { "type": ["boolean", "null"] },
+        "adviser": { "$ref": "#/$defs/Adviser" },
+        "firm": { "$ref": "#/$defs/Firm" },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "Adviser": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": ["string", "null"] },
+        "qualifications": { "type": "array", "items": { "type": "string" } },
+        "role": { "type": ["string", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "Firm": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": ["string", "null"] },
+        "fcaReferenceNumber": { "type": ["string", "null"] },
+        "companyNumber": { "type": ["string", "null"] },
+        "address": { "type": ["string", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "___SECTION_PARTIES___": { "description": "Category A/B: who the client is" },
+
+    "Client": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office Client + PersonValue.",
+      "additionalProperties": false,
+      "required": ["clientId"],
+      "properties": {
+        "clientId": { "type": "string", "description": "Local id used for cross-references within this instance." },
+        "role": { "enum": ["Primary", "Joint", "Third", "Beneficiary", "Other"] },
+        "title": { "type": ["string", "null"] },
+        "firstName": { "type": ["string", "null"] },
+        "lastName": { "type": ["string", "null"] },
+        "fullName": { "type": ["string", "null"] },
+        "dateOfBirth": { "type": ["string", "null"], "format": "date" },
+        "age": { "type": ["integer", "null"] },
+        "gender": { "enum": ["Unspecified", "Male", "Female", null] },
+        "maritalStatus": { "type": ["string", "null"] },
+        "nationalInsuranceNumber": { "type": ["string", "null"] },
+        "clientCategory": { "enum": ["Retail", "Professional", "EligibleCounterparty", "Consumer", null] },
+        "territorialProfile": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ukResident": { "type": ["boolean", "null"] },
+            "ukDomicile": { "type": ["boolean", "null"] },
+            "countryOfResidence": { "type": ["string", "null"] },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "taxStatus": {
+          "type": "object",
+          "description": "CHK-001 essential facts; CHK-008 tax consequences.",
+          "additionalProperties": false,
+          "properties": {
+            "incomeTaxBand": { "enum": ["NonTaxpayer", "Starter", "Basic", "Intermediate", "Higher", "AdvancedScottish", "Additional", "Top", "Unknown", null] },
+            "isScottishTaxpayer": { "type": ["boolean", "null"] },
+            "personalAllowanceTapered": { "type": ["boolean", "null"] },
+            "mpaaTriggered": { "type": ["boolean", "null"] },
+            "annualAllowance": { "$ref": "#/$defs/Money" },
+            "lumpSumAllowanceUsed": { "$ref": "#/$defs/Money" },
+            "protections": { "type": "array", "items": { "type": "string" } },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "health": {
+          "type": "object",
+          "description": "Aligned to HealthProfileValue.",
+          "additionalProperties": false,
+          "properties": {
+            "inGoodHealth": { "type": ["boolean", "null"] },
+            "isSmoker": { "enum": ["Yes", "No", "Unknown", null] },
+            "healthNotes": { "type": ["string", "null"] },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "estatePlanning": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "hasWill": { "type": ["boolean", "null"] },
+            "isWillUpToDate": { "type": ["boolean", "null"] },
+            "isPowerOfAttorneyGranted": { "type": ["boolean", "null"] },
+            "estimatedIhtLiability": { "$ref": "#/$defs/Money" },
+            "nilRateBandsNoted": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "employments": { "type": "array", "items": { "$ref": "#/$defs/Employment" } },
+        "statePension": { "$ref": "#/$defs/StatePensionEntitlement" },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "Employment": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office Employment/BaseEmployment.",
+      "additionalProperties": false,
+      "properties": {
+        "employmentStatus": {
+          "enum": ["Unknown", "SelfEmployed", "CompanyDirector", "Retired", "Unemployed", "Houseperson", "Student", "MaternityLeave", "LongTermIllness", "ContractWorker", "Employed", "CarerOfaChildUnder16", "CarerOfaPersonOver16", "Other", null]
+        },
+        "occupation": { "type": ["string", "null"] },
+        "employer": { "type": ["string", "null"] },
+        "startsOn": { "type": ["string", "null"], "format": "date" },
+        "intendedRetirementAge": { "type": ["integer", "null"] },
+        "intendedRetirementDate": { "type": ["string", "null"], "format": "date" },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "StatePensionEntitlement": {
+      "type": "object",
+      "description": "Called out separately because CHK-001 and CHK-005 name state pension entitlement explicitly.",
+      "additionalProperties": false,
+      "properties": {
+        "isInPayment": { "type": ["boolean", "null"] },
+        "amount": { "$ref": "#/$defs/Money" },
+        "frequency": { "$ref": "#/$defs/Frequency" },
+        "statePensionAge": { "type": ["integer", "null"] },
+        "payableFrom": { "type": ["string", "null"], "format": "date" },
+        "isFullEntitlement": { "type": ["boolean", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "Dependant": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office Dependant.",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": ["string", "null"] },
+        "relationshipType": { "enum": ["Child", "Daughter", "Grandchild", "Grandparent", "Parent", "Son", "Spouse", "StepChild", "Partner", "CivilPartner", "StepParent", "Other", null] },
+        "dateOfBirth": { "type": ["string", "null"], "format": "date" },
+        "age": { "type": ["integer", "null"] },
+        "isFinanciallyDependant": { "type": ["boolean", "null"] },
+        "financialDependencyEndsOn": { "type": ["string", "null"], "format": "date" },
+        "notes": { "type": ["string", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "ProfessionalContact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": ["string", "null"] },
+        "type": { "enum": ["Accountant", "Solicitor", "Attorney", "Trustee", "Employer", "Other", null] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "ClientAuthority": {
+      "type": "object",
+      "description": "Category A. CHK-001 and CHK-010 reference client authority documents; the report typically only asserts that they exist and what was agreed.",
+      "additionalProperties": false,
+      "properties": {
+        "clientAgreementIssued": { "type": ["boolean", "null"] },
+        "clientAgreementReferences": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "servicesDisclosed": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "feeAgreementBasis": { "type": ["string", "null"], "description": "How remuneration was agreed, e.g. 'facilitated from the plan'." },
+        "consentsAndInstructions": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "___SECTION_FINANCIALS___": { "description": "Category B: financial position" },
+
+    "FinancialPosition": {
+      "type": "object",
+      "description": "CHK-001 (consistency) and CHK-005 (affordability/liquidity) payload.",
+      "additionalProperties": false,
+      "properties": {
+        "asAt": { "type": ["string", "null"], "format": "date" },
+        "incomes": { "type": "array", "items": { "$ref": "#/$defs/IncomeItem" } },
+        "expenditures": { "type": "array", "items": { "$ref": "#/$defs/ExpenditureItem" } },
+        "assets": { "type": "array", "items": { "$ref": "#/$defs/AssetItem" } },
+        "liabilities": { "type": "array", "items": { "$ref": "#/$defs/LiabilityItem" } },
+        "totals": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "totalMonthlyIncomeNet": { "$ref": "#/$defs/Money" },
+            "totalMonthlyExpenditure": { "$ref": "#/$defs/Money" },
+            "monthlySurplusOrDeficit": { "$ref": "#/$defs/Money" },
+            "totalAssets": { "$ref": "#/$defs/Money" },
+            "totalLiabilities": { "$ref": "#/$defs/Money" },
+            "netWorth": { "$ref": "#/$defs/Money" },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "emergencyFund": {
+          "type": "object",
+          "description": "Aligned to Intelliflo Office EmergencyFund. CHK-005 explicitly tests emergency fund and liquidity.",
+          "additionalProperties": false,
+          "properties": {
+            "heldAmount": { "$ref": "#/$defs/Money" },
+            "requiredAmount": { "$ref": "#/$defs/Money" },
+            "shortfall": { "$ref": "#/$defs/Money" },
+            "isConfirmedSufficient": { "type": ["boolean", "null"] },
+            "statements": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "liquidityAndAccessNeeds": {
+          "type": "array",
+          "description": "Emergency, planned and ad-hoc access requirements named by CHK-002 and CHK-005.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "accessType": { "enum": ["Emergency", "Planned", "AdHoc", "Regular", "Unspecified"] },
+              "description": { "type": ["string", "null"] },
+              "amount": { "$ref": "#/$defs/Money" },
+              "requiredFrom": { "type": ["string", "null"] },
+              "fundedFrom": { "type": ["string", "null"] },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "affordabilityAssessment": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "initialCommitment": { "$ref": "#/$defs/Money" },
+            "ongoingCommitment": { "$ref": "#/$defs/Money" },
+            "ongoingCommitmentFrequency": { "$ref": "#/$defs/Frequency" },
+            "isAffordableAsserted": { "type": ["boolean", "null"] },
+            "basisOfAffordability": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "foreseeableChanges": {
+          "type": "array",
+          "description": "Foreseeable life changes named by CHK-002 (retirement, inheritance, care costs, income cessation).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "description": { "type": "string" },
+              "expectedOn": { "type": ["string", "null"] },
+              "financialImpact": { "$ref": "#/$defs/Money" },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        }
+      }
+    },
+
+    "IncomeItem": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office BaseIncome/Income.",
+      "additionalProperties": false,
+      "properties": {
+        "ownerClientIds": { "type": "array", "items": { "type": "string" } },
+        "category": { "enum": ["Employment", "SelfEmployment", "StatePension", "PrivatePension", "Investment", "Rental", "Benefits", "Trust", "Other", null] },
+        "description": { "type": ["string", "null"] },
+        "gross": { "$ref": "#/$defs/Money" },
+        "net": { "$ref": "#/$defs/Money" },
+        "frequency": { "$ref": "#/$defs/Frequency" },
+        "monthlyEquivalentNet": { "$ref": "#/$defs/Money" },
+        "startsOn": { "type": ["string", "null"], "format": "date" },
+        "endsOn": { "type": ["string", "null"], "format": "date" },
+        "includeInAffordability": { "type": ["boolean", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "ExpenditureItem": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office Expenditure.",
+      "additionalProperties": false,
+      "properties": {
+        "ownerClientIds": { "type": "array", "items": { "type": "string" } },
+        "category": { "type": ["string", "null"] },
+        "description": { "type": ["string", "null"] },
+        "amount": { "$ref": "#/$defs/Money" },
+        "frequency": { "$ref": "#/$defs/Frequency" },
+        "monthlyEquivalent": { "$ref": "#/$defs/Money" },
+        "isEssential": { "type": ["boolean", "null"] },
+        "isConsolidated": { "type": ["boolean", "null"], "description": "True where the report gives one combined household figure rather than itemised lines." },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "AssetItem": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office Asset. Non-plan assets only; plans belong in existingArrangements.",
+      "additionalProperties": false,
+      "properties": {
+        "ownerClientIds": { "type": "array", "items": { "type": "string" } },
+        "assetType": { "enum": ["Cash", "Collectibles", "HolidayHome", "HomeContents", "InvestmentProperty", "MainResidence", "MotorVehicles", "OverseasProperty", "OwnBusiness", "RentalOrOtherProperty", "SecondHome", "Investments", "BuyToLetProperty", "CommercialProperty", "Other", null] },
+        "description": { "type": ["string", "null"] },
+        "currentValue": { "$ref": "#/$defs/Money" },
+        "valuedOn": { "type": ["string", "null"], "format": "date" },
+        "isLiquid": { "type": ["boolean", "null"] },
+        "isEarmarkedForObjectiveIds": { "type": "array", "items": { "type": "string" } },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "LiabilityItem": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office Liability.",
+      "additionalProperties": false,
+      "properties": {
+        "ownerClientIds": { "type": "array", "items": { "type": "string" } },
+        "description": { "type": ["string", "null"] },
+        "liabilityType": { "enum": ["Mortgage", "SecondCharge", "PersonalLoan", "CreditCard", "CarFinance", "StudentLoan", "Overdraft", "Other", null] },
+        "outstandingAmount": { "$ref": "#/$defs/Money" },
+        "monthlyRepayment": { "$ref": "#/$defs/Money" },
+        "interestRate": { "type": ["number", "null"] },
+        "repaymentType": { "enum": ["InterestOnly", "Repayment", null] },
+        "endedOn": { "type": ["string", "null"], "format": "date" },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "___SECTION_OBJECTIVES___": { "description": "Category B/F: goals, demands and needs" },
+
+    "Objective": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office BaseObjective + typed objective subclasses. CHK-002 tests these against recommendations; CHK-006 requires each recommendation to link back to one.",
+      "additionalProperties": false,
+      "required": ["objectiveId"],
+      "properties": {
+        "objectiveId": { "type": "string" },
+        "objectiveType": { "enum": ["RetirementObjective", "InvestmentObjective", "ProtectionObjective", "MortgageObjective", "EstatePlanningObjective", "BudgetObjective", "EquityReleaseObjective", "Other"] },
+        "summary": { "type": "string" },
+        "details": { "type": ["string", "null"] },
+        "priorityRank": { "type": ["integer", "null"], "description": "1 = highest. CHK-002 tests priority ordering." },
+        "isClientStated": { "type": ["boolean", "null"], "description": "False where the objective appears to be adviser-generated rather than client-expressed." },
+        "targetAmount": { "$ref": "#/$defs/Money" },
+        "targetIncome": { "$ref": "#/$defs/Money" },
+        "targetIncomeFrequency": { "$ref": "#/$defs/Frequency" },
+        "targetDate": { "type": ["string", "null"], "format": "date" },
+        "targetAge": { "type": ["integer", "null"] },
+        "termYears": { "type": ["number", "null"] },
+        "timeHorizon": { "enum": ["None", "ShortTerm", "MediumTerm", "LongTerm", null] },
+        "needLevelRisk": { "type": ["string", "null"], "description": "Risk required to meet this specific need, where the report states it separately from overall ATR (CHK-003)." },
+        "shortfall": { "$ref": "#/$defs/Money" },
+        "status": { "enum": ["Active", "Completed", "Deferred", null] },
+        "linkedRecommendationIds": { "type": "array", "items": { "type": "string" } },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "___SECTION_RISK___": { "description": "Category D: risk, capacity and experience" },
+
+    "RiskAssessment": {
+      "type": "object",
+      "description": "CHK-003 payload. Modelled per client because joint cases can differ.",
+      "additionalProperties": false,
+      "properties": {
+        "perClient": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "clientId": { "type": "string" },
+              "attitudeToRisk": { "$ref": "#/$defs/AttitudeToRisk" },
+              "capacityForLoss": { "$ref": "#/$defs/CapacityForLoss" },
+              "toleranceForLoss": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "maximumAcceptableLossPercentage": { "type": ["number", "null"] },
+                  "maximumAcceptableLossAmount": { "$ref": "#/$defs/Money" },
+                  "statements": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+                  "provenance": { "$ref": "#/$defs/Provenance" }
+                }
+              },
+              "investmentTermYears": { "type": ["number", "null"] },
+              "reconciliation": { "$ref": "#/$defs/RiskReconciliation" }
+            }
+          }
+        },
+        "esgOrEthicalPreferences": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "hasPreference": { "enum": ["Yes", "No", "Unanswered", null] },
+            "preferences": { "type": ["string", "null"] },
+            "howAddressed": { "type": ["string", "null"] },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        }
+      }
+    },
+
+    "AttitudeToRisk": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office AtrChosenRiskProfile / AtrGeneratedRiskProfile.",
+      "additionalProperties": false,
+      "properties": {
+        "assessedCode": { "type": ["string", "null"], "description": "Score/level produced by the questionnaire (AtrGeneratedRiskProfile.code)." },
+        "agreedCode": { "type": ["string", "null"], "description": "Score/level actually adopted (AtrChosenRiskProfile.code)." },
+        "scaleName": { "type": ["string", "null"], "description": "e.g. 'Dynamic Planner 1-10', 'FE 1-7'." },
+        "scaleMin": { "type": ["number", "null"] },
+        "scaleMax": { "type": ["number", "null"] },
+        "label": { "type": ["string", "null"], "description": "e.g. 'Balanced'." },
+        "description": { "type": ["string", "null"] },
+        "assessedOn": { "type": ["string", "null"], "format": "date" },
+        "methodology": { "type": ["string", "null"], "description": "Questionnaire/tool used." },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "CapacityForLoss": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rating": { "enum": ["None", "Low", "Medium", "High", "Unspecified", null] },
+        "ratingRaw": { "type": ["string", "null"] },
+        "assessmentBasis": { "type": "array", "items": { "$ref": "#/$defs/Statement" }, "description": "The facts the report relies on: surplus income, other assets, no liabilities, alternative provision." },
+        "isSeparatelyAssessedFromAtr": { "type": ["boolean", "null"], "description": "False where CFL is asserted only as a restatement of ATR - a common CHK-003 concern." },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "RiskReconciliation": {
+      "type": "object",
+      "description": "Where the agreed risk level differs from the questionnaire result, CHK-003 requires the override and its justification to be explicit and evidenced.",
+      "additionalProperties": false,
+      "properties": {
+        "hasOverride": { "type": ["boolean", "null"] },
+        "direction": { "enum": ["Increased", "Decreased", "Unchanged", null] },
+        "fromCode": { "type": ["string", "null"] },
+        "toCode": { "type": ["string", "null"] },
+        "justification": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "clientAcknowledgement": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "KnowledgeAndExperience": {
+      "type": "object",
+      "description": "CHK-004 payload.",
+      "additionalProperties": false,
+      "properties": {
+        "perClient": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "clientId": { "type": "string" },
+              "statedLevel": { "enum": ["None", "Limited", "Moderate", "Good", "Extensive", "Unspecified", null] },
+              "productExperience": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "productType": { "type": "string" },
+                    "hasHeld": { "type": ["boolean", "null"] },
+                    "yearsExperience": { "type": ["number", "null"] },
+                    "provenance": { "$ref": "#/$defs/Provenance" }
+                  }
+                }
+              },
+              "understandingEvidence": { "type": "array", "items": { "$ref": "#/$defs/Statement" }, "description": "Client questions, explanations given and comprehension confirmations - CHK-004 asks for evidence the client can evaluate risks and features." },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "recommendedProductComplexity": {
+          "type": "array",
+          "description": "Complexity classification of each recommended product, to be compared against statedLevel.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "recommendationId": { "type": ["string", "null"] },
+              "productName": { "type": ["string", "null"] },
+              "complexity": { "enum": ["NonComplex", "Complex", "Unspecified", null] },
+              "complexityDrivers": { "type": "array", "items": { "type": "string" } },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        }
+      }
+    },
+
+    "VulnerabilityAssessment": {
+      "type": "object",
+      "description": "CHK-010 payload, aligned to Intelliflo Office ClientVulnerabilityDocument. Applies as an overlay to every other check.",
+      "additionalProperties": false,
+      "properties": {
+        "perClient": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "clientId": { "type": "string" },
+              "hasVulnerability": { "enum": ["Yes", "No", "Possible", "NotAssessed", null] },
+              "categories": {
+                "type": "array",
+                "items": { "enum": ["Health", "LifeEvents", "Resilience", "Capability", "Unspecified"] },
+                "description": "FCA FG21/1 four drivers."
+              },
+              "characteristics": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+              "supportNeeds": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+              "adjustmentsMade": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+              "communicationPreferences": { "type": ["string", "null"] },
+              "thirdPartySupport": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "isPresent": { "type": ["boolean", "null"] },
+                  "name": { "type": ["string", "null"] },
+                  "relationship": { "type": ["string", "null"] },
+                  "authorityType": { "enum": ["LPA", "Deputy", "Consent", "Informal", "Other", null] },
+                  "provenance": { "$ref": "#/$defs/Provenance" }
+                }
+              },
+              "impactOnRecommendation": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+              "assessedOn": { "type": ["string", "null"], "format": "date" },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "foreseeableHarms": {
+          "type": "array",
+          "description": "PRIN 2A consumer duty overlay - harms identified and how mitigated.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "harm": { "type": "string" },
+              "mitigation": { "type": ["string", "null"] },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        }
+      }
+    },
+
+    "___SECTION_EXISTING___": { "description": "Category E: existing plans and portfolios" },
+
+    "ExistingArrangement": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office BasePlan + PensionContributionDrawdownPlan + PlanValuation + PlanCharge + GetPlanHolding.",
+      "additionalProperties": false,
+      "required": ["arrangementId"],
+      "properties": {
+        "arrangementId": { "type": "string" },
+        "planType": { "enum": ["PersonalPension", "StakeholderPension", "SIPP", "OccupationalDC", "OccupationalDB", "SectionS32", "AVC", "GPP", "Drawdown", "Annuity", "ISA", "GIA", "OEIC", "InvestmentBondOnshore", "InvestmentBondOffshore", "VCT", "EIS", "CashAccount", "Protection", "Mortgage", "Other", null] },
+        "productName": { "type": ["string", "null"] },
+        "provider": { "type": ["string", "null"] },
+        "policyNumber": { "type": ["string", "null"] },
+        "startedOn": { "type": ["string", "null"], "format": "date" },
+        "owners": { "type": "array", "items": { "type": "string" } },
+        "isWorkplaceScheme": { "type": ["boolean", "null"] },
+        "currentValue": { "$ref": "#/$defs/Money" },
+        "transferValue": { "$ref": "#/$defs/Money" },
+        "valuedOn": { "type": ["string", "null"], "format": "date" },
+        "contributions": { "type": "array", "items": { "$ref": "#/$defs/ContributionItem" } },
+        "withdrawals": { "type": "array", "items": { "$ref": "#/$defs/WithdrawalItem" } },
+        "charges": { "$ref": "#/$defs/ChargeSet" },
+        "holdings": { "type": "array", "items": { "$ref": "#/$defs/Holding" } },
+        "assetAllocation": { "type": "array", "items": { "$ref": "#/$defs/AssetAllocationLine" } },
+        "riskRating": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "value": { "type": ["string", "null"] },
+            "scaleName": { "type": ["string", "null"] },
+            "isComparableToClientScale": { "type": ["boolean", "null"], "description": "Critical for CHK-003: provider risk scales are not interchangeable." },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "safeguardedBenefits": { "$ref": "#/$defs/SafeguardedBenefits" },
+        "exitPenalties": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "hasPenalty": { "type": ["boolean", "null"] },
+            "amount": { "$ref": "#/$defs/Money" },
+            "percentage": { "$ref": "#/$defs/Percentage" },
+            "description": { "type": ["string", "null"] },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "retirementOptionsAvailable": {
+          "type": "array",
+          "items": { "enum": ["FlexiAccessDrawdown", "UFPLS", "PartialUFPLS", "Annuity", "SmallPots", "Triviality", "PCLSOnly", "Other"] }
+        },
+        "numberOfFundsAvailable": { "type": ["string", "null"] },
+        "allowsAdviserServicing": { "type": ["boolean", "null"] },
+        "allowsAdviserChargeFacilitation": { "type": ["boolean", "null"] },
+        "isLifestyling": { "type": ["boolean", "null"] },
+        "performance": { "type": "array", "items": { "$ref": "#/$defs/PerformanceLine" } },
+        "otherFeatures": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "adviceAction": {
+          "enum": ["Retain", "RetainAndSwitchFunds", "PartialTransfer", "FullTransfer", "Switch", "Encash", "Surrender", "Stop", "Amend", "NoAdviceGiven", null],
+          "description": "The recommended treatment of this arrangement. Triggers CHK-009 when Switch/Transfer/Encash/Surrender."
+        },
+        "adviceActionRationale": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "SafeguardedBenefits": {
+      "type": "object",
+      "description": "CHK-009 explicitly requires lost features/guarantees to be identified.",
+      "additionalProperties": false,
+      "properties": {
+        "hasSafeguardedBenefits": { "type": ["boolean", "null"] },
+        "types": {
+          "type": "array",
+          "items": { "enum": ["GuaranteedAnnuityRate", "GuaranteedMinimumPension", "GuaranteedGrowthRate", "EnhancedTaxFreeCash", "ProtectedRetirementAge", "ProtectedPCLS", "WithProfitsBonus", "MarketValueReductionFree", "LifeCover", "WaiverOfPremium", "Other"] }
+        },
+        "details": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "valueOfBenefit": { "$ref": "#/$defs/Money" },
+        "isBeingGivenUp": { "type": ["boolean", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "ContributionItem": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office Contribution.",
+      "additionalProperties": false,
+      "properties": {
+        "contributionType": { "enum": ["Regular", "LumpSum", "Transfer", "Rebate", null] },
+        "payer": { "enum": ["Client", "Employer", "ThirdParty", "Unspecified", null] },
+        "gross": { "$ref": "#/$defs/Money" },
+        "net": { "$ref": "#/$defs/Money" },
+        "percentageOfSalary": { "type": ["number", "null"] },
+        "frequency": { "$ref": "#/$defs/Frequency" },
+        "startsOn": { "type": ["string", "null"], "format": "date" },
+        "endsOn": { "type": ["string", "null"], "format": "date" },
+        "isSalaryExchange": { "type": ["boolean", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "WithdrawalItem": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office Withdrawal.",
+      "additionalProperties": false,
+      "properties": {
+        "withdrawalType": { "enum": ["Regular", "LumpSum", "PercentageOfInvestment", "PercentageOfFund", "Transfer", "PCLS", "UFPLS", null] },
+        "amount": { "$ref": "#/$defs/Money" },
+        "percentage": { "$ref": "#/$defs/Percentage" },
+        "frequency": { "$ref": "#/$defs/Frequency" },
+        "startsOn": { "type": ["string", "null"], "format": "date" },
+        "isSustainabilityAssessed": { "type": ["boolean", "null"] },
+        "taxTreatment": { "type": ["string", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "Holding": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office GetPlanHolding + Fund.",
+      "additionalProperties": false,
+      "properties": {
+        "fundName": { "type": ["string", "null"] },
+        "isin": { "type": ["string", "null"] },
+        "sedol": { "type": ["string", "null"] },
+        "citiCode": { "type": ["string", "null"] },
+        "sector": { "type": ["string", "null"] },
+        "allocationPercentage": { "type": ["number", "null"] },
+        "value": { "$ref": "#/$defs/Money" },
+        "ongoingChargeFigure": { "$ref": "#/$defs/Percentage" },
+        "transactionCosts": { "$ref": "#/$defs/Percentage" },
+        "riskRating": { "type": ["string", "null"] },
+        "managementStyle": { "enum": ["Active", "Passive", "Blend", null] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "AssetAllocationLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "assetClass": { "type": "string" },
+        "percentage": { "type": ["number", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "PerformanceLine": {
+      "type": "object",
+      "description": "CHK-007 value assessment and CHK-009 comparison evidence.",
+      "additionalProperties": false,
+      "properties": {
+        "instrumentName": { "type": "string" },
+        "role": { "enum": ["Existing", "Recommended", "Benchmark", "PeerGroup", "Other", null] },
+        "period": { "type": ["string", "null"], "description": "e.g. '5y', '13/10/2020-13/10/2025'." },
+        "cumulativeReturnPercentage": { "type": ["number", "null"] },
+        "annualisedVolatility": { "type": ["number", "null"] },
+        "asAt": { "type": ["string", "null"], "format": "date" },
+        "dataSource": { "type": ["string", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "___SECTION_NEEDS_RESEARCH___": { "description": "Categories F and G" },
+
+    "NeedsAnalysis": {
+      "type": "object",
+      "description": "CHK-002 and CHK-005 draw on cashflow and shortfall modelling.",
+      "additionalProperties": false,
+      "properties": {
+        "wasCashflowModelled": { "type": ["boolean", "null"] },
+        "modellingTool": { "type": ["string", "null"] },
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scenarioId": { "type": ["string", "null"] },
+              "name": { "type": ["string", "null"] },
+              "scenarioType": { "enum": ["Baseline", "Proposed", "StressTest", "Alternative", null] },
+              "description": { "type": ["string", "null"] },
+              "stressType": { "enum": ["HighInflation", "MarketCrash", "Longevity", "EarlyDeath", "IncomeLoss", "CareCosts", "InterestRate", "Combined", "Other", null] },
+              "outcome": { "enum": ["NoShortfall", "Shortfall", "Inconclusive", null] },
+              "shortfallAmount": { "$ref": "#/$defs/Money" },
+              "shortfallFromAge": { "type": ["integer", "null"] },
+              "fundsExhaustedAtAge": { "type": ["integer", "null"] },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string", "description": "e.g. 'General expenditure inflation', 'Mid growth rate'." },
+              "value": { "type": ["string", "null"] },
+              "isDisclosed": { "type": ["boolean", "null"] },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "identifiedShortfalls": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "objectiveId": { "type": ["string", "null"] },
+              "description": { "type": ["string", "null"] },
+              "amount": { "$ref": "#/$defs/Money" },
+              "howAddressed": { "type": ["string", "null"] },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "lifeExpectancyBasis": { "type": "array", "items": { "$ref": "#/$defs/Statement" } }
+      }
+    },
+
+    "Research": {
+      "type": "object",
+      "description": "Category G facts asserted inside the report. Used by CHK-006 (alternatives), CHK-007 (cost comparison) and CHK-009 (switch analysis).",
+      "additionalProperties": false,
+      "properties": {
+        "wholeOfMarketAsserted": { "type": ["boolean", "null"] },
+        "researchToolsUsed": { "type": "array", "items": { "type": "string" } },
+        "optionsConsidered": {
+          "type": "array",
+          "description": "The option set the adviser says was evaluated (e.g. 'leave untouched', 'switch funds in situ', 'new plan').",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "optionId": { "type": ["string", "null"] },
+              "label": { "type": "string" },
+              "optionType": { "enum": ["DoNothing", "InSituFundSwitch", "ConsolidateIntoExisting", "EmployerScheme", "NewPlan", "AlternativeProduct", "AlternativeProvider", "AlternativeWrapper", "AlternativeStrategy", "InvestmentPathway", "Other", null] },
+              "wasRecommended": { "type": ["boolean", "null"] },
+              "rejectionReasons": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "comparisons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "dimension": { "enum": ["Cost", "Performance", "Volatility", "FundRange", "Flexibility", "Service", "FinancialStrength", "Features", "Other", null] },
+              "subjectA": { "type": ["string", "null"] },
+              "subjectB": { "type": ["string", "null"] },
+              "finding": { "type": ["string", "null"] },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        }
+      }
+    },
+
+    "___SECTION_RECOMMENDATIONS___": { "description": "Categories H and I" },
+
+    "Recommendation": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office Recommendation2Document + BaseRecommendation2Proposal. proposalType reuses the IO proposal discriminator so a recommendation can be pushed into Office as a proposal.",
+      "additionalProperties": false,
+      "required": ["recommendationId", "summary"],
+      "properties": {
+        "recommendationId": { "type": "string" },
+        "sequence": { "type": ["integer", "null"] },
+        "summary": { "type": "string" },
+        "proposalType": {
+          "enum": [
+            "NewBusinessPensionProposal", "NewBusinessInvestmentProposal", "NewBusinessAnnuityProposal",
+            "NewBusinessPersonalProtectionProposal", "NewBusinessMortgageProposal", "NewBusinessEquityReleaseProposal",
+            "NewBusinessGeneralInsuranceProposal",
+            "ExistingBusinessTransferRolloverProposal", "ExistingBusinessSwitchProposal", "ExistingBusinessRebalanceProposal",
+            "ExistingBusinessNewMoneyProposal", "ExistingBusinessLumpsumWithdrawalProposal",
+            "ExistingBusinessAmendRegularContributionsPremiumsProposal", "ExistingBusinessAmendRegularWithdrawalIncomeProposal",
+            "ExistingBusinessAmendProductDetailsProposal", "ExistingBusinessCloseProductProposal",
+            "ExistingBusinessNoActionProposal", "ExistingBusinessReviewedProposal",
+            "NonProductProposal", null
+          ]
+        },
+        "action": { "enum": ["NewPlan", "Transfer", "Switch", "Consolidate", "Retain", "Encash", "Surrender", "Rebalance", "IncreaseContribution", "DecreaseContribution", "StartWithdrawal", "AmendWithdrawal", "Crystallise", "NonProductAction", "Other", null] },
+        "ownerClientIds": { "type": "array", "items": { "type": "string" } },
+        "linkedObjectiveIds": { "type": "array", "items": { "type": "string" }, "description": "CHK-006 requires each recommendation to tie to a stated objective." },
+        "sourceArrangementIds": { "type": "array", "items": { "type": "string" }, "description": "Existing arrangements affected." },
+        "targetPlanId": { "type": ["string", "null"], "description": "Reference into solution.recommendedPlans." },
+        "amount": { "$ref": "#/$defs/Money" },
+        "rationale": { "type": "array", "items": { "$ref": "#/$defs/Statement" }, "description": "Why this is suitable, in client-specific terms." },
+        "benefits": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "disadvantages": { "type": "array", "items": { "$ref": "#/$defs/Statement" }, "description": "CHK-008." },
+        "risks": { "type": "array", "items": { "$ref": "#/$defs/Statement" }, "description": "CHK-008." },
+        "taxImplications": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "alternativesConsidered": { "type": "array", "items": { "$ref": "#/$defs/Alternative" }, "description": "CHK-006 and CHK-009." },
+        "clientAgreementStatements": { "type": "array", "items": { "$ref": "#/$defs/Statement" }, "description": "Where the report records that the client understood or agreed." },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "Alternative": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": { "type": "string" },
+        "alternativeType": { "enum": ["DoNothing", "AlternativeProduct", "AlternativeProvider", "AlternativeWrapper", "AlternativeInvestmentStrategy", "StakeholderPension", "InvestmentPathway", "EmployerScheme", "InSituSwitch", "Other", null] },
+        "wasConsidered": { "type": ["boolean", "null"] },
+        "rejectionReasons": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "comparativeCost": { "$ref": "#/$defs/Money" },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "Solution": {
+      "type": "object",
+      "description": "Category H. The 'to be' state.",
+      "additionalProperties": false,
+      "properties": {
+        "recommendedPlans": { "type": "array", "items": { "$ref": "#/$defs/RecommendedPlan" } },
+        "investmentStrategy": { "$ref": "#/$defs/InvestmentStrategy" },
+        "providerSelection": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "providerName": { "type": ["string", "null"] },
+            "rationale": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+            "financialStrengthRating": { "type": ["string", "null"] },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "documentsProvided": {
+          "type": "array",
+          "items": { "enum": ["Illustration", "KeyFeatures", "KID", "KIID", "TermsAndConditions", "FundFactsheets", "ClientAgreement", "ChargesSchedule", "CancellationNotice", "Other"] }
+        },
+        "implementation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "outOfMarketRiskDisclosed": { "type": ["boolean", "null"] },
+            "expectedTimescale": { "type": ["string", "null"] },
+            "cancellationRights": { "type": ["string", "null"] },
+            "nextSteps": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        }
+      }
+    },
+
+    "RecommendedPlan": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office BasePlan for the proposed product.",
+      "additionalProperties": false,
+      "required": ["planId"],
+      "properties": {
+        "planId": { "type": "string" },
+        "planType": { "type": ["string", "null"] },
+        "productName": { "type": ["string", "null"] },
+        "provider": { "type": ["string", "null"] },
+        "wrapper": { "enum": ["PersonalPension", "SIPP", "ISA", "GIA", "Bond", "Drawdown", "Annuity", "Other", null] },
+        "ownerClientIds": { "type": "array", "items": { "type": "string" } },
+        "initialInvestment": { "$ref": "#/$defs/Money" },
+        "transferValueIn": { "$ref": "#/$defs/Money" },
+        "regularContributions": { "type": "array", "items": { "$ref": "#/$defs/ContributionItem" } },
+        "plannedWithdrawals": { "type": "array", "items": { "$ref": "#/$defs/WithdrawalItem" } },
+        "selectedRetirementAge": { "type": ["integer", "null"] },
+        "targetMarketConfirmed": { "type": ["boolean", "null"], "description": "PROD/Consumer Duty target market statement." },
+        "projections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "growthRateBasis": { "enum": ["Low", "Mid", "High", null] },
+              "growthRatePercentage": { "type": ["number", "null"] },
+              "projectedValue": { "$ref": "#/$defs/Money" },
+              "atAge": { "type": ["integer", "null"] },
+              "isRealTerms": { "type": ["boolean", "null"] },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "deathBenefits": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "InvestmentStrategy": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office PortfolioModel / ProposedFundValue. CHK-003 compares this to the risk profile.",
+      "additionalProperties": false,
+      "properties": {
+        "strategyType": { "enum": ["ModelPortfolio", "MultiAssetFund", "BespokePortfolio", "DFM", "InvestmentPathway", "SingleFund", "Other", null] },
+        "modelName": { "type": ["string", "null"] },
+        "isCentralisedInvestmentProposition": { "type": ["boolean", "null"] },
+        "managementStyle": { "enum": ["Active", "Passive", "Blend", null] },
+        "targetRiskRating": { "type": ["string", "null"] },
+        "targetRiskScaleName": { "type": ["string", "null"] },
+        "benchmark": { "type": ["string", "null"] },
+        "rebalancingBasis": { "type": ["string", "null"] },
+        "holdings": { "type": "array", "items": { "$ref": "#/$defs/Holding" } },
+        "assetAllocation": { "type": "array", "items": { "$ref": "#/$defs/AssetAllocationLine" } },
+        "allocationTotalPercentage": { "type": ["number", "null"] },
+        "rationale": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "___SECTION_COSTS___": { "description": "CHK-007" },
+
+    "CostsAndCharges": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office PlanCharge / PlanFee / FeeType / FundCharges. Structured so that aggregation completeness (all material cost layers disclosed) is machine-testable.",
+      "additionalProperties": false,
+      "properties": {
+        "existing": { "$ref": "#/$defs/ChargeSet" },
+        "recommended": { "$ref": "#/$defs/ChargeSet" },
+        "adviserFees": { "type": "array", "items": { "$ref": "#/$defs/AdviserFee" } },
+        "comparison": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "basis": { "enum": ["LikeForLike", "IncludingAdviceFees", "ExcludingAdviceFees", "Other", null] },
+            "differencePercentage": { "$ref": "#/$defs/Percentage" },
+            "differenceAmount": { "$ref": "#/$defs/Money" },
+            "direction": { "enum": ["RecommendedCheaper", "RecommendedMoreExpensive", "Equivalent", null] },
+            "perArrangement": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "arrangementId": { "type": ["string", "null"] },
+                  "existingAnnualChargePercentage": { "$ref": "#/$defs/Percentage" },
+                  "existingAnnualChargeAmount": { "$ref": "#/$defs/Money" },
+                  "impactPercentage": { "$ref": "#/$defs/Percentage" },
+                  "impactAmount": { "$ref": "#/$defs/Money" },
+                  "provenance": { "$ref": "#/$defs/Provenance" }
+                }
+              }
+            },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "reductionInYield": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "subject": { "enum": ["Existing", "Recommended", null] },
+              "growthRateBasis": { "enum": ["Low", "Mid", "High", null] },
+              "riyPercentage": { "$ref": "#/$defs/Percentage" },
+              "criticalYieldPercentage": { "$ref": "#/$defs/Percentage" },
+              "effectOfSwitchingAmount": { "$ref": "#/$defs/Money" },
+              "effectOfSwitchingPercentage": { "$ref": "#/$defs/Percentage" },
+              "atAge": { "type": ["integer", "null"] },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "valueAssessment": {
+          "type": "object",
+          "description": "PRIN 2A.4 fair value. CHK-007 asks whether benefits justify cost.",
+          "additionalProperties": false,
+          "properties": {
+            "benefitsStated": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+            "costJustification": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+            "requiredOutperformanceAmount": { "$ref": "#/$defs/Money" },
+            "requiredOutperformancePercentage": { "$ref": "#/$defs/Percentage" },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "disclosureCompleteness": {
+          "type": "object",
+          "description": "Presence flags per cost layer - directly answers the CHK-007 'all material costs disclosed' test.",
+          "additionalProperties": false,
+          "properties": {
+            "productOrPlatformDisclosed": { "type": ["boolean", "null"] },
+            "investmentOrFundDisclosed": { "type": ["boolean", "null"] },
+            "transactionCostsDisclosed": { "type": ["boolean", "null"] },
+            "initialAdviceFeeDisclosed": { "type": ["boolean", "null"] },
+            "ongoingAdviceFeeDisclosed": { "type": ["boolean", "null"] },
+            "dfmOrDiscretionaryFeeDisclosed": { "type": ["boolean", "null"] },
+            "aggregatedTotalDisclosed": { "type": ["boolean", "null"] },
+            "cumulativeEffectDisclosed": { "type": ["boolean", "null"] },
+            "exclusionsNoted": { "type": "array", "items": { "$ref": "#/$defs/Statement" } }
+          }
+        }
+      }
+    },
+
+    "ChargeSet": {
+      "type": "object",
+      "description": "Layered cost breakdown for one arrangement or for the proposed solution.",
+      "additionalProperties": false,
+      "properties": {
+        "scope": { "type": ["string", "null"], "description": "Arrangement id or 'Solution'." },
+        "lines": { "type": "array", "items": { "$ref": "#/$defs/ChargeLine" } },
+        "totalOngoingPercentage": { "$ref": "#/$defs/Percentage" },
+        "totalOngoingAmount": { "$ref": "#/$defs/Money" },
+        "totalInitialPercentage": { "$ref": "#/$defs/Percentage" },
+        "totalInitialAmount": { "$ref": "#/$defs/Money" },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "ChargeLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer": { "enum": ["Product", "Platform", "InvestmentManagement", "Fund", "TransactionCost", "DFM", "AdviceInitial", "AdviceOngoing", "AdviceAdHoc", "Administration", "ExitPenalty", "Other"] },
+        "chargeType": { "enum": ["OneOffCharge", "OngoingCharge", "TransactionCost", "IncidentalCost", null], "description": "Intelliflo Office PlanCharge.type." },
+        "description": { "type": ["string", "null"] },
+        "percentage": { "$ref": "#/$defs/Percentage" },
+        "amount": { "$ref": "#/$defs/Money" },
+        "frequency": { "$ref": "#/$defs/Frequency" },
+        "isTiered": { "type": ["boolean", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "AdviserFee": {
+      "type": "object",
+      "description": "Aligned to Intelliflo Office PlanFee/FeeType/FeePaymentType.",
+      "additionalProperties": false,
+      "properties": {
+        "feeCategory": { "enum": ["InitialFee", "OngoingFee", "AdHocFee", null] },
+        "feeChargingType": { "enum": ["FixedPrice", "PercentOfFumAum", "PercentOfAllInvestmentContribution", "PercentOfLumpSumContribution", "PercentOfTransferContribution", "PercentOfRegularContribution", "TieredPercentOfAum", "NonChargeable", "Other", null] },
+        "percentage": { "$ref": "#/$defs/Percentage" },
+        "amount": { "$ref": "#/$defs/Money" },
+        "frequency": { "$ref": "#/$defs/Frequency" },
+        "paidBy": { "enum": ["Client", "Provider", "Platform", null] },
+        "isFacilitatedFromPlan": { "type": ["boolean", "null"] },
+        "vatTreatment": { "enum": ["Inclusive", "Exclusive", "NonVatable", null] },
+        "matchesClientAgreement": { "type": ["boolean", "null"], "description": "Comparison against category A evidence; null when not determinable from this document alone." },
+        "servicesProvidedForFee": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "___SECTION_REPLACEMENT___": { "description": "CHK-009" },
+
+    "ReplacementAnalysis": {
+      "type": "object",
+      "description": "One per ceding arrangement. Everything CHK-009 asks for is a named field so absence is detectable rather than inferred from prose.",
+      "additionalProperties": false,
+      "required": ["cedingArrangementId"],
+      "properties": {
+        "cedingArrangementId": { "type": "string" },
+        "receivingPlanId": { "type": ["string", "null"] },
+        "replacementType": { "enum": ["PensionSwitch", "PensionTransferDB", "InvestmentReRegistration", "BondSurrender", "IsaTransfer", "Encashment", "Other", null] },
+        "transferValue": { "$ref": "#/$defs/Money" },
+        "comparison": {
+          "type": "array",
+          "description": "Existing vs recommended on each dimension.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "dimension": { "enum": ["Charges", "FundRange", "Performance", "RiskAlignment", "RetirementOptions", "Flexibility", "AdviserServicing", "DeathBenefits", "Guarantees", "Service", "Other"] },
+              "existingPosition": { "type": ["string", "null"] },
+              "recommendedPosition": { "type": ["string", "null"] },
+              "assessment": { "enum": ["Better", "Worse", "Equivalent", "NotAssessed", null] },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "benefitsOfSwitching": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "costsOfSwitching": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "exitPenalty": { "$ref": "#/$defs/Money" },
+            "initialAdviceFee": { "$ref": "#/$defs/Money" },
+            "annualChargeDifferencePercentage": { "$ref": "#/$defs/Percentage" },
+            "annualChargeDifferenceAmount": { "$ref": "#/$defs/Money" },
+            "outOfMarketExposure": { "type": ["string", "null"] },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "featuresOrGuaranteesLost": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "featuresGained": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "employerContributionsLost": { "type": ["boolean", "null"] },
+        "alternativesConsidered": { "type": "array", "items": { "$ref": "#/$defs/Alternative" } },
+        "netBenefitConclusion": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "___SECTION_DISCLOSURE___": { "description": "CHK-008 and supporting disclosures" },
+
+    "RiskWarningsAndDisadvantages": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "generalRiskWarnings": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "productSpecificRisks": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "investmentRisks": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "materialDisadvantages": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "limitations": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "lossScenariosIllustrated": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "description": { "type": "string" },
+              "lossPercentage": { "type": ["number", "null"] },
+              "lossAmount": { "$ref": "#/$defs/Money" },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "prominence": {
+          "type": "object",
+          "description": "COBS 4.2.1R fair, clear and not misleading; disadvantages must not be buried.",
+          "additionalProperties": false,
+          "properties": {
+            "hasDedicatedSection": { "type": ["boolean", "null"] },
+            "sectionHeading": { "type": ["string", "null"] },
+            "appearsOnlyInAppendix": { "type": ["boolean", "null"] },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        }
+      }
+    },
+
+    "TaxTreatment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "consequencesStated": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "allowancesUsed": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "allowanceType": { "enum": ["AnnualAllowance", "MPAA", "CarryForward", "LumpSumAllowance", "LumpSumAndDeathBenefitAllowance", "ISA", "CGT", "DividendAllowance", "PersonalAllowance", "NilRateBand", "ResidenceNilRateBand", "Other"] },
+              "amount": { "$ref": "#/$defs/Money" },
+              "notes": { "type": ["string", "null"] },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          }
+        },
+        "inheritanceTaxPosition": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "estimatedLiability": { "$ref": "#/$defs/Money" },
+            "statements": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+            "provenance": { "$ref": "#/$defs/Provenance" }
+          }
+        },
+        "taxLawCaveat": { "type": ["boolean", "null"] }
+      }
+    },
+
+    "OngoingService": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isOngoingServiceRecommended": { "type": ["boolean", "null"] },
+        "serviceLevelName": { "type": ["string", "null"] },
+        "reviewFrequency": { "$ref": "#/$defs/Frequency" },
+        "servicesIncluded": { "type": "array", "items": { "$ref": "#/$defs/Statement" } },
+        "annualCost": { "$ref": "#/$defs/Money" },
+        "annualCostPercentage": { "$ref": "#/$defs/Percentage" },
+        "clientOptedIn": { "type": ["boolean", "null"] },
+        "cancellationTerms": { "type": ["string", "null"] },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+
+    "___SECTION_QA___": { "description": "QA orchestration support" },
+
+    "CheckTriggers": {
+      "type": "object",
+      "description": "Derived booleans that tell the QA engine which checks are in scope, so 'N/A: trigger absent' is a computed outcome rather than an LLM judgement.",
+      "additionalProperties": false,
+      "properties": {
+        "isAdvisedCase": { "type": ["boolean", "null"] },
+        "hasInvestmentOrPensionRecommendation": { "type": ["boolean", "null"] },
+        "hasReplacementOrSwitch": { "type": ["boolean", "null"], "description": "CHK-009 trigger." },
+        "hasCapitalContributionsOrWithdrawals": { "type": ["boolean", "null"], "description": "CHK-005 trigger." },
+        "hasDecumulation": { "type": ["boolean", "null"] },
+        "hasSafeguardedBenefitsInScope": { "type": ["boolean", "null"] },
+        "hasVulnerabilityIndicators": { "type": ["boolean", "null"], "description": "CHK-010 enhanced scope." },
+        "hasComplexProduct": { "type": ["boolean", "null"], "description": "CHK-004 escalation." },
+        "hasCostsAndChargesSection": { "type": ["boolean", "null"], "description": "CHK-007 second limb." },
+        "hasAlternativesSection": { "type": ["boolean", "null"] },
+        "hasCashflowModelling": { "type": ["boolean", "null"] }
+      }
+    },
+
+    "ExtractionReport": {
+      "type": "object",
+      "description": "Self-assessment of the extraction pass. Distinguishes 'the report does not say this' from 'the extractor could not find it' - the two produce very different QA outcomes.",
+      "additionalProperties": false,
+      "properties": {
+        "expectedButAbsent": {
+          "type": "array",
+          "description": "Canonical paths the model expected for this case type and did not find. Feeds completeness scoring for CHK-006/007/008/009.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path"],
+            "properties": {
+              "path": { "type": "string", "description": "JSON Pointer-style canonical path, e.g. '/replacementAnalysis/0/featuresOrGuaranteesLost'." },
+              "reason": { "enum": ["NotPresentInDocument", "PresentButUnparseable", "AmbiguousReference", "OutOfScopeForCaseType"] },
+              "relatedCheckIds": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "ambiguities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": { "type": "string" },
+              "description": { "type": "string" },
+              "candidateReadings": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "internalInconsistencies": {
+          "type": "array",
+          "description": "Contradictions found within this single document - these are findable without any other evidence and are high-value CHK-001 hits.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "paths": { "type": "array", "items": { "type": "string" } },
+              "description": { "type": "string" },
+              "valuesObserved": { "type": "array", "items": { "type": "string" } },
+              "relatedCheckIds": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "overallConfidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+      }
+    }
+  }
+}

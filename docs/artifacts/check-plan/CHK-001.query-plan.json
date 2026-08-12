@@ -1,0 +1,215 @@
+{
+  "planVersion": "1.0",
+  "checkId": "CHK-001",
+  "checkName": "Suitability completeness against client information",
+  "appliesTo": "All advised investment and pension cases",
+  "regulatoryBasis": "Not required for this check",
+  "primaryCategories": ["A", "B", "C", "I"],
+
+  "tool": {
+    "name": "search_case_documents",
+    "parameters": ["searchText"],
+    "resultsPerCall": 8,
+    "categoryFilterAvailable": false
+  },
+
+  "triggerProbe": {
+    "triggerField": "checkTriggers.isAdvisedCase",
+    "queries": [
+      { "id": "T1.1", "text": "suitability report recommendation summary for the client", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["Suitability Report", "My Recommendation", "recommendation summary"], "priority": "Core" }
+    ],
+    "presentWhen": "At least one category I document is returned.",
+    "absentWhen": "No category I passage exists in the case.",
+    "onAbsent": "ReturnNA"
+  },
+
+  "queryGroups": [
+    {
+      "groupId": "G1.1",
+      "requirement": "Essential facts (personal details) stated in the report are consistent with the evidence",
+      "limb": "Consistency",
+      "canonicalPaths": ["/parties/clients[]/firstName", "/parties/clients[]/lastName", "/parties/clients[]/age", "/parties/clients[]/dateOfBirth", "/parties/clients[]/maritalStatus", "/parties/dependants[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["A", "B", "C"] },
+      "queries": [
+        { "id": "Q1.1.1", "text": "your current situation you are currently aged and married with children", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["aged", "married", "children", "spouse", "partner"], "canonicalPaths": ["/parties/clients[]/age", "/parties/clients[]/maritalStatus"], "priority": "Core" },
+        { "id": "Q1.1.2", "text": "client personal details date of birth marital status national insurance number", "side": "Evidence", "targetCategories": ["B", "A"], "expectSignals": ["Date of birth", "Marital status", "NI number", "Title", "Surname"], "canonicalPaths": ["/parties/clients[]/dateOfBirth"], "priority": "Core" },
+        { "id": "Q1.1.3", "text": "dependants children financially dependent living at home", "side": "Either", "targetCategories": ["B", "I"], "expectSignals": ["dependant", "children", "financially independent", "age"], "canonicalPaths": ["/parties/dependants[]"], "priority": "Supplementary" },
+        { "id": "Q1.1.4", "text": "health status smoker in good health medical conditions", "side": "Evidence", "targetCategories": ["B"], "expectSignals": ["good health", "smoker", "medical"], "canonicalPaths": ["/parties/clients[]/health"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "tolerance": "Age may differ by 1 year where the fact find predates the report; date of birth must match exactly.",
+        "falsePositiveGuards": [
+          "The report often states age while the fact find states date of birth — derive before comparing, using the report date.",
+          "A spouse who is not the advised client appears in both documents; do not treat their details as a mismatch on the client."
+        ]
+      },
+      "sufficiency": {
+        "ifAssertionAbsent": "Not a finding on its own — a report need not restate every personal detail.",
+        "ifEvidenceAbsent": "Potential Concern: the report asserts personal facts with no supporting KYC record.",
+        "ifBothAbsent": "No finding."
+      }
+    },
+
+    {
+      "groupId": "G1.2",
+      "requirement": "Tax status stated in the report is consistent with the evidence",
+      "limb": "Consistency",
+      "canonicalPaths": ["/parties/clients[]/taxStatus"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B"] },
+      "queries": [
+        { "id": "Q1.2.1", "text": "your marginal rate of income tax basic rate higher rate taxpayer personal allowance", "side": "Either", "targetCategories": ["I", "B"], "expectSignals": ["basic rate", "higher rate", "marginal rate", "personal allowance", "non-taxpayer"], "canonicalPaths": ["/parties/clients[]/taxStatus/incomeTaxBand"], "priority": "Core" },
+        { "id": "Q1.2.2", "text": "money purchase annual allowance triggered annual allowance carry forward lifetime allowance protection", "side": "Either", "targetCategories": ["I", "B", "E"], "expectSignals": ["MPAA", "annual allowance", "carry forward", "£60,000", "protection"], "canonicalPaths": ["/parties/clients[]/taxStatus/mpaaTriggered", "/parties/clients[]/taxStatus/annualAllowance"], "priority": "Core" },
+        { "id": "Q1.2.3", "text": "tax residency domicile UK resident for tax purposes", "side": "Evidence", "targetCategories": ["B"], "expectSignals": ["UK resident", "domicile", "residency"], "canonicalPaths": ["/parties/clients[]/territorialProfile"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "falsePositiveGuards": [
+          "Generic legislative statements of allowance limits are not client-specific assertions; only flag where a figure is applied to this client.",
+          "Scottish and rest-of-UK bands differ — check territorial profile before flagging a band mismatch."
+        ]
+      },
+      "sufficiency": {
+        "ifAssertionAbsent": "Note as a gap where the recommendation depends on tax band (encashment, contribution relief, drawdown).",
+        "ifEvidenceAbsent": "Potential Concern: tax treatment asserted without a recorded tax position."
+      }
+    },
+
+    {
+      "groupId": "G1.3",
+      "requirement": "Employment details are consistent with the evidence",
+      "limb": "Consistency",
+      "canonicalPaths": ["/parties/clients[]/employments[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B"] },
+      "queries": [
+        { "id": "Q1.3.1", "text": "you work full time as employed self employed occupation employer earning", "side": "Either", "targetCategories": ["I", "B"], "expectSignals": ["occupation", "employer", "self-employed", "employed", "retired"], "canonicalPaths": ["/parties/clients[]/employments[]/occupation"], "priority": "Core" },
+        { "id": "Q1.3.2", "text": "intended retirement age expect to retire in years selected retirement date", "side": "Either", "targetCategories": ["I", "B", "F"], "expectSignals": ["retire", "retirement age", "intended retirement"], "canonicalPaths": ["/parties/clients[]/employments[]/intendedRetirementAge"], "priority": "Core" }
+      ],
+      "comparison": { "method": "ValueMatch", "falsePositiveGuards": ["Intended retirement age in a fact find is often superseded by a later file note — prefer the most recent dated evidence."] },
+      "sufficiency": { "ifEvidenceAbsent": "Potential Concern where employment income underpins affordability." }
+    },
+
+    {
+      "groupId": "G1.4",
+      "requirement": "Income and expenditure figures are consistent with the evidence",
+      "limb": "Consistency",
+      "canonicalPaths": ["/financialPosition/incomes[]", "/financialPosition/expenditures[]", "/financialPosition/totals"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B"] },
+      "queries": [
+        { "id": "Q1.4.1", "text": "your income per week per month net earnings from employment", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["per week", "per month", "net", "£"], "canonicalPaths": ["/financialPosition/incomes[]"], "priority": "Core" },
+        { "id": "Q1.4.2", "text": "income and expenditure schedule monthly net income total outgoings surplus", "side": "Evidence", "targetCategories": ["B"], "expectSignals": ["Total income", "Total expenditure", "Surplus", "Monthly", "Net"], "canonicalPaths": ["/financialPosition/totals"], "priority": "Core" },
+        { "id": "Q1.4.3", "text": "household expenditure rent mortgage utilities food transport insurance per month", "side": "Either", "targetCategories": ["I", "B"], "expectSignals": ["expenditure", "rent", "utilities", "per month"], "canonicalPaths": ["/financialPosition/expenditures[]"], "priority": "Core" },
+        { "id": "Q1.4.4", "text": "essential expenditure versus discretionary spending breakdown", "side": "Evidence", "targetCategories": ["B", "F"], "expectSignals": ["essential", "discretionary", "basic", "committed"], "canonicalPaths": ["/financialPosition/expenditures[]/isEssential"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "tolerance": "Normalise to a monthly equivalent before comparing. Treat a difference of more than 5% as a mismatch; below that, rounding.",
+        "falsePositiveGuards": [
+          "Gross versus net is the single most common false mismatch — never compare a gross fact-find figure to a net report figure.",
+          "Weekly figures annualise at 52, not 4.33 x 12; £300/week is £1,300/month, not £1,200.",
+          "A report giving one consolidated household expenditure figure cannot be reconciled line by line — compare on the total only."
+        ]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Potential Concern: unsupported figures. This is the check's stated core - 'data mismatches and unsupported figures'." }
+    },
+
+    {
+      "groupId": "G1.5",
+      "requirement": "Assets and liabilities are consistent with the evidence",
+      "limb": "Consistency",
+      "canonicalPaths": ["/financialPosition/assets[]", "/financialPosition/liabilities[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B"] },
+      "queries": [
+        { "id": "Q1.5.1", "text": "assets and liabilities table net asset value savings cash property", "side": "Either", "targetCategories": ["I", "B"], "expectSignals": ["Assets", "Liabilities", "Net asset value", "Cash", "Savings", "Property"], "priority": "Core" },
+        { "id": "Q1.5.2", "text": "outstanding mortgage loans credit cards debts no outstanding liabilities", "side": "Either", "targetCategories": ["I", "B"], "expectSignals": ["mortgage", "loan", "credit card", "no liabilities", "outstanding"], "canonicalPaths": ["/financialPosition/liabilities[]"], "priority": "Core" },
+        { "id": "Q1.5.3", "text": "main residence home value owned rented", "side": "Either", "targetCategories": ["B", "I", "F"], "expectSignals": ["main residence", "property value", "rent", "owned"], "canonicalPaths": ["/financialPosition/assets[]"], "priority": "Supplementary", "note": "Reconciles the assets table against any property assumed in cashflow modelling." }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "falsePositiveGuards": [
+          "An assets table that excludes pensions is normal — check whether pensions are listed separately before flagging an omission.",
+          "Valuation dates differ between fact find and report; compare as-at dates before flagging a value difference."
+        ]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Potential Concern where the asset position supports the capacity-for-loss or affordability conclusion." }
+    },
+
+    {
+      "groupId": "G1.6",
+      "requirement": "State pension entitlement is consistent with the evidence",
+      "limb": "Consistency",
+      "canonicalPaths": ["/parties/clients[]/statePension"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"] },
+      "queries": [
+        { "id": "Q1.6.1", "text": "state pension entitlement full new state pension per week in payment", "side": "Either", "targetCategories": ["I", "B"], "expectSignals": ["State Pension", "per week", "full", "£230", "£11,973"], "priority": "Core" },
+        { "id": "Q1.6.2", "text": "state pension forecast age qualifying years from age 66 67", "side": "Evidence", "targetCategories": ["B", "F"], "expectSignals": ["forecast", "qualifying years", "State Pension age", "66", "67"], "canonicalPaths": ["/parties/clients[]/statePension/statePensionAge"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "tolerance": "Weekly and annual statements of the same entitlement must reconcile at x52.",
+        "falsePositiveGuards": ["State pension age and intended retirement age are different things and are routinely conflated in reports."]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Potential Concern: state pension entitlement is named explicitly by this check and is often asserted without a forecast on file." }
+    },
+
+    {
+      "groupId": "G1.7",
+      "requirement": "Existing products (pensions and investments) are consistent with the evidence",
+      "limb": "Consistency",
+      "canonicalPaths": ["/existingArrangements[]/provider", "/existingArrangements[]/policyNumber", "/existingArrangements[]/currentValue", "/existingArrangements[]/transferValue", "/existingArrangements[]/contributions[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "E"] },
+      "queries": [
+        { "id": "Q1.7.1", "text": "existing arrangements table provider policy number fund value transfer value", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["Provider", "Policy number", "Fund Value", "Transfer Value"], "priority": "Core" },
+        { "id": "Q1.7.2", "text": "policy information current fund value as at valuation date plan number", "side": "Evidence", "targetCategories": ["E"], "expectSignals": ["Plan number", "Policy number", "value as at", "Fund value"], "priority": "Core" },
+        { "id": "Q1.7.3", "text": "transfer value quotation surrender value cash equivalent", "side": "Evidence", "targetCategories": ["E"], "expectSignals": ["Transfer value", "Surrender value", "CETV", "as at"], "canonicalPaths": ["/existingArrangements[]/transferValue"], "priority": "Core" },
+        { "id": "Q1.7.4", "text": "regular contributions paid by member and employer per month annual", "side": "Either", "targetCategories": ["E", "I", "B"], "expectSignals": ["contribution", "employer pays", "you pay", "per annum", "monthly"], "canonicalPaths": ["/existingArrangements[]/contributions[]"], "priority": "Core" },
+        { "id": "Q1.7.5", "text": "total combined pension value across all plans", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["combined", "total", "approximately £"], "priority": "Core", "note": "Cross-foots the narrative total against the per-plan table. Discrepancies here are pure internal inconsistencies and need no external evidence." }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "tolerance": "Plan values must match the provider statement to the penny where the same as-at date is used; otherwise flag the date gap, not the value.",
+        "falsePositiveGuards": [
+          "Fund value and transfer value are different figures; a report quoting one against a statement quoting the other is not automatically a mismatch.",
+          "Values move between the provider statement date and the report date — check both dates before flagging."
+        ]
+      },
+      "sufficiency": {
+        "ifEvidenceAbsent": "Potential Concern: plan values quoted with no provider documentation to support them.",
+        "minEvidenceCategories": 1
+      }
+    },
+
+    {
+      "groupId": "G1.8",
+      "requirement": "Data mismatches and unsupported figures within the report itself",
+      "limb": "Consistency",
+      "canonicalPaths": ["/extractionReport/internalInconsistencies[]"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["I"] },
+      "queries": [
+        { "id": "Q1.8.1", "text": "total transfer value into the new plan recommended solution amount invested", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["Total Transfer Value", "amount invested", "£"], "priority": "Core", "note": "Compare against the sum of the individual plans in G1.7 and against any narrative total." },
+        { "id": "Q1.8.2", "text": "charges percentage and monetary amount per existing plan comparison table", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["%", "£", "annual recurring charge"], "priority": "Core", "note": "Recompute each monetary charge against the stated plan value; a figure that is not the stated percentage of the stated value is an unsupported figure." },
+        { "id": "Q1.8.3", "text": "worked example calculation estimated net receipt after tax", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["estimate", "we estimate", "net", "tax free"], "priority": "Supplementary", "note": "Checks worked examples against the plan values quoted elsewhere in the same report." }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "tolerance": "Arithmetic must reconcile within rounding to the nearest pound or 0.01%.",
+        "falsePositiveGuards": ["A figure quoted 'as at' an earlier date is not an inconsistency; look for a stated date before flagging."]
+      },
+      "sufficiency": { "ifBothAbsent": "No finding.", "ifEvidenceAbsent": "Not applicable — this group compares the report against itself." }
+    }
+  ],
+
+  "decision": {
+    "noIssue": "Every group with an assertion side found corroborating evidence in at least one of categories A, B, C or E, values reconcile within tolerance, and no internal arithmetic contradiction was found.",
+    "potentialConcern": "Any material client fact, financial figure or plan value asserted in the report either contradicts the evidence or has no supporting document; or the report contradicts itself on a figure it relies on.",
+    "notApplicable": "No category I document exists for this case.",
+    "severityHints": [
+      "Highest: a figure that drives the recommendation (transfer value, charge, income need) contradicts the provider or fact-find evidence.",
+      "High: the report contradicts itself on the same figure in two places — no external evidence needed to conclude.",
+      "Moderate: a personal or contextual detail differs with no bearing on the recommendation.",
+      "Low: rounding, presentation or as-at date differences."
+    ]
+  },
+
+  "budget": { "coreQueries": 20, "supplementaryQueries": 6, "estimatedPassages": 208 }
+}

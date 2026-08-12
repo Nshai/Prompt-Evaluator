@@ -1,0 +1,200 @@
+{
+  "planVersion": "1.0",
+  "checkId": "CHK-003",
+  "checkName": "Risk, Capacity for Loss and Investment Strategy Match",
+  "appliesTo": "All investment and pension accumulation/decumulation cases",
+  "regulatoryBasis": "COBS 9.2.1R–9.2.2R; COBS 9A.2.1R–9A.2.2R",
+  "primaryCategories": ["B", "D", "E", "G", "I"],
+
+  "tool": {
+    "name": "search_case_documents",
+    "parameters": ["searchText"],
+    "resultsPerCall": 8,
+    "categoryFilterAvailable": false
+  },
+
+  "triggerProbe": {
+    "triggerField": "checkTriggers.hasInvestmentOrPensionRecommendation",
+    "queries": [
+      { "id": "T3.1", "text": "recommended investment strategy funds portfolio allocation for your pension", "side": "Assertion", "targetCategories": ["I", "H"], "expectSignals": ["fund", "portfolio", "allocation", "%", "invest"], "priority": "Core" }
+    ],
+    "presentWhen": "The report recommends an investment strategy, portfolio or product with underlying investments.",
+    "absentWhen": "No investment recommendation is made (e.g. pure protection advice).",
+    "onAbsent": "ReturnNA"
+  },
+
+  "queryGroups": [
+    {
+      "groupId": "G3.1",
+      "requirement": "Risk rating and summary",
+      "limb": "Consistency",
+      "canonicalPaths": ["/riskAssessment/perClient[]/attitudeToRisk/assessedCode", "/riskAssessment/perClient[]/attitudeToRisk/agreedCode", "/riskAssessment/perClient[]/attitudeToRisk/label"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "D"] },
+      "queries": [
+        { "id": "Q3.1.1", "text": "your attitude to risk you are a risk rating balanced cautious adventurous investor", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["risk rating", "Balanced", "Cautious", "Moderate", "attitude to risk"], "priority": "Core" },
+        { "id": "Q3.1.2", "text": "attitude to risk questionnaire result score profile outcome", "side": "Evidence", "targetCategories": ["D"], "expectSignals": ["questionnaire", "score", "profile", "risk level", "result"], "canonicalPaths": ["/riskAssessment/perClient[]/attitudeToRisk/assessedCode"], "priority": "Core" },
+        { "id": "Q3.1.3", "text": "risk profile description what this risk level means for your investments", "side": "Either", "targetCategories": ["D", "I"], "expectSignals": ["as a", "investor", "you may be suited", "description"], "priority": "Core" },
+        { "id": "Q3.1.4", "text": "risk scale one to ten definition of each risk category", "side": "Evidence", "targetCategories": ["D", "G"], "expectSignals": ["1-10", "scale", "level", "Dynamic Planner", "FE", "Defaqto"], "canonicalPaths": ["/riskAssessment/perClient[]/attitudeToRisk/scaleName"], "priority": "Core", "note": "Establishes which scale is in use. Without it, no comparison of numeric risk ratings is safe." }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "tolerance": "The agreed code in the report must equal the code adopted in the ATR evidence, on the same scale.",
+        "falsePositiveGuards": [
+          "Never compare numbers across different risk scales — a 5 on a 1-10 scale is not a 5 on a 1-7 scale.",
+          "A questionnaire result and an agreed rating legitimately differ; that is an override, handled in G3.6, not a mismatch."
+        ]
+      },
+      "sufficiency": {
+        "ifAssertionAbsent": "Potential Concern: an investment recommendation with no stated risk profile.",
+        "ifEvidenceAbsent": "Potential Concern: risk rating asserted with no questionnaire or risk assessment on file.",
+        "minEvidenceCategories": 1
+      }
+    },
+
+    {
+      "groupId": "G3.2",
+      "requirement": "Capacity for loss assessment",
+      "limb": "Consistency",
+      "canonicalPaths": ["/riskAssessment/perClient[]/capacityForLoss/rating", "/riskAssessment/perClient[]/capacityForLoss/assessmentBasis", "/riskAssessment/perClient[]/capacityForLoss/isSeparatelyAssessedFromAtr"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "D", "F"] },
+      "queries": [
+        { "id": "Q3.2.1", "text": "capacity for loss you have a low medium high capacity to absorb a fall in value", "side": "Either", "targetCategories": ["I", "D"], "expectSignals": ["capacity for loss", "low", "medium", "high", "absorb"], "priority": "Core" },
+        { "id": "Q3.2.2", "text": "would a fall in the value of your investments affect your standard of living", "side": "Either", "targetCategories": ["D", "B", "I"], "expectSignals": ["standard of living", "day to day", "detrimental", "impact", "reliant"], "priority": "Core" },
+        { "id": "Q3.2.3", "text": "capacity for loss assessment questions and answers scoring", "side": "Evidence", "targetCategories": ["D"], "expectSignals": ["capacity", "question", "answer", "assessment"], "priority": "Core" },
+        { "id": "Q3.2.4", "text": "other income and assets available if the investment falls in value alternative provision", "side": "Evidence", "targetCategories": ["B", "F"], "expectSignals": ["other assets", "other income", "savings", "surplus"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "falsePositiveGuards": [
+          "Capacity for loss restated as a consequence of attitude to risk ('medium CFL, consistent with your ATR of 5') is a weak assessment — flag it as such rather than as a value mismatch.",
+          "A CFL rating with no supporting financial reasoning is not evidenced merely because the words appear."
+        ]
+      },
+      "sufficiency": {
+        "ifEvidenceAbsent": "Potential Concern: capacity for loss asserted with no assessment on file.",
+        "ifAssertionAbsent": "Potential Concern: CFL is explicitly named by this check and by COBS 9.2."
+      }
+    },
+
+    {
+      "groupId": "G3.3",
+      "requirement": "Tolerance for loss and need-level risk",
+      "limb": "Consistency",
+      "canonicalPaths": ["/riskAssessment/perClient[]/toleranceForLoss", "/objectives[]/needLevelRisk"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["D", "F"] },
+      "queries": [
+        { "id": "Q3.3.1", "text": "maximum loss you would be prepared to tolerate percentage fall in a year", "side": "Either", "targetCategories": ["D", "I"], "expectSignals": ["maximum", "tolerate", "%", "fall", "loss"], "priority": "Core" },
+        { "id": "Q3.3.2", "text": "level of risk required to meet this objective need level risk required return", "side": "Evidence", "targetCategories": ["F", "G"], "expectSignals": ["required return", "need", "risk required", "to achieve"], "priority": "Core" },
+        { "id": "Q3.3.3", "text": "how would you feel if your investment fell by twenty percent", "side": "Evidence", "targetCategories": ["D", "C"], "expectSignals": ["fell", "20%", "comfortable", "concerned"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "RangeMatch",
+        "falsePositiveGuards": ["Many firms do not quantify tolerance for loss separately; absence is a documentation gap, not a contradiction."]
+      },
+      "sufficiency": { "ifBothAbsent": "Note as a gap — record that tolerance for loss was never quantified, which matters where a stress test models a large fall." }
+    },
+
+    {
+      "groupId": "G3.4",
+      "requirement": "Time horizon used to support the risk profile",
+      "limb": "Consistency",
+      "canonicalPaths": ["/riskAssessment/perClient[]/investmentTermYears", "/objectives[]/timeHorizon"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "D", "F"] },
+      "queries": [
+        { "id": "Q3.4.1", "text": "invest over a period of years growth potential over the long term", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["over a", "year period", "long term", "growth potential"], "priority": "Core" },
+        { "id": "Q3.4.2", "text": "investment term recorded in the risk assessment how long until the money is needed", "side": "Evidence", "targetCategories": ["D", "B"], "expectSignals": ["term", "years", "horizon", "until"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "RangeMatch",
+        "tolerance": "The term used in the risk section must be reconcilable with the objective horizon from CHK-002.",
+        "falsePositiveGuards": ["Money left invested through retirement can legitimately have a longer horizon than the retirement date itself — but the report must say so."]
+      },
+      "sufficiency": { "ifEvidenceAbsent": "Potential Concern where a long horizon is the stated justification for a higher risk profile." }
+    },
+
+    {
+      "groupId": "G3.5",
+      "requirement": "Investment strategy and asset allocation",
+      "limb": "Consistency",
+      "canonicalPaths": ["/solution/investmentStrategy/targetRiskRating", "/solution/investmentStrategy/holdings[]", "/solution/investmentStrategy/assetAllocation[]", "/solution/investmentStrategy/strategyType"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H"] },
+      "queries": [
+        { "id": "Q3.5.1", "text": "fund recommendation allocation percentage risk rating annual charge table", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["Allocation", "Risk Rating", "%", "fund"], "priority": "Core" },
+        { "id": "Q3.5.2", "text": "fund factsheet risk profile rating of this fund volatility measure", "side": "Evidence", "targetCategories": ["H", "G"], "expectSignals": ["risk rating", "risk profile", "volatility", "SRRI", "rated"], "priority": "Core" },
+        { "id": "Q3.5.3", "text": "asset allocation equities bonds property cash percentage breakdown", "side": "Either", "targetCategories": ["H", "G", "I"], "expectSignals": ["equities", "bonds", "property", "cash", "%"], "canonicalPaths": ["/solution/investmentStrategy/assetAllocation[]"], "priority": "Core" },
+        { "id": "Q3.5.4", "text": "model portfolio risk targeted multi asset fund designed to remain within risk level", "side": "Either", "targetCategories": ["G", "H", "I"], "expectSignals": ["risk targeted", "multi-asset", "model portfolio", "remain within"], "priority": "Core" },
+        { "id": "Q3.5.5", "text": "benchmark for this risk profile peer group comparison sector", "side": "Evidence", "targetCategories": ["G", "H"], "expectSignals": ["benchmark", "IA Mixed", "sector", "peer"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "ValueMatch",
+        "tolerance": "The strategy's risk rating must equal the client's agreed rating on the same scale; fund allocations must total 100%.",
+        "falsePositiveGuards": [
+          "Fund-level risk ratings from a provider are not necessarily on the firm's client risk scale.",
+          "A blend of two funds can target a rating neither fund carries individually — check for a stated combined rating before flagging."
+        ]
+      },
+      "sufficiency": {
+        "ifEvidenceAbsent": "Potential Concern: fund risk ratings asserted with no factsheet or research to support them.",
+        "minEvidenceCategories": 1
+      }
+    },
+
+    {
+      "groupId": "G3.6",
+      "requirement": "Risk override justification where the agreed rating differs from the questionnaire",
+      "limb": "Consistency",
+      "canonicalPaths": ["/riskAssessment/perClient[]/reconciliation"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["C", "D"] },
+      "queries": [
+        { "id": "Q3.6.1", "text": "we agreed a risk rating rather than the questionnaire result did not fully reflect", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["rather than", "didn't fully reflect", "we agreed", "instead of", "increase"], "priority": "Core", "note": "This is the highest-value query in the plan. An override that the report mentions only in passing is easily missed by an unplanned search." },
+        { "id": "Q3.6.2", "text": "discussion about changing the client's risk level and why file note", "side": "Evidence", "targetCategories": ["C", "D"], "expectSignals": ["discussed", "agreed", "changed", "amended", "reconcil"], "priority": "Core" },
+        { "id": "Q3.6.3", "text": "client confirmed they are happy to take a higher level of risk and understand the consequences", "side": "Either", "targetCategories": ["I", "C"], "expectSignals": ["happy to", "aware", "understand", "accept", "confirmed"], "priority": "Core" }
+      ],
+      "comparison": {
+        "method": "PresenceOnly",
+        "falsePositiveGuards": ["Where assessed and agreed ratings match, this group is not applicable — do not report a missing justification for an override that did not occur."]
+      },
+      "sufficiency": {
+        "ifAssertionAbsent": "Only relevant if G3.1 found differing assessed and agreed codes; then Potential Concern — an unexplained override.",
+        "ifEvidenceAbsent": "Potential Concern: the override is asserted in the report but nothing in the file records the conversation."
+      }
+    },
+
+    {
+      "groupId": "G3.7",
+      "requirement": "Recommendation or strategy exceeds risk tolerance, taking account of capacity for loss",
+      "limb": "Appropriateness",
+      "canonicalPaths": ["/solution/investmentStrategy/targetRiskRating", "/riskAssessment/perClient[]/agreedCode", "/riskAssessment/perClient[]/capacityForLoss/rating", "/existingArrangements[]/riskRating"],
+      "expectedCategories": { "assertion": ["I"], "evidence": ["D", "E", "G"] },
+      "queries": [
+        { "id": "Q3.7.1", "text": "how the recommended strategy aligns with your attitude to risk and capacity for loss", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["aligns", "in line with", "consistent with", "matches"], "priority": "Core" },
+        { "id": "Q3.7.2", "text": "existing plan fund risk level compared with your agreed risk profile", "side": "Either", "targetCategories": ["E", "I", "G"], "expectSignals": ["risk level", "rated", "higher than", "lower than", "outside"], "canonicalPaths": ["/existingArrangements[]/riskRating"], "priority": "Core" },
+        { "id": "Q3.7.3", "text": "lifestyling strategy automatically reduces risk as you approach retirement", "side": "Either", "targetCategories": ["E", "H", "I"], "expectSignals": ["lifestyling", "de-risk", "glide path", "automatically"], "priority": "Core", "note": "Lifestyling moves a portfolio outside the agreed profile over time and is a recurring appropriateness point." },
+        { "id": "Q3.7.4", "text": "volatility and potential loss of the recommended portfolio maximum drawdown", "side": "Evidence", "targetCategories": ["G", "H"], "expectSignals": ["volatility", "drawdown", "loss", "standard deviation"], "priority": "Supplementary" }
+      ],
+      "comparison": {
+        "method": "RangeMatch",
+        "falsePositiveGuards": [
+          "Retained plans invested outside the agreed profile are only a concern where the report claims alignment for the whole portfolio.",
+          "Compare on one scale only; where scales differ and no mapping is given, report the incomparability rather than a breach."
+        ]
+      },
+      "sufficiency": { "ifAssertionAbsent": "Potential Concern: no explanation of how the strategy matches the risk profile — this is the explicit subject of the check." }
+    }
+  ],
+
+  "decision": {
+    "noIssue": "ATR, CFL, tolerance, term and strategy are each evidenced in categories D, B, G or H; the strategy risk rating equals the agreed rating on a stated scale; and any override carries a justification and client acknowledgement.",
+    "potentialConcern": "A risk figure is asserted with no assessment on file, the agreed rating differs from the questionnaire without explanation, the strategy risk exceeds the agreed rating or capacity for loss, or risk ratings are compared across incompatible scales.",
+    "notApplicable": "No investment or pension recommendation in the case.",
+    "severityHints": [
+      "Highest: strategy risk exceeds the agreed profile or capacity for loss.",
+      "High: questionnaire result overridden upward with no evidenced justification.",
+      "High: risk scale never identified, so no comparison can be substantiated.",
+      "Moderate: capacity for loss asserted as a restatement of attitude to risk.",
+      "Low: tolerance for loss not quantified where no large-loss scenario is modelled."
+    ]
+  },
+
+  "budget": { "coreQueries": 21, "supplementaryQueries": 4, "estimatedPassages": 200 }
+}

@@ -48,6 +48,19 @@ partial class ConfigurationForm
     private NumericUpDown chunkOverlapUpDown;
     private Label searchResultsLabel;
     private NumericUpDown searchResultsUpDown;
+    private GroupBox canonicalGroup;
+    private TableLayoutPanel canonicalLayout;
+    private Label canonicalSchemaLabel;
+    private TextBox canonicalSchemaTextBox;
+    private Button canonicalSchemaBrowseButton;
+    private Label checkPlanLabel;
+    private TextBox checkPlanTextBox;
+    private Button checkPlanBrowseButton;
+    private Label canonicalDbLabel;
+    private TextBox canonicalDbTextBox;
+    private Label canonicalHintLabel;
+    private Label extractionTokensLabel;
+    private NumericUpDown extractionTokensUpDown;
     private GroupBox contextGroup;
     private TableLayoutPanel contextLayout;
     private Label documentFolderLabel;
@@ -115,6 +128,19 @@ partial class ConfigurationForm
         chunkOverlapUpDown = new NumericUpDown();
         searchResultsLabel = new Label();
         searchResultsUpDown = new NumericUpDown();
+        canonicalGroup = new GroupBox();
+        canonicalLayout = new TableLayoutPanel();
+        canonicalSchemaLabel = new Label();
+        canonicalSchemaTextBox = new TextBox();
+        canonicalSchemaBrowseButton = new Button();
+        checkPlanLabel = new Label();
+        checkPlanTextBox = new TextBox();
+        checkPlanBrowseButton = new Button();
+        canonicalDbLabel = new Label();
+        canonicalDbTextBox = new TextBox();
+        canonicalHintLabel = new Label();
+        extractionTokensLabel = new Label();
+        extractionTokensUpDown = new NumericUpDown();
         contextGroup = new GroupBox();
         contextLayout = new TableLayoutPanel();
         documentFolderLabel = new Label();
@@ -138,6 +164,9 @@ partial class ConfigurationForm
         ((System.ComponentModel.ISupportInitialize)chunkTokensUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)chunkOverlapUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)searchResultsUpDown).BeginInit();
+        canonicalGroup.SuspendLayout();
+        canonicalLayout.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)extractionTokensUpDown).BeginInit();
         contextGroup.SuspendLayout();
         contextLayout.SuspendLayout();
         buttonPanel.SuspendLayout();
@@ -149,7 +178,8 @@ partial class ConfigurationForm
         rootLayout.Dock = DockStyle.Fill;
         rootLayout.Padding = new Padding(10);
         rootLayout.AutoScroll = true;
-        rootLayout.RowCount = 6;
+        rootLayout.RowCount = 7;
+        rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
@@ -159,9 +189,10 @@ partial class ConfigurationForm
         rootLayout.Controls.Add(connectionGroup, 0, 0);
         rootLayout.Controls.Add(modelsGroup, 0, 1);
         rootLayout.Controls.Add(vectorGroup, 0, 2);
-        rootLayout.Controls.Add(contextGroup, 0, 3);
-        rootLayout.Controls.Add(clarificationCheckBox, 0, 4);
-        rootLayout.Controls.Add(buttonPanel, 0, 5);
+        rootLayout.Controls.Add(canonicalGroup, 0, 3);
+        rootLayout.Controls.Add(contextGroup, 0, 4);
+        rootLayout.Controls.Add(clarificationCheckBox, 0, 5);
+        rootLayout.Controls.Add(buttonPanel, 0, 6);
         rootLayout.Name = "rootLayout";
 
         // connectionGroup
@@ -393,6 +424,115 @@ partial class ConfigurationForm
         vectorLayout.Controls.Add(searchResultsUpDown, 1, 8);
         vectorLayout.Name = "vectorLayout";
 
+        // canonicalGroup — where the schema, the query plans and the extracted models live
+        canonicalGroup.AutoSize = true;
+        canonicalGroup.Controls.Add(canonicalLayout);
+        canonicalGroup.Dock = DockStyle.Fill;
+        canonicalGroup.Margin = new Padding(0, 0, 0, 8);
+        canonicalGroup.Name = "canonicalGroup";
+        canonicalGroup.Padding = new Padding(8);
+        canonicalGroup.TabStop = false;
+        canonicalGroup.Text = "Canonical model";
+
+        // canonicalLayout
+        canonicalLayout.AutoSize = true;
+        canonicalLayout.ColumnCount = 3;
+        canonicalLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
+        canonicalLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        canonicalLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        canonicalLayout.Dock = DockStyle.Fill;
+        canonicalLayout.RowCount = 5;
+        canonicalLayout.Controls.Add(canonicalSchemaLabel, 0, 0);
+        canonicalLayout.Controls.Add(canonicalSchemaTextBox, 1, 0);
+        canonicalLayout.Controls.Add(canonicalSchemaBrowseButton, 2, 0);
+        canonicalLayout.Controls.Add(checkPlanLabel, 0, 1);
+        canonicalLayout.Controls.Add(checkPlanTextBox, 1, 1);
+        canonicalLayout.Controls.Add(checkPlanBrowseButton, 2, 1);
+        canonicalLayout.Controls.Add(canonicalHintLabel, 1, 2);
+        canonicalLayout.Controls.Add(canonicalDbLabel, 0, 3);
+        canonicalLayout.Controls.Add(canonicalDbTextBox, 1, 3);
+        canonicalLayout.Controls.Add(extractionTokensLabel, 0, 4);
+        canonicalLayout.Controls.Add(extractionTokensUpDown, 1, 4);
+        canonicalLayout.Name = "canonicalLayout";
+
+        // canonicalSchemaLabel
+        canonicalSchemaLabel.Anchor = AnchorStyles.Left;
+        canonicalSchemaLabel.AutoSize = true;
+        canonicalSchemaLabel.Name = "canonicalSchemaLabel";
+        canonicalSchemaLabel.Text = "Model schema";
+
+        // canonicalSchemaTextBox
+        canonicalSchemaTextBox.Dock = DockStyle.Fill;
+        canonicalSchemaTextBox.Margin = new Padding(0, 3, 8, 3);
+        canonicalSchemaTextBox.Name = "canonicalSchemaTextBox";
+        canonicalSchemaTextBox.PlaceholderText = AppSettings.DefaultCanonicalSchemaFileName + " (beside the app)";
+
+        // canonicalSchemaBrowseButton
+        canonicalSchemaBrowseButton.AutoSize = true;
+        canonicalSchemaBrowseButton.Margin = new Padding(0, 3, 0, 3);
+        canonicalSchemaBrowseButton.Name = "canonicalSchemaBrowseButton";
+        canonicalSchemaBrowseButton.Padding = new Padding(8, 2, 8, 2);
+        canonicalSchemaBrowseButton.Text = "Browse...";
+        canonicalSchemaBrowseButton.UseVisualStyleBackColor = true;
+        canonicalSchemaBrowseButton.Click += CanonicalSchemaBrowseButton_Click;
+
+        // checkPlanLabel
+        checkPlanLabel.Anchor = AnchorStyles.Left;
+        checkPlanLabel.AutoSize = true;
+        checkPlanLabel.Name = "checkPlanLabel";
+        checkPlanLabel.Text = "Check plan folder";
+
+        // checkPlanTextBox
+        checkPlanTextBox.Dock = DockStyle.Fill;
+        checkPlanTextBox.Margin = new Padding(0, 3, 8, 3);
+        checkPlanTextBox.Name = "checkPlanTextBox";
+        checkPlanTextBox.PlaceholderText = AppSettings.DefaultCheckPlanFolderName + " (beside the app)";
+
+        // checkPlanBrowseButton
+        checkPlanBrowseButton.AutoSize = true;
+        checkPlanBrowseButton.Margin = new Padding(0, 3, 0, 3);
+        checkPlanBrowseButton.Name = "checkPlanBrowseButton";
+        checkPlanBrowseButton.Padding = new Padding(8, 2, 8, 2);
+        checkPlanBrowseButton.Text = "Browse...";
+        checkPlanBrowseButton.UseVisualStyleBackColor = true;
+        checkPlanBrowseButton.Click += CheckPlanBrowseButton_Click;
+
+        // canonicalHintLabel
+        canonicalHintLabel.AutoSize = true;
+        canonicalHintLabel.ForeColor = SystemColors.GrayText;
+        canonicalHintLabel.Margin = new Padding(0, 0, 0, 8);
+        canonicalHintLabel.Name = "canonicalHintLabel";
+        canonicalHintLabel.Text =
+            "Leave blank to use the copies deployed with the app. A check reads what the report asserts\r\n"
+            + "from the extracted model and searches only the evidence documents.";
+
+        // canonicalDbLabel
+        canonicalDbLabel.Anchor = AnchorStyles.Left;
+        canonicalDbLabel.AutoSize = true;
+        canonicalDbLabel.Name = "canonicalDbLabel";
+        canonicalDbLabel.Text = "Model database";
+
+        // canonicalDbTextBox
+        canonicalDbTextBox.Dock = DockStyle.Fill;
+        canonicalDbTextBox.Margin = new Padding(0, 3, 8, 3);
+        canonicalDbTextBox.Name = "canonicalDbTextBox";
+        canonicalDbTextBox.PlaceholderText = "canonical-models.db (in the app's local data folder)";
+
+        // extractionTokensLabel
+        extractionTokensLabel.Anchor = AnchorStyles.Left;
+        extractionTokensLabel.AutoSize = true;
+        extractionTokensLabel.Name = "extractionTokensLabel";
+        extractionTokensLabel.Text = "Extraction max tokens";
+
+        // extractionTokensUpDown
+        extractionTokensUpDown.Anchor = AnchorStyles.Left;
+        extractionTokensUpDown.Increment = 1000;
+        extractionTokensUpDown.Margin = new Padding(0, 3, 0, 3);
+        extractionTokensUpDown.Maximum = 128000;
+        extractionTokensUpDown.Minimum = 1000;
+        extractionTokensUpDown.Name = "extractionTokensUpDown";
+        extractionTokensUpDown.Width = 120;
+
         // qdrantLabel
         qdrantLabel.Anchor = AnchorStyles.Left;
         qdrantLabel.AutoSize = true;
@@ -610,6 +750,11 @@ partial class ConfigurationForm
         contextLayout.PerformLayout();
         contextGroup.ResumeLayout(false);
         contextGroup.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)extractionTokensUpDown).EndInit();
+        canonicalLayout.ResumeLayout(false);
+        canonicalLayout.PerformLayout();
+        canonicalGroup.ResumeLayout(false);
+        canonicalGroup.PerformLayout();
         ((System.ComponentModel.ISupportInitialize)searchResultsUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)chunkOverlapUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)chunkTokensUpDown).EndInit();

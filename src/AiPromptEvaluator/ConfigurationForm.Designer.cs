@@ -61,6 +61,13 @@ partial class ConfigurationForm
     private Label canonicalHintLabel;
     private Label extractionTokensLabel;
     private NumericUpDown extractionTokensUpDown;
+    private GroupBox reproducibilityGroup;
+    private TableLayoutPanel reproducibilityLayout;
+    private CheckBox deterministicCheckBox;
+    private CheckBox structuredFindingsCheckBox;
+    private Label seedLabel;
+    private NumericUpDown seedUpDown;
+    private Label reproducibilityHintLabel;
     private GroupBox contextGroup;
     private TableLayoutPanel contextLayout;
     private Label documentFolderLabel;
@@ -141,6 +148,13 @@ partial class ConfigurationForm
         canonicalHintLabel = new Label();
         extractionTokensLabel = new Label();
         extractionTokensUpDown = new NumericUpDown();
+        reproducibilityGroup = new GroupBox();
+        reproducibilityLayout = new TableLayoutPanel();
+        deterministicCheckBox = new CheckBox();
+        structuredFindingsCheckBox = new CheckBox();
+        seedLabel = new Label();
+        seedUpDown = new NumericUpDown();
+        reproducibilityHintLabel = new Label();
         contextGroup = new GroupBox();
         contextLayout = new TableLayoutPanel();
         documentFolderLabel = new Label();
@@ -167,6 +181,9 @@ partial class ConfigurationForm
         canonicalGroup.SuspendLayout();
         canonicalLayout.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)extractionTokensUpDown).BeginInit();
+        reproducibilityGroup.SuspendLayout();
+        reproducibilityLayout.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)seedUpDown).BeginInit();
         contextGroup.SuspendLayout();
         contextLayout.SuspendLayout();
         buttonPanel.SuspendLayout();
@@ -178,7 +195,8 @@ partial class ConfigurationForm
         rootLayout.Dock = DockStyle.Fill;
         rootLayout.Padding = new Padding(10);
         rootLayout.AutoScroll = true;
-        rootLayout.RowCount = 7;
+        rootLayout.RowCount = 8;
+        rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
@@ -190,9 +208,10 @@ partial class ConfigurationForm
         rootLayout.Controls.Add(modelsGroup, 0, 1);
         rootLayout.Controls.Add(vectorGroup, 0, 2);
         rootLayout.Controls.Add(canonicalGroup, 0, 3);
-        rootLayout.Controls.Add(contextGroup, 0, 4);
-        rootLayout.Controls.Add(clarificationCheckBox, 0, 5);
-        rootLayout.Controls.Add(buttonPanel, 0, 6);
+        rootLayout.Controls.Add(reproducibilityGroup, 0, 4);
+        rootLayout.Controls.Add(contextGroup, 0, 5);
+        rootLayout.Controls.Add(clarificationCheckBox, 0, 6);
+        rootLayout.Controls.Add(buttonPanel, 0, 7);
         rootLayout.Name = "rootLayout";
 
         // connectionGroup
@@ -533,6 +552,71 @@ partial class ConfigurationForm
         extractionTokensUpDown.Name = "extractionTokensUpDown";
         extractionTokensUpDown.Width = 120;
 
+        // reproducibilityGroup — what keeps two runs of the same check agreeing with each other
+        reproducibilityGroup.AutoSize = true;
+        reproducibilityGroup.Controls.Add(reproducibilityLayout);
+        reproducibilityGroup.Dock = DockStyle.Fill;
+        reproducibilityGroup.Margin = new Padding(0, 0, 0, 8);
+        reproducibilityGroup.Name = "reproducibilityGroup";
+        reproducibilityGroup.Padding = new Padding(8);
+        reproducibilityGroup.TabStop = false;
+        reproducibilityGroup.Text = "Assessment reproducibility";
+
+        // reproducibilityLayout
+        reproducibilityLayout.AutoSize = true;
+        reproducibilityLayout.ColumnCount = 2;
+        reproducibilityLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
+        reproducibilityLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        reproducibilityLayout.Dock = DockStyle.Fill;
+        reproducibilityLayout.RowCount = 4;
+        reproducibilityLayout.Controls.Add(deterministicCheckBox, 0, 0);
+        reproducibilityLayout.SetColumnSpan(deterministicCheckBox, 2);
+        reproducibilityLayout.Controls.Add(structuredFindingsCheckBox, 0, 1);
+        reproducibilityLayout.SetColumnSpan(structuredFindingsCheckBox, 2);
+        reproducibilityLayout.Controls.Add(seedLabel, 0, 2);
+        reproducibilityLayout.Controls.Add(seedUpDown, 1, 2);
+        reproducibilityLayout.Controls.Add(reproducibilityHintLabel, 0, 3);
+        reproducibilityLayout.SetColumnSpan(reproducibilityHintLabel, 2);
+        reproducibilityLayout.Name = "reproducibilityLayout";
+
+        // deterministicCheckBox
+        deterministicCheckBox.AutoSize = true;
+        deterministicCheckBox.Margin = new Padding(0, 3, 0, 3);
+        deterministicCheckBox.Name = "deterministicCheckBox";
+        deterministicCheckBox.Text = "Pin sampling (temperature 0, top-p 1, fixed seed)";
+        deterministicCheckBox.UseVisualStyleBackColor = true;
+
+        // structuredFindingsCheckBox
+        structuredFindingsCheckBox.AutoSize = true;
+        structuredFindingsCheckBox.Margin = new Padding(0, 3, 0, 3);
+        structuredFindingsCheckBox.Name = "structuredFindingsCheckBox";
+        structuredFindingsCheckBox.Text = "Constrain findings to the response schema";
+        structuredFindingsCheckBox.UseVisualStyleBackColor = true;
+
+        // seedLabel
+        seedLabel.Anchor = AnchorStyles.Left;
+        seedLabel.AutoSize = true;
+        seedLabel.Name = "seedLabel";
+        seedLabel.Text = "Sampling seed";
+
+        // seedUpDown
+        seedUpDown.Anchor = AnchorStyles.Left;
+        seedUpDown.Margin = new Padding(0, 3, 0, 3);
+        seedUpDown.Maximum = int.MaxValue;
+        seedUpDown.Minimum = 0;
+        seedUpDown.Name = "seedUpDown";
+        seedUpDown.Width = 120;
+
+        // reproducibilityHintLabel
+        reproducibilityHintLabel.AutoSize = true;
+        reproducibilityHintLabel.ForeColor = SystemColors.GrayText;
+        reproducibilityHintLabel.Margin = new Padding(0, 6, 0, 0);
+        reproducibilityHintLabel.Name = "reproducibilityHintLabel";
+        reproducibilityHintLabel.Text =
+            "Two runs of the same check over the same case should reach the same finding. Clear these only\r\n"
+            + "for an endpoint that rejects them. Changing the seed samples a second opinion; the findings\r\n"
+            + "report records both, so a difference between runs can be traced to what actually changed.";
+
         // qdrantLabel
         qdrantLabel.Anchor = AnchorStyles.Left;
         qdrantLabel.AutoSize = true;
@@ -755,6 +839,11 @@ partial class ConfigurationForm
         canonicalLayout.PerformLayout();
         canonicalGroup.ResumeLayout(false);
         canonicalGroup.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)seedUpDown).EndInit();
+        reproducibilityLayout.ResumeLayout(false);
+        reproducibilityLayout.PerformLayout();
+        reproducibilityGroup.ResumeLayout(false);
+        reproducibilityGroup.PerformLayout();
         ((System.ComponentModel.ISupportInitialize)searchResultsUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)chunkOverlapUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)chunkTokensUpDown).EndInit();

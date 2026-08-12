@@ -151,6 +151,37 @@ public class AppSettings
     [JsonPropertyName("extractionMaxTokens")]
     public int ExtractionMaxTokens { get; set; } = 16000;
 
+    /// <summary>
+    /// Pins sampling so the same evidence pack produces the same finding: temperature 0,
+    /// top-p 1, and a fixed seed. Not an absolute guarantee — expert routing and batched
+    /// floating-point arithmetic still admit variation — but it is the single largest source
+    /// of run-to-run disagreement, because the provider default is a creative temperature.
+    ///
+    /// Turn it off for a model that rejects the parameters; some reasoning models do.
+    /// </summary>
+    [JsonPropertyName("deterministicSampling")]
+    public bool DeterministicSampling { get; set; } = true;
+
+    /// <summary>
+    /// The seed sent with every call when <see cref="DeterministicSampling"/> is on. Its value
+    /// does not matter; holding it constant does. Change it deliberately to sample a second
+    /// opinion on a check that keeps flipping.
+    /// </summary>
+    [JsonPropertyName("samplingSeed")]
+    public long SamplingSeed { get; set; } = 1;
+
+    /// <summary>
+    /// Constrains a check finding to the schema the app parses, rather than asking for JSON
+    /// and hoping. It removes the whole class of variation where a rewording of the outcome
+    /// changes the outcome — an unrecognised value is read as a concern, so a wobble in the
+    /// envelope becomes a wobble in the result.
+    ///
+    /// Requires an endpoint that supports JSON-schema response formats. Turn it off for one
+    /// that does not.
+    /// </summary>
+    [JsonPropertyName("structuredFindings")]
+    public bool StructuredFindings { get; set; } = true;
+
     /// <summary>The file name looked for beside the executable when no schema path is set.</summary>
     public const string DefaultCanonicalSchemaFileName = "canonical-suitability-model.schema.json";
 

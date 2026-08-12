@@ -1,5 +1,8 @@
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+
+using Microsoft.Extensions.AI;
 
 namespace AiPromptEvaluator;
 
@@ -104,6 +107,78 @@ public sealed record CheckFinding
 }
 
 /// <summary>
+/// The JSON schema a check finding must satisfy, sent to the model as a response format so
+/// the reply cannot arrive in a shape the app has to guess at.
+///
+/// This matters more than tidiness. <see cref="CheckFinding.ParseOutcome"/> reads anything it
+/// does not recognise as a Potential Concern, which is the safe direction but means a rewording
+/// of the outcome silently becomes a different outcome. Constraining the enum removes that
+/// path: the model can only return one of the three values the checks define.
+///
+/// Written out by hand rather than generated from the type, because the strict dialect the
+/// providers enforce is narrower than the type: every property has to be required, unset
+/// values have to be nullable rather than omitted, and additional properties have to be
+/// refused explicitly.
+/// </summary>
+public static class FindingSchema
+{
+    private const string Json =
+        """
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["checkId", "checkName", "outcome", "summary", "groups"],
+          "properties": {
+            "checkId": { "type": "string" },
+            "checkName": { "type": "string" },
+            "outcome": { "type": "string", "enum": ["NoIssue", "PotentialConcern", "NotApplicable"] },
+            "summary": { "type": "string" },
+            "groups": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["groupId", "requirement", "outcome", "severity", "explanation", "citations"],
+                "properties": {
+                  "groupId": { "type": "string" },
+                  "requirement": { "type": "string" },
+                  "outcome": { "type": "string", "enum": ["NoIssue", "PotentialConcern", "NotApplicable"] },
+                  "severity": { "type": ["string", "null"], "enum": ["High", "Moderate", "Low", null] },
+                  "explanation": { "type": "string" },
+                  "citations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["source", "category", "quote"],
+                      "properties": {
+                        "source": { "type": "string" },
+                        "category": { "type": ["string", "null"] },
+                        "quote": { "type": ["string", "null"] }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        """;
+
+    /// <summary>The schema as a <see cref="JsonElement"/>, parsed once.</summary>
+    public static JsonElement Element { get; } = JsonDocument.Parse(Json).RootElement.Clone();
+
+    /// <summary>The response format to send, or null when the endpoint should not be asked for one.</summary>
+    public static ChatResponseFormat? ResponseFormat(bool enabled) =>
+        enabled
+            ? ChatResponseFormat.ForJsonSchema(
+                Element,
+                "qa_check_finding",
+                "The outcome of one QA check, with per-group detail and citations.")
+            : null;
+}
+
+/// <summary>
 /// The consolidated result of a run across one or more checks, and the report the user
 /// reads. Kept separate from the UI so the same text can be written to a file or copied to
 /// the clipboard without a form being involved.
@@ -114,7 +189,8 @@ public sealed record FindingsReport(
     string ModelId,
     DateTimeOffset RunAt,
     IReadOnlyList<CheckFinding> Findings,
-    CanonicalModelDocument? Model)
+    CanonicalModelDocument? Model,
+    RunFingerprint? Fingerprint = null)
 {
     public int Count(CheckOutcome outcome) => Findings.Count(f => f.ParsedOutcome == outcome);
 
@@ -149,6 +225,14 @@ public sealed record FindingsReport(
             sb.AppendLine(
                 $"Canonical model extracted {Model.ExtractedAt:yyyy-MM-dd HH:mm} from "
                 + $"{string.Join(", ", Model.SourceDocuments)} (schema v{Model.SchemaVersion})");
+        }
+
+        // Everything that could make this run differ from the last one, on two lines. Diff
+        // these before concluding that the assessor changed its mind.
+        if (Fingerprint is not null)
+        {
+            sb.AppendLine(new string('-', 78));
+            sb.AppendLine(Fingerprint.Format());
         }
 
         sb.AppendLine(rule);

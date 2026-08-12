@@ -41,6 +41,20 @@ public class PromptEvaluator
         string systemPrompt,
         string userPrompt,
         int maxOutputTokens,
+        CancellationToken cancellationToken = default) =>
+        await RunRawAsync(systemPrompt, userPrompt, maxOutputTokens, responseFormat: null, cancellationToken)
+            .ConfigureAwait(false);
+
+    /// <summary>
+    /// As above, with the reply constrained to <paramref name="responseFormat"/>. Callers that
+    /// have to parse the reply pass the schema they parse against, so the model is prevented
+    /// from returning a shape the app would have to guess at.
+    /// </summary>
+    public virtual async Task<PromptResult> RunRawAsync(
+        string systemPrompt,
+        string userPrompt,
+        int maxOutputTokens,
+        ChatResponseFormat? responseFormat,
         CancellationToken cancellationToken = default)
     {
         using var client = AiClientFactory.CreateChatClient(_settings);
@@ -53,6 +67,7 @@ public class PromptEvaluator
 
         var options = ChatOptions();
         options.MaxOutputTokens = Math.Max(1, maxOutputTokens);
+        options.ResponseFormat = responseFormat;
 
         var response = await client
             .GetResponseAsync(messages, options, cancellationToken)
@@ -79,11 +94,28 @@ public class PromptEvaluator
         return ToResult(response);
     }
 
-    private ChatOptions ChatOptions() => new()
+    /// <summary>
+    /// Options for every call. Sampling is pinned by default: a QA finding is a judgement that
+    /// should not change because the sampler rolled differently, and the provider default is a
+    /// creative temperature rather than a neutral one.
+    /// </summary>
+    internal ChatOptions ChatOptions()
     {
-        MaxOutputTokens = _settings.MaxTokens,
-        ModelId = _settings.SelectedModel,
-    };
+        var options = new ChatOptions
+        {
+            MaxOutputTokens = _settings.MaxTokens,
+            ModelId = _settings.SelectedModel,
+        };
+
+        if (_settings.DeterministicSampling)
+        {
+            options.Temperature = 0f;
+            options.TopP = 1f;
+            options.Seed = _settings.SamplingSeed;
+        }
+
+        return options;
+    }
 
     private PromptResult ToResult(ChatResponse response) =>
         new(response.Text, CostBreakdown.Create(_settings.SelectedModel, ReadUsage(response.Usage)));

@@ -39,7 +39,7 @@ public sealed class CheckPlanRunner
     /// a group overlap heavily by design, and past a dozen passages the pack is mostly the
     /// same text scored slightly differently.
     /// </summary>
-    private const int MaxPassagesPerGroup = 12;
+    public const int MaxPassagesPerGroup = 12;
 
     /// <summary>Output cap for a decision. Enough for a structured finding across every group.</summary>
     private const int DecisionMaxTokens = 8000;
@@ -115,7 +115,12 @@ public sealed class CheckPlanRunner
             var userPrompt = BuildAssessmentPrompt(check, plan, trigger, packs);
 
             var result = await _evaluator
-                .RunRawAsync(systemPrompt, userPrompt, DecisionMaxTokens, cancellationToken)
+                .RunRawAsync(
+                    systemPrompt,
+                    userPrompt,
+                    DecisionMaxTokens,
+                    FindingSchema.ResponseFormat(_settings.StructuredFindings),
+                    cancellationToken)
                 .ConfigureAwait(false);
 
             _promptLog?.LogExchange(plan.CheckId, plan.CheckName, systemPrompt, userPrompt, result.Response);
@@ -236,7 +241,7 @@ public sealed class CheckPlanRunner
             // first and drop the rest so the pack is evidence rather than repetition.
             foreach (var hit in hits)
             {
-                if (seen.Add($"{hit.DocumentName}|{hit.SearchedText.GetHashCode()}"))
+                if (seen.Add(DeduplicationKey(hit)))
                 {
                     passages.Add(hit);
                 }
@@ -256,11 +261,7 @@ public sealed class CheckPlanRunner
             .SelectMany(q => q.TargetCategories)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        var ranked = passages
-            .OrderByDescending(p => targeted.Count == 0 || targeted.Contains(p.CategoryCode) ? 1 : 0)
-            .ThenByDescending(p => p.Score)
-            .Take(MaxPassagesPerGroup)
-            .ToList();
+        var ranked = Rank(passages, targeted);
 
         var categories = ranked
             .Select(p => p.CategoryCode)
@@ -271,6 +272,42 @@ public sealed class CheckPlanRunner
 
         return new GroupEvidence(group, fragments, ranked, searches, total, categories, missedSignals);
     }
+
+    /// <summary>
+    /// What makes two hits the same passage.
+    ///
+    /// Deliberately the text itself rather than its hash code: <see cref="string.GetHashCode()"/>
+    /// is seeded per process, so a collision would drop a genuinely distinct passage — and a
+    /// different one on the next launch. The evidence pack would then differ between sessions
+    /// before the assessor had been called at all, which is the hardest kind of inconsistency
+    /// to notice, because everything visible about the run is identical.
+    /// </summary>
+    /// <remarks>
+    /// Length-prefixed rather than separated by a delimiter, so no choice of separator can
+    /// appear in a document name and make two different hits look like one.
+    /// </remarks>
+    internal static string DeduplicationKey(CaseDocumentSearchMatch hit) =>
+        $"{hit.DocumentName.Length}:{hit.DocumentName}{hit.SearchedText}";
+
+    /// <summary>
+    /// Orders a group's passages and keeps the best <see cref="MaxPassagesPerGroup"/>.
+    ///
+    /// Targeted categories first, then score — and then the passage itself. That last part is
+    /// what makes the cut reproducible: scores collide often enough to matter, and
+    /// <c>Take</c> slices straight through the tie band, so without a final key which passages
+    /// survive depends on the order the vector store happened to return them in. An approximate
+    /// index is under no obligation to keep that order stable.
+    /// </summary>
+    internal static List<CaseDocumentSearchMatch> Rank(
+        IEnumerable<CaseDocumentSearchMatch> passages,
+        IReadOnlySet<string> targeted) =>
+        passages
+            .OrderByDescending(p => targeted.Count == 0 || targeted.Contains(p.CategoryCode) ? 1 : 0)
+            .ThenByDescending(p => p.Score)
+            .ThenBy(p => p.DocumentName, StringComparer.Ordinal)
+            .ThenBy(p => p.SearchedText, StringComparer.Ordinal)
+            .Take(MaxPassagesPerGroup)
+            .ToList();
 
     private async Task<IReadOnlyList<CaseDocumentSearchMatch>> SearchAsync(
         PlannedQuery query, CancellationToken cancellationToken) =>

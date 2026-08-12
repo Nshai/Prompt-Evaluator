@@ -71,7 +71,10 @@ public sealed class CaseDocumentSearchTool
                 DocumentName: hit.Chunk.DocumentName,
                 CategoryCode: hit.Chunk.CategoryCode,
                 CategoryName: hit.Chunk.CategoryName,
-                Score: Math.Round(hit.Score, 4)))
+
+                // Kept at full precision. Rounding here manufactured ties that ranking then
+                // had to break arbitrarily; the score is rounded where it is displayed instead.
+                Score: hit.Score))
             .ToList();
     }
 }

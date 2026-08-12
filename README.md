@@ -25,8 +25,11 @@ check then compares what the report *asserts* against what the case file
 - Any OpenAI-compatible endpoint: configurable base URL, API key, chat model and
   embedding model
 - Configuration dialog with persistent app settings
+- **Reproducible assessment** — pinned sampling, schema-constrained findings, deterministic
+  retrieval ranking, and a run fingerprint on every report
 - xUnit tests for the pricing/cost logic, chunk metadata, document context builder,
-  canonical model store and accessor, schema slicing, and the shipped query plans
+  canonical model store and accessor, schema slicing, retrieval determinism, and the
+  shipped query plans
 - MSI installer that opens in Visual Studio 2022 and 2026
 
 ## How the Check Evaluator works
@@ -94,6 +97,36 @@ and a regression visible.
    in full with their evidence, folds cleared checks to a line each, and closes
    with what retrieval actually found — because *No Issue* from a run that found
    nothing is not the same claim as one corroborated across three categories.
+
+### Why two runs agree
+
+A QA finding that changes between runs is not a finding. Determinism is not something a
+language model offers, but almost everything that made runs disagree was under the app's
+own control, and each of those is now pinned:
+
+- **Sampling.** The provider's default is a creative temperature; the app sends
+  temperature 0, top-p 1 and a fixed seed. This is the single largest contributor. It is
+  not an absolute guarantee — expert routing and batched floating-point arithmetic still
+  admit variation — but it collapses the band.
+- **The reply's shape.** A finding is requested against a JSON schema rather than
+  described in prose and hoped for. This matters beyond tidiness: an outcome the app
+  doesn't recognise is read as a *Potential Concern*, so an unconstrained model rewording
+  "No Issue" would turn a pass into a concern. The enum makes that unreachable.
+- **Which passages reach the assessor.** De-duplication keys on the passage itself, not
+  on `string.GetHashCode()` — that is seeded per process, so a collision used to drop a
+  genuinely distinct passage, and a *different* one after the next restart. Ranking
+  keeps full-precision scores and breaks ties on the passage text, because `Take(12)`
+  cuts through the tie band and an approximate index is under no obligation to return
+  neighbours in a stable order.
+- **Everything underneath.** The report carries a **run fingerprint**: chat and embedding
+  models, the sampling settings, the retrieval limits, a digest of the query plans as
+  loaded from disk, and a digest of the canonical model. When two runs disagree, diff
+  these first — a rolled model alias, an edited plan or a re-extracted model all look
+  exactly like model variance without it.
+
+What none of this fixes is a check that is genuinely borderline. If a group still flips
+with identical evidence and pinned sampling, its plan's `noIssue` / `potentialConcern`
+criteria do not partition the space, and the fix belongs in the plan text.
 
 ### Design notes worth knowing
 
@@ -233,6 +266,9 @@ Settings are stored in the user profile under
 | Check plan folder | Where the `CHK-*.query-plan.json` files live. Empty means the `check-plan` folder beside the app |
 | Model database | SQLite file holding extracted canonical models. Empty means `canonical-models.db` in `%LOCALAPPDATA%\AiPromptEvaluator` |
 | Extraction max tokens | Output cap for one extraction pass. Higher than the response cap because a truncated JSON section is unusable rather than merely short |
+| Pin sampling | Sends temperature 0, top-p 1 and the seed below. Clear it only for a model that rejects those parameters |
+| Sampling seed | Held constant so runs agree. Change it deliberately to sample a second opinion on a check that keeps flipping |
+| Constrain findings | Requests the finding against a JSON schema. Clear it for an endpoint with no JSON-schema response format |
 | Docling endpoint | Sidecar used to convert spreadsheets to Markdown |
 | Document context folder | Folder ingested for prompt context on the main screen |
 | Clarification prompt behavior | Whether ambiguous prompts get a clarifying question |

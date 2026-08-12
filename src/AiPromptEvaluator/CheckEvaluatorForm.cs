@@ -857,7 +857,9 @@ public partial class CheckEvaluatorForm : Form
 
             var report = new FindingsReport(
                 caseReference, _settings.TenantId, _settings.SelectedModel,
-                DateTimeOffset.Now, findings, _model);
+                DateTimeOffset.Now, findings, _model,
+                RunFingerprint.For(
+                    _settings, _model, planFolder, plans.Count, CheckPlanRunner.MaxPassagesPerGroup));
 
             responseTextBox.Text = report.Format();
 

@@ -32,6 +32,10 @@ public partial class ConfigurationForm : Form
         canonicalDbTextBox.Text = _settings.CanonicalModelDbPath;
         extractionTokensUpDown.Value = Clamp(extractionTokensUpDown, _settings.ExtractionMaxTokens);
 
+        deterministicCheckBox.Checked = _settings.DeterministicSampling;
+        structuredFindingsCheckBox.Checked = _settings.StructuredFindings;
+        seedUpDown.Value = Math.Clamp(_settings.SamplingSeed, (long)seedUpDown.Minimum, (long)seedUpDown.Maximum);
+
         RefreshModelChoices();
         selectedModelComboBox.Text = _settings.SelectedModel;
     }
@@ -251,6 +255,10 @@ public partial class ConfigurationForm : Form
         _settings.CheckPlanFolder = checkPlanTextBox.Text.Trim();
         _settings.CanonicalModelDbPath = canonicalDbTextBox.Text.Trim();
         _settings.ExtractionMaxTokens = (int)extractionTokensUpDown.Value;
+
+        _settings.DeterministicSampling = deterministicCheckBox.Checked;
+        _settings.StructuredFindings = structuredFindingsCheckBox.Checked;
+        _settings.SamplingSeed = (long)seedUpDown.Value;
 
         try
         {

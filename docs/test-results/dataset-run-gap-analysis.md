@@ -3,8 +3,16 @@
 Measures the four runs in [../Runtime-Logs/dataset/](../Runtime-Logs/dataset/) against the answer key in
 [expected-results-benchmark.md](expected-results-benchmark.md).
 
-> **Headline.** Determinism is solved: three consecutive runs are byte-identical across all 60
-> requirement groups. Category filtering works and category C is no longer starved. Recall against
+> **Correction, 2026-08-13.** This document originally reported determinism as solved on the
+> strength of three byte-identical runs. Two of those three were served from a gateway response
+> cache, not generated. See [Determinism — what the evidence actually
+> supports](#1-determinism--what-the-evidence-actually-supports); the headline below has been
+> rewritten and the rest of the document is unchanged.
+
+> **Headline.** Prompt-level reproducibility is solved: identical inputs produce identical
+> evidence packs and identical prompts across all 60 requirement groups. Model-level sampling
+> determinism remains **untested** — no two genuine runs of the same configuration exist in this
+> dataset. Category filtering works and category C is no longer starved. Recall against
 > the benchmark is **53% of material findings caught outright, 19% partially, 28% missed** — and
 > the misses are not scattered. Seven of the ten come from the Fact Find, which four checks never
 > saw a single passage from. Two failure modes now dominate the output and both are mechanical:
@@ -26,7 +34,7 @@ All measurements below are of `100428` unless stated.
 
 ---
 
-## 1. Determinism — solved
+## 1. Determinism — what the evidence actually supports
 
 Comparing the three post-fix runs group by group:
 
@@ -36,14 +44,41 @@ Comparing the three post-fix runs group by group:
 | Identical response JSON | **60 / 60** |
 | Groups whose outcome differs | **0 / 60** |
 
-Byte-identical, not merely equivalent. The three log files differ only in the order sections were
-written, which is the parallel executor interleaving its writes — the content of every section
-matches. The question that started this work, *why does re-running produce different results*, is
-answered: it no longer does.
+That much is measured and stands. **What it means is narrower than first reported here.**
 
-Worth keeping: the ordering of log sections is the one remaining nondeterminism, and it is
-cosmetic. It does mean two logs cannot be compared with `diff`, which is why the comparison above
-is done by group key.
+Two of the three runs were not generated. Timing each run from its own log:
+
+| Run | Wall clock | Output produced | Implied generation rate |
+| --- | --- | --- | --- |
+| `001513` | 250s | ~78,600 tok | 314 tok/s |
+| `095533` | 126s | ~78,000 tok | 618 tok/s |
+| `100051` | **3s** | ~78,000 tok | **25,990 tok/s** |
+| `100428` | **2s** | ~78,000 tok | **38,986 tok/s** |
+
+Producing seventy-eight thousand tokens of JSON in two seconds is not achievable, and the
+application has no response cache — the code was checked. Prompt *prefix* caching does not explain
+it either: that reduces the cost of reading the input, not of generating the output. The only
+reading left is a gateway-side response cache keyed on the prompt.
+
+The same signature appears in the later check runs: `143309` took 130 seconds, and three reruns
+minutes afterwards took 2–3 seconds each and matched it exactly.
+
+**What is therefore established:** the pipeline is *reproducible at the prompt level*. Given the
+same case, plans and settings it assembles the same evidence packs and sends the same prompts,
+60/60. That was the original defect — retrieval and prompt assembly varying between runs — and it
+is fixed.
+
+**What is not established:** that the *model* returns the same finding when asked the same
+question twice. Every apparently-identical pair in this dataset is one generation and one cache
+hit, and a cache returning what it stored is not evidence about sampling.
+
+Testing it properly needs two runs that both take full wall-clock time — either far enough apart
+that the cache has expired, or with caching disabled at the gateway. **Read run duration before
+treating any two runs as independent samples.**
+
+Worth keeping: the ordering of log sections is nondeterministic and cosmetic — the parallel
+executor interleaves its writes. It does mean two logs cannot be compared with `diff`, which is
+why the comparison above is done by group key.
 
 ---
 

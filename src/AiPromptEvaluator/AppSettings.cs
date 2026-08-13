@@ -193,9 +193,14 @@ public class AppSettings
     /// Output cap for one extraction pass. Extraction returns a JSON section rather than
     /// prose, and a truncated section is unusable, so it needs far more headroom than a
     /// check response — the app extracts a section at a time to stay inside this.
+    ///
+    /// Raised from 16,000 after a run lost its recommendations section to this cap: the
+    /// largest section that succeeded used about 14,100 tokens and recommendations needed
+    /// roughly 17,500, so the old default sat between the two. A truncated pass is now
+    /// salvaged and reported rather than silently retried, but headroom is the cheaper fix.
     /// </summary>
     [JsonPropertyName("extractionMaxTokens")]
-    public int ExtractionMaxTokens { get; set; } = 16000;
+    public int ExtractionMaxTokens { get; set; } = 32000;
 
     /// <summary>
     /// Pins temperature so the same evidence pack produces the same finding — the provider

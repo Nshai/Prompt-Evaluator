@@ -102,6 +102,10 @@ public sealed class CanonicalModelExtractor
         var usage = TokenUsage.Empty;
         var done = 0;
 
+        // Grows as passes complete, and is shown to every pass that follows. See
+        // CanonicalModelIdentity for why the passes cannot be trusted to agree without it.
+        var identity = new CanonicalModelIdentity();
+
         foreach (var section in ExtractionSection.All)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -112,11 +116,22 @@ public sealed class CanonicalModelExtractor
 
             try
             {
-                var (fragment, sectionUsage) = await ExtractSectionAsync(
-                    section, schemaJson, documentText, caseReference, promptLog, cancellationToken).ConfigureAwait(false);
+                var (fragment, sectionUsage, shortfall) = await ExtractSectionAsync(
+                    section, schemaJson, documentText, caseReference, identity, root, promptLog,
+                    cancellationToken).ConfigureAwait(false);
 
                 usage = Add(usage, sectionUsage);
                 length = Merge(root, fragment, section);
+
+                // Ids are adopted the moment the pass that defines them lands, so the next
+                // pass is choosing from a table rather than inventing its own naming.
+                identity.Adopt(root);
+
+                if (shortfall is not null)
+                {
+                    failures.Add((section.Name, shortfall));
+                    error = shortfall;
+                }
             }
             catch (OperationCanceledException)
             {
@@ -140,6 +155,18 @@ public sealed class CanonicalModelExtractor
                 $"Every extraction pass failed. First error: {failures[0].Error}");
         }
 
+        // Passes that ran before an id was adopted, or that used an entity's old name anyway,
+        // are repointed here; whatever still resolves to nothing is a broken link and is
+        // reported rather than left for a check to discover as an unresolved path.
+        identity.RewriteReferences(root);
+
+        foreach (var dangling in identity.DanglingReferences(root))
+        {
+            failures.Add(("Cross-references", $"Reference resolves to nothing: {dangling}"));
+        }
+
+        StampSource(root, reportFiles);
+
         var document = new CanonicalModelDocument(
             CaseReference: caseReference,
             TenantId: _settings.TenantId,
@@ -153,18 +180,25 @@ public sealed class CanonicalModelExtractor
         return new ExtractionResult(document, failures, CostBreakdown.Create(_settings.SelectedModel, usage));
     }
 
-    /// <summary>Runs one pass and returns the section's JSON object plus what it cost.</summary>
-    private async Task<(JsonObject Fragment, TokenUsage Usage)> ExtractSectionAsync(
+    /// <summary>
+    /// Runs one pass and returns the section's JSON object, what it cost, and a note of
+    /// anything the pass fell short of — a truncation it was salvaged from, or values dropped
+    /// for not matching the schema's enums.
+    /// </summary>
+    private async Task<(JsonObject Fragment, TokenUsage Usage, string? Shortfall)> ExtractSectionAsync(
         ExtractionSection section,
         string schemaJson,
         string documentText,
         string caseReference,
+        CanonicalModelIdentity identity,
+        JsonObject modelSoFar,
         PromptLogWriter? promptLog,
         CancellationToken cancellationToken)
     {
-        var slice = JsonSchemaSlicer.Slice(schemaJson, section.Properties);
+        var slice = StripCodeOwnedFields(JsonSchemaSlicer.Slice(schemaJson, section.Properties));
         var systemPrompt = BuildSystemPrompt();
-        var userPrompt = BuildSectionPrompt(section, slice, documentText, caseReference);
+        var userPrompt = BuildSectionPrompt(
+            section, slice, documentText, caseReference, identity, modelSoFar);
 
         var result = await _evaluator
             .RunRawAsync(
@@ -174,13 +208,48 @@ public sealed class CanonicalModelExtractor
                 cancellationToken)
             .ConfigureAwait(false);
 
+        // Logged before parsing, so a reply that fails to parse is still on disk to read —
+        // which is how the truncated recommendations section came to be diagnosed at all.
         promptLog?.LogExchange("extract", section.Name, systemPrompt, userPrompt, result.Response);
 
-        var fragment = ParseObject(result.Response)
-            ?? throw new InvalidOperationException(
-                "The model did not return a JSON object for this section.");
+        var shortfalls = new List<string>();
+        var fragment = ExtractionResponseReader.ParseObject(result.Response);
 
-        return (fragment, result.Breakdown.Usage);
+        if (fragment is null)
+        {
+            if (!ExtractionResponseReader.LooksTruncated(result.Response))
+            {
+                throw new InvalidOperationException(
+                    "The model did not return a JSON object for this section.");
+            }
+
+            // Cut off at the output cap. Whatever finished is worth keeping — an observed run
+            // lost four complete recommendations because the fifth was half-written.
+            fragment = ExtractionResponseReader.Salvage(result.Response)
+                ?? throw new InvalidOperationException(
+                    $"The response was cut off at the {_settings.ExtractionMaxTokens:N0}-token output "
+                    + $"limit after {result.Response.Length:N0} characters, with nothing complete to "
+                    + "salvage. Raise ExtractionMaxTokens or split this section.");
+
+            var kept = section.Properties
+                .Sum(p => ExtractionResponseReader.SalvagedCount(fragment, p));
+
+            shortfalls.Add(
+                $"The response was cut off at the {_settings.ExtractionMaxTokens:N0}-token output limit; "
+                + $"{kept} complete entr{(kept == 1 ? "y was" : "ies were")} salvaged and the rest lost. "
+                + "Raise ExtractionMaxTokens or split this section.");
+        }
+
+        var dropped = CanonicalModelValidator.StripEnumViolations(fragment, slice);
+        if (dropped.Count > 0)
+        {
+            shortfalls.Add(
+                $"Dropped {dropped.Count} value(s) the schema's enums do not allow: "
+                + string.Join("; ", dropped.Take(5)) + (dropped.Count > 5 ? "; …" : string.Empty));
+        }
+
+        return (fragment, result.Breakdown.Usage,
+            shortfalls.Count == 0 ? null : string.Join(" ", shortfalls));
     }
 
     /// <summary>
@@ -204,8 +273,20 @@ public sealed class CanonicalModelExtractor
         - assertionStatus: "Stated" when it is explicit in the text; "Inferred" when you read
           it out of narrative prose; "Derived" when you calculated it from other values;
           "Absent" when the model expects it and the report does not provide it.
-        - Every Stated or Inferred provenance needs a verbatim quote from the document and the
-          page number from the nearest "<!-- page: N -->" marker above it.
+        - Use the identifiers given under "Identifiers" exactly as written. Every id field and
+          every *Ids array must hold an id from that table. If something you would reference is
+          not in the table, omit the reference — never coin a new id, and never put a name, a
+          label or a description in an id field.
+        - Every Stated or Inferred provenance needs the page number from the nearest
+          "<!-- page: N -->" marker above it, and a quote where the rules below call for one.
+        - Quote where the value is contestable: figures, dates, percentages, ratings, and any
+          statement a check might have to weigh. For descriptive prose and boilerplate the page
+          number alone is enough.
+        - Quote each passage once. Where several assertions rest on the same sentence, quote it
+          on the first and give only the page number on the rest. A repeated quote adds nothing
+          the page number does not.
+        - Keep quotes to the shortest span that carries the assertion — normally one clause, at
+          most one sentence. Never quote a table row wholesale where one cell is the evidence.
         - Keep the document's own units. "£300 per week net" is amount 300, basis "Net",
           frequency "Weekly" — do not convert to monthly and lose the original.
         - Record contradictions rather than resolving them. If the report gives two different
@@ -216,8 +297,16 @@ public sealed class CanonicalModelExtractor
         - Enumerated fields must use a value from the schema's enum, or be omitted.
         """;
 
+    /// <summary>The property whose pass reports on the extraction as a whole.</summary>
+    private const string ExtractionReportProperty = "extractionReport";
+
     private static string BuildSectionPrompt(
-        ExtractionSection section, string schemaSlice, string documentText, string caseReference)
+        ExtractionSection section,
+        string schemaSlice,
+        string documentText,
+        string caseReference,
+        CanonicalModelIdentity identity,
+        JsonObject modelSoFar)
     {
         var sb = new StringBuilder();
 
@@ -229,6 +318,22 @@ public sealed class CanonicalModelExtractor
         sb.AppendLine();
         sb.AppendLine("---");
         sb.AppendLine();
+
+        if (identity.HasEntities)
+        {
+            sb.AppendLine(identity.Table());
+            sb.AppendLine();
+        }
+
+        // The self-report pass is the one pass that is about the extraction rather than the
+        // report, and it used to be given no sight of what the other passes produced — it was
+        // being asked to report on work it could not see.
+        if (section.Properties.Contains(ExtractionReportProperty, StringComparer.Ordinal))
+        {
+            sb.AppendLine(SummariseExtraction(modelSoFar));
+            sb.AppendLine();
+        }
+
         sb.AppendLine($"## Extract: {section.Name}");
         sb.AppendLine();
         sb.AppendLine(section.Description);
@@ -241,6 +346,101 @@ public sealed class CanonicalModelExtractor
         sb.AppendLine("```");
 
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// What the previous passes produced, for the pass that reports on the extraction.
+    ///
+    /// Which paths came back empty is a walk over the merged object rather than a judgement,
+    /// so the model is left to do the part that needs one: deciding whether an empty path is
+    /// the report saying nothing or the extraction having missed it. Those mean opposite
+    /// things to a check, and only one of them is a finding about the advice.
+    /// </summary>
+    internal static string SummariseExtraction(JsonObject modelSoFar)
+    {
+        var populated = new List<string>();
+        var empty = new List<string>();
+
+        foreach (var (name, value) in modelSoFar.OrderBy(p => p.Key, StringComparer.Ordinal))
+        {
+            if (name == "modelVersion")
+            {
+                continue;
+            }
+
+            (IsEmpty(value) ? empty : populated).Add(name);
+        }
+
+        var sb = new StringBuilder();
+        sb.AppendLine("## What the previous passes produced");
+        sb.AppendLine();
+        sb.AppendLine($"Populated sections ({populated.Count}): {string.Join(", ", populated)}");
+        sb.AppendLine(
+            empty.Count == 0
+                ? "Sections that came back empty: none."
+                : $"Sections that came back empty ({empty.Count}): {string.Join(", ", empty)}");
+        sb.AppendLine();
+        sb.AppendLine(
+            """
+            Report on this extraction, not only on the report. A section that came back empty is
+            "expectedButAbsent" only where the report was expected to say something — give the
+            reason that applies. Where the report states two different figures for the same
+            thing, that is an "internalInconsistency": list every one you can find, including
+            any not implied by the summary above.
+            """);
+
+        return sb.ToString();
+    }
+
+    private static bool IsEmpty(JsonNode? node) => node switch
+    {
+        null => true,
+        JsonArray array => array.Count == 0,
+        JsonObject obj => obj.Count == 0,
+        _ => false,
+    };
+
+    /// <summary>
+    /// Records who produced the model and when, rather than asking the model to.
+    ///
+    /// Asked for these, an extraction run on 2026-08-13 using Claude Haiku 4.5 answered
+    /// "2025-01-01T00:00:00Z" and "claude-opus" — a plausible guess in the two places the
+    /// "never invent a value" rule could never have been enforced, because the model has no
+    /// way to know either answer. The schema slice no longer asks (see
+    /// <see cref="StripCodeOwnedFields"/>) and the process fills them in here.
+    /// </summary>
+    private void StampSource(JsonObject root, IReadOnlyList<string> reportFiles)
+    {
+        if (root["source"] is not JsonObject source)
+        {
+            root["source"] = source = new JsonObject();
+        }
+
+        source["extractedAt"] = DateTimeOffset.Now.ToString("O");
+        source["extractorModel"] = _settings.SelectedModel;
+
+        if (source["fileName"] is null && reportFiles.Count > 0)
+        {
+            source["fileName"] = Path.GetFileName(reportFiles[0]);
+        }
+    }
+
+    /// <summary>
+    /// Removes the fields the process owns from a schema slice, so the model is never asked
+    /// for an answer it cannot have.
+    /// </summary>
+    internal static string StripCodeOwnedFields(string schemaSlice)
+    {
+        if (JsonNode.Parse(schemaSlice) is not JsonObject slice ||
+            slice["properties"]?["source"]?["properties"] is not JsonObject source)
+        {
+            return schemaSlice;
+        }
+
+        source.Remove("extractedAt");
+        source.Remove("extractorModel");
+
+        return slice.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
     }
 
     /// <summary>
@@ -294,52 +494,12 @@ public sealed class CanonicalModelExtractor
     }
 
     /// <summary>
-    /// Reads the model's reply as a JSON object, tolerating the two things a chat model does
-    /// even when told not to: wrapping the object in a markdown fence, and adding a sentence
-    /// before or after it.
+    /// Reads the model's reply as a JSON object. Kept as the extractor's public entry point;
+    /// the parsing itself lives in <see cref="ExtractionResponseReader"/> alongside the
+    /// truncation handling it belongs with.
     /// </summary>
-    public static JsonObject? ParseObject(string response)
-    {
-        var text = response.Trim();
-
-        if (text.StartsWith("```", StringComparison.Ordinal))
-        {
-            var firstNewline = text.IndexOf('\n');
-            if (firstNewline >= 0)
-            {
-                text = text[(firstNewline + 1)..];
-            }
-
-            var fenceEnd = text.LastIndexOf("```", StringComparison.Ordinal);
-            if (fenceEnd >= 0)
-            {
-                text = text[..fenceEnd];
-            }
-
-            text = text.Trim();
-        }
-
-        if (!text.StartsWith('{'))
-        {
-            var start = text.IndexOf('{');
-            var end = text.LastIndexOf('}');
-            if (start < 0 || end <= start)
-            {
-                return null;
-            }
-
-            text = text[start..(end + 1)];
-        }
-
-        try
-        {
-            return JsonNode.Parse(text) as JsonObject;
-        }
-        catch (JsonException)
-        {
-            return null;
-        }
-    }
+    public static JsonObject? ParseObject(string response) =>
+        ExtractionResponseReader.ParseObject(response);
 
     /// <summary>
     /// The schema's declared model version, so a stored model records which contract it was

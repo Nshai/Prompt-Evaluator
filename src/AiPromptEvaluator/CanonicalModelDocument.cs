@@ -61,13 +61,17 @@ public sealed record ExtractionSection(string Name, string Description, IReadOnl
             "Cashflow scenarios, stress tests, shortfalls and assumptions; the options considered and comparisons made.",
             ["needsAnalysis", "research"]),
 
-        new("Recommendations",
-            "One entry per discrete recommended action, with its own rationale, benefits, disadvantages, risks, tax implications and alternatives.",
-            ["recommendations"]),
-
+        // Solution runs before Recommendations because a recommendation carries a targetPlanId
+        // pointing into solution.recommendedPlans. Every cross-reference in the model now runs
+        // forwards, so the identifier table (see CanonicalModelIdentity) always holds the ids a
+        // pass needs by the time that pass runs.
         new("Solution",
             "The recommended plans, the investment strategy, the provider selection and implementation.",
             ["solution"]),
+
+        new("Recommendations",
+            "One entry per discrete recommended action, with its own rationale, benefits, disadvantages, risks, tax implications and alternatives.",
+            ["recommendations"]),
 
         new("Costs and charges",
             "Layered charges for existing and recommended arrangements, adviser fees, the cost comparison, reduction in yield, value assessment and disclosure completeness.",

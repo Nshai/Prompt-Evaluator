@@ -1,6 +1,6 @@
 # Gap analysis — dataset runs, case ABC-99
 
-Measures the four runs in [../dataset/](../dataset/) against the answer key in
+Measures the four runs in [../Runtime-Logs/dataset/](../Runtime-Logs/dataset/) against the answer key in
 [expected-results-benchmark.md](expected-results-benchmark.md).
 
 > **Headline.** Determinism is solved: three consecutive runs are byte-identical across all 60

@@ -40,7 +40,7 @@ The gaps below are about what it *missed* and *why*.
 ## The verification run
 
 A second run of the same case, recorded in
-[dataset/ABC-99_20260813_001513.log](dataset/ABC-99_20260813_001513.log), was measured against
+[Runtime-Logs/dataset/ABC-99_20260813_001513.log](Runtime-Logs/dataset/ABC-99_20260813_001513.log), was measured against
 the figures above.
 
 | | Baseline (12 Aug) | Verification (13 Aug) |

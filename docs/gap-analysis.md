@@ -1,10 +1,14 @@
 # Gap analysis — run of 2026-08-12, case ABC-99
 
-> **Status.** GAP 1 is addressed (citation verification, an `Indeterminate` outcome,
-> reasoning-before-verdict ordering, one call per requirement), as is GAP 2 (category filtering)
-> and GAP 6's indexing failure. GAP 3 and 4 remain open, as does the reporting half of GAP 6;
-> GAP 5 should largely resolve with GAP 2 and needs re-measuring. The figures below describe the
-> run as it was, and are the baseline the next run should be measured against.
+> **Status, after the verification pass of 2026-08-13.** GAP 1a is confirmed fixed and GAP 1b is
+> not. GAP 6's indexing failure is confirmed fixed. GAP 2 is **untested** — the verification run
+> predates the fix. GAP 4 is half done: the extraction report is now surfaced, the path
+> reconciliation is not. GAP 3 and GAP 5 are unchanged. One new defect was found in the fix
+> itself, [GAP 7](#gap-7--citation-verification-flags-formatting-as-fabrication), and it is now
+> the loudest thing in the output.
+>
+> The figures in the body describe the original run and remain the baseline. Each gap carries a
+> **Verification** note recording what the second run showed.
 
 Derived from the actual run recorded in [logs.md](logs.md), against the ten checks in
 [Assessment Checks & Prompts QA CA v1.0 (Checks).csv](QA-Checks/Assessment%20Checks%20&%20Prompts%20QA%20CA%20v1.0%20(Checks).csv),
@@ -33,6 +37,33 @@ The gaps below are about what it *missed* and *why*.
 
 ---
 
+## The verification run
+
+A second run of the same case, recorded in
+[dataset/ABC-99_20260813_001513.log](dataset/ABC-99_20260813_001513.log), was measured against
+the figures above.
+
+| | Baseline (12 Aug) | Verification (13 Aug) |
+| --- | --- | --- |
+| Groups executed | 60 | 60 |
+| Searches issued | 154 | 154 |
+| Passages returned | 1,232 → 649 | 1,232 → 650 |
+| Canonical paths absent | 37 refs / 33 paths | 37 refs / 33 paths |
+| Documents never retrieved | 2 (both unindexable) | 1 (`[E] SW Further Info 4.md`, 4 KB) |
+| Group outcomes | 38 No Issue, 22 Potential Concern | 4 No Issue, 40 Potential Concern, 16 Indeterminate |
+
+**The run predates the GAP 2 fix and cannot test it.** The run began at 00:15:13; the category
+filter was committed at 01:33:40. The arithmetic confirms it independently — 154 searches
+returned 1,232 hits, which is 154 × 8 with no exceptions, so the second filtered query never
+ran. Every retrieval figure below is therefore a re-measurement of the *unfixed* pipeline.
+
+What the outcome column shows is GAP 1's fix working as intended and GAP 7 working as not
+intended. Sixteen groups now decline to answer rather than guess, which is the behaviour that
+was missing. But of the 44 groups that did answer, 41 were forced to Potential Concern by
+citation verification, and most of those were forced on formatting.
+
+---
+
 ## GAP 1 — The assessor manufactures reconciliations to reach No Issue
 
 **Severity: critical.** Two independent instances, in different checks, on different evidence
@@ -58,6 +89,11 @@ G3.6 returned **No Issue**, and its explanation reads:
 
 The quote is presented as verbatim. The source says 6. The assessor changed the digit, which
 made the evidence consistent with the recommendation, and cleared the check.
+
+> **Verified fixed.** In the second run G3.6 returns **Potential Concern** and states the
+> contradiction plainly: *"File notes [P6] state client 'happy to proceed with a Risk rating of 6'
+> whereas report [P5] … state risk rating 5 as the agreed final rating."* The digit is no longer
+> altered, and the category C file note reached the group.
 
 This is not a retrieval failure, a plan failure or an extraction failure. Everything upstream
 worked. **A fabricated citation is worse than a missed finding**, because a missed finding leaves
@@ -101,6 +137,18 @@ Age field as the error.
 37 unresolved canonical paths (GAP 4). The model supplied `age` but not `dateOfBirth`, so the
 assertion side held nothing to derive from. The assessor closed the gap by inventing arithmetic
 rather than reporting that it could not perform the comparison.
+
+> **Not fixed.** In the second run G1.1 again returns **No Issue**, and the tolerance is still
+> applied backwards: *"The discrepancy is material but within the stated tolerance of 1 year."*
+> The mismatch is at least now *listed* — `discrepancies` opens with *"Report states client age
+> 69; Fact Find (P6) states age 70 and date of birth 07/06/1956"* — so the reasoning-before-verdict
+> ordering surfaced it and the verdict then reasoned past it. `dateOfBirth` is still absent from
+> the model.
+>
+> The group is ultimately forced to Potential Concern, but by [GAP 7](#gap-7--citation-verification-flags-formatting-as-fabrication)
+> and on an unrelated reflowed table cell — the right outcome for the wrong reason, which a
+> reviewer has no way to distinguish from the right one. This is the case for computing the
+> comparison in code, part 2 of the fix below, which has not been done.
 
 ### What this means
 
@@ -175,8 +223,9 @@ CHK-006  G6.1 G6.3                  CHK-010  G10.1 G10.2 G10.3 G10.4
 All four CHK-010 groups — the vulnerability and foreseeable-harm overlay — missed the one
 document recording what was actually discussed with the client.
 
-**Fixed.** `CaseDocumentStore.SearchAsync` takes a category filter, using the payload index that
-had existed unused since the collection was first created.
+**Written, and never yet executed against this case.** `CaseDocumentStore.SearchAsync` takes a
+category filter, using the payload index that had existed unused since the collection was first
+created.
 
 The plan's categories are applied as a *second* search rather than as a restriction. Each query
 is embedded once and run twice — once restricted to the categories the plan names, once across
@@ -190,7 +239,17 @@ in miniature: one weakly-matching note in category C against three strong matche
 It asserts the unfiltered search misses the note — the defect itself — and that the targeted one
 finds it.
 
-**Still to do:** re-run the case and re-measure. The 31% figure above is the baseline.
+> **Untested.** The verification run began at 00:15:13 and the fix was committed at 01:33:40, so
+> it ran against the unfiltered pipeline. Its 154 searches returned 1,232 hits — 154 × 8 with no
+> exceptions — which is the signature of the second query never firing.
+>
+> Category C drifted from 5 groups to 7 of 16 (31% → 44%), but that is run-to-run variation in an
+> unchanged pipeline, not the fix. The better evidence the gap is still live is a *new* casualty:
+> `[E] SW Further Info 4.md`, 4 KB, was never retrieved once in 154 searches — a small document
+> losing the same competition, in the same way, that category C loses it.
+
+**Still to do:** re-run the case on a build including `4699c18` and re-measure. The 31% figure
+above is the baseline, and no measurement has yet been taken against the fix.
 
 ---
 
@@ -223,6 +282,17 @@ run sit around 0.60 — plausible-looking but well below anything that should co
 return nothing. Calibrate the threshold from this run's score distribution rather than guessing.
 The 6 `expectSignals` misses already recorded are the closest thing to a working absence signal —
 worth extending rather than leaving as the only one.
+
+> **Unchanged, and confirmed in every particular.** The verification run again returned exactly 8
+> passages for all 154 searches. `"Nothing was retrieved"` appears **zero** times in the log. The
+> lowest score in the run is **0.559** and 115 passages scored below 0.60, so the weak tail is
+> still being presented as evidence. 47 of the 57 retrieving groups hit the 12-passage cap.
+>
+> The only groups with an empty pack are G1.8, G7.6 and G8.5 — the three assertion-only groups,
+> empty by design. Retrieval has still never reported an absence.
+>
+> Calibration data is now available: with the floor anywhere in 0.56–0.60 the threshold begins to
+> bite, and the distribution is dense enough at the bottom to choose from rather than guess.
 
 ---
 
@@ -262,6 +332,19 @@ a genuine silence from a failed pass. And reconcile the plans' canonical paths a
 and against a real extraction — a path no extraction ever populates is either a schema gap or a
 plan typo, and both are worth knowing before a run rather than after.
 
+> **First part done.** All 60 prompts in the verification run carry a *"What the extraction said
+> about itself"* section with the `expectedButAbsent`, `ambiguities` and `internalInconsistencies`
+> the extraction recorded, framed exactly as this gap asked: *"Use this to tell report silence
+> from extraction failure where a canonical path below is absent."*
+>
+> **Second part untouched.** The same 37 references across 33 distinct paths resolved to nothing,
+> `dateOfBirth` among them. No path was newly populated.
+>
+> One consequence to note against [GAP 7](#gap-7--citation-verification-flags-formatting-as-fabrication):
+> the assessor now reads the extraction report and quotes from it, but `EvidenceTextOf` does not
+> include it in the haystack, so citing the section it was just told to consult is scored as
+> fabrication.
+
 ---
 
 ## GAP 5 — Category coverage falls short of the check catalogue
@@ -285,6 +368,11 @@ what retrieval actually surfaced:
 Nine of ten checks failed to surface at least one category the catalogue names as primary. C is
 missing from five, B from four — the same two single-document categories from GAP 2. This is the
 same root cause seen from the catalogue's side rather than the plan's, and the same fix applies.
+
+> **Unchanged.** Nine of ten checks still fail to surface a category the catalogue names as
+> primary: C missing from CHK-001, 002, 004 and 010, B from CHK-003, 007, 008 and 009, F from
+> CHK-006. CHK-006 gained C and lost F; CHK-008 remains the weakest at E, F, G, H, I only. As
+> expected, since this is GAP 2 seen from the other side and GAP 2 did not run.
 
 CHK-008 is the weakest: *Disadvantages, Risks and Customer Understanding* reached only E, F, G, H
 and I, missing both B and C — every source of what the client was actually told and understood.
@@ -340,6 +428,64 @@ if any element exceeds the limit, so this cannot come back quietly.
 **Still open:** the second point above. A check should be told which documents failed to index,
 so an evidence gap caused by the tool never reads as an evidence gap in the case.
 
+> **Indexing verified fixed.** Both `[E] SW Charges Info 2.md` and `[E] Zurich Policy Info.md`
+> were retrieved in the verification run, having been retrieved zero times in the baseline. 27 of
+> the 28 converted documents were reached.
+>
+> **The reporting half is confirmed still open.** No prompt in the run mentions an indexing
+> failure; the phrase does not appear in the log at all. Nothing would have told a check that a
+> document it needed was missing for a reason other than the case not containing it.
+
+---
+
+## GAP 7 — Citation verification flags formatting as fabrication
+
+**Severity: high.** Found by the verification run, in the fix for GAP 1a. The mechanism works —
+it is what forces G3.6 and G1.1 off No Issue — but its false-positive rate has grown large enough
+to drown the signal it exists to carry.
+
+Replaying `CitationVerifier` over all 60 responses, against the same haystack the pipeline builds:
+
+| | |
+| --- | --- |
+| Citations made | 280 |
+| Quotes failing verification | **95 (34%)** |
+| Groups forced to Potential Concern | **41 of 60** |
+| Groups surviving as No Issue | **4** |
+
+**Most of the 95 are not fabrications.** Classifying them:
+
+- **38 differ only in punctuation.** Strip non-alphanumerics and they match the evidence exactly.
+  They are markdown table rows, quoted with the cell separators the assessor saw:
+  `Liabilities | Description | Opening Value (£) | Total | 0`. `Normalise` folds case, whitespace,
+  smart quotes and dashes — it does not fold table punctuation, and almost every document in this
+  case is tabular.
+- **19 are elisions or joins** — a quote spanning two rows, or two adjacent figures joined with a
+  comma. Substantial contiguous runs of each appear in the evidence.
+- **The remainder include citations of the extraction report**, which [GAP 4](#gap-4--extraction-does-not-populate-fields-the-plans-depend-on)
+  now instructs the assessor to consult but `EvidenceTextOf` does not include in the haystack.
+  Following the instruction is scored as fabrication.
+
+**Why this is worse than it looks.** At 41 of 60 groups flagged, "this group cited something not
+in its pack" no longer distinguishes anything. G1.1 is the illustration: it is forced to Potential
+Concern, correctly, but on a reflowed date-of-birth table cell — while the actual age defect it
+should have been caught for goes unremarked in the same finding. A reviewer cannot tell that
+outcome from a sound one, and a check that fires on two thirds of groups trains people to ignore
+it. The original defect — a changed digit inside quotation marks — is exactly the kind of thing
+that gets lost in a channel this noisy.
+
+**Fix.** Two changes, both small and both to the matcher rather than the prompt:
+
+1. **Fold table punctuation in `Normalise`.** Collapse `|` and runs of separator characters the
+   way whitespace is already collapsed. This is the same argument the class already makes for
+   folding smart quotes — a model reflowing a quote is not what this is looking for — applied to
+   the punctuation this corpus actually contains.
+2. **Add the extraction report to `EvidenceTextOf`.** It is part of the pack the group was given,
+   so a quote from it is a verifiable claim about a document like any other.
+
+Worth re-measuring after both: the residual rate is the number that says whether fabrication is
+still happening, and at present it cannot be read.
+
 ---
 
 ## What is working
@@ -356,24 +502,42 @@ Worth stating plainly, because the fixes above should not disturb it:
 - The three assertion-only groups (G1.8, G7.6, G8.5) all behaved correctly and all returned
   Potential Concern.
 
+The verification run adds two more, both new behaviour worth keeping:
+
+- **Sixteen groups declined to answer**, setting `comparisonPerformed` to false and naming what
+  was missing, where the baseline had none. This is the single most important change in the run:
+  "I could not make this comparison" is the answer neither GAP 1 instance produced, and it is now
+  being given.
+- **All 60 prompts carry the extraction report**, so report silence and extraction failure are
+  distinguishable at the point the judgement is made.
+
 ---
 
 ## Recommended order
 
+Revised after the verification pass.
+
 | | Gap | Change | Effort |
 | --- | --- | --- | --- |
-| 1 | GAP 1a | Verify every citation appears in that group's pack; fail the group when it does not | small |
+| 1 | GAP 7 | Fold table punctuation in `Normalise`; add the extraction report to `EvidenceTextOf` | small |
 | 2 | GAP 1b | Compute age, arithmetic and date comparisons in code; report "comparison not possible" when an input is absent | small |
-| 3 | ~~GAP 2~~ | ~~Category filter on `CaseDocumentStore.SearchAsync`~~ — done | — |
+| 3 | GAP 2 | Re-run on a build including `4699c18` — the fix has never executed | — |
 | 4 | GAP 3 | Minimum score threshold; let a group legitimately return no evidence | small |
-| 5 | GAP 4 | Populate `dateOfBirth` and the other 32 paths; surface `extractionReport` | medium |
+| 5 | GAP 4 | Populate `dateOfBirth` and the other 32 paths | medium |
 | 6 | GAP 6 | Tell each check which documents failed to index, so a tool failure never reads as an evidence gap in the case | small |
 | 7 | GAP 5 | Re-measure after 3 and 4 — most of this should resolve itself | — |
+| — | ~~GAP 1a~~ | ~~Verify every citation appears in that group's pack~~ — done, verified | — |
+| — | ~~GAP 4a~~ | ~~Surface `extractionReport`~~ — done, verified | — |
+| — | ~~GAP 6a~~ | ~~Stop losing a document too big to embed~~ — done, verified | — |
 
-GAP 1 is first despite GAP 2 being the larger structural defect. An assessor that will rewrite
-evidence to fit its conclusion makes better retrieval worse, not better: more evidence simply
-means more material available to be reconciled away. The integrity checks have to land before the
-retrieval improvements are worth making.
+GAP 7 is now first, ahead of the defect it was introduced to fix. A verification check that fires
+on two thirds of groups is not a weaker version of the check — it is a different one, which
+reports nothing about fabrication and costs a reviewer the same attention. Both of its fixes are
+smaller than anything else on the list.
+
+GAP 1b follows for the reason GAP 1 led the original list: an assessor that will reason past a
+contradiction it has already written down makes better retrieval worse, not better. GAP 2's fix
+is written and tested but has never run, so it sits third — it needs a run, not work.
 
 **A note on measuring this.** Both GAP 1 instances are precisely what the
 [eval framework](../../eval-strategy/) is built to catch — they are *missed concerns*, the

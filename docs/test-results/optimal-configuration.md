@@ -19,7 +19,7 @@ actually found).
 
 | Setting | Use | Why |
 | --- | --- | --- |
-| `maxSearchResults` | **8** | 1 costs 34 points of recall; see [§1](#1-maxsearchresults--8) |
+| `maxSearchResults` | **8** | 1 costs 34 points of recall, 16 buys nothing; see [§1](#1-maxsearchresults--8) |
 | `extractionMaxTokens` | **32000** | 16,000 truncated the recommendations section |
 | `maxTokensPerChunk` | **600** | untested — default, retained |
 | `chunkOverlapTokens` | **100** | untested — default, retained |
@@ -77,9 +77,45 @@ returned the same chunk from both passes** — so for most searches the targeted
 at all. The design assumes enough headroom that targeted hits *supplement* the unfiltered ones;
 below that, they merely duplicate them, and the category fix stops working.
 
-**Above 8 is untested.** 16 would plausibly help category B, which four checks still never reach —
-but more passages per search also means more weak matches, and there is no relevance floor to stop
-them (see [§7](#7-known-gaps-that-no-setting-fixes)). Worth an experiment, not a default.
+### 16 was tested, and is worse than 8
+
+The obvious next move — double it, and hope category B benefits — was measured. It does not work,
+and the reason is worth understanding because it applies to any further increase.
+
+| | top 8 | top 16 |
+| --- | --- | --- |
+| Hits from 154 searches | 2,436 | **4,791** |
+| Passages after cap | 682 | **684** |
+| Hits discarded | 72% | **86%** |
+| Groups at the 12-passage cap | 56 / 57 | **57 / 57** |
+| Category-group touches | 157 | **150** |
+
+**Twice the retrieval cost bought two extra passages.** `MaxPassagesPerGroup` is 12, every group
+was already at or near it, and the cap does not care how large the candidate set was.
+
+Worse, **category diversity fell**. A bigger candidate set means the top twelve are drawn from
+whichever documents score best, so each group sees *fewer* distinct categories, not more:
+
+| Category | top 8 | top 16 |
+| --- | --- | --- |
+| A Client Authority | 9 | 6 |
+| **B Know Your Client** | 16 | **15** |
+| C Meetings & Communications | 10 | 9 |
+| G Research | 25 | 22 |
+| H Solution Design | 19 | 16 |
+| I Recommendations | 45 | 40 |
+
+Every category fell except Needs Analysis. **Category B did not improve, and CHK-007, CHK-008 and
+CHK-009 still receive nothing from the Fact Find.**
+
+The lesson generalises: **once groups are at the passage cap, the search limit stops being the
+binding constraint.** Raising it adds candidates that are then thrown away, and biases what
+survives toward whatever scores highest — which is not the same as what the check needs. The fix
+for category B is a per-category floor in the pack, or a relevance threshold that clears out weak
+matches to make room, not a larger candidate set.
+
+**Do not raise this above 8 without first raising `MaxPassagesPerGroup`**, and treat that as a
+separate experiment with its own measurement.
 
 ---
 
@@ -207,13 +243,18 @@ solved pipeline.
 
 ## What still needs measuring
 
-| Question | How |
-| --- | --- |
-| Does `maxSearchResults: 16` help category B, or add noise? | Run the benchmark at 8 and 16, compare recall and false positives |
-| Is the model deterministic at temperature 0? | Two full-duration runs, cache disabled or expired |
-| Do chunk size and search limit interact? | Vary `maxTokensPerChunk` at fixed `maxSearchResults: 8` |
-| Does the extraction fix restore check recall? | Re-run checks at `maxSearchResults: 8` against the 56% baseline |
+| Question | How | Status |
+| --- | --- | --- |
+| Does `maxSearchResults: 16` help category B? | Compare category reach and recall at 8 and 16 | **answered — no**, see [§1](#16-was-tested-and-is-worse-than-8) |
+| Does raising `MaxPassagesPerGroup` above 12 help? | Vary the cap at fixed `maxSearchResults: 8` | not started — now the more promising lever |
+| Is the model deterministic at temperature 0? | Two full-duration runs, cache disabled or expired | not started |
+| Do chunk size and search limit interact? | Vary `maxTokensPerChunk` at fixed `maxSearchResults: 8` | not started |
+| Does the extraction fix restore check recall? | Re-run checks at 8 against the 56% baseline | not started |
 
-The last of these is the one currently blocking: the extraction fixes are verified on the
-extraction side and have never been measured through to the checks, because the only run that
-exercised them was starved.
+**The passage cap is now the more interesting lever.** Every group at `maxSearchResults: 16` sat
+at the 12-passage limit and 86% of retrieved hits were discarded, so the pack size — not the
+candidate-set size — is what bounds what a check can see. That experiment has not been run.
+
+The last row remains blocking: the extraction fixes are verified on the extraction side and have
+never been measured through to the checks, because neither run that exercised them used a healthy
+search configuration.

@@ -4,7 +4,7 @@ Compares the canonical model produced at runtime
 ([ABC-Cononical-Model.txt](ABC-Cononical-Model.txt), extracted by `intelliflo-claude-haiku-4-5`
 over the prompts in [extract_ABC-99_20260813_125630.log](extract_ABC-99_20260813_125630.log))
 against the reference model in
-[../../artifacts/examples/suitability-report-test-1.extract.json](../../artifacts/examples/suitability-report-test-1.extract.json).
+[../../artifacts/examples/suitability-report-test-1.extract.json](../../../artifacts/examples/suitability-report-test-1.extract.json).
 
 Both describe the same 21-page suitability report. The improvement plan is in
 [improvement-plan.md](improvement-plan.md).
@@ -54,7 +54,7 @@ Recommendations did not:
 | Replacement analysis | **56,410** | yes | ✓ |
 | **Recommendations** | **61,422** | **no** | **✗ unterminated string** |
 
-`ExtractionMaxTokens` is **16,000** ([AppSettings.cs:198](../../../src/AiPromptEvaluator/AppSettings.cs#L198)).
+`ExtractionMaxTokens` is **16,000** ([AppSettings.cs:198](../../../../src/AiPromptEvaluator/AppSettings.cs#L198)).
 61,422 characters of JSON is roughly 15.4k tokens. The section ran into the ceiling and stopped
 mid-string, inside a `documentCategory` value.
 
@@ -65,7 +65,7 @@ the way loses 100% of the answer.
 
 `ParseObject` tolerates fences and surrounding prose but has no notion of truncation: it returns
 `null`, and `ExtractSectionAsync` turns that into *"The model did not return a JSON object"*
-([CanonicalModelExtractor.cs:173](../../../src/AiPromptEvaluator/CanonicalModelExtractor.cs#L173)).
+([CanonicalModelExtractor.cs:173](../../../../src/AiPromptEvaluator/CanonicalModelExtractor.cs#L173)).
 The message sent whoever read it looking for a prompt-compliance problem, which is the one thing
 it was not.
 
@@ -100,7 +100,7 @@ The schema is the enabler. It says only:
 
 That is a contract between passes, but there is only one pass per section and nothing carries the
 keys between them. Each call re-reads the report and re-invents the naming. The system prompt
-([CanonicalModelExtractor.cs:185](../../../src/AiPromptEvaluator/CanonicalModelExtractor.cs#L185))
+([CanonicalModelExtractor.cs:185](../../../../src/AiPromptEvaluator/CanonicalModelExtractor.cs#L185))
 says nothing about identifiers at all.
 
 **This is why CHK-006 cannot pass.** The check asks whether each recommendation has
@@ -221,14 +221,14 @@ Worth recording, because the fix should not lose it:
 ## One finding that revises earlier analysis
 
 `/parties/clients[]/dateOfBirth` is absent from **both** models. It was listed in
-[../../gap-analysis.md](../../gap-analysis.md) GAP 4 as an extraction failure that made CHK-001's
+[../../gap-analysis.md](../../../gap-analysis.md) GAP 4 as an extraction failure that made CHK-001's
 age comparison impossible.
 
 It is not an extraction failure. **The suitability report never states a date of birth** — it says
 *"You are currently aged 69"* and nothing more. Both extractions are correct to omit it.
 
 The date of birth is in the Fact Find, which is category B — the category that
-[../../test-results/dataset-run-gap-analysis.md](../../test-results/dataset-run-gap-analysis.md)
+[../../test-results/dataset-run-gap-analysis.md](../../dataset-run-gap-analysis.md)
 found four checks never retrieve a single passage from. So the age finding is a **retrieval** gap,
 not an extraction gap, and the fix belongs on the search side. GAP 4's list of 33 paths should be
 re-triaged on this basis: some proportion of it is the report legitimately not saying something.

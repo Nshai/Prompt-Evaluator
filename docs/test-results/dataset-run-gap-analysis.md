@@ -1,6 +1,6 @@
 # Gap analysis — dataset runs, case ABC-99
 
-Measures the four runs in [../Runtime-Logs/dataset/](../Runtime-Logs/dataset/) against the answer key in
+Measures the four runs in [Runtime-Logs/dataset/](Runtime-Logs/dataset/) against the answer key in
 [expected-results-benchmark.md](expected-results-benchmark.md).
 
 > **Correction, 2026-08-13.** This document originally reported determinism as solved on the

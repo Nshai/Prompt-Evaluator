@@ -34,7 +34,7 @@ The highest-value change and the one no prompt tweak alone will achieve reliably
 the passes that *reference* them, with one exception, so the table can be harvested from work that
 happens anyway rather than paid for again.
 
-What shipped, in [`CanonicalModelIdentity`](../../../src/AiPromptEvaluator/CanonicalModelIdentity.cs):
+What shipped, in [`CanonicalModelIdentity`](../../../../src/AiPromptEvaluator/CanonicalModelIdentity.cs):
 
 - **Ids are adopted after every pass**, not extracted separately. `Adopt` walks the merged model,
   finds entities whose id is not yet canonical, and rewrites it — `C1`, `OBJ1`, `EA1`, `NP1`,
@@ -274,7 +274,7 @@ part that needs judgement — deciding whether an empty path is silence or omiss
 > alone was enough.
 
 **Measure:** `internalInconsistencies` count against the benchmark's list of contradictions in
-[../../test-results/expected-results-benchmark.md](../../test-results/expected-results-benchmark.md).
+[../../test-results/expected-results-benchmark.md](../../expected-results-benchmark.md).
 The report contains at least eight the extraction should see without leaving category I, including
 the p5-versus-p11 charge tables and the 4/5 risk rating.
 
@@ -355,14 +355,14 @@ data with `isClientSpecific` false.
 
 | | Change | Gap | Status | Where |
 | --- | --- | --- | --- | --- |
-| 1 | `ExtractionMaxTokens` → 32,000 | E1 | **done** | [AppSettings.cs](../../../src/AiPromptEvaluator/AppSettings.cs) |
-| 2 | Truncation detected and reported honestly | E1 | **done** | [ExtractionResponseReader.cs](../../../src/AiPromptEvaluator/ExtractionResponseReader.cs) |
-| 3 | Canonical ids + id table in every prompt | E2 | **done** | [CanonicalModelIdentity.cs](../../../src/AiPromptEvaluator/CanonicalModelIdentity.cs) |
+| 1 | `ExtractionMaxTokens` → 32,000 | E1 | **done** | [AppSettings.cs](../../../../src/AiPromptEvaluator/AppSettings.cs) |
+| 2 | Truncation detected and reported honestly | E1 | **done** | [ExtractionResponseReader.cs](../../../../src/AiPromptEvaluator/ExtractionResponseReader.cs) |
+| 3 | Canonical ids + id table in every prompt | E2 | **done** | [CanonicalModelIdentity.cs](../../../../src/AiPromptEvaluator/CanonicalModelIdentity.cs) |
 | 4 | Dangling-reference validation | E2 | **done** | `DanglingReferences` |
 | 5 | Quote discipline in the prompt | E3 | **done** | `BuildSystemPrompt` |
 | 6 | Salvage complete array elements | E1 | **done** | `ExtractionResponseReader.Salvage` |
 | 7 | Stamp `extractedAt` / `extractorModel` in code | E5 | **done** | `StampSource`, `StripCodeOwnedFields` |
-| 8 | Schema validation at the merge boundary | E6 | **done** | [CanonicalModelValidator.cs](../../../src/AiPromptEvaluator/CanonicalModelValidator.cs) |
+| 8 | Schema validation at the merge boundary | E6 | **done** | [CanonicalModelValidator.cs](../../../../src/AiPromptEvaluator/CanonicalModelValidator.cs) |
 | 9 | Feed the merged model into the self-report pass | E4 | **done** | `SummariseExtraction` |
 | 10 | Structured output for extraction | E5, E6 | not done | see below |
 | 11 | Chunk Recommendations by arrangement | E1 | not done | see below |

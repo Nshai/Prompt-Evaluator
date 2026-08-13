@@ -24,6 +24,7 @@ public sealed record RunFingerprint(
     bool StructuredFindings,
     int MaxSearchResults,
     int MaxPassagesPerGroup,
+    int ExtractionMaxTokens,
     int PlanCount,
     string PlanDigest,
     string CanonicalModelDigest,
@@ -47,6 +48,7 @@ public sealed record RunFingerprint(
             StructuredFindings: settings.StructuredFindings,
             MaxSearchResults: settings.MaxSearchResults,
             MaxPassagesPerGroup: maxPassagesPerGroup,
+            ExtractionMaxTokens: settings.ExtractionMaxTokens,
             PlanCount: planCount,
             PlanDigest: DigestOfFolder(planFolder, CheckQueryPlanLoader.SearchPattern),
             CanonicalModelDigest: model is null ? "none" : Digest(model.Json),
@@ -76,6 +78,7 @@ public sealed record RunFingerprint(
         $"Chat {ChatModel} · {Sampling} · findings {(StructuredFindings ? "schema-constrained" : "free-form")}"
         + Environment.NewLine
         + $"Embeddings {EmbeddingModel} · top {MaxSearchResults}/search, {MaxPassagesPerGroup}/group · "
+        + $"extraction cap {ExtractionMaxTokens:N0} tok · "
         + $"plans {PlanCount}@{PlanDigest} · model {CanonicalModelDigest} (schema v{SchemaVersion})";
 
     /// <summary>

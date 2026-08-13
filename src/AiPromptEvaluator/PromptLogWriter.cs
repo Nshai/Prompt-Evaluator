@@ -30,6 +30,31 @@ public sealed class PromptLogWriter : IDisposable
         _writer.WriteLine();
     }
 
+    /// <summary>
+    /// Records the settings the run used, at the head of the log.
+    ///
+    /// Written because of a run that could not be explained from its own log. Retrieval had
+    /// collapsed to two passages per search and the cause — <c>MaxSearchResults</c> set to 1 —
+    /// had to be inferred from the arithmetic of hit counts, then cross-checked against a
+    /// settings file that turned out to belong to a different environment entirely. The
+    /// fingerprint that would have said so in one line existed already; it was only ever shown
+    /// on screen, where nobody reading the log afterwards could see it.
+    ///
+    /// Every value here can change a finding, so a log without them is not a record of what
+    /// happened — it is a record of half of it.
+    /// </summary>
+    public void LogRunConfiguration(RunFingerprint fingerprint)
+    {
+        lock (_gate)
+        {
+            _writer.WriteLine(new string('-', 100));
+            _writer.WriteLine("[RUN CONFIGURATION]");
+            _writer.WriteLine(fingerprint.Format());
+            _writer.WriteLine(new string('-', 100));
+            _writer.WriteLine();
+        }
+    }
+
     /// <summary>Appends one check's system prompt, user prompt and the model's raw response.</summary>
     public void LogExchange(string checkId, string checkName, string systemPrompt, string userPrompt, string response)
     {

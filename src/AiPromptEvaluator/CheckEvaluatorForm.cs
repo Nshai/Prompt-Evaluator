@@ -557,6 +557,13 @@ public partial class CheckEvaluatorForm : Form
 
         using var extractionLog = new PromptLogWriter(
             _settings.ResolvePromptLogFolder(), caseReference, DateTimeOffset.Now, filePrefix: "extract");
+
+        // The extraction token cap is the setting most likely to explain a section that came
+        // back short, so it is recorded before the first pass rather than reconstructed after.
+        extractionLog.LogRunConfiguration(RunFingerprint.For(
+            _settings, model: null, _settings.ResolveCheckPlanFolder(), planCount: 0,
+            CheckPlanRunner.MaxPassagesPerGroup));
+
         AppendResponseLine($"Logging extraction to {extractionLog.FilePath}");
 
         try
@@ -917,6 +924,12 @@ public partial class CheckEvaluatorForm : Form
         {
             promptLog = new PromptLogWriter(
                 _settings.ResolvePromptLogFolder(), caseReference, runStartedAt, filePrefix: "checks");
+
+            // Written before the first prompt rather than with the report at the end, so a run
+            // that is cancelled or fails still says what it was configured to do.
+            promptLog.LogRunConfiguration(RunFingerprint.For(
+                _settings, _model, planFolder, plans.Count, CheckPlanRunner.MaxPassagesPerGroup));
+
             AppendResponseLine($"Logging prompts to {promptLog.FilePath}");
 
             // Each planned search embeds its text, so a run over ten checks is a few hundred

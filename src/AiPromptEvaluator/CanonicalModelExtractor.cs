@@ -70,6 +70,7 @@ public sealed class CanonicalModelExtractor
         string caseFolder,
         string caseReference,
         IProgress<ExtractionProgress>? progress = null,
+        PromptLogWriter? promptLog = null,
         CancellationToken cancellationToken = default)
     {
         var reportFiles = FindReportFiles(caseFolder);
@@ -112,7 +113,7 @@ public sealed class CanonicalModelExtractor
             try
             {
                 var (fragment, sectionUsage) = await ExtractSectionAsync(
-                    section, schemaJson, documentText, caseReference, cancellationToken).ConfigureAwait(false);
+                    section, schemaJson, documentText, caseReference, promptLog, cancellationToken).ConfigureAwait(false);
 
                 usage = Add(usage, sectionUsage);
                 length = Merge(root, fragment, section);
@@ -158,17 +159,22 @@ public sealed class CanonicalModelExtractor
         string schemaJson,
         string documentText,
         string caseReference,
+        PromptLogWriter? promptLog,
         CancellationToken cancellationToken)
     {
         var slice = JsonSchemaSlicer.Slice(schemaJson, section.Properties);
+        var systemPrompt = BuildSystemPrompt();
+        var userPrompt = BuildSectionPrompt(section, slice, documentText, caseReference);
 
         var result = await _evaluator
             .RunRawAsync(
-                BuildSystemPrompt(),
-                BuildSectionPrompt(section, slice, documentText, caseReference),
+                systemPrompt,
+                userPrompt,
                 _settings.ExtractionMaxTokens,
                 cancellationToken)
             .ConfigureAwait(false);
+
+        promptLog?.LogExchange("extract", section.Name, systemPrompt, userPrompt, result.Response);
 
         var fragment = ParseObject(result.Response)
             ?? throw new InvalidOperationException(

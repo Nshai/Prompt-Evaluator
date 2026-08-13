@@ -555,6 +555,10 @@ public partial class CheckEvaluatorForm : Form
         var elapsed = Stopwatch.StartNew();
         _cts = new CancellationTokenSource();
 
+        using var extractionLog = new PromptLogWriter(
+            _settings.ResolvePromptLogFolder(), caseReference, DateTimeOffset.Now, filePrefix: "extract");
+        AppendResponseLine($"Logging extraction to {extractionLog.FilePath}");
+
         try
         {
             var extractor = new CanonicalModelExtractor(_settings, _evaluator);
@@ -571,10 +575,12 @@ public partial class CheckEvaluatorForm : Form
             });
 
             var result = await extractor
-                .ExtractAsync(caseFolder, caseReference, progress, _cts.Token)
+                .ExtractAsync(caseFolder, caseReference, progress, extractionLog, _cts.Token)
                 .ConfigureAwait(true);
 
             await _modelStore.SaveAsync(result.Document, _cts.Token).ConfigureAwait(true);
+
+            extractionLog.LogCanonicalModel(result.Document, result.Failures);
 
             elapsed.Stop();
             _model = result.Document;
@@ -909,7 +915,8 @@ public partial class CheckEvaluatorForm : Form
         using var store = new CaseDocumentStore(_settings);
         try
         {
-            promptLog = new PromptLogWriter(_settings.ResolvePromptLogFolder(), caseReference, runStartedAt);
+            promptLog = new PromptLogWriter(
+                _settings.ResolvePromptLogFolder(), caseReference, runStartedAt, filePrefix: "checks");
             AppendResponseLine($"Logging prompts to {promptLog.FilePath}");
 
             // Each planned search embeds its text, so a run over ten checks is a few hundred

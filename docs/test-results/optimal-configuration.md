@@ -5,7 +5,7 @@ measured on case ABC-99 or reasoned from a specific observed failure — where a
 been tested, it says so rather than inventing a recommendation.
 
 **Read this alongside** [expected-results-benchmark.md](expected-results-benchmark.md) (what a
-correct run should find) and [dataset-run-gap-analysis.md](dataset-run-gap-analysis.md) (what runs
+correct run should find) and [gap-analysis.md](gap-analysis.md) (what runs
 actually found).
 
 > **Two settings account for almost all of the variation observed so far.**
@@ -157,7 +157,7 @@ the one that is refused, not all three.
 > **not been shown sufficient**. Every apparently-identical pair of runs in this dataset is one
 > real generation and one gateway cache hit — a 2-second run reproducing a 130-second one. Before
 > treating two runs as independent evidence of determinism, **check their wall-clock duration**.
-> See [dataset-run-gap-analysis.md §1](dataset-run-gap-analysis.md#1-determinism--what-the-evidence-actually-supports).
+> See [gap-analysis.md §1](gap-analysis.md#1-what-the-runs-actually-are).
 
 ---
 

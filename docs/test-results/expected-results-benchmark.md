@@ -16,7 +16,7 @@ No run output was consulted while adjudicating.
 check-level agreement is worth almost nothing as a measure — a pipeline that returned Potential
 Concern unconditionally would score 100%. The discriminating measure is which of the 36 material
 findings below a run actually reaches, and that is what
-[dataset-run-gap-analysis.md](dataset-run-gap-analysis.md) scores.
+[gap-analysis.md](gap-analysis.md) scores.
 
 ---
 

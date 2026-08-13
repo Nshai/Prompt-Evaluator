@@ -1,6 +1,6 @@
 # Extraction improvement plan
 
-Acts on [gap-analysis.md](gap-analysis.md). Ordered so that each change can ship and be measured
+Acts on the extraction gaps E1–E6 in [../../gap-analysis.md](../../gap-analysis.md). Ordered so that each change can ship and be measured
 on its own.
 
 > **Implemented 2026-08-13.** Items 1–9 are in the build; 10 and 11 are deliberately not, for the

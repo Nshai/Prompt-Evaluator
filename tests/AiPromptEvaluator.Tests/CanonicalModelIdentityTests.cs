@@ -143,6 +143,37 @@ public class CanonicalModelIdentityTests
     }
 
     /// <summary>
+    /// A reference must point at the right *kind* of thing, not merely at something that
+    /// exists. This is not hypothetical: a real extraction wrote linkedObjectiveIds of
+    /// ["REC5"] — a recommendation id in an objective slot. Validating against every id in the
+    /// model would pass it, because REC5 is a real id; it is just not an objective.
+    /// </summary>
+    [Fact]
+    public void DanglingReferences_RejectsARealIdOfTheWrongKind()
+    {
+        var root = Model(
+            """
+            {
+              "objectives": [ { "objectiveId": "OBJ-1", "summary": "Consolidate pensions" } ],
+              "recommendations": [
+                { "recommendationId": "R-9", "summary": "Switch Zurich", "linkedObjectiveIds": ["R-9"] }
+              ]
+            }
+            """);
+
+        var identity = new CanonicalModelIdentity();
+        identity.Adopt(root);
+        identity.RewriteReferences(root);
+
+        var dangling = identity.DanglingReferences(root);
+
+        // Rewriting is kind-scoped too, so an objective slot is never repointed using the
+        // recommendation map: the value stays as written and is reported for what it is.
+        Assert.Single(dangling);
+        Assert.Contains("linkedObjectiveIds → R-9", dangling[0], StringComparison.Ordinal);
+    }
+
+    /// <summary>
     /// Adopting is idempotent. A later pass restating an entity must not renumber it out from
     /// under a reference already written against it.
     /// </summary>

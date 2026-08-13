@@ -40,6 +40,75 @@ public class CaseDocumentStoreTests
 
     private static ReadOnlyMemory<float> Vector(float x, float y, float z) => new([x, y, z]);
 
+    /// <summary>
+    /// Filtering by document category, which is what lets a small category be found at all.
+    ///
+    /// Unfiltered, a search competes across the whole case file, so a category holding one short
+    /// file note loses every time to the long policy documents beside it — in a real run the
+    /// meetings-and-communications category reached five of fifty-seven requirement groups while
+    /// sixteen asked for it, and the file note it holds was the decisive evidence for three
+    /// checks. The scenario here is that shape in miniature: one weakly-matching note in
+    /// category C against three strong matches in category E.
+    /// </summary>
+    [Fact]
+    public async Task Search_CanBeRestrictedToDocumentCategories()
+    {
+        var settings = Settings();
+        using var store = new CaseDocumentStore(settings);
+
+        if (!await store.IsAvailableAsync())
+        {
+            _output.WriteLine($"Skipped: no Qdrant at {store.Endpoint}.");
+            return;
+        }
+
+        await store.EnsureCollectionAsync(Dimensions);
+        await store.DeleteCaseAsync("CASE-CAT", 99);
+
+        var chunks = new List<CaseDocumentChunk>
+        {
+            Chunk("CASE-CAT", "policy-1.md", "E", 0, "Policy charges and fund details."),
+            Chunk("CASE-CAT", "policy-2.md", "E", 0, "More policy charges."),
+            Chunk("CASE-CAT", "policy-3.md", "E", 0, "Yet more policy charges."),
+            Chunk("CASE-CAT", "file-note.md", "C", 0, "We agreed a risk rating of 5 rather than 4."),
+        };
+
+        // The file note is the weakest match by a distance no re-ranking could close.
+        var vectors = new List<ReadOnlyMemory<float>>
+        {
+            Vector(1f, 0f, 0f),
+            Vector(0.99f, 0.1f, 0f),
+            Vector(0.98f, 0.2f, 0f),
+            Vector(0f, 1f, 0f),
+        };
+
+        await store.UpsertAsync(chunks, vectors);
+
+        // Unfiltered and capped at three, the file note never appears — this is the defect.
+        var unfiltered = await store.SearchAsync("CASE-CAT", 99, Vector(1f, 0f, 0f), limit: 3);
+        Assert.DoesNotContain(unfiltered, h => h.Chunk.CategoryCode == "C");
+
+        // Asked for category C, it is the only thing that can come back.
+        var targeted = await store.SearchAsync("CASE-CAT", 99, Vector(1f, 0f, 0f), limit: 3, ["C"]);
+        Assert.NotEmpty(targeted);
+        Assert.All(targeted, h => Assert.Equal("C", h.Chunk.CategoryCode));
+        Assert.Contains(targeted, h => h.Chunk.Text.Contains("rating of 5", StringComparison.Ordinal));
+
+        // Several categories at once, as a plan's targetCategories usually names.
+        var both = await store.SearchAsync("CASE-CAT", 99, Vector(1f, 0f, 0f), limit: 10, ["C", "E"]);
+        Assert.Equal(4, both.Count);
+
+        // An empty filter is no filter, not a filter matching nothing.
+        var unrestricted = await store.SearchAsync("CASE-CAT", 99, Vector(1f, 0f, 0f), limit: 10, []);
+        Assert.Equal(4, unrestricted.Count);
+
+        // A category nothing is filed under returns nothing rather than falling back.
+        var absent = await store.SearchAsync("CASE-CAT", 99, Vector(1f, 0f, 0f), limit: 10, ["Z"]);
+        Assert.Empty(absent);
+
+        await store.DeleteCaseAsync("CASE-CAT", 99);
+    }
+
     [Fact]
     public async Task Search_ReturnsMatchesAcrossDocuments_ScopedToOneCaseAndTenant()
     {

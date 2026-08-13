@@ -1,9 +1,10 @@
 # Gap analysis — run of 2026-08-12, case ABC-99
 
-> **Status.** GAP 1 is addressed in code (citation verification, an `Indeterminate` outcome,
-> reasoning-before-verdict ordering, one call per requirement), and GAP 6's indexing failure with
-> it. GAP 2, 3, 4 and 5 remain open, as does the reporting half of GAP 6. The figures below
-> describe the run as it was, and are the baseline the next run should be measured against.
+> **Status.** GAP 1 is addressed (citation verification, an `Indeterminate` outcome,
+> reasoning-before-verdict ordering, one call per requirement), as is GAP 2 (category filtering)
+> and GAP 6's indexing failure. GAP 3 and 4 remain open, as does the reporting half of GAP 6;
+> GAP 5 should largely resolve with GAP 2 and needs re-measuring. The figures below describe the
+> run as it was, and are the baseline the next run should be measured against.
 
 Derived from the actual run recorded in [logs.md](logs.md), against the ten checks in
 [Assessment Checks & Prompts QA CA v1.0 (Checks).csv](QA-Checks/Assessment%20Checks%20&%20Prompts%20QA%20CA%20v1.0%20(Checks).csv),
@@ -174,9 +175,22 @@ CHK-006  G6.1 G6.3                  CHK-010  G10.1 G10.2 G10.3 G10.4
 All four CHK-010 groups — the vulnerability and foreseeable-harm overlay — missed the one
 document recording what was actually discussed with the client.
 
-**Fix.** Add a category filter to `CaseDocumentStore.SearchAsync`. The Qdrant payload index
-already exists and is unused; the plans already carry `targetCategories` on every query. This is
-the highest-leverage change available and mostly wiring.
+**Fixed.** `CaseDocumentStore.SearchAsync` takes a category filter, using the payload index that
+had existed unused since the collection was first created.
+
+The plan's categories are applied as a *second* search rather than as a restriction. Each query
+is embedded once and run twice — once restricted to the categories the plan names, once across
+the whole case — and the results merged with the targeted hits first. Restricting alone would be
+wrong: target categories are where evidence is *expected*, not the only place it can be, and a
+hard filter would silently discard a contradiction sitting somewhere nobody thought to name.
+The second query costs almost nothing, since the embedding is the expensive part and is shared.
+
+`Search_CanBeRestrictedToDocumentCategories` runs against a real Qdrant and reproduces this gap
+in miniature: one weakly-matching note in category C against three strong matches in category E.
+It asserts the unfiltered search misses the note — the defect itself — and that the targeted one
+finds it.
+
+**Still to do:** re-run the case and re-measure. The 31% figure above is the baseline.
 
 ---
 
@@ -350,7 +364,7 @@ Worth stating plainly, because the fixes above should not disturb it:
 | --- | --- | --- | --- |
 | 1 | GAP 1a | Verify every citation appears in that group's pack; fail the group when it does not | small |
 | 2 | GAP 1b | Compute age, arithmetic and date comparisons in code; report "comparison not possible" when an input is absent | small |
-| 3 | GAP 2 | Category filter on `CaseDocumentStore.SearchAsync` using the existing payload index | small |
+| 3 | ~~GAP 2~~ | ~~Category filter on `CaseDocumentStore.SearchAsync`~~ — done | — |
 | 4 | GAP 3 | Minimum score threshold; let a group legitimately return no evidence | small |
 | 5 | GAP 4 | Populate `dateOfBirth` and the other 32 paths; surface `extractionReport` | medium |
 | 6 | GAP 6 | Tell each check which documents failed to index, so a tool failure never reads as an evidence gap in the case | small |

@@ -48,6 +48,25 @@ public sealed class CaseDocumentSearchTool
     /// </summary>
     public async Task<IReadOnlyList<CaseDocumentSearchMatch>> SearchAsync(
         string searchText,
+        CancellationToken cancellationToken = default) =>
+        await SearchAsync(searchText, categoryCodes: null, cancellationToken).ConfigureAwait(false);
+
+    /// <summary>
+    /// As above, but guaranteeing the plan's target categories get a hearing.
+    ///
+    /// The query is embedded once and run twice: once restricted to the categories the plan
+    /// asked for, and once across the whole case. Restricting alone would be wrong — a plan's
+    /// target categories are where the evidence is *expected*, not the only place it can be, and
+    /// a hard filter would silently discard a contradiction sitting in a category nobody thought
+    /// to name. Searching unfiltered alone is what the run already did, and small categories lose
+    /// that competition every time.
+    ///
+    /// The second query costs almost nothing: the embedding is the expensive part and it is
+    /// shared, leaving one more vector lookup against an indexed payload field.
+    /// </summary>
+    public async Task<IReadOnlyList<CaseDocumentSearchMatch>> SearchAsync(
+        string searchText,
+        IReadOnlyCollection<string>? categoryCodes,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(searchText))
@@ -60,8 +79,24 @@ public sealed class CaseDocumentSearchTool
             .ConfigureAwait(false);
 
         var hits = await _store
-            .SearchAsync(_caseReference, _settings.TenantId, vector, _settings.MaxSearchResults, cancellationToken)
+            .SearchAsync(
+                _caseReference, _settings.TenantId, vector, _settings.MaxSearchResults,
+                categoryCodes: null, cancellationToken)
             .ConfigureAwait(false);
+
+        if (categoryCodes is { Count: > 0 })
+        {
+            var targeted = await _store
+                .SearchAsync(
+                    _caseReference, _settings.TenantId, vector, _settings.MaxSearchResults,
+                    categoryCodes, cancellationToken)
+                .ConfigureAwait(false);
+
+            // Targeted hits first, so the categories the plan asked for survive the per-group
+            // cap even when they score below the bulk of the case file. De-duplication further
+            // down keeps a chunk found by both from appearing twice.
+            hits = [.. targeted, .. hits];
+        }
 
         return hits
             .Select(hit => new CaseDocumentSearchMatch(

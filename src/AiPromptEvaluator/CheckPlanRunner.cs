@@ -372,9 +372,16 @@ public sealed class CheckPlanRunner : IDisposable
             .Take(MaxPassagesPerGroup)
             .ToList();
 
+    /// <summary>
+    /// Runs one planned query, telling the store which categories the plan expects the answer
+    /// in. Those are no longer only a post-filter over whatever the search happened to return:
+    /// a passage that never entered the candidate set could not be re-ranked into it.
+    /// </summary>
     private async Task<IReadOnlyList<CaseDocumentSearchMatch>> SearchAsync(
         PlannedQuery query, CancellationToken cancellationToken) =>
-        await _search.SearchAsync(query.Text, cancellationToken).ConfigureAwait(false);
+        await _search
+            .SearchAsync(query.Text, query.TargetCategories, cancellationToken)
+            .ConfigureAwait(false);
 
     /// <summary>
     /// Whether any of a query's expected signals turned up. Where none do across every hit,

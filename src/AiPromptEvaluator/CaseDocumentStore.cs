@@ -125,16 +125,35 @@ public sealed class CaseDocumentStore : IDisposable
     /// can span several documents — that is the point: one search answers "where in this
     /// case file is this discussed", not "where in this document".
     /// </summary>
+    /// <param name="categoryCodes">
+    /// Restricts the search to these document categories. Empty or null searches everything.
+    ///
+    /// This is what makes a small category reachable. Unfiltered, a search competes across the
+    /// whole case file, and a category holding one short file note loses every time to the ten
+    /// long policy documents next to it — in a real run the meetings-and-communications category
+    /// reached five of fifty-seven requirement groups while sixteen of them asked for it. The
+    /// query plans have always carried the categories each search wants; until now nothing acted
+    /// on them at the point where it would have made a difference.
+    /// </param>
     public async Task<IReadOnlyList<CaseDocumentSearchResult>> SearchAsync(
         string caseReference,
         int tenantId,
         ReadOnlyMemory<float> queryVector,
         int limit,
+        IReadOnlyCollection<string>? categoryCodes = null,
         CancellationToken cancellationToken = default)
     {
         var filter = new Filter();
         filter.Must.Add(Conditions.Match(TenantKey, tenantId));
         filter.Must.Add(Conditions.MatchKeyword(CaseKey, caseReference));
+
+        if (categoryCodes is { Count: > 0 })
+        {
+            // Qdrant's keyword match takes a set, so one condition covers "any of these".
+            // The payload index on category_code has existed since the collection was first
+            // created; this is the first thing to use it.
+            filter.Must.Add(Conditions.Match(CategoryCodeKey, categoryCodes.ToList()));
+        }
 
         var points = await _client.QueryAsync(
             _collection,

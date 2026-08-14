@@ -10,7 +10,6 @@ public partial class CheckEvaluatorForm : Form
 {
     private readonly AppSettings _settings;
     private readonly IChatCompletionClient _chat;
-    private readonly IDoclingClient _docling;
 
     // Creation the container cannot do for us: a store the form disposes, a search scoped to a
     // case, a runner scoped to an extracted model, a log file named for the run.
@@ -48,7 +47,6 @@ public partial class CheckEvaluatorForm : Form
     public CheckEvaluatorForm(
         AppSettings settings,
         IChatCompletionClient chat,
-        IDoclingClient docling,
         ICanonicalModelStore modelStore,
         ICanonicalModelExtractor extractor,
         ICaseDocumentStoreFactory stores,
@@ -60,7 +58,6 @@ public partial class CheckEvaluatorForm : Form
         InitializeComponent();
         _settings = settings;
         _chat = chat;
-        _docling = docling;
         _modelStore = modelStore;
         _extractor = extractor;
         _stores = stores;

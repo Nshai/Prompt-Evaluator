@@ -14,7 +14,7 @@ namespace AiPromptEvaluator;
 /// and deleting the model are separate, deliberate actions: re-indexing documents should
 /// not silently discard an extraction that cost real tokens to produce.
 /// </summary>
-public sealed class CanonicalModelStore
+public sealed class CanonicalModelStore : ICanonicalModelStore
 {
     private readonly string _databasePath;
 

@@ -24,7 +24,7 @@ public sealed record ExtractionResult(
 /// the document held constant at the front of every prompt, so the provider's prefix cache
 /// covers the expensive part and only the section instruction and its schema slice change.
 /// </summary>
-public sealed class CanonicalModelExtractor
+public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
 {
     /// <summary>
     /// The category holding the suitability report. The canonical model describes what the
@@ -35,12 +35,12 @@ public sealed class CanonicalModelExtractor
     public const string SuitabilityReportCategoryCode = "I";
 
     private readonly AppSettings _settings;
-    private readonly PromptEvaluator _evaluator;
+    private readonly IChatCompletionClient _chat;
 
-    public CanonicalModelExtractor(AppSettings settings, PromptEvaluator evaluator)
+    public CanonicalModelExtractor(AppSettings settings, IChatCompletionClient chat)
     {
         _settings = settings;
-        _evaluator = evaluator;
+        _chat = chat;
     }
 
     /// <summary>
@@ -103,8 +103,8 @@ public sealed class CanonicalModelExtractor
         var done = 0;
 
         // Grows as passes complete, and is shown to every pass that follows. See
-        // CanonicalModelIdentity for why the passes cannot be trusted to agree without it.
-        var identity = new CanonicalModelIdentity();
+        // CanonicalModelIdentityRegistry for why the passes cannot be trusted to agree without it.
+        var identity = new CanonicalModelIdentityRegistry();
 
         foreach (var section in ExtractionSection.All)
         {
@@ -189,7 +189,7 @@ public sealed class CanonicalModelExtractor
         string schemaJson,
         string documentText,
         string caseReference,
-        CanonicalModelIdentity identity,
+        CanonicalModelIdentityRegistry identity,
         JsonObject modelSoFar,
         PromptLogWriter? promptLog,
         CancellationToken cancellationToken)
@@ -199,7 +199,7 @@ public sealed class CanonicalModelExtractor
         var userPrompt = BuildSectionPrompt(
             section, slice, documentText, caseReference, identity, modelSoFar);
 
-        var result = await _evaluator
+        var result = await _chat
             .RunRawAsync(
                 systemPrompt,
                 userPrompt,
@@ -258,45 +258,7 @@ public sealed class CanonicalModelExtractor
     /// later check honest: never invent a value, record contradictions instead of resolving
     /// them, and quote the text every assertion came from.
     /// </summary>
-    private static string BuildSystemPrompt() =>
-        """
-        You extract structured data from UK financial services suitability reports into a
-        canonical JSON model. You are building the record a compliance assessor will later
-        rely on, so accuracy about what the document does NOT say matters as much as accuracy
-        about what it does.
-
-        Rules:
-        - Return one JSON object and nothing else. No prose, no markdown fences.
-        - Populate only the properties named in the request. Omit anything you cannot fill.
-        - Never invent a value. If the report does not state something, either omit the field
-          or set its provenance assertionStatus to "Absent" — a plausible guess is worse than
-          a gap, because it will read as evidence.
-        - assertionStatus: "Stated" when it is explicit in the text; "Inferred" when you read
-          it out of narrative prose; "Derived" when you calculated it from other values;
-          "Absent" when the model expects it and the report does not provide it.
-        - Use the identifiers given under "Identifiers" exactly as written. Every id field and
-          every *Ids array must hold an id from that table. If something you would reference is
-          not in the table, omit the reference — never coin a new id, and never put a name, a
-          label or a description in an id field.
-        - Every Stated or Inferred provenance needs the page number from the nearest
-          "<!-- page: N -->" marker above it, and a quote where the rules below call for one.
-        - Quote where the value is contestable: figures, dates, percentages, ratings, and any
-          statement a check might have to weigh. For descriptive prose and boilerplate the page
-          number alone is enough.
-        - Quote each passage once. Where several assertions rest on the same sentence, quote it
-          on the first and give only the page number on the rest. A repeated quote adds nothing
-          the page number does not.
-        - Keep quotes to the shortest span that carries the assertion — normally one clause, at
-          most one sentence. Never quote a table row wholesale where one cell is the evidence.
-        - Keep the document's own units. "£300 per week net" is amount 300, basis "Net",
-          frequency "Weekly" — do not convert to monthly and lose the original.
-        - Record contradictions rather than resolving them. If the report gives two different
-          figures for the same thing, capture both where the model allows it and note the
-          conflict; do not quietly pick one.
-        - Boilerplate is data. Capture generic paragraphs with isClientSpecific false rather
-          than skipping them — their presence without personalisation is itself a finding.
-        - Enumerated fields must use a value from the schema's enum, or be omitted.
-        """;
+    private static string BuildSystemPrompt() => Prompts.ExtractorSystem;
 
     /// <summary>The property whose pass reports on the extraction as a whole.</summary>
     private const string ExtractionReportProperty = "extractionReport";
@@ -306,7 +268,7 @@ public sealed class CanonicalModelExtractor
         string schemaSlice,
         string documentText,
         string caseReference,
-        CanonicalModelIdentity identity,
+        CanonicalModelIdentityRegistry identity,
         JsonObject modelSoFar)
     {
         var sb = new StringBuilder();

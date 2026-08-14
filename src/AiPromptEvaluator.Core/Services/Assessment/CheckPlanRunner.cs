@@ -28,7 +28,7 @@ public sealed record CheckRunProgress(int Done, int Total, string CheckId, strin
 /// The check's own outcome is never asked for. It is computed from the requirement findings, so
 /// it cannot disagree with them — and, more to the point, cannot be stated before they exist.
 /// </summary>
-public sealed class CheckPlanRunner : IDisposable
+public sealed class CheckPlanRunner : ICheckPlanRunner
 {
     private static readonly JsonSerializerOptions FindingOptions = new()
     {
@@ -59,8 +59,8 @@ public sealed class CheckPlanRunner : IDisposable
     private const int DecisionMaxTokens = 8000;
 
     private readonly AppSettings _settings;
-    private readonly PromptEvaluator _evaluator;
-    private readonly CaseDocumentSearchTool _search;
+    private readonly IChatCompletionClient _chat;
+    private readonly ICaseDocumentSearchService _search;
     private readonly CanonicalModelDocument _model;
     private readonly CanonicalModelAccessor _accessor;
     private readonly IReadOnlyList<DerivedFigures.Figure> _derived;
@@ -77,15 +77,15 @@ public sealed class CheckPlanRunner : IDisposable
     /// <param name="searches">The same, for retrieval.</param>
     public CheckPlanRunner(
         AppSettings settings,
-        PromptEvaluator evaluator,
-        CaseDocumentSearchTool search,
+        IChatCompletionClient chat,
+        ICaseDocumentSearchService search,
         CanonicalModelDocument model,
         PromptLogWriter? promptLog = null,
         ConcurrencyGate? modelCalls = null,
         ConcurrencyGate? searches = null)
     {
         _settings = settings;
-        _evaluator = evaluator;
+        _chat = chat;
         _search = search;
         _model = model;
         _accessor = new CanonicalModelAccessor(model.Json);
@@ -177,7 +177,7 @@ public sealed class CheckPlanRunner : IDisposable
                 var userPrompt = header + BuildGroupPrompt(pack);
 
                 var result = await _modelCalls
-                    .RunAsync(t => _evaluator.RunRawAsync(
+                    .RunAsync(t => _chat.RunRawAsync(
                         systemPrompt,
                         userPrompt,
                         DecisionMaxTokens,
@@ -518,53 +518,7 @@ public sealed class CheckPlanRunner : IDisposable
     // Prompting
     // ──────────────────────────────────────────────
 
-    private static string BuildSystemPrompt() =>
-        """
-        You are a financial services Quality Assurance assessor. You assess ONE requirement
-        against a pre-assembled evidence pack and return a structured finding.
-
-        The pack has two sides, and the distinction matters:
-
-        - CANONICAL MODEL — what the suitability report asserts. It was extracted from the
-          report itself, so treat it as an accurate record of what the report says. It is not
-          evidence that the assertion is true.
-        - RETRIEVED PASSAGES — what the rest of the case file holds, quoted verbatim from the
-          supporting documents, each with an id like [P3] and a category. This is the evidence.
-
-        A consistency requirement is met when the report's assertion is corroborated by the
-        evidence. It fails when they contradict each other, or when the report asserts
-        something no document supports.
-
-        Answer the fields in the order they are given. That order is the order to think in:
-        set out what each side says, list every discrepancy you can see, establish whether the
-        comparison can be made at all, reason about it, cite — and decide last. Do not decide
-        first and explain afterwards.
-
-        Rules:
-        - Judge only on the pack. Do not use outside knowledge of the case, and do not assume
-          a document exists because it usually would.
-        - Put EVERY difference between the two sides in "discrepancies", before you consider
-          whether any of them matters. A difference explained by a guard still goes in the list;
-          say in "analysis" which guard explains it.
-        - If a value the comparison depends on is not in the pack, set "comparisonPerformed" to
-          false and name what is missing. Do NOT estimate, derive around, or assume it. A
-          comparison you could not make is a legitimate answer; an invented one is not.
-        - Quote only text that appears in the passages given, verbatim, and name the passage id
-          it came from. Quotations are checked against the pack automatically. Do not adjust a
-          quotation to fit your reasoning: if the evidence contradicts the report, that is the
-          finding.
-        - Where the evidence is a TABLE and what you rely on is a row rather than a sentence,
-          do not rewrite the row as prose. Leave "quote" empty, name the passage id, and list
-          the values you read in "cells" — for example
-          ["Savings", "JS", "Cash Account", "6,000"]. A table restated as a sentence is not a
-          quotation and will be rejected, however accurately you read it. Every value you list
-          is checked against that passage, so list what is there and nothing more.
-        - Respect the false-positive guards. They describe specific ways this comparison
-          produces spurious mismatches, and a finding one of them explains is not a finding.
-        - Do not soften, hedge or omit a contradiction to make the finding read more favourably.
-          Where a genuine mismatch stands after the guards, the outcome is Potential Concern.
-        - Return one JSON object and nothing else. No prose outside it, no markdown fences.
-        """;
+    private static string BuildSystemPrompt() => Prompts.AssessorSystem;
 
     /// <summary>
     /// The part of the prompt that is the same for every group of a check — the check itself,
@@ -642,7 +596,7 @@ public sealed class CheckPlanRunner : IDisposable
         // What the extraction itself reported about its own gaps. Carried so the assessor can
         // tell a report that is genuinely silent from one the extraction failed to read — the
         // two look identical from an absent canonical path, and they mean opposite things.
-        var extraction = _accessor.Resolve("/extractionReport");
+        var extraction = _accessor.Resolve(CanonicalModel.Paths.ExtractionReport);
 
         if (extraction.Found)
         {
@@ -845,21 +799,7 @@ public sealed class CheckPlanRunner : IDisposable
     /// </summary>
     private static Task ForEachAsync(
         int count, Func<int, CancellationToken, Task> body, CancellationToken cancellationToken) =>
-        ForEachAsync(count, count, body, cancellationToken);
-
-    internal static Task ForEachAsync(
-        int count,
-        int maxParallelism,
-        Func<int, CancellationToken, Task> body,
-        CancellationToken cancellationToken) =>
-        Parallel.ForEachAsync(
-            Enumerable.Range(0, count),
-            new ParallelOptions
-            {
-                MaxDegreeOfParallelism = Math.Max(1, maxParallelism),
-                CancellationToken = cancellationToken,
-            },
-            async (index, token) => await body(index, token).ConfigureAwait(false));
+        ParallelWork.ForEachAsync(count, count, body, cancellationToken);
 
     private static TokenUsage AddUsage(TokenUsage a, TokenUsage b) => new(
         a.InputTokens + b.InputTokens,

@@ -100,7 +100,7 @@ public class ObservedExtractionFailureTests
             return;
         }
 
-        var identity = new CanonicalModelIdentity();
+        var identity = new CanonicalModelIdentityRegistry();
         identity.Adopt(root);
         identity.RewriteReferences(root);
 
@@ -128,7 +128,7 @@ public class ObservedExtractionFailureTests
             return;
         }
 
-        var identity = new CanonicalModelIdentity();
+        var identity = new CanonicalModelIdentityRegistry();
         identity.Adopt(root);
 
         Assert.True(identity.HasEntities);

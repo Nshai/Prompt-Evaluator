@@ -22,17 +22,17 @@ public sealed record CaseDocumentSearchMatch(
 /// Matches from several documents come back together, which is the point: a check needs to
 /// see the fact find and the suitability report side by side to tell whether they agree.
 /// </summary>
-public sealed class CaseDocumentSearchTool
+public sealed class CaseDocumentSearchService : ICaseDocumentSearchService
 {
     private readonly AppSettings _settings;
     private readonly IEmbeddingGenerator<string, Embedding<float>> _embeddings;
-    private readonly CaseDocumentStore _store;
+    private readonly ICaseDocumentStore _store;
     private readonly string _caseReference;
 
-    public CaseDocumentSearchTool(
+    public CaseDocumentSearchService(
         AppSettings settings,
         IEmbeddingGenerator<string, Embedding<float>> embeddings,
-        CaseDocumentStore store,
+        ICaseDocumentStore store,
         string caseReference)
     {
         _settings = settings;

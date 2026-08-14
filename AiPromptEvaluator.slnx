@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/AiPromptEvaluator.Core/AiPromptEvaluator.Core.csproj" />
     <Project Path="src/AiPromptEvaluator/AiPromptEvaluator.csproj" />
   </Folder>
   <Folder Name="/src/installer/">

@@ -16,7 +16,7 @@ public sealed record DoclingConversionResult(bool Success, string? Markdown, str
 /// other rich documents to Markdown. The endpoint comes from settings, so the container can
 /// live anywhere reachable (localhost by default, or a shared host).
 /// </summary>
-public sealed class DoclingClient
+public sealed class DoclingClient : IDoclingClient
 {
     private static readonly TimeSpan ConvertTimeout = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan HealthTimeout = TimeSpan.FromSeconds(10);

@@ -1,4 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The desktop front end: forms, their designers, and the entry point.
+    Everything it drives lives in AiPromptEvaluator.Core, which knows nothing about WinForms.
+  -->
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -12,37 +17,19 @@
   </PropertyGroup>
 
   <!--
-    The canonical model schema and the per-check query plans are data the app reads at run
-    time, not source. They are authored under docs/artifacts and copied beside the executable
-    so a fresh clone builds and a fresh install works without the user pointing Settings at
-    anything; both locations stay overridable in Settings for anyone iterating on them.
+    The container implementation, which only the composition root needs. Core declares what it
+    registers against the abstractions; this project is where a provider is built.
   -->
   <ItemGroup>
-    <Content Include="..\..\docs\artifacts\canonical-suitability-model.schema.json"
-             Link="canonical-suitability-model.schema.json"
-             CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\docs\artifacts\check-plan\*.query-plan.json"
-             Link="check-plan\%(Filename)%(Extension)"
-             CopyToOutputDirectory="PreserveNewest" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
   </ItemGroup>
 
   <!--
-    Retrieval ordering and the chat options are internal detail with no place on a public
-    surface, but they are exactly what decides whether two runs of a check agree — so the
-    tests need to reach them.
+    The schema and query plans travel with Core, which carries them into this project's output
+    as well. Nothing here needs to name them.
   -->
   <ItemGroup>
-    <InternalsVisibleTo Include="AiPromptEvaluator.Tests" />
+    <ProjectReference Include="..\AiPromptEvaluator.Core\AiPromptEvaluator.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.AI" Version="10.9.0" />
-    <PackageReference Include="Microsoft.Extensions.AI.Abstractions" Version="10.9.0" />
-    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" Version="10.9.0" />
-    <PackageReference Include="Microsoft.Extensions.DataIngestion" Version="10.9.0-preview.1.26411.16" />
-    <PackageReference Include="Microsoft.Extensions.DataIngestion.Markdig" Version="10.9.0-preview.1.26411.16" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.10" />
-    <PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase" Version="1.0.1" />
-    <PackageReference Include="Qdrant.Client" Version="1.19.0" />
-  </ItemGroup>
 </Project>

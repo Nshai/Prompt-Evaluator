@@ -8,7 +8,7 @@ namespace AiPromptEvaluator;
 /// case reference, document name and category as payload, so a search can be narrowed to
 /// one case within one tenant before the vectors are compared.
 /// </summary>
-public sealed class CaseDocumentStore : IDisposable
+public sealed class CaseDocumentStore : ICaseDocumentStore
 {
     // Payload keys. They are also the fields the payload indexes are built on, so keep
     // them in one place rather than spelling them out at each call site.

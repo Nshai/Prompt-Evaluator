@@ -9,8 +9,19 @@ namespace AiPromptEvaluator;
 public partial class CheckEvaluatorForm : Form
 {
     private readonly AppSettings _settings;
-    private readonly PromptEvaluator _evaluator;
-    private readonly DoclingClient _docling;
+    private readonly IChatCompletionClient _chat;
+    private readonly IDoclingClient _docling;
+
+    // Creation the container cannot do for us: a store the form disposes, a search scoped to a
+    // case, a runner scoped to an extracted model, a log file named for the run.
+    private readonly ICaseDocumentStoreFactory _stores;
+    private readonly ICaseDocumentSearchServiceFactory _searches;
+    private readonly ICheckPlanRunnerFactory _runners;
+    private readonly IPromptLogWriterFactory _promptLogs;
+
+    /// <summary>Navigation. The two screens open each other, so neither may construct the other.</summary>
+    private readonly Func<MainForm> _mainForm;
+    private readonly ICanonicalModelExtractor _extractor;
     private List<AssessmentCheck> _checks = new();
     private CancellationTokenSource? _cts;
     private bool _busy;
@@ -25,18 +36,38 @@ public partial class CheckEvaluatorForm : Form
     /// </summary>
     private CanonicalModelDocument? _model;
 
-    private readonly CanonicalModelStore _modelStore;
+    private readonly ICanonicalModelStore _modelStore;
 
     private CostBreakdown _lastBreakdown;
 
-    public CheckEvaluatorForm(AppSettings settings)
+    /// <summary>
+    /// Everything this screen drives arrives through the constructor, so the form knows what the
+    /// pipeline does and nothing about how it is built. Swapping this screen for a web endpoint
+    /// means resolving the same set from the same container.
+    /// </summary>
+    public CheckEvaluatorForm(
+        AppSettings settings,
+        IChatCompletionClient chat,
+        IDoclingClient docling,
+        ICanonicalModelStore modelStore,
+        ICanonicalModelExtractor extractor,
+        ICaseDocumentStoreFactory stores,
+        ICaseDocumentSearchServiceFactory searches,
+        ICheckPlanRunnerFactory runners,
+        IPromptLogWriterFactory promptLogs,
+        Func<MainForm> mainForm)
     {
         InitializeComponent();
         _settings = settings;
-        _evaluator = new PromptEvaluator(_settings);
-        // Read the endpoint lazily so editing it in Settings takes effect without a restart.
-        _docling = new DoclingClient(() => _settings.ResolveDoclingEndpoint());
-        _modelStore = new CanonicalModelStore(_settings);
+        _chat = chat;
+        _docling = docling;
+        _modelStore = modelStore;
+        _extractor = extractor;
+        _stores = stores;
+        _searches = searches;
+        _runners = runners;
+        _promptLogs = promptLogs;
+        _mainForm = mainForm;
 
         caseFolderTextBox.Text = _settings.DocumentFolder;
 
@@ -292,7 +323,7 @@ public partial class CheckEvaluatorForm : Form
         // and cancelling halfway through does not refund what has already been embedded.
         UsageTrackingEmbeddingGenerator? embeddings = null;
 
-        using var store = new CaseDocumentStore(_settings);
+        using var store = _stores.Create();
         try
         {
             if (!await store.IsAvailableAsync(_cts.Token).ConfigureAwait(true))
@@ -473,7 +504,7 @@ public partial class CheckEvaluatorForm : Form
 
         try
         {
-            using var store = new CaseDocumentStore(_settings);
+            using var store = _stores.Create();
             var count = await store.CountAsync(caseReference, _settings.TenantId).ConfigureAwait(true);
 
             if (count > 0)
@@ -555,7 +586,7 @@ public partial class CheckEvaluatorForm : Form
         var elapsed = Stopwatch.StartNew();
         _cts = new CancellationTokenSource();
 
-        using var extractionLog = new PromptLogWriter(
+        using var extractionLog = _promptLogs.Create(
             _settings.ResolvePromptLogFolder(), caseReference, DateTimeOffset.Now, filePrefix: "extract");
 
         // The extraction token cap is the setting most likely to explain a section that came
@@ -568,7 +599,7 @@ public partial class CheckEvaluatorForm : Form
 
         try
         {
-            var extractor = new CanonicalModelExtractor(_settings, _evaluator);
+            var extractor = _extractor;
 
             var progress = new Progress<ExtractionProgress>(p =>
             {
@@ -915,10 +946,10 @@ public partial class CheckEvaluatorForm : Form
         // still in flight — with several running at once, there is no single "current" one.
         CheckRunBoard? board = null;
 
-        using var store = new CaseDocumentStore(_settings);
+        using var store = _stores.Create();
         try
         {
-            promptLog = new PromptLogWriter(
+            promptLog = _promptLogs.Create(
                 _settings.ResolvePromptLogFolder(), caseReference, runStartedAt, filePrefix: "checks");
 
             // Written before the first prompt rather than with the report at the end, so a run
@@ -933,15 +964,15 @@ public partial class CheckEvaluatorForm : Form
             embeddings = new UsageTrackingEmbeddingGenerator(
                 AiClientFactory.CreateEmbeddingGenerator(_settings));
 
-            var searchTool = new CaseDocumentSearchTool(_settings, embeddings, store, caseReference);
+            var searchTool = _searches.Create(caseReference, store, embeddings);
 
             // One budget for the whole run. Checks and their requirements both fan out, and
             // bounding each level separately would multiply into a request count neither
             // setting names.
             using var modelCalls = new ConcurrencyGate(_settings.MaxParallelRequests);
             using var searches = new ConcurrencyGate(_settings.MaxParallelRequests);
-            using var runner = new CheckPlanRunner(
-                _settings, _evaluator, searchTool, _model, promptLog, modelCalls, searches);
+            using var runner = _runners.Create(
+                _model, searchTool, promptLog, modelCalls, searches);
 
             var skipped = new List<string>();
 
@@ -1004,7 +1035,7 @@ public partial class CheckEvaluatorForm : Form
             // Checks run concurrently. They share nothing: each reads the same canonical model
             // and the same vector store, and writes only its own slot. What made them sequential
             // was never a dependency, only the shape of the loop.
-            await CheckPlanRunner.ForEachAsync(
+            await ParallelWork.ForEachAsync(
                 checks.Count,
                 Math.Max(1, _settings.MaxParallelChecks),
                 async (i, token) =>
@@ -1170,7 +1201,7 @@ public partial class CheckEvaluatorForm : Form
 
         _cts = new CancellationTokenSource();
 
-        using var store = new CaseDocumentStore(_settings);
+        using var store = _stores.Create();
         try
         {
             var before = await store.CountAsync(caseReference, tenantId, _cts.Token).ConfigureAwait(true);
@@ -1277,7 +1308,7 @@ public partial class CheckEvaluatorForm : Form
 
     private void OpenPromptEvaluatorButton_Click(object? sender, EventArgs e)
     {
-        var form = new MainForm(_settings);
+        var form = _mainForm();
         form.Location = Location;
         form.Size = Size;
         form.WindowState = WindowState;
@@ -1305,7 +1336,7 @@ public partial class CheckEvaluatorForm : Form
     {
         try
         {
-            SettingsStorage.Save(_settings);
+            SettingsStore.Save(_settings);
             statusLabel.Text = "Settings saved.";
         }
         catch (Exception ex)

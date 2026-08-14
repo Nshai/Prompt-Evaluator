@@ -28,7 +28,7 @@ public class DeterminismTests
     [Fact]
     public void ChatOptions_PinSamplingByDefault()
     {
-        var options = new PromptEvaluator(new AppSettings()).ChatOptions();
+        var options = new ChatCompletionClient(new AppSettings()).ChatOptions();
 
         Assert.Equal(0f, options.Temperature);
         Assert.Equal(1f, options.TopP);
@@ -40,7 +40,7 @@ public class DeterminismTests
     {
         var settings = new AppSettings { SamplingSeed = 4242 };
 
-        Assert.Equal(4242L, new PromptEvaluator(settings).ChatOptions().Seed);
+        Assert.Equal(4242L, new ChatCompletionClient(settings).ChatOptions().Seed);
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public class DeterminismTests
     {
         var settings = new AppSettings { PinTemperature = false, PinTopP = false, PinSeed = false };
 
-        var options = new PromptEvaluator(settings).ChatOptions();
+        var options = new ChatCompletionClient(settings).ChatOptions();
 
         Assert.Null(options.Temperature);
         Assert.Null(options.TopP);
@@ -69,7 +69,7 @@ public class DeterminismTests
     {
         var settings = new AppSettings { PinTemperature = false, PinTopP = true, PinSeed = false };
 
-        var options = new PromptEvaluator(settings).ChatOptions();
+        var options = new ChatCompletionClient(settings).ChatOptions();
 
         Assert.Null(options.Temperature);
         Assert.Equal(1f, options.TopP);
@@ -81,7 +81,7 @@ public class DeterminismTests
     {
         var settings = new AppSettings { Temperature = 1f, TopP = 0.9f };
 
-        var options = new PromptEvaluator(settings).ChatOptions();
+        var options = new ChatCompletionClient(settings).ChatOptions();
 
         Assert.Equal(1f, options.Temperature);
         Assert.Equal(0.9f, options.TopP);

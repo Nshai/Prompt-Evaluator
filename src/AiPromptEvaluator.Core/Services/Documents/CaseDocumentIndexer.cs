@@ -28,7 +28,7 @@ public sealed record CaseIndexResult(
 /// and its supporting sentence in the same chunk. Every chunk is stamped with the case
 /// reference, tenant, document name and category so the search tool can filter and cite.
 /// </summary>
-public sealed class CaseDocumentIndexer
+public sealed class CaseDocumentIndexer : ICaseDocumentIndexer
 {
     /// <summary>
     /// How many chunk texts are embedded per request. Large enough to keep the round-trip
@@ -39,12 +39,12 @@ public sealed class CaseDocumentIndexer
 
     private readonly AppSettings _settings;
     private readonly IEmbeddingGenerator<string, Embedding<float>> _embeddings;
-    private readonly CaseDocumentStore _store;
+    private readonly ICaseDocumentStore _store;
 
     public CaseDocumentIndexer(
         AppSettings settings,
         IEmbeddingGenerator<string, Embedding<float>> embeddings,
-        CaseDocumentStore store)
+        ICaseDocumentStore store)
     {
         _settings = settings;
         _embeddings = embeddings;

@@ -5,23 +5,23 @@ using Microsoft.Extensions.AI;
 namespace AiPromptEvaluator;
 
 /// <summary>Outcome of a single prompt run, including the cost breakdown.</summary>
-public sealed record PromptResult(string Response, CostBreakdown Breakdown);
+public sealed record ChatCompletionResult(string Response, CostBreakdown Breakdown);
 
 /// <summary>
 /// UI-independent prompt execution: builds the prompt, calls the configured
 /// <see cref="IChatClient"/>, and converts the reported usage into a cost breakdown.
 /// </summary>
-public class PromptEvaluator
+public class ChatCompletionClient : IChatCompletionClient
 {
     private readonly AppSettings _settings;
 
-    public PromptEvaluator(AppSettings settings)
+    public ChatCompletionClient(AppSettings settings)
     {
         _settings = settings;
     }
 
     /// <summary>Sends <paramref name="rawPrompt"/> verbatim — no system preamble, no folder context injected.</summary>
-    public async Task<PromptResult> RunRawAsync(string rawPrompt, CancellationToken cancellationToken = default)
+    public async Task<ChatCompletionResult> RunRawAsync(string rawPrompt, CancellationToken cancellationToken = default)
     {
         using var client = AiClientFactory.CreateChatClient(_settings);
 
@@ -37,7 +37,7 @@ public class PromptEvaluator
     /// decisions both return JSON rather than prose, where the default response cap is the
     /// wrong size: a truncated JSON document is unusable, not merely short.
     /// </summary>
-    public virtual async Task<PromptResult> RunRawAsync(
+    public virtual async Task<ChatCompletionResult> RunRawAsync(
         string systemPrompt,
         string userPrompt,
         int maxOutputTokens,
@@ -50,7 +50,7 @@ public class PromptEvaluator
     /// have to parse the reply pass the schema they parse against, so the model is prevented
     /// from returning a shape the app would have to guess at.
     /// </summary>
-    public virtual async Task<PromptResult> RunRawAsync(
+    public virtual async Task<ChatCompletionResult> RunRawAsync(
         string systemPrompt,
         string userPrompt,
         int maxOutputTokens,
@@ -76,7 +76,7 @@ public class PromptEvaluator
         return ToResult(response);
     }
 
-    public virtual async Task<PromptResult> RunAsync(string prompt, CancellationToken cancellationToken = default)
+    public virtual async Task<ChatCompletionResult> RunAsync(string prompt, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(prompt))
         {
@@ -128,7 +128,7 @@ public class PromptEvaluator
         return options;
     }
 
-    private PromptResult ToResult(ChatResponse response) =>
+    private ChatCompletionResult ToResult(ChatResponse response) =>
         new(response.Text, CostBreakdown.Create(_settings.SelectedModel, ReadUsage(response.Usage)));
 
     internal static TokenUsage ReadUsage(UsageDetails? usage)

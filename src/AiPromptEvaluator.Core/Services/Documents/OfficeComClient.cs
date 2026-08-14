@@ -16,7 +16,7 @@ namespace AiPromptEvaluator;
 /// diffing the process list around instance creation and only ever touching what we started.
 /// </summary>
 [SupportedOSPlatform("windows")]
-internal static class OfficeComHost
+internal static class OfficeComClient
 {
     /// <summary>
     /// Serialises every Office automation call in the process. Two callers starting Word or

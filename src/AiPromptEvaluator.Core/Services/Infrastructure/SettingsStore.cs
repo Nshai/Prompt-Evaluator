@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace AiPromptEvaluator;
 
-public static class SettingsStorage
+public static class SettingsStore
 {
     private static readonly string AppDataPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

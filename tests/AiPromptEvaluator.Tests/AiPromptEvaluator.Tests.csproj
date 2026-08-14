@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <!-- The container implementation: these tests build a provider to check the wiring. -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
     <PackageReference Include="xunit" Version="2.9.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,6 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AiPromptEvaluator\AiPromptEvaluator.csproj" />
+    <!--
+      The tests exercise the pipeline, not the forms, so they reference Core directly.
+      That is also the check that the decoupling holds: if a test needs the desktop app
+      to compile, something has leaked back across the boundary.
+    -->
+    <ProjectReference Include="..\..\src\AiPromptEvaluator.Core\AiPromptEvaluator.Core.csproj" />
   </ItemGroup>
 </Project>

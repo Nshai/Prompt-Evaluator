@@ -130,7 +130,7 @@ public static class DerivedFigures
     /// </summary>
     private static void AddArrangementTotals(JsonObject root, List<Figure> figures)
     {
-        if (root["existingArrangements"] is not JsonArray arrangements || arrangements.Count == 0)
+        if (root[CanonicalModel.ExistingArrangements] is not JsonArray arrangements || arrangements.Count == 0)
         {
             return;
         }
@@ -140,14 +140,14 @@ public static class DerivedFigures
 
         foreach (var node in arrangements.OfType<JsonObject>())
         {
-            var name = Text(node["provider"]) ?? Text(node["productName"]) ?? Text(node["arrangementId"]) ?? "unnamed";
+            var name = Text(node[CanonicalModel.Provider]) ?? Text(node[CanonicalModel.ProductName]) ?? Text(node[CanonicalModel.ArrangementId]) ?? "unnamed";
 
-            if (MoneyOf(node["currentValue"]) is { } c)
+            if (MoneyOf(node[CanonicalModel.CurrentValue]) is { } c)
             {
                 current.Add((name, c));
             }
 
-            if (MoneyOf(node["transferValue"]) is { } t)
+            if (MoneyOf(node[CanonicalModel.TransferValue]) is { } t)
             {
                 transfer.Add((name, t));
             }
@@ -190,11 +190,11 @@ public static class DerivedFigures
     /// </summary>
     private static void AddImpliedChargeBases(JsonObject root, List<Figure> figures)
     {
-        var arrangements = (root["existingArrangements"] as JsonArray ?? [])
+        var arrangements = (root[CanonicalModel.ExistingArrangements] as JsonArray ?? [])
             .OfType<JsonObject>()
             .Select(a => (
-                Name: Text(a["provider"]) ?? Text(a["productName"]) ?? Text(a["arrangementId"]) ?? "unnamed",
-                Value: MoneyOf(a["currentValue"])))
+                Name: Text(a[CanonicalModel.Provider]) ?? Text(a[CanonicalModel.ProductName]) ?? Text(a[CanonicalModel.ArrangementId]) ?? "unnamed",
+                Value: MoneyOf(a[CanonicalModel.CurrentValue])))
             .Where(a => a.Value is not null)
             .ToList();
 
@@ -208,9 +208,9 @@ public static class DerivedFigures
             totals.Add(("the total of all arrangements", arrangements.Sum(a => a.Value!.Value)));
         }
 
-        var transferred = (root["existingArrangements"] as JsonArray ?? [])
+        var transferred = (root[CanonicalModel.ExistingArrangements] as JsonArray ?? [])
             .OfType<JsonObject>()
-            .Select(a => MoneyOf(a["transferValue"]))
+            .Select(a => MoneyOf(a[CanonicalModel.TransferValue]))
             .Where(v => v is > 0)
             .ToList();
 
@@ -273,22 +273,22 @@ public static class DerivedFigures
             seen.Add((percentage.Value, where));
         }
 
-        foreach (var node in (root["existingArrangements"] as JsonArray ?? []).OfType<JsonObject>())
+        foreach (var node in (root[CanonicalModel.ExistingArrangements] as JsonArray ?? []).OfType<JsonObject>())
         {
-            var name = Text(node["provider"]) ?? Text(node["productName"]);
-            var charges = node["charges"];
+            var name = Text(node[CanonicalModel.Provider]) ?? Text(node[CanonicalModel.ProductName]);
+            var charges = node[CanonicalModel.Charges];
 
-            Record(name, Number(charges?["totalOngoingPercentage"]), "the existing arrangements table");
+            Record(name, Number(charges?[CanonicalModel.TotalOngoingPercentage]), "the existing arrangements table");
 
-            foreach (var line in (charges?["lines"] as JsonArray ?? []).OfType<JsonObject>())
+            foreach (var line in (charges?[CanonicalModel.Lines] as JsonArray ?? []).OfType<JsonObject>())
             {
-                Record(name, Number(line["percentage"]?["value"]), "the existing arrangements table");
+                Record(name, Number(line[CanonicalModel.Percentage]?[CanonicalModel.Value]), "the existing arrangements table");
             }
         }
 
         foreach (var (scope, line) in ChargeLines(root))
         {
-            Record(scope, Number(line["percentage"]?["value"]), "the charges comparison");
+            Record(scope, Number(line[CanonicalModel.Percentage]?[CanonicalModel.Value]), "the charges comparison");
         }
 
         foreach (var (name, values) in byArrangement)
@@ -319,15 +319,15 @@ public static class DerivedFigures
     /// </summary>
     private static void AddIncomeFrequencies(JsonObject root, List<Figure> figures)
     {
-        if (root["financialPosition"]?["income"] is not JsonArray income)
+        if (root[CanonicalModel.FinancialPosition]?[CanonicalModel.Income] is not JsonArray income)
         {
             return;
         }
 
         foreach (var item in income.OfType<JsonObject>())
         {
-            var amount = MoneyOf(item["net"]) ?? MoneyOf(item["gross"]);
-            var frequency = Text(item["frequency"]);
+            var amount = MoneyOf(item[CanonicalModel.Net]) ?? MoneyOf(item[CanonicalModel.Gross]);
+            var frequency = Text(item[CanonicalModel.Frequency]);
 
             if (amount is not > 0 || frequency is null)
             {
@@ -342,7 +342,7 @@ public static class DerivedFigures
             }
 
             var annual = amount.Value * perYear.Value;
-            var described = Text(item["description"]) ?? Text(item["category"]) ?? "income";
+            var described = Text(item[CanonicalModel.Description]) ?? Text(item[CanonicalModel.Category]) ?? "income";
 
             figures.Add(new Figure(
                 "Income restated",
@@ -385,13 +385,13 @@ public static class DerivedFigures
     {
         foreach (var (scope, line) in ChargeLines(root))
         {
-            var percentage = PercentageOf(line["percentage"]);
-            var amount = MoneyOf(line["amount"]);
+            var percentage = PercentageOf(line[CanonicalModel.Percentage]);
+            var amount = MoneyOf(line[CanonicalModel.Amount]);
 
             if (percentage is > 0 && amount is > 0)
             {
                 yield return (
-                    Text(line["description"]) ?? Text(line["chargeType"]) ?? scope,
+                    Text(line[CanonicalModel.Description]) ?? Text(line[CanonicalModel.ChargeType]) ?? scope,
                     percentage.Value,
                     amount.Value);
             }
@@ -425,21 +425,21 @@ public static class DerivedFigures
             yield break;
         }
 
-        var owner = Text(obj["provider"])
-                    ?? Text(obj["productName"])
-                    ?? Text(obj["arrangementId"])
-                    ?? Text(obj["scope"]);
+        var owner = Text(obj[CanonicalModel.Provider])
+                    ?? Text(obj[CanonicalModel.ProductName])
+                    ?? Text(obj[CanonicalModel.ArrangementId])
+                    ?? Text(obj[CanonicalModel.Scope]);
 
         foreach (var property in obj.ToList())
         {
-            if (!property.Key.EndsWith("Percentage", StringComparison.Ordinal))
+            if (!property.Key.EndsWith(CanonicalModel.PercentageSuffix, StringComparison.Ordinal))
             {
                 continue;
             }
 
-            var prefix = property.Key[..^"Percentage".Length];
+            var prefix = property.Key[..^CanonicalModel.PercentageSuffix.Length];
             var percentage = PercentageOf(property.Value);
-            var amount = MoneyOf(obj[prefix + "Amount"]);
+            var amount = MoneyOf(obj[prefix + CanonicalModel.AmountSuffix]);
 
             if (percentage is > 0 && amount is > 0)
             {
@@ -478,20 +478,20 @@ public static class DerivedFigures
 
     private static IEnumerable<(string Scope, JsonObject Line)> ChargeLines(JsonObject root)
     {
-        foreach (var arrangement in (root["existingArrangements"] as JsonArray ?? []).OfType<JsonObject>())
+        foreach (var arrangement in (root[CanonicalModel.ExistingArrangements] as JsonArray ?? []).OfType<JsonObject>())
         {
-            var scope = Text(arrangement["provider"])
-                        ?? Text(arrangement["productName"])
-                        ?? Text(arrangement["arrangementId"])
+            var scope = Text(arrangement[CanonicalModel.Provider])
+                        ?? Text(arrangement[CanonicalModel.ProductName])
+                        ?? Text(arrangement[CanonicalModel.ArrangementId])
                         ?? "an existing arrangement";
 
-            foreach (var line in (arrangement["charges"]?["lines"] as JsonArray ?? []).OfType<JsonObject>())
+            foreach (var line in (arrangement[CanonicalModel.Charges]?[CanonicalModel.Lines] as JsonArray ?? []).OfType<JsonObject>())
             {
                 yield return (scope, line);
             }
         }
 
-        if (root["costsAndCharges"] is not JsonObject costs)
+        if (root[CanonicalModel.CostsAndCharges] is not JsonObject costs)
         {
             yield break;
         }
@@ -507,9 +507,9 @@ public static class DerivedFigures
 
             foreach (var set in sets)
             {
-                var scope = Text(set["scope"]) ?? key;
+                var scope = Text(set[CanonicalModel.Scope]) ?? key;
 
-                foreach (var line in (set["lines"] as JsonArray ?? []).OfType<JsonObject>())
+                foreach (var line in (set[CanonicalModel.Lines] as JsonArray ?? []).OfType<JsonObject>())
                 {
                     yield return (scope, line);
                 }
@@ -541,11 +541,11 @@ public static class DerivedFigures
     /// used both spellings for the same idea.
     /// </summary>
     private static double? MoneyOf(JsonNode? node) =>
-        node is JsonObject obj ? Number(obj["amount"]) : Number(node);
+        node is JsonObject obj ? Number(obj[CanonicalModel.Amount]) : Number(node);
 
     /// <summary>A percentage, written either as an object with a <c>value</c> or as a bare number.</summary>
     private static double? PercentageOf(JsonNode? node) =>
-        node is JsonObject obj ? Number(obj["value"]) : Number(node);
+        node is JsonObject obj ? Number(obj[CanonicalModel.Value]) : Number(node);
 
     private static double? Number(JsonNode? node)
     {

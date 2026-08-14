@@ -213,7 +213,7 @@ public partial class ConfigurationForm : Form
         chatTestButton.Text = "Testing...";
         try
         {
-            var evaluator = new PromptEvaluator(probe);
+            var evaluator = new ChatCompletionClient(probe);
             var result = await evaluator
                 .RunRawAsync("Reply with the single word: ready", CancellationToken.None)
                 .ConfigureAwait(true);
@@ -349,7 +349,7 @@ public partial class ConfigurationForm : Form
 
         try
         {
-            SettingsStorage.Save(_settings);
+            SettingsStore.Save(_settings);
         }
         catch (Exception ex)
         {

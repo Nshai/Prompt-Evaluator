@@ -126,32 +126,32 @@ public static class DocumentToPdfConverter
     // Microsoft Word (COM automation)
     // ──────────────────────────────────────────────
 
-    private static bool IsWordAvailable() => OfficeComHost.IsRegistered("Word.Application");
+    private static bool IsWordAvailable() => OfficeComClient.IsRegistered("Word.Application");
 
     /// <summary>Returns null on success, or the error message on failure.</summary>
     [SupportedOSPlatform("windows")]
     private static string? ConvertWithWord(string sourcePath, string pdfPath) =>
-        OfficeComHost.Run("Word.Application", "WINWORD", word =>
+        OfficeComClient.Run("Word.Application", "WINWORD", word =>
         {
             object? documents = null;
             object? document = null;
 
             try
             {
-                documents = OfficeComHost.GetProperty(word, "Documents");
+                documents = OfficeComClient.GetProperty(word, "Documents");
 
                 // Open(FileName, ConfirmConversions, ReadOnly, AddToRecentFiles)
-                document = OfficeComHost.Invoke(documents!, "Open", sourcePath, false, true, false)
+                document = OfficeComClient.Invoke(documents!, "Open", sourcePath, false, true, false)
                     ?? throw new InvalidOperationException("Word could not open the document.");
 
                 // SaveAs2(FileName, FileFormat) — wdFormatPDF writes a PDF rendering.
-                OfficeComHost.Invoke(document, "SaveAs2", pdfPath, WdFormatPdf);
+                OfficeComClient.Invoke(document, "SaveAs2", pdfPath, WdFormatPdf);
             }
             finally
             {
-                OfficeComHost.TryInvoke(document, "Close", WdDoNotSaveChanges);
-                OfficeComHost.Release(document);
-                OfficeComHost.Release(documents);
+                OfficeComClient.TryInvoke(document, "Close", WdDoNotSaveChanges);
+                OfficeComClient.Release(document);
+                OfficeComClient.Release(documents);
             }
         });
 

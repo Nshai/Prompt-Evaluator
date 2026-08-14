@@ -25,7 +25,7 @@ public class ParallelAssessmentTests
         const int count = 24;
         var results = new int[count];
 
-        await CheckPlanRunner.ForEachAsync(count, maxParallelism: 8, async (i, token) =>
+        await ParallelWork.ForEachAsync(count, maxParallelism: 8, async (i, token) =>
         {
             // Later indices finish first.
             await Task.Delay((count - i) * 4, token);
@@ -41,7 +41,7 @@ public class ParallelAssessmentTests
         const int count = 50;
         var counts = new int[count];
 
-        await CheckPlanRunner.ForEachAsync(count, maxParallelism: 8, (i, _) =>
+        await ParallelWork.ForEachAsync(count, maxParallelism: 8, (i, _) =>
         {
             Interlocked.Increment(ref counts[i]);
             return Task.CompletedTask;
@@ -58,7 +58,7 @@ public class ParallelAssessmentTests
         var peak = 0;
         var gate = new object();
 
-        await CheckPlanRunner.ForEachAsync(40, maxParallelism: 4, async (_, token) =>
+        await ParallelWork.ForEachAsync(40, maxParallelism: 4, async (_, token) =>
         {
             lock (gate)
             {
@@ -84,7 +84,7 @@ public class ParallelAssessmentTests
     {
         var order = new List<int>();
 
-        await CheckPlanRunner.ForEachAsync(6, configured, (i, _) =>
+        await ParallelWork.ForEachAsync(6, configured, (i, _) =>
         {
             lock (order)
             {
@@ -105,7 +105,7 @@ public class ParallelAssessmentTests
         var started = 0;
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
-            CheckPlanRunner.ForEachAsync(200, maxParallelism: 4, async (_, token) =>
+            ParallelWork.ForEachAsync(200, maxParallelism: 4, async (_, token) =>
             {
                 if (Interlocked.Increment(ref started) == 4)
                 {
@@ -123,7 +123,7 @@ public class ParallelAssessmentTests
     {
         var ran = false;
 
-        await CheckPlanRunner.ForEachAsync(0, 4, (_, _) =>
+        await ParallelWork.ForEachAsync(0, 4, (_, _) =>
         {
             ran = true;
             return Task.CompletedTask;

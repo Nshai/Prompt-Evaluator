@@ -33,7 +33,7 @@ public static class SpreadsheetNormalizer
         Path.GetExtension(filePath).ToLowerInvariant() is
             ".xlsx" or ".xlsm" or ".xltx" or ".xltm";
 
-    public static bool IsExcelAvailable() => OfficeComHost.IsRegistered("Excel.Application");
+    public static bool IsExcelAvailable() => OfficeComClient.IsRegistered("Excel.Application");
 
     /// <summary>
     /// Returns a path Docling can read: the source itself when it's already OOXML, or a
@@ -63,26 +63,26 @@ public static class SpreadsheetNormalizer
 
         Directory.CreateDirectory(Path.GetDirectoryName(cached)!);
 
-        var error = OfficeComHost.Run("Excel.Application", "EXCEL", excel =>
+        var error = OfficeComClient.Run("Excel.Application", "EXCEL", excel =>
         {
             object? workbooks = null;
             object? workbook = null;
 
             try
             {
-                workbooks = OfficeComHost.GetProperty(excel, "Workbooks");
+                workbooks = OfficeComClient.GetProperty(excel, "Workbooks");
 
                 // Open(FileName, UpdateLinks, ReadOnly) — never chase links to other files.
-                workbook = OfficeComHost.Invoke(workbooks!, "Open", sourcePath, 0, true)
+                workbook = OfficeComClient.Invoke(workbooks!, "Open", sourcePath, 0, true)
                     ?? throw new InvalidOperationException("Excel could not open the workbook.");
 
-                OfficeComHost.Invoke(workbook, "SaveAs", cached, XlOpenXmlWorkbook);
+                OfficeComClient.Invoke(workbook, "SaveAs", cached, XlOpenXmlWorkbook);
             }
             finally
             {
-                OfficeComHost.TryInvoke(workbook, "Close", false);
-                OfficeComHost.Release(workbook);
-                OfficeComHost.Release(workbooks);
+                OfficeComClient.TryInvoke(workbook, "Close", false);
+                OfficeComClient.Release(workbook);
+                OfficeComClient.Release(workbooks);
             }
         });
 

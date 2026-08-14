@@ -37,7 +37,7 @@ public class CanonicalModelIdentityTests
             }
             """);
 
-        new CanonicalModelIdentity().Adopt(root);
+        new CanonicalModelIdentityRegistry().Adopt(root);
 
         var clients = root["parties"]!["clients"]!.AsArray();
         Assert.Equal("C1", clients[0]!["clientId"]!.GetValue<string>());
@@ -63,7 +63,7 @@ public class CanonicalModelIdentityTests
             }
             """);
 
-        var identity = new CanonicalModelIdentity();
+        var identity = new CanonicalModelIdentityRegistry();
         identity.Adopt(root);
 
         var table = identity.Table();
@@ -75,7 +75,7 @@ public class CanonicalModelIdentityTests
 
     [Fact]
     public void Table_IsEmptyBeforeAnythingIsAdopted() =>
-        Assert.False(new CanonicalModelIdentity().HasEntities);
+        Assert.False(new CanonicalModelIdentityRegistry().HasEntities);
 
     /// <summary>
     /// A pass that used an entity's old id is repointed rather than left dangling — which is
@@ -101,7 +101,7 @@ public class CanonicalModelIdentityTests
             }
             """);
 
-        var identity = new CanonicalModelIdentity();
+        var identity = new CanonicalModelIdentityRegistry();
         identity.Adopt(root);
         identity.RewriteReferences(root);
 
@@ -129,7 +129,7 @@ public class CanonicalModelIdentityTests
             }
             """);
 
-        var identity = new CanonicalModelIdentity();
+        var identity = new CanonicalModelIdentityRegistry();
         identity.Adopt(root);
         identity.RewriteReferences(root);
 
@@ -161,7 +161,7 @@ public class CanonicalModelIdentityTests
             }
             """);
 
-        var identity = new CanonicalModelIdentity();
+        var identity = new CanonicalModelIdentityRegistry();
         identity.Adopt(root);
         identity.RewriteReferences(root);
 
@@ -185,7 +185,7 @@ public class CanonicalModelIdentityTests
             { "objectives": [ { "objectiveId": "a", "summary": "First" } ] }
             """);
 
-        var identity = new CanonicalModelIdentity();
+        var identity = new CanonicalModelIdentityRegistry();
         identity.Adopt(root);
         identity.Adopt(root);
 
@@ -208,7 +208,7 @@ public class CanonicalModelIdentityTests
             { "objectives": [ { "objectiveId": "OBJ1", "summary": "Retire" } ] }
             """);
 
-        var identity = new CanonicalModelIdentity();
+        var identity = new CanonicalModelIdentityRegistry();
         identity.Adopt(root);
         Assert.Equal("OBJ1", root["objectives"]![0]!["objectiveId"]!.GetValue<string>());
         Assert.Empty(identity.DanglingReferences(root));
@@ -220,7 +220,7 @@ public class CanonicalModelIdentityTests
     {
         var root = Model("""{ "objectives": [], "recommendations": [] }""");
 
-        var identity = new CanonicalModelIdentity();
+        var identity = new CanonicalModelIdentityRegistry();
         identity.Adopt(root);
 
         Assert.False(identity.HasEntities);

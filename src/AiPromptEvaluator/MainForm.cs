@@ -5,11 +5,13 @@ public partial class MainForm : Form
     private readonly AppSettings _settings;
     private bool _suppressSettingsSync;
 
-    public MainForm() : this(SettingsStorage.Load()) { }
+    /// <summary>Navigation. See the matching field on CheckEvaluatorForm.</summary>
+    private readonly Func<CheckEvaluatorForm> _checkEvaluator;
 
-    public MainForm(AppSettings settings)
+    public MainForm(AppSettings settings, Func<CheckEvaluatorForm> checkEvaluator)
     {
         InitializeComponent();
+        _checkEvaluator = checkEvaluator;
 
         _settings = settings;
         LoadSettingsIntoUi();
@@ -121,7 +123,7 @@ public partial class MainForm : Form
 
     private void OpenCheckEvaluatorButton_Click(object? sender, EventArgs e)
     {
-        var form = new CheckEvaluatorForm(_settings);
+        var form = _checkEvaluator();
         form.Location = Location;
         form.Size = Size;
         form.WindowState = WindowState;
@@ -144,7 +146,7 @@ public partial class MainForm : Form
     {
         try
         {
-            SettingsStorage.Save(_settings);
+            SettingsStore.Save(_settings);
             statusLabel.Text = "Settings saved.";
         }
         catch (Exception ex)
@@ -171,7 +173,7 @@ public partial class MainForm : Form
 
         try
         {
-            var evaluator = new PromptEvaluator(_settings);
+            var evaluator = new ChatCompletionClient(_settings);
             var result = await evaluator.RunAsync(promptTextBox.Text).ConfigureAwait(true);
 
             responseTextBox.Text = result.Response;

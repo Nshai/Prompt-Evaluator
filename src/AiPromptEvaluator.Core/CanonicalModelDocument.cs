@@ -63,7 +63,7 @@ public sealed record ExtractionSection(string Name, string Description, IReadOnl
 
         // Solution runs before Recommendations because a recommendation carries a targetPlanId
         // pointing into solution.recommendedPlans. Every cross-reference in the model now runs
-        // forwards, so the identifier table (see CanonicalModelIdentity) always holds the ids a
+        // forwards, so the identifier table (see CanonicalModelIdentityRegistry) always holds the ids a
         // pass needs by the time that pass runs.
         new("Solution",
             "The recommended plans, the investment strategy, the provider selection and implementation.",

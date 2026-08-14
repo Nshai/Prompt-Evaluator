@@ -59,6 +59,23 @@ public sealed record PlanExpectedCategories
 {
     [JsonPropertyName("assertion")] public List<string> Assertion { get; init; } = [];
     [JsonPropertyName("evidence")] public List<string> Evidence { get; init; } = [];
+
+    /// <summary>
+    /// Words naming the part of a document this group's answer lives in — "disposable income",
+    /// "residency", "existing pension provision".
+    ///
+    /// A category is too coarse a target for a form. The Fact Find is one 42 KB document with a
+    /// dozen unrelated sections, and once a floor guaranteed it a slot the slot went to whichever
+    /// section embedded best for the group's wording. Measured on a real run, the income section
+    /// — carrying the client's <b>£-288.00 monthly disposable income</b> — was delivered to four
+    /// groups assessing personal details, tax status, employment and the emergency fund, and to
+    /// none of the groups that needed it. Not one mentioned it. Retrieval had stopped being the
+    /// problem and routing had become it.
+    ///
+    /// Matched against the passage text rather than a stored section id, because converted
+    /// documents carry their headings inline and a heading is what the hint is really naming.
+    /// </summary>
+    [JsonPropertyName("evidenceSections")] public List<string> EvidenceSections { get; init; } = [];
 }
 
 public sealed record PlanQueryGroup
@@ -80,6 +97,13 @@ public sealed record PlanQueryGroup
             .Select(c => c.Trim())
             .Where(c => c.Length > 0)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Words naming the sections this group's evidence lives in, if the plan says.</summary>
+    public IReadOnlyList<string> DeclaredEvidenceSections =>
+        (ExpectedCategories?.EvidenceSections ?? [])
+            .Select(s => s.Trim())
+            .Where(s => s.Length > 0)
+            .ToList();
 
     /// <summary>Evidence categories this group declares its answer lives in.</summary>
     public IReadOnlySet<string> DeclaredEvidenceCategories =>

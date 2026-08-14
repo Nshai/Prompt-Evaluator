@@ -219,18 +219,9 @@ public static class DerivedFigures
             totals.Add(("the total being transferred", transferred.Sum(v => v!.Value)));
         }
 
-        foreach (var (scope, line) in ChargeLines(root))
+        foreach (var (described, percentage, amount) in ChargePairs(root))
         {
-            var percentage = Number(line["percentage"]?["value"]);
-            var amount = MoneyOf(line["amount"]);
-
-            if (percentage is not > 0 || amount is not > 0)
-            {
-                continue;
-            }
-
-            var implied = amount.Value / (percentage.Value / 100);
-            var described = Text(line["description"]) ?? Text(line["chargeType"]) ?? scope;
+            var implied = amount / (percentage / 100);
 
             var match = arrangements
                 .Where(a => Math.Abs(a.Value!.Value - implied) <= implied * ImpliedBaseTolerance)
@@ -242,7 +233,7 @@ public static class DerivedFigures
 
             figures.Add(new Figure(
                 "Charge arithmetic",
-                $"{described}: {Money(amount.Value)} at {percentage.Value:0.###}% implies a fund "
+                $"{described}: {Money(amount)} at {percentage:0.###}% implies a fund "
                 + $"value of {Money(implied)}"
                 + (match is null
                     ? ", which matches no arrangement value and neither total."
@@ -369,6 +360,122 @@ public static class DerivedFigures
     /// computed against the wrong plan actually sits — were never divided. The scope is the
     /// arrangement's name, so the resulting figure names the plan a reader can check.
     /// </summary>
+    /// <summary>
+    /// Every percentage-and-amount pair in the model that describes one charge, wherever it is
+    /// written.
+    ///
+    /// Three shapes, because the extraction has used three and the component chased two of them
+    /// across two stages and missed the figure both times. A charge can arrive as a line in
+    /// <c>existingArrangements[].charges.lines[]</c>, as a line in
+    /// <c>costsAndCharges.*.lines[]</c>, or — the one that kept escaping — as flat sibling
+    /// properties on some other object entirely:
+    ///
+    /// <code>
+    ///   { "arrangementId": "EA5",
+    ///     "existingAnnualChargePercentage": { "value": 0.18 },
+    ///     "existingAnnualChargeAmount":     { "amount": 186.19 } }
+    /// </code>
+    ///
+    /// Rather than add a fourth named path the next time the shape moves, the last case is found
+    /// structurally: any object holding a <c>…Percentage</c> and a <c>…Amount</c> under the same
+    /// prefix is describing one charge, whatever the surrounding schema calls it.
+    /// </summary>
+    private static IEnumerable<(string Described, double Percentage, double Amount)> ChargePairs(
+        JsonObject root)
+    {
+        foreach (var (scope, line) in ChargeLines(root))
+        {
+            var percentage = PercentageOf(line["percentage"]);
+            var amount = MoneyOf(line["amount"]);
+
+            if (percentage is > 0 && amount is > 0)
+            {
+                yield return (
+                    Text(line["description"]) ?? Text(line["chargeType"]) ?? scope,
+                    percentage.Value,
+                    amount.Value);
+            }
+        }
+
+        foreach (var pair in SiblingChargePairs(root))
+        {
+            yield return pair;
+        }
+    }
+
+    /// <summary>
+    /// Walks the model for objects carrying <c>…Percentage</c> and <c>…Amount</c> siblings under
+    /// a shared prefix, and names each by whatever identifies the object it sits on.
+    /// </summary>
+    private static IEnumerable<(string Described, double Percentage, double Amount)> SiblingChargePairs(
+        JsonNode? node)
+    {
+        if (node is JsonArray array)
+        {
+            foreach (var pair in array.SelectMany(SiblingChargePairs))
+            {
+                yield return pair;
+            }
+
+            yield break;
+        }
+
+        if (node is not JsonObject obj)
+        {
+            yield break;
+        }
+
+        var owner = Text(obj["provider"])
+                    ?? Text(obj["productName"])
+                    ?? Text(obj["arrangementId"])
+                    ?? Text(obj["scope"]);
+
+        foreach (var property in obj.ToList())
+        {
+            if (!property.Key.EndsWith("Percentage", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var prefix = property.Key[..^"Percentage".Length];
+            var percentage = PercentageOf(property.Value);
+            var amount = MoneyOf(obj[prefix + "Amount"]);
+
+            if (percentage is > 0 && amount is > 0)
+            {
+                var label = Humanise(prefix);
+
+                yield return (
+                    owner is null ? label : $"{owner} {label}",
+                    percentage.Value,
+                    amount.Value);
+            }
+        }
+
+        foreach (var pair in obj.Select(p => p.Value).SelectMany(SiblingChargePairs))
+        {
+            yield return pair;
+        }
+    }
+
+    /// <summary>Turns "existingAnnualCharge" into "existing annual charge", for a readable line.</summary>
+    private static string Humanise(string camelCase)
+    {
+        var sb = new StringBuilder();
+
+        foreach (var c in camelCase)
+        {
+            if (char.IsUpper(c) && sb.Length > 0)
+            {
+                sb.Append(' ');
+            }
+
+            sb.Append(char.ToLowerInvariant(c));
+        }
+
+        return sb.Length == 0 ? "charge" : sb.ToString();
+    }
+
     private static IEnumerable<(string Scope, JsonObject Line)> ChargeLines(JsonObject root)
     {
         foreach (var arrangement in (root["existingArrangements"] as JsonArray ?? []).OfType<JsonObject>())
@@ -428,7 +535,17 @@ public static class DerivedFigures
         _ => null,
     };
 
-    private static double? MoneyOf(JsonNode? node) => Number(node?["amount"]) ?? Number(node);
+    /// <summary>
+    /// A money value, whether written as an object with an <c>amount</c> or as a bare number.
+    /// Indexing a scalar node throws, so the shape is checked rather than assumed — the model has
+    /// used both spellings for the same idea.
+    /// </summary>
+    private static double? MoneyOf(JsonNode? node) =>
+        node is JsonObject obj ? Number(obj["amount"]) : Number(node);
+
+    /// <summary>A percentage, written either as an object with a <c>value</c> or as a bare number.</summary>
+    private static double? PercentageOf(JsonNode? node) =>
+        node is JsonObject obj ? Number(obj["value"]) : Number(node);
 
     private static double? Number(JsonNode? node)
     {

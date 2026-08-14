@@ -142,6 +142,64 @@ measurement trustworthy come before the stages that need measuring**.
 
 ---
 
+> ## Stage 7 status — implemented 2026-08-14
+>
+> **7.1, 7.2, 7.3 and 7.5 are in the build. 7.4 is a run, not a change.**
+> Build clean, **366 tests passing** (was 360).
+>
+> | Item | Status |
+> | --- | --- |
+> | 7.1 Section-level routing | **done** — `evidenceSections` on a query group, matched in `Rank` above score; hints added to the 7 groups whose findings are blocked |
+> | 7.2 Third charge shape | **done** — any object with `…Percentage` / `…Amount` siblings under one prefix is now divided, found structurally rather than by named path |
+> | 7.3 £186.19 — 0.18% or 0.52%? | **settled: 0.18%.** The benchmark is right and the extraction is wrong — and the reason matters, see below |
+> | 7.5 Citation metric framing | **done** — reported as "citation trust… measures how far the working can be checked, not how much was found" |
+> | 7.4 Hold the extraction and re-run | **not a code change** |
+>
+> ### 7.3: the extraction is reconciling a contradiction it is told to record
+>
+> Opening the report settles it, and finds something worse than a wrong digit. Page 11 reads:
+>
+> ```
+> Plan            Current Annual Recurring Charge      Impact of Recommended Alternative
+> Aviva           0.50%   £18.72                       -0.06%   -£2.25
+> Zurich          0.93%   £961.98                      -0.49%   -£506.85
+> Standard Life   0.18%   £186.19                       0.26%    £268.94
+> ```
+>
+> **0.18%, exactly as the benchmark reads it.** So £186.19 ÷ 0.18% = £103,439 — Zurich's fund, not
+> Standard Life's £3,002. **F7.2 is confirmed as a real finding.**
+>
+> Where did 0.52% come from? Page 5's Existing Arrangements table:
+>
+> | | Zurich | Standard Life |
+> | --- | --- | --- |
+> | **Page 5** | 0.18% | **0.52%** |
+> | **Page 11** | 0.93% | **0.18%** |
+>
+> **The two pages disagree — which is benchmark finding F7.1 — and the extraction merged them**,
+> taking page 5's rate and attaching it to page 11's amount. It stored one value where the report
+> holds two conflicting ones, which silently destroys F7.1's evidence and corrupts F7.2's pairing.
+>
+> That is a direct breach of the extractor's own standing instruction to *"record contradictions
+> instead of resolving them"*, and it is an extraction-side defect: **7.2 now divides whatever pair
+> it is given, so with 0.52% stored it will correctly report "matches nothing" rather than the
+> finding.** The arithmetic is ready; the input is wrong. Added as [7.6](#76--stop-the-extraction-merging-two-tables-into-one-value-new-from-73).
+>
+> **Stage 6's schema fix worked outright: extraction went from 4 of 12 sections succeeding to
+> 12 of 12, `charges` from 0 occurrences in the pack to 521, and £186.19 exists in the model for
+> the first time.** Unverified quotes hit 11%, meeting the target.
+>
+> **Recall did not move. Third consecutive run at 24 of 36.**
+>
+> The measurement that explains it: the Fact Find's income section — the one carrying
+> `Total Monthly Disposable Income £-288.00` — reached the evidence pack of four groups for the
+> first time, and **not one of them mentioned it**. They were assessing personal details, tax
+> status, employment and the emergency fund. The group that needed it did not receive it.
+>
+> **Retrieval is no longer the bottleneck; routing is.** Nothing in Stage 7 is built yet.
+
+---
+
 ## The shape of the fix
 
 Nineteen defects, but they are not nineteen independent problems. They fall into four groups, and
@@ -177,6 +235,7 @@ unaided. It is being let down by what it is shown and by what happens to its ans
 - [Stage 4 — New capability](#stage-4--new-capability) — A4, N1, N2, E4b, R1
 - [Stage 5 — What Run 2 says to do next](#stage-5--what-run-2-says-to-do-next) — **R3**, N1 repair, A4 repair, A2
 - [Stage 6 — What Run 3 says to do next](#stage-6--what-run-3-says-to-do-next) — **chunking**, N1 selection, E-side
+- [Stage 7 — What Run 4 says to do next](#stage-7--what-run-4-says-to-do-next) — **section routing**, A4 third shape
 - [Exit criteria](#exit-criteria)
 - [Scoring rubric](scoring-rubric.md) — how a run is adjudicated, and why it needed writing down
 - [What this plan does not do](#what-this-plan-does-not-do)
@@ -812,31 +871,158 @@ quantity the benchmark should say so. Either way it should not sit unremarked in
 
 ---
 
+## Stage 7 — What Run 4 says to do next
+
+Added 2026-08-14 after scoring Run 4. **Stage 6's schema fix worked outright and moved no
+findings**, which makes this the third consecutive run to catch the same 24 of 36.
+
+### The plateau is the finding
+
+| | Run 2 | Run 3 | Run 4 |
+| --- | --- | --- | --- |
+| Extraction sections succeeding | — | 4 of 12 | **12 of 12** |
+| Checks reaching the Fact Find | 7/10 | **10/10** | 10/10 |
+| Unverified quote rate | 32% | 14% | **11%** |
+| **Benchmark recall (caught)** | **24/36** | **24/36** | **24/36** |
+
+Four canonical models, two retrieval configurations, six exit criteria met — and **the same 24
+findings every time**. On a ±2 noise floor that is a plateau, not a coincidence, and it means the
+twelve findings the pipeline does not reach are blocked by none of the machinery that has been
+fixed.
+
+Where they are actually blocked:
+
+| Blocked by | Findings | |
+| --- | --- | --- |
+| **Section-level routing** — right document, wrong part, or right part to a group with no use for it | F1.1, F1.2, F1.3, F1.6, F5.1, F5.2, F5.4 | **7** |
+| A third data shape `DerivedFigures` does not read | F7.2 | 1 |
+| Cross-group composition, which depends on the above landing first | (F1.1, F1.3) | — |
+| Judgement inside a group | F1.9, F3.4, F6.2, F8.1 | 4 |
+
+**Seven of twelve are one document section reaching the wrong groups.** Stage 7 is mostly that.
+
+### 7.1 — Let a query group target a document *section*, not just a category
+
+**The measurement that settles it.** The Fact Find's income section — carrying
+`Total Net Monthly Income £1,430.00`, `Total Monthly Expenditure £1,718.00` and
+`Total Monthly Disposable Income £-288.00` — **reached the evidence pack of four groups** in Run 4,
+for the first time in four runs: CHK-001's G1.1, G1.2, G1.3 and G1.9.
+
+**Not one mentioned it.** `288` and `Disposable` appear zero times in the output.
+
+Those four groups assess personal details, tax status, employment and the emergency fund. None has
+a question the figure answers. The group that does — **G1.4, income and expenditure — did not
+receive it**, and compared the report against the planning documents instead. Nor did any CHK-005
+group, where F5.1 belongs.
+
+**Retrieval is no longer the bottleneck. Routing is.** A plan can say "this group needs the Fact
+Find" and cannot say "this group needs the Fact Find's *income section*", so a 42 KB form is a
+single indivisible target and the per-category floor spends its one slot on whichever chunk
+embeds best for that group's wording.
+
+**Fix.** Carry the section heading with each chunk at indexing time, and let
+`expectedCategories.evidence` take an optional section hint — `"B:Income"` beside `"B"`. The
+per-category floor then holds its slot for the section rather than the document. This subsumes
+Stage 6's chunking item, which was aimed at the same target and missed — see 7.5.
+
+**Expected gain.** F1.1, F1.2, F1.3, F5.1, F5.2, F5.4, and F1.6 by the same route. **Seven
+findings, and the only change on this list that can move recall.**
+
+### 7.2 — Read the third charge shape in `DerivedFigures`
+
+Stage 5.3 added `existingArrangements[].charges.lines[]` for F7.2. Stage 6.4 fixed the schema so
+the data would survive. **Both worked, and the figure still escaped**, because the extraction
+writes this comparison as flat sibling properties on a replacement-analysis entry:
+
+```json
+{ "arrangementId": "EA5",
+  "existingAnnualChargePercentage": { "value": 0.52, "basis": "of fund value pa" },
+  "existingAnnualChargeAmount":     { "amount": 186.19 } }
+```
+
+Neither path the component reads. **Third attempt, one path away:** pair any
+`*Percentage` / `*Amount` siblings on the same object, not only entries in a `lines[]` array.
+
+### 7.3 — Adjudicate £186.19: 0.18% or 0.52%?
+
+**F7.2 cannot be scored honestly until this is settled, and it is not settleable from the logs.**
+
+The benchmark reads the page-11 table as **0.18%** — which is what makes the finding, because
+£186.19 at 0.18% implies £103,439, Zurich's fund, not Standard Life's £3,002. The extraction reads
+the same table as **0.52%**, which implies £35,805 and matches nothing.
+
+One of them is misreading a column. Open the report, decide, and correct whichever is wrong — the
+benchmark or the extraction. Until then 7.2 could ship and produce a confidently wrong figure.
+
+### 7.4 — Re-run holding the extraction
+
+Run 4 *had* to re-extract, because Stage 6's schema change only takes effect on extraction. **That
+excuse is now spent.** The next run can hold the plans, the settings and the canonical model, and
+be the first fully controlled comparison in the project.
+
+### 7.5 — Stop expecting the citation work to move recall, and say so
+
+Unverified quotes have gone **36% → 32% → 14% → 11%**, the target is met, and across the same runs
+recall has gone **44% → 67% → 67% → 67%**. The citation work is a **trust** measure — whether a
+reviewer can rely on the working — and it has never been a recall measure. Report it as one, and
+stop reading its progress as progress toward finding more.
+
+**And a correction to Stage 6's premise.** 6.1 was argued on unfilled forms outranking content.
+Tested against every Fact Find passage Run 4 admitted, **exactly one of eleven is a skeleton** and
+`ContentDensity` catches it; the rest are genuinely filled tables about pension features, bank
+statements and trading accounts. They are not empty — they are the wrong sections. **Content
+density cannot separate "filled and relevant" from "filled and irrelevant", because both are
+filled.** The rule is correct and the premise was too narrow, which is why 7.1 changes the unit of
+targeting rather than the ranking again.
+
+### 7.6 — Stop the extraction merging two tables into one value *(new, from 7.3)*
+
+The report states Standard Life's existing charge as **0.52%** on page 5 and **0.18%** on page 11,
+and Zurich's as **0.18%** on page 5 and **0.93%** on page 11. The extraction stores one figure per
+arrangement, taking page 5's rate and pairing it with page 11's monetary amount.
+
+**Two findings are lost to this.** F7.1 *is* the disagreement between those tables, and it cannot
+be reported from a model that holds one reconciled value. F7.2 depends on the page-11 pairing being
+preserved intact, and it is not.
+
+The extractor is already instructed to record contradictions rather than resolve them, so this is
+a compliance failure against its own prompt rather than a missing capability. **Fix by making the
+charge a list rather than a scalar** — one entry per place the report states it, each carrying its
+page — so a repeated key with different values survives to be compared. This is the same shape
+[4.4](#44--repeated-key-detection-for-extractionreport-e4b) asks for and the same coordination
+question as 4.3.
+
+---
+
 ## Exit criteria
 
-Measured across all three generated runs —
-[Run 2](Runtime-Logs/latest/Run-2/run-analysis.md), [Run 3](Runtime-Logs/latest/Run-3/run-analysis.md).
+Measured across all four generated runs —
+[Run 2](Runtime-Logs/latest/Run-2/run-analysis.md),
+[Run 3](Runtime-Logs/latest/Run-3/run-analysis.md),
+[Run 4](Runtime-Logs/latest/Run-4/run-analysis.md).
 
-| After | Measure | Run 1 | Target | Run 2 | **Run 3** | |
-| --- | --- | --- | --- | --- | --- | --- |
-| Stage 0 | Runs mis-reported as generated | 8 of 12+ | 0 | 0 | **0** | ✅ |
-| Stage 0 | Plan copies disagreeing | 4 of 9 stale | 1 source | 1 source | **1 source** | ✅ |
-| Stage 1 | L1 violations | 17 of 60 | 0, enforced | 0 | **0** | ✅ |
-| Stage 1/5 | **Checks reaching the Fact Find** | 5/10 | every check | 7/10 | **10/10** | ✅ |
-| Stage 2 | Extraction report reaching assessors | 45% | 100% | 100% | **100%** | ✅ |
-| Stage 2 | Findings storing the model's requirement text | 25 of 60 | 0 | 0 | 2 of 60 | ⚠️ |
-| Stage 2 | Groups vetoed by `comparisonPerformed` | 20 | 0 | 17 | 16 | ⚠️ |
-| Stage 3/5 | **Unverified quote rate** | 36% | <12% | 32% | **14%** | ⚠️ close |
-| Stage 3/5 | **Groups flagged** | 70% | <25% | 70% | **45%** | ❌ |
-| Stage 4 | **Benchmark recall (caught)** | 16/36 (44%) | ≥26/36 (72%) | 24/36 | **24/36 (67%)** | ⚠️ |
-| Stage 4 | **Missed** | 8 | ≤3 | 6 | **5** | ❌ |
+| After | Measure | Run 1 | Target | Run 2 | Run 3 | **Run 4** | |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Stage 0 | Runs mis-reported as generated | 8 of 12+ | 0 | 0 | 0 | **0** | ✅ |
+| Stage 0 | Plan copies disagreeing | 4 of 9 stale | 1 source | 1 | 1 | **1** | ✅ |
+| Stage 1 | L1 violations | 17 of 60 | 0, enforced | 0 | 0 | **0** | ✅ |
+| Stage 1/5 | Checks reaching the Fact Find | 5/10 | every check | 7/10 | 10/10 | **10/10** | ✅ |
+| Stage 2 | Extraction report reaching assessors | 45% | 100% | 100% | 100% | **100%** | ✅ |
+| **Stage 6** | **Extraction sections succeeding** | — | all | — | 4 of 12 | **12 of 12** | ✅ |
+| Stage 3/5 | **Unverified quote rate** | 36% | <12% | 32% | 14% | **11%** | ✅ |
+| Stage 2 | Findings storing the model's requirement text | 25 of 60 | 0 | 0 | 2 | 3 of 60 | ⚠️ |
+| Stage 2 | Groups vetoed by `comparisonPerformed` | 20 | 0 | 17 | 16 | 18 | ⚠️ |
+| Stage 3/5 | Groups flagged | 70% | <25% | 70% | 45% | **42%** | ❌ |
+| Stage 4 | **Benchmark recall (caught)** | 16/36 (44%) | ≥26/36 (72%) | 24/36 | 24/36 | **24/36 (67%)** | ❌ |
+| Stage 4 | **Missed** | 8 | ≤3 | 6 | 5 | **8** | ❌ |
 
-**Five met, three close, two missed** — against four met after Run 2.
+**Six met — the most yet — and every one of them is about the machinery.**
 
-**The two hard misses are recall and missed-count, and after Run 3 they have a single cause.**
-Every mechanical measure improved: Fact Find coverage is complete, citation failures more than
-halved. Recall did not move, because the passages the coverage delivered were the wrong part of the
-right document. That is [Stage 6](#stage-6--what-run-3-says-to-do-next), and it is one change.
+**Every criterion about findings is still red, and recall has now been 24 of 36 for three
+consecutive runs**, across four canonical models and two retrieval configurations. That is a
+plateau rather than a coincidence: the twelve findings the pipeline does not reach are blocked by
+none of the machinery that has been fixed. Seven of them are one document section reaching the
+wrong groups, which is [Stage 7](#stage-7--what-run-4-says-to-do-next).
 
 > **Read recall against the noise floor.** Two scorers hand-adjudicating the *same 60 responses*
 > produced 39% and 44%, so **±2 findings is the noise floor**. The 23-point gain is well outside
@@ -851,7 +1037,7 @@ right document. That is [Stage 6](#stage-6--what-run-3-says-to-do-next), and it 
 
 ## What was not done, and why
 
-Four items remain unbuilt. Each is blocked on something a code change here cannot supply.
+Three items remain unbuilt. Each is blocked on something a code change here cannot supply.
 
 **4.3 — carry the report's verbatim claim beside the normalised enum.** This is a change to the
 extraction schema (`knowledgeLevel`, the risk and horizon labels), not to the assessment path,
@@ -865,37 +1051,47 @@ one** — so a floor today would only empty packs; that half stands. The other h
 calibration needed a generated run, and **Run 2 supplies one**: the admitted band measured
 0.507–0.765, median 0.620, and *"Nothing was retrieved"* has still never appeared in any log.
 
-**Run 3 settles the priority: it is not this.** A floor removes low-scoring passages. Run 3 shows
-the binding problem is that the *highest*-scoring passage of a category is an empty form table — a
-short, generic chunk that embeds near everything and asserts nothing. A relevance floor would keep
-it and discard something better. **Do [6.1](#61--chunk-the-fact-find-on-its-sections-and-drop-chunks-that-carry-no-content)
-first; a floor calibrated before the chunking is fixed would be calibrated against the wrong
-distribution.**
+**Runs 3 and 4 settle the priority, and the reason changed between them.** After Run 3 the argument
+was that the highest-scoring passage of a category is an empty form, so a floor would keep the wrong
+thing. Run 4 shows that was too narrow: of eleven Fact Find passages admitted, **exactly one is an
+empty form** and the rest are filled tables about the wrong subject. A relevance floor cannot tell
+"filled and relevant" from "filled and irrelevant" any more than content density could.
+**Do [7.1](#71--let-a-query-group-target-a-document-section-not-just-a-category) first.** A floor
+calibrated before targeting works at section level would be calibrated against the wrong
+distribution either way.
 
 **4.4, extraction half.** The assessment-side detection is built: `DerivedFigures` now reports
 when one arrangement's charge is recorded at two different percentages, which is the route to
 F7.1. Feeding repeated-key candidates into the `extractionReport` pass is the other half, sits
 in the extraction pipeline, and is the same coordination question as 4.3.
 
-**A fourth item joined the list after Run 3: [6.4](#64--find-out-why-no-existing-arrangement-charge-lines-reach-the-model).**
-`DerivedFigures` was extended in 5.3 to divide the arrangements' own charge lines, precisely so
-F7.2 would be caught by arithmetic. `£186.19` appears nowhere in Run 3 — the canonical model
-carries no such line under either path. The fix is right and the data is absent, so F7.2 is
-unreachable from the assessment side and the question moves to extraction, alongside 4.3 and 4.4.
+**6.4 has since closed, and it is the one clean success of the last two stages.** The cause was the
+schema's enums stripping every charge line's `basis`; removing them took extraction from 4 of 12
+sections succeeding to 12 of 12, and `£186.19` now exists in the model. **It still did not produce
+the finding**, because the extraction writes the figure in a third shape `DerivedFigures` does not
+read — [7.2](#72--read-the-third-charge-shape-in-derivedfigures) — and because it pairs it with
+0.52% where the benchmark reads 0.18%, which [7.3](#73--adjudicate-18619-018-or-052) has to settle
+before the arithmetic can be trusted.
 
-### What three runs have and have not settled
+### What four runs have and have not settled
 
 - **Run 2 moved four variables at once.** Its 23-point recall gain is real and attributable to
   none of them by measurement.
-- **Run 3 held three of four** — plans, search limit, extraction cap — and re-extracted the
-  canonical model. Coverage and citation gains are attributable to Stage 5 by mechanism; recall
-  being flat is attributable to neither. [6.5](#65--hold-the-extraction-too-and-re-run) closes the
-  last variable.
+- **Runs 3 and 4 each held three of four** — plans, search limit, extraction cap — and re-extracted
+  the canonical model. Run 4 had no choice: Stage 6's change *was* an extraction change. That
+  excuse is now spent, and [7.4](#74--re-run-holding-the-extraction) is the first run that can hold
+  everything.
 - **Each stage has found a defect in the previous stage's output.** Run 2 found
   `CrossGroupContradictions` splitting on decimal points and `DerivedFigures` reading the wrong
   charge lines; Run 3 found the pair-selection heuristic choosing restatements over the one real
-  contradiction available to it, and the per-category floor admitting empty form tables. **Shipping
-  a component is not the same as it working, and only a run tells the difference.**
+  contradiction available to it; Run 4 found `DerivedFigures` missing the figure a third time and
+  showed Stage 6's own premise to be too narrow. **Shipping a component is not the same as it
+  working, and only a run tells the difference.**
+- **Three stages of machinery have not moved recall.** 44% → 67% → 67% → 67%. Everything since
+  Stage 4 has improved coverage, extraction and citation trustworthiness without reaching a single
+  additional finding. The honest reading is that the remaining gap was never a machinery problem,
+  and [Stage 7](#stage-7--what-run-4-says-to-do-next) is the first item aimed at what it actually
+  is: **the assessor being handed the right page and not being asked the question it answers.**
 
 ---
 

@@ -288,6 +288,61 @@ public class DerivedFiguresTests
         Assert.Contains("matches no arrangement value and neither total", charge.Statement);
     }
 
+
+    /// <summary>
+    /// F7.2's third shape, and the one that kept escaping. Two stages added named paths for this
+    /// figure and both missed it, because the extraction writes the pair as flat siblings on a
+    /// replacement-analysis entry rather than as a line in any array.
+    ///
+    /// At the rate the report actually prints — 0.18%, confirmed against page 11 — £186.19
+    /// implies £103,439, which is **Zurich's** fund, not Standard Life's £3,002. The row was
+    /// computed on the wrong plan.
+    /// </summary>
+    [Fact]
+    public void AChargeWrittenAsFlatSiblingsIsStillDivided()
+    {
+        var figures = DerivedFigures.From(
+            """
+            {
+              "existingArrangements": [
+                { "provider": "Zurich", "currentValue": { "amount": 103439.24 } },
+                { "provider": "Standard Life", "currentValue": { "amount": 3002.00 } }
+              ],
+              "replacementAnalysis": [
+                { "arrangementId": "Standard Life",
+                  "existingAnnualChargePercentage": { "value": 0.18, "basis": "of fund value pa" },
+                  "existingAnnualChargeAmount": { "currency": "GBP", "amount": 186.19 } }
+              ]
+            }
+            """);
+
+        var charge = Assert.Single(figures, f => f.Topic == "Charge arithmetic");
+
+        Assert.Contains("Standard Life existing annual charge", charge.Statement);
+        Assert.Contains("implies a fund value of £103,438.89", charge.Statement);
+        Assert.Contains("which is Zurich's current value", charge.Statement);
+    }
+
+    /// <summary>
+    /// A percentage with no amount beside it, or the reverse, is not a pair and must not be
+    /// invented into one.
+    /// </summary>
+    [Fact]
+    public void AnUnpairedPercentageIsIgnored()
+    {
+        var figures = DerivedFigures.From(
+            """
+            {
+              "existingArrangements": [{ "provider": "Zurich", "currentValue": { "amount": 103439.24 } }],
+              "replacementAnalysis": [
+                { "arrangementId": "Zurich", "impactPercentage": { "value": 0.49 } }
+              ]
+            }
+            """);
+
+        Assert.DoesNotContain(figures, f => f.Topic == "Charge arithmetic");
+    }
+
     // ──────────────────────────────────────────────
     // It has to be safe on models that do not carry these values
     // ──────────────────────────────────────────────

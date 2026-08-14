@@ -29,7 +29,7 @@
       "requirement": "Material disadvantages, risk factors and limitations of the recommendation",
       "limb": "Consistency",
       "canonicalPaths": ["/riskWarningsAndDisadvantages/materialDisadvantages[]", "/riskWarningsAndDisadvantages/limitations[]", "/recommendations[]/disadvantages[]"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H", "B", "C"] },
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H", "B", "C"], "evidenceSections": ["Residency", "Contact Address"] },
       "queries": [
         { "id": "Q8.1.1", "text": "disadvantages of this recommendation you should note the following drawbacks", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["disadvantage", "drawback", "you should note", "however", "downside"], "priority": "Core" },
         { "id": "Q8.1.2", "text": "other considerations of switching things to bear in mind", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["other considerations", "bear in mind", "please note", "important"], "priority": "Core" },

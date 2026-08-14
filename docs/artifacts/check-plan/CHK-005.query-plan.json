@@ -29,7 +29,7 @@
       "requirement": "Affordability of initial and ongoing commitments",
       "limb": "Consistency",
       "canonicalPaths": ["/financialPosition/affordabilityAssessment"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"] },
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"], "evidenceSections": ["Total Monthly Disposable Income", "Current Monthly Cash Flow"] },
       "queries": [
         { "id": "Q5.1.1", "text": "initial adviser fee and ongoing annual charge in monetary terms payable by you", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["initial", "ongoing", "£", "%", "per annum"], "canonicalPaths": ["/financialPosition/affordabilityAssessment/initialCommitment"], "priority": "Core" },
         { "id": "Q5.1.2", "text": "monthly contribution you will pay into the plan regular premium", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["per month", "monthly", "contribution", "premium"], "priority": "Core" },
@@ -55,7 +55,7 @@
       "requirement": "Financial situation plus cashflow supports the recommendation",
       "limb": "Consistency",
       "canonicalPaths": ["/financialPosition/totals", "/needsAnalysis/scenarios[]", "/needsAnalysis/assumptions[]"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"] },
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"], "evidenceSections": ["Total Monthly Disposable Income", "Total Net Monthly Income"] },
       "queries": [
         { "id": "Q5.2.1", "text": "cashflow modelling projection of income and expenditure year on year to age", "side": "Either", "targetCategories": ["I", "F"], "expectSignals": ["cashflow", "projection", "modelled", "to age", "forecast"], "priority": "Core" },
         { "id": "Q5.2.2", "text": "cashflow assumptions inflation rate growth rate used in the plan", "side": "Either", "targetCategories": ["F", "I"], "expectSignals": ["inflation", "growth rate", "assumption", "%"], "canonicalPaths": ["/needsAnalysis/assumptions[]"], "priority": "Core" },
@@ -101,7 +101,7 @@
       "requirement": "Initial and ongoing commitments are unaffordable based on income, expenditure and cashflow",
       "limb": "Appropriateness",
       "canonicalPaths": ["/financialPosition/affordabilityAssessment", "/financialPosition/totals/monthlySurplusOrDeficit"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"] },
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"], "evidenceSections": ["Total Monthly Disposable Income", "Total Monthly Expenditure"] },
       "queries": [
         { "id": "Q5.4.1", "text": "impact of the charges on your fund value each year in monetary terms", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["£", "per annum", "charge", "reduce"], "priority": "Core" },
         { "id": "Q5.4.2", "text": "can the client sustain the payments if income reduces or stops", "side": "Evidence", "targetCategories": ["F", "C", "B"], "expectSignals": ["sustain", "if income", "reduce", "stop", "afford"], "priority": "Supplementary" },

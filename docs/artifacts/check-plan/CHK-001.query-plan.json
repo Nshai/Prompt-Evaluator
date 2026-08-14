@@ -30,7 +30,7 @@
       "requirement": "Essential facts (personal details) stated in the report are consistent with the evidence",
       "limb": "Consistency",
       "canonicalPaths": ["/parties/clients[]/firstName", "/parties/clients[]/lastName", "/parties/clients[]/age", "/parties/clients[]/dateOfBirth", "/parties/clients[]/maritalStatus", "/parties/dependants[]"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["A", "B", "C"] },
+      "expectedCategories": { "assertion": ["I"], "evidence": ["A", "B", "C"], "evidenceSections": ["Residency", "Contact Address"] },
       "queries": [
         { "id": "Q1.1.1", "text": "your current situation you are currently aged and married with children", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["aged", "married", "children", "spouse", "partner"], "canonicalPaths": ["/parties/clients[]/age", "/parties/clients[]/maritalStatus"], "priority": "Core" },
         { "id": "Q1.1.2", "text": "client personal details date of birth marital status national insurance number", "side": "Evidence", "targetCategories": ["B", "A", "C"], "expectSignals": ["Date of birth", "Marital status", "NI number", "Title", "Surname"], "canonicalPaths": ["/parties/clients[]/dateOfBirth"], "priority": "Core" },
@@ -95,7 +95,7 @@
       "requirement": "Income and expenditure figures are consistent with the evidence",
       "limb": "Consistency",
       "canonicalPaths": ["/financialPosition/incomes[]", "/financialPosition/expenditures[]", "/financialPosition/totals"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["B"] },
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B"], "evidenceSections": ["Current Monthly Cash Flow", "Total Net Monthly Income", "Total Monthly Disposable Income"] },
       "queries": [
         { "id": "Q1.4.1", "text": "your income per week per month net earnings from employment", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["per week", "per month", "net", "£"], "canonicalPaths": ["/financialPosition/incomes[]"], "priority": "Core" },
         { "id": "Q1.4.2", "text": "income and expenditure schedule monthly net income total outgoings surplus", "side": "Evidence", "targetCategories": ["B"], "expectSignals": ["Total income", "Total expenditure", "Surplus", "Monthly", "Net"], "canonicalPaths": ["/financialPosition/totals"], "priority": "Core" },
@@ -158,7 +158,7 @@
       "requirement": "Existing products (pensions, investments and protection plans) are consistent with the evidence",
       "limb": "Consistency",
       "canonicalPaths": ["/existingArrangements[]/provider", "/existingArrangements[]/policyNumber", "/existingArrangements[]/currentValue", "/existingArrangements[]/transferValue", "/existingArrangements[]/contributions[]", "/existingArrangements[]/planType"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "E"] },
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "E"], "evidenceSections": ["Existing Pension Provision"] },
       "queries": [
         { "id": "Q1.7.1", "text": "existing arrangements table provider policy number fund value transfer value", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["Provider", "Policy number", "Fund Value", "Transfer Value"], "priority": "Core" },
         { "id": "Q1.7.2", "text": "policy information current fund value as at valuation date plan number", "side": "Evidence", "targetCategories": ["E"], "expectSignals": ["Plan number", "Policy number", "value as at", "Fund value"], "priority": "Core" },

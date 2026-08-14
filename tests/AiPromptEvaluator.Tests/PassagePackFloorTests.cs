@@ -191,7 +191,123 @@ public class PassagePackFloorTests
         Assert.Equal(forwards, reordered);
     }
 
+
     // ──────────────────────────────────────────────
+    // Section routing — what Run 4 showed the floor alone cannot do
+    // ──────────────────────────────────────────────
+
+    private const string PensionFeatures =
+        """
+        | Lump Sum Cont. |  | Value | £116,555.45 |
+        | Valuation Date | 23/07/2026 |
+        | Protected Rights | No | BR19 Projection | Yes |
+        """;
+
+    private const string CashFlowSection =
+        """
+        ## Current Monthly Cash Flow
+        | Total Net Monthly Income | £ 1,430.00 |
+        | Total Monthly Expenditure | £ 1,718.00 |
+        | Total Monthly Disposable Income | £ -288.00 |
+        """;
+
+    /// <summary>
+    /// The measurement this exists for. In Run 4 the floor guaranteed the Fact Find a slot and
+    /// the slot went to a pension-features table, while the section carrying the client's
+    /// £-288.00 disposable income was handed to four groups that had no question it answered.
+    /// Both passages are filled, both are the Fact Find, and only one is about income — so
+    /// neither the floor nor content density can separate them. The plan has to say which part.
+    /// </summary>
+    [Fact]
+    public void ASectionHintDecidesWhichPartOfADocumentWins()
+    {
+        var passages = new List<CaseDocumentSearchMatch>
+        {
+            Passage("Fact Find.md", "B", 0.64, PensionFeatures),
+            Passage("Fact Find.md", "B", 0.55, CashFlowSection),
+        };
+
+        for (var i = 0; i < 12; i++)
+        {
+            passages.Add(Passage($"planning{i:00}.md", "F", 0.70 - (i * 0.01), $"cashflow row {i}"));
+        }
+
+        var ranked = CheckPlanRunner.Rank(
+            passages,
+            Targets("B", "F"),
+            ["Total Monthly Disposable Income", "Total Net Monthly Income"]);
+
+        var factFind = ranked.Where(p => p.CategoryCode == "B").ToList();
+
+        Assert.NotEmpty(factFind);
+        Assert.Contains("-288.00", factFind[0].SearchedText);
+    }
+
+    /// <summary>
+    /// A hint promotes; it does not override the category targeting, or a group would start
+    /// pulling in documents it never asked for because they happen to use the same words.
+    /// </summary>
+    [Fact]
+    public void ASectionHintDoesNotAdmitAnUntargetedCategory()
+    {
+        var passages = new List<CaseDocumentSearchMatch>();
+
+        for (var i = 0; i < 14; i++)
+        {
+            passages.Add(Passage($"wanted{i:00}.md", "B", 0.60, $"fact find row {i}"));
+        }
+
+        passages.Add(Passage("elsewhere.md", "H", 0.99, "Total Monthly Disposable Income appears here too"));
+
+        var ranked = CheckPlanRunner.Rank(passages, Targets("B"), ["Total Monthly Disposable Income"]);
+
+        Assert.DoesNotContain(ranked, p => p.CategoryCode == "H");
+    }
+
+    /// <summary>A plan that names no section ranks exactly as before.</summary>
+    [Fact]
+    public void NoHintChangesNothing()
+    {
+        var passages = new List<CaseDocumentSearchMatch>
+        {
+            Passage("a.md", "B", 0.9, "high"),
+            Passage("b.md", "B", 0.5, "low"),
+        };
+
+        Assert.Equal(
+            CheckPlanRunner.Rank(passages, Targets("B")),
+            CheckPlanRunner.Rank(passages, Targets("B"), []));
+    }
+
+    /// <summary>
+    /// An unfilled form matching the hint is still an unfilled form. Skeletons sink first, so a
+    /// hint cannot drag one back up past a section that carries values.
+    /// </summary>
+    [Fact]
+    public void AHintDoesNotRescueASkeleton()
+    {
+        var skeleton = Passage(
+            "Fact Find.md", "B", 0.90,
+            """
+            | Total Monthly Disposable Income |  |  |
+            | GMP Amount (p.a.) |  |  |
+            | Enhanced Tax Free Cash |  |  |
+            | Applicable Penalties |  |  |
+            | Guaranteed Growth Rates |  |  |
+            | Lifetime Allowance Used |  |  |
+            | Options Available at Retirement |  |  |
+            | Other Benefits and Material Features |  |  |
+            | Lifestyling strategy |  |  |
+            | Additional Notes |  |  |
+            """);
+
+        var ranked = CheckPlanRunner.Rank(
+            [skeleton, Passage("Fact Find.md", "B", 0.50, CashFlowSection)],
+            Targets("B"),
+            ["Total Monthly Disposable Income"]);
+
+        Assert.Contains("1,430.00", ranked[0].SearchedText);
+    }
 
     private static IReadOnlySet<string> Targets(params string[] categories) =>
         new HashSet<string>(categories, StringComparer.OrdinalIgnoreCase);

@@ -680,10 +680,16 @@ public sealed record FindingsReport(
 
         if (UnverifiedCitations > 0)
         {
+            // Framed as trust rather than as coverage, because it has repeatedly been read as
+            // the latter. Across four runs this rate went 36% -> 32% -> 14% -> 11% while the
+            // findings the pipeline reached did not change at all. It measures whether a
+            // reviewer can follow the working, which is worth having and is not progress
+            // toward finding more.
             sb.AppendLine(
-                $"Citations: {UnverifiedCitations} quote(s) could not be found in the evidence they "
-                + "were drawn from. Those findings are marked and should be read first; any that "
-                + "would otherwise have passed were downgraded.");
+                $"Citation trust: {UnverifiedCitations} quote(s) could not be traced to the "
+                + "evidence they were drawn from. Those findings are marked and should be read "
+                + "first; any that would otherwise have passed were downgraded. This measures "
+                + "how far the working can be checked, not how much was found.");
         }
 
         // Read across the finished findings rather than within any one of them, because the

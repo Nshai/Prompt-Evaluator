@@ -350,7 +350,7 @@ public sealed class CheckPlanRunner : IDisposable
             .SelectMany(q => q.TargetCategories)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        var ranked = Rank(passages, targeted);
+        var ranked = Rank(passages, targeted, group.DeclaredEvidenceSections);
 
         var categories = ranked
             .Select(p => p.CategoryCode)
@@ -416,8 +416,13 @@ public sealed class CheckPlanRunner : IDisposable
     /// </summary>
     internal static List<CaseDocumentSearchMatch> Rank(
         IEnumerable<CaseDocumentSearchMatch> passages,
-        IReadOnlySet<string> targeted)
+        IReadOnlySet<string> targeted,
+        IReadOnlyList<string>? sections = null)
     {
+        var hints = (sections ?? [])
+            .Where(h => !string.IsNullOrWhiteSpace(h))
+            .ToList();
+
         var ordered = passages
             .OrderByDescending(p => targeted.Count == 0 || targeted.Contains(p.CategoryCode) ? 1 : 0)
 
@@ -428,6 +433,13 @@ public sealed class CheckPlanRunner : IDisposable
             // Ranked here rather than filtered at indexing, because an unfilled section is
             // sometimes the finding itself.
             .ThenBy(p => ContentDensity.IsFormSkeleton(p.SearchedText) ? 1 : 0)
+
+            // Then the part of the document the plan actually named. A category is one document
+            // and a document is a dozen unrelated sections, so without this the floor's slot goes
+            // to whichever section embeds best for the group's wording — which delivered the
+            // client's disposable income to four groups with no use for it and to none of the
+            // groups that needed it.
+            .ThenByDescending(p => Mentions(p.SearchedText, hints) ? 1 : 0)
             .ThenByDescending(p => p.Score)
             .ThenBy(p => p.DocumentName, StringComparer.Ordinal)
             .ThenBy(p => p.SearchedText, StringComparer.Ordinal)
@@ -472,6 +484,15 @@ public sealed class CheckPlanRunner : IDisposable
         // the best evidence first, whether or not it got in on the floor.
         return ordered.Where((_, i) => keep.Contains(i)).ToList();
     }
+
+    /// <summary>
+    /// Whether a passage looks like the section a plan named. Converted documents carry their
+    /// headings inline, so the hint is matched against the passage text — a plain substring,
+    /// because the hint is a phrase from the document rather than a query to be interpreted.
+    /// </summary>
+    private static bool Mentions(string text, IReadOnlyList<string> hints) =>
+        hints.Count > 0
+        && hints.Any(h => text.Contains(h, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
     /// Runs one planned query, telling the store which categories the plan expects the answer

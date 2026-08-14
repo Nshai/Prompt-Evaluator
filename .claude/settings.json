@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "Read(//c/Users/najaf/.nuget/packages/anthropic.sdk/**)",
+      "Read(//c/Users/najaf/.nuget/packages/anthropic.sdk/5.10.0/lib/net8.0/**)",
+      "Bash(grep -iE \"^\\(get_\\)?\\(Cache|Input|Output\\)[A-Za-z]*Tokens$\")",
+      "Bash(cd /c/Users/najaf/.nuget/packages/anthropic.sdk/5.10.0/lib/net8.0 && tr -c '[:print:]' '\\\\n' < Anthropic.SDK.dll | grep -oE \"[A-Za-z]*Tokens\" | sort -u)",
+      "Bash(cd /c/Users/najaf/.nuget/packages/anthropic.sdk/5.10.0/lib/net8.0 && tr -c '[:print:]' '\\\\n' < Anthropic.SDK.dll | grep -nE \"^\\(get_|set_\\)?\\(ApiUrlFormat|ApiVersion|ApiKeys|Auth\\)\" | sort -u; echo \"---xml---\"; grep -oE \"ApiUrlFormat[^<]*\" Anthropic.SDK.xml 2>/dev/null | head -5; ls)",
+      "Bash(cd /c/Users/najaf/.nuget/packages/anthropic.sdk/5.10.0/lib/net8.0 && grep -B3 -A6 \"ApiUrlFormat\" Anthropic.SDK.xml | head -40)",
+      "Bash(grep -E \"api\\\\.anthropic|\\\\{0\\\\}/\\\\{1\\\\}\")",
+      "Bash(cd /c/Users/najaf/.nuget/packages/anthropic.sdk/5.10.0/lib/net8.0 && tr -c '[:print:]' '\\\\n' < Anthropic.SDK.dll | grep -iE \"anthropic\\\\.com\" | sort -u | head)",
+      "Bash(cd /c/Users/najaf/.nuget/packages/anthropic.sdk/5.10.0/lib/net8.0 && tr -d '\\\\000' < Anthropic.SDK.dll | tr -c '[:print:]' '\\\\n' | grep -iE \"anthropic\\\\.com|\\\\{0\\\\}\" | sort -u | head)",
+      "Bash(rm -f App.xaml App.xaml.cs MainWindow.xaml MainWindow.xaml.cs ConfigurationWindow.xaml ConfigurationWindow.xaml.cs InverseBooleanConverter.cs MainViewModel.cs AssemblyInfo.cs)",
+      "Bash(rm -rf obj bin)",
+      "Bash(rm -rf AiPromptEvaluator)",
+      "Bash(dotnet tool *)",
+      "PowerShell(& \"C:\\\\Users\\\\najaf\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Work-Ai-Prompt-Evaluator\\\\804f9f67-f81b-47fa-b25a-70a7f713b8bd\\\\scratchpad\\\\smoke.ps1\")",
+      "Bash(python -c ' *)",
+      "Bash(python extract.py docs.json)",
+      "Bash(grep -vE \"^C:\\\\\\\\\\\\\\\\Users.*warn|^  warn\")",
+      "PowerShell(git pull)",
+      "PowerShell(docker --version)",
+      "PowerShell(docker info --format '{{.ServerVersion}}' 2>$null)",
+      "PowerShell(docker pull ghcr.io/docling-project/docling-serve-cpu:latest)",
+      "PowerShell(\"removed\")",
+      "PowerShell(dotnet add 'c:\\\\Work\\\\Ai-Prompt-Evaluator\\\\src\\\\AiPromptEvaluator\\\\AiPromptEvaluator.csproj' package Microsoft.Data.Sqlite 2>&1)"
+    ]
+  }
+}

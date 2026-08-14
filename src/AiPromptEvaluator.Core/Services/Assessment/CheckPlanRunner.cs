@@ -224,6 +224,9 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 PassagesRetrieved = trigger.Passages + packs.Sum(p => p.TotalPassages),
                 CanonicalPathsResolved = packs.Sum(p => p.Fragments.Count(f => f.Found)),
                 CanonicalPathsMissing = packs.Sum(p => p.Fragments.Count(f => !f.Found)),
+                UnmatchedSections = packs
+                    .SelectMany(p => p.UnmatchedSections.Select(s => $"{p.Group.GroupId}: {s}"))
+                    .ToList(),
                 Usage = usage,
                 Elapsed = startedAt.Elapsed,
             };
@@ -302,7 +305,8 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         int Searches,
         int TotalPassages,
         IReadOnlyList<string> CategoriesFound,
-        IReadOnlyList<string> MissedSignals);
+        IReadOnlyList<string> MissedSignals,
+        IReadOnlyList<string> UnmatchedSections);
 
     /// <summary>
     /// Assembles one group's evidence: the assertion side from the stored model, the evidence
@@ -359,7 +363,9 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        return new GroupEvidence(group, fragments, ranked, searches, total, categories, missedSignals);
+        return new GroupEvidence(
+            group, fragments, ranked, searches, total, categories, missedSignals,
+            UnmatchedSections(passages, group.DeclaredEvidenceSections));
     }
 
     /// <summary>
@@ -493,6 +499,39 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     private static bool Mentions(string text, IReadOnlyList<string> hints) =>
         hints.Count > 0
         && hints.Any(h => text.Contains(h, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
+    /// Section hints that matched none of the passages the searches returned.
+    ///
+    /// **A hint that matches nothing does nothing, silently, and that cost a run.** One commit
+    /// added six section hints. Three named parts of the Fact Find's cash-flow table and moved
+    /// four benchmark findings from missed to caught. The other three named <c>Residency</c> and
+    /// <c>Contact Address</c>, matched no passage anywhere, and moved nothing — and the run gave
+    /// no signal distinguishing "the hint worked and the group ignored the section" from "the
+    /// hint never matched". The first is a reasoning problem and the second is a typo, and they
+    /// were indistinguishable for a whole run.
+    ///
+    /// Measured over the candidates rather than the ranked pack, so this reports a hint that
+    /// matched nothing at all — not one that matched and then lost its slot, which is a
+    /// different problem and needs a different answer.
+    /// </summary>
+    internal static IReadOnlyList<string> UnmatchedSections(
+        IEnumerable<CaseDocumentSearchMatch> passages,
+        IReadOnlyList<string> sections)
+    {
+        var hints = sections.Where(h => !string.IsNullOrWhiteSpace(h)).ToList();
+
+        if (hints.Count == 0)
+        {
+            return [];
+        }
+
+        var candidates = passages.Select(p => p.SearchedText).ToList();
+
+        return hints
+            .Where(h => !candidates.Any(t => t.Contains(h, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+    }
 
     /// <summary>
     /// Runs one planned query, telling the store which categories the plan expects the answer

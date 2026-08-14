@@ -193,6 +193,30 @@ public sealed record GroupFinding
     public bool ComparedSomething => Discrepancies.Count > 0;
 
     /// <summary>
+    /// Differences this group named and then did not carry into its verdict.
+    ///
+    /// A group that lists discrepancies and answers No Issue is contradicting itself, and until
+    /// now it did so silently: the report prints only groups that raised a concern, so the
+    /// discrepancies went with the group. Measured across the four scored runs, **9 to 15 groups
+    /// per run** passed while naming between 27 and 51 differences, and no analysis counted them.
+    ///
+    /// One of them is a benchmark finding. CHK-003/G3.6 wrote *"P11 file notes state 'Risk rating
+    /// of 6' … contradicting all other sources"* — the contradiction, correctly, both sides named
+    /// — and returned No Issue, so the string never reached the report. The same group found the
+    /// same thing in the run before and answered Potential Concern, which is the only reason it
+    /// was ever seen.
+    ///
+    /// **Most of these are immaterial and that is the point.** A group is entitled to notice a
+    /// £0.02 variance and decide it is not a concern. What it may not do is decide that where a
+    /// reader cannot see it. So this does not change the verdict — <see cref="ParsedOutcome"/> is
+    /// untouched — it only refuses to let the working disappear with it.
+    /// </summary>
+    public IReadOnlyList<string> DiscardedDiscrepancies =>
+        ParsedOutcome is CheckOutcome.NoIssue or CheckOutcome.NotApplicable
+            ? Discrepancies
+            : [];
+
+    /// <summary>
     /// The outcome as it stands after the deterministic checks, which can only ever move it
     /// away from a pass:
     ///
@@ -276,6 +300,13 @@ public sealed record CheckFinding
     [JsonIgnore] public TokenUsage Usage { get; init; } = TokenUsage.Empty;
     [JsonIgnore] public TimeSpan Elapsed { get; init; }
     [JsonIgnore] public string? Error { get; init; }
+
+    /// <summary>
+    /// Section hints from this check's plan that matched no retrieved passage, as
+    /// <c>"G1.1: Residency"</c>. A hint that matches nothing is a typo wearing the costume of a
+    /// working feature; see <see cref="CheckPlanRunner.UnmatchedSections"/>.
+    /// </summary>
+    [JsonIgnore] public IReadOnlyList<string> UnmatchedSections { get; init; } = [];
 
     public CheckOutcome ParsedOutcome => ParseOutcome(Outcome);
 
@@ -554,6 +585,27 @@ public sealed record FindingsReport(
     public int UnverifiedCitations => Findings.Sum(f => f.Groups.Sum(g => g.UnverifiedQuotes.Count));
 
     /// <summary>
+    /// Groups that named a difference and then passed, and how many differences went with them.
+    ///
+    /// Surfaced because it was invisible. Recall is scored from the printed report, so a finding
+    /// a group raised and discarded is indistinguishable from one it never found — and across
+    /// four runs this happened 9 to 15 times each, carrying 27 to 51 differences with it. Until
+    /// this number exists there is no way to tell which of the two failures a run is having.
+    /// </summary>
+    public (int Groups, int Discrepancies) DiscardedDiscrepancies
+    {
+        get
+        {
+            var discarding = Findings
+                .SelectMany(f => f.Groups)
+                .Where(g => g.DiscardedDiscrepancies.Count > 0)
+                .ToList();
+
+            return (discarding.Count, discarding.Sum(g => g.DiscardedDiscrepancies.Count));
+        }
+    }
+
+    /// <summary>
     /// Responses that did not echo back the group id or the requirement they were asked about.
     /// Nothing downstream depends on either — the plan's values are used — but a climbing
     /// count means the assessor is losing track of the question, and that is worth a number.
@@ -692,6 +744,33 @@ public sealed record FindingsReport(
                 + "how far the working can be checked, not how much was found.");
         }
 
+        var unmatched = Findings.SelectMany(f => f.UnmatchedSections).ToList();
+
+        if (unmatched.Count > 0)
+        {
+            // Loud, because the failure mode is silence. A plan asking for a section that does
+            // not exist behaves exactly like a plan not asking for one, and a whole run went by
+            // before anyone could tell which had happened.
+            sb.AppendLine(
+                $"Section hints matching nothing: {unmatched.Count} — "
+                + string.Join("; ", unmatched)
+                + ". These asked for part of a document and reached no passage, so they had no "
+                + "effect. Check the wording against the converted document.");
+        }
+
+        var (discarding, discarded) = DiscardedDiscrepancies;
+
+        if (discarding > 0)
+        {
+            // Counted because it was invisible, and invisible in a way that corrupted the only
+            // measure the project has: a difference a group raised and dropped reads, in the
+            // printed report, exactly like one it never found.
+            sb.AppendLine(
+                $"Raised and not carried: {discarding} group(s) named {discarded} difference(s) "
+                + "and then passed. Printed under the check that passed. Most are immaterial; "
+                + "one of them, in an earlier run, was a benchmark finding.");
+        }
+
         // Read across the finished findings rather than within any one of them, because the
         // check catalogue is exactly what splits these contradictions in half.
         sb.Append(CrossGroupContradictions.Format(CrossGroupContradictions.In(Findings)));
@@ -723,6 +802,10 @@ public sealed record FindingsReport(
 
         if (!full)
         {
+            // A cleared check is summarised rather than printed — but if one of its groups
+            // named a difference on the way to passing, that goes in the summary. Folding it
+            // away with the rest is exactly how a raised finding disappears.
+            AppendDiscarded(sb, finding);
             sb.AppendLine();
             return;
         }
@@ -805,12 +888,49 @@ public sealed record FindingsReport(
             }
         }
 
+        AppendDiscarded(sb, finding);
+
         sb.AppendLine();
         sb.AppendLine(
             $"  ({finding.SearchesRun} search(es), {finding.PassagesRetrieved} passage(s), "
             + $"{finding.CanonicalPathsResolved} model path(s) resolved, {finding.CanonicalPathsMissing} absent, "
             + $"{finding.Elapsed.TotalSeconds:0.0}s)");
         sb.AppendLine();
+    }
+
+    /// <summary>
+    /// Differences a group named on its way to passing, printed under the check that passed.
+    ///
+    /// Deliberately not presented as findings. Most are immaterial — a £0.02 variance a group
+    /// was right to wave through — and promoting them all to concerns would flood the report and
+    /// destroy the check-level signal. What they are is *the group's own working*, and the
+    /// failure this fixes is that it was being deleted along with the group.
+    /// </summary>
+    private static void AppendDiscarded(StringBuilder sb, CheckFinding finding)
+    {
+        var discarding = finding.Groups
+            .Where(g => g.DiscardedDiscrepancies.Count > 0)
+            .ToList();
+
+        if (discarding.Count == 0)
+        {
+            return;
+        }
+
+        sb.AppendLine();
+        sb.AppendLine("    RAISED AND NOT CARRIED — named by a group that then passed. Not");
+        sb.AppendLine("    findings; read them to check nothing material was waved through.");
+
+        foreach (var group in discarding)
+        {
+            sb.AppendLine(
+                $"      [{group.GroupId}] {CheckFinding.Describe(group.ParsedOutcome)}");
+
+            foreach (var discrepancy in group.DiscardedDiscrepancies)
+            {
+                sb.AppendLine(Indent($"- {discrepancy}", "        "));
+            }
+        }
     }
 
     /// <summary>Indents wrapped text so a multi-line explanation stays inside its section.</summary>

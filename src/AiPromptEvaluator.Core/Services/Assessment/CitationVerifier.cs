@@ -162,6 +162,22 @@ public static class CitationVerifier
     private static readonly string[] Ellipses = ["...", "…"];
 
     /// <summary>
+    /// Whether the character at <paramref name="i"/> has a digit on both sides, which is what
+    /// separates the decimal point in <c>£1,430.00</c> from the full stop ending a sentence.
+    /// </summary>
+    private static bool BetweenDigits(string text, int i) =>
+        i > 0 && i + 1 < text.Length && char.IsDigit(text[i - 1]) && char.IsDigit(text[i + 1]);
+
+    /// <summary>
+    /// Whether the dot at <paramref name="i"/> belongs to an ellipsis rather than ending a
+    /// sentence. <see cref="IsPresent"/> splits on ellipses to allow elision, so folding these
+    /// away turns "the first part … the last part" into one span that matches nothing.
+    /// </summary>
+    private static bool InEllipsis(string text, int i) =>
+        text[i] == '.'
+        && ((i > 0 && text[i - 1] == '.') || (i + 1 < text.Length && text[i + 1] == '.'));
+
+    /// <summary>
     /// Applies the check to a group finding, recording any quotes that could not be found.
     /// <see cref="GroupFinding.ParsedOutcome"/> then refuses to read the group as a pass.
     /// </summary>
@@ -186,15 +202,42 @@ public static class CitationVerifier
     /// about whether it read the document. Collapsing the pipes to spaces — and the
     /// <c>|---|---|</c> separator rows with them — puts both spellings in the same shape.
     ///
-    /// This cannot hide a substantive difference, because a digit or a word is not punctuation.
+    /// **Three further folds were added after measuring, not before.** Of 34 quote failures in
+    /// one run, 18 differed from their source by punctuation alone. Named exactly:
+    ///
+    /// - **Private Use Area glyphs.** The converter emits <c>U+F0B7</c> — a Wingdings bullet —
+    ///   for list markers in the source PDFs. It is in the evidence, never in the quotation, and
+    ///   it accounted for seven failures on its own.
+    /// - **Markdown emphasis.** The evidence carries <c>**bold**</c>; a quotation of it does not.
+    /// - **Sentence punctuation**, but only where it is not holding two digits apart. The full
+    ///   stop ending a sentence is formatting; the one in <c>£1,430.00</c> is the figure. Folding
+    ///   the first and keeping the second is the entire distinction, and it is why this is a
+    ///   character rule rather than "ignore all punctuation".
+    ///
+    /// **None of this weakens the check this class exists for.** The failure it was built to
+    /// catch is a quotation reading "a Risk rating of 5" against evidence reading "a Risk rating
+    /// of 6" — a digit, not punctuation. Every fold here preserves letters and digits exactly, so
+    /// that quotation still fails, and a test pins it.
     /// </summary>
     internal static string Normalise(string text)
     {
         var sb = new StringBuilder(text.Length);
         var lastWasSpace = false;
 
-        foreach (var raw in text)
+        for (var i = 0; i < text.Length; i++)
         {
+            var raw = text[i];
+
+            // Sentence punctuation, unless it is separating two digits — in which case it is
+            // part of a number, and dropping it would make £1,430.00 and £143000 the same claim
+            // — or unless it is one dot of an ellipsis, which is the model saying it elided
+            // something and is the one piece of punctuation carrying meaning here. Folding it
+            // away silently broke the elision path; a test now pins that.
+            if (raw is '.' or ',' or ';' or ':' && !BetweenDigits(text, i) && !InEllipsis(text, i))
+            {
+                raw = ' ';
+            }
+
             var c = raw switch
             {
                 '‘' or '’' or 'ʼ' or '`' => '\'',
@@ -204,6 +247,10 @@ public static class CitationVerifier
                 // Markdown table furniture. The pipe becomes a space so cells stay separated
                 // as words; a run of them collapses with the surrounding whitespace below.
                 '|' => ' ',
+                // Emphasis markers, and the bullet glyphs a PDF converter leaves in the
+                // Private Use Area. Both are in the document and in no quotation of it.
+                '*' or '_' => ' ',
+                >= '\uE000' and <= '\uF8FF' => ' ',
                 _ => raw,
             };
 
@@ -264,6 +311,27 @@ public static class CitationVerifier
 
             sb.Append(text[i]);
             i++;
+        }
+
+        // A separator run is replaced by one space — but the character after it is often a
+        // space too, which left two and made a folded table row unmatchable against the same
+        // row quoted without it. Collapse again rather than complicate the loop.
+        return CollapseSpaces(sb.ToString());
+    }
+
+    /// <summary>Reduces runs of spaces to one, after separator folding has introduced them.</summary>
+    private static string CollapseSpaces(string text)
+    {
+        var sb = new StringBuilder(text.Length);
+
+        foreach (var c in text)
+        {
+            if (c == ' ' && sb.Length > 0 && sb[^1] == ' ')
+            {
+                continue;
+            }
+
+            sb.Append(c);
         }
 
         return sb.ToString();

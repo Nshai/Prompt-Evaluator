@@ -106,6 +106,25 @@ What the pipeline *did* with the finding is measured separately, in the outcome 
 **R7 — Score what is printed.** If the substance is only in a log field the report does not
 render, it is Partial at most.
 
+**R8 — A *raised and not carried* block counts as printed.** From Run 6 the report renders the
+differences a group named on its way to passing, under a heading that says they are not findings.
+A finding stated there is **Caught** if it names both sides and the conflict.
+
+*Why this way.* The reader sees the sentence, under the check it belongs to, with an instruction
+to review it. [R5](#3-rules-that-settle-the-arguments) already says the pipeline's own verdict does
+not decide ours, and a group answering No Issue is that verdict. Scoring it Missed would mean a
+finding is worth less because the pipeline underrated it, which is exactly the conflation R5
+exists to prevent.
+
+*What it costs.* This is not free and the number should be stated whenever it applies. **On the
+strict reading — that a report disclaiming a finding has not delivered it — Run 6 scores 24/36
+rather than 25/36**, and the whole of Stage 8's measured recall gain disappears. One finding, F3.1,
+turned on this rule. Record which findings are scored under R8 in every analysis that uses it, so
+the alternative reading can be computed without re-adjudicating.
+
+*The limit.* This applies to a block the report renders. It does not extend to a group the report
+omits entirely — that remains R7, and remains Partial at most.
+
 ---
 
 ## 4. Procedure

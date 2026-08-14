@@ -52,7 +52,7 @@ measurement trustworthy come before the stages that need measuring**.
 > | Stage | Item | Status |
 > | --- | --- | --- |
 > | 8.1 | Surface findings a group discards | **done, steps 1 and 2** — counted at run level and printed under the check that passed. Step 3 (constraining the outcome) deliberately **not** built — see below |
-> | 8.3 | Citation verifier normalisation | **done, measured** — Run 5's quote failures fall **34 → 19** replaying the same log through the shipped code |
+> | 8.3 | Citation verifier normalisation | **done, measured on Run 6** — unverified citations **61 → 45**, rate **18% → 13%**, groups flagged 31 → 26. Quote failures 34 → 19; table reads 27 → 26 |
 > | 8.4 | A section hint that matches nothing must say so | **done** — `CheckPlanRunner.UnmatchedSections`, reported per run |
 > | 8.2 | Build 7.6 — stop merging the two charge tables | **not done** — still the extraction-schema coordination blocking 4.3 and 4.4 |
 > | 8.5 | Controlled re-run | **not done** — needs a run, not a code change |
@@ -108,6 +108,33 @@ measurement trustworthy come before the stages that need measuring**.
 > Writing the test for the arrangement totals, the five plans sum to **£116,998.47**. The
 > extraction reported **£116,997.47** and the assessment repeated it. The finding was right and
 > the arithmetic behind it was out by a pound — which is the argument for 4.1 in one line.
+
+> ### Stage 9 — implemented 2026-08-15, after scoring Run 6
+>
+> **Build clean, 419 tests passing (was 410).**
+>
+> | Stage | Item | Status |
+> | --- | --- | --- |
+> | 9.1 | Reserve a slot per declared section | **done** — `ReservedSlotsPerDeclaredSection`, taken before the category floor |
+> | 9.2 | Correct G1.7's section hint | **done** — the Fact Find calls it `Money Purchase Pension Schemes` / `Personal Pensions` / `Final Salary Pension Schemes` |
+> | 9.4 | What a raised-and-not-carried block scores as | **done** — rubric [R8](scoring-rubric.md), with the strict reading recorded beside it |
+> | 9.5 | Matcher/downgrade coupling | **done** — pinned by two tests; no behaviour change |
+> | 9.3 | Build 7.6 | **not done** — the extraction-schema block, sixth stage running |
+> | 9.6 | Generate a real Run 7 | **not done** — needs a run |
+>
+> **An existing test caught the first attempt at 9.1, and it was right.**
+> `ASectionHintDoesNotAdmitAnUntargetedCategory` failed: because hints match a substring of the
+> passage *text*, an unrelated document using the same phrase claimed the reserved slot and
+> admitted a category the group never asked for. Reservation is now confined to targeted
+> categories. **The guard was written in Stage 7 for a risk that had not yet occurred, and it
+> caught the change that caused it two stages later.**
+>
+> **9.2 found that the plan had been quoting the benchmark, not the corpus.** There is no
+> `Existing Pension Provision` heading anywhere in the converted Fact Find — the benchmark's
+> phrase is a description, and it had been copied into the plan as though it were a heading. The
+> same is true of `Residency` and `Contact Address`, which were **left unchanged on purpose** so
+> that Run 7 measures the reserved-slot mechanism rather than two changes at once.
+
 
 ---
 
@@ -271,6 +298,7 @@ unaided. It is being let down by what it is shown and by what happens to its ans
 - [Stage 6 — What Run 3 says to do next](#stage-6--what-run-3-says-to-do-next) — **chunking**, N1 selection, E-side
 - [Stage 7 — What Run 4 says to do next](#stage-7--what-run-4-says-to-do-next) — **section routing**, A4 third shape
 - [Stage 8 — What Run 5 says to do next](#stage-8--what-run-5-says-to-do-next) — **S1 suppressed findings**, 7.6, verifier normalisation
+- [Stage 9 — What Run 6 says to do next](#stage-9--what-run-6-says-to-do-next) — **section slots**, 7.6, the last two findings
 - [Exit criteria](#exit-criteria)
 - [Scoring rubric](scoring-rubric.md) — how a run is adjudicated, and why it needed writing down
 - [What this plan does not do](#what-this-plan-does-not-do)
@@ -1192,7 +1220,15 @@ strength of a spacing difference.
 > | Sentence punctuation — 19 occurrences of a full stop, comma or colon present on one side only | fold, **but only where it is not between two digits** |
 > | `CollapseSeparatorRuns` emitting a double space, so a folded table row could not match itself | collapse again after folding |
 >
-> **34 → 19 failures**, measured by replaying the same log through the shipped code. The digit
+> **34 → 19 quote failures**, and the reported unverified rate **18% → 13%** (61 → 45 of 343
+> citations), measured on [Run 6](Runtime-Logs/latest/Run-6/run-analysis.md), which replays Run 5's
+> responses through this code.
+>
+> **A pre-run projection of 11% was wrong, and the error is worth keeping.** It came from a harness
+> that passed the whole prompt as evidence and no passage map; the runner passes only the pack's
+> passages and checks each table read against the specific passage it names. The harness was more
+> generous than the code it was measuring. Table reads barely moved (27 → 26) and are the bulk of
+> what remains. The digit
 > rule is what keeps this safe: `£1,430.00` still differs from `£143000`, `0.18%` from `018%`,
 > `rating 5.0` from `rating 50`, and the altered quotation the class exists for — "a Risk rating
 > of 5" against evidence reading 6 — still fails. Tests pin all four.
@@ -1269,46 +1305,253 @@ and it is the one a reviewer actually bears the cost of.
 
 ---
 
+## Stage 9 — What Run 6 says to do next
+
+Added 2026-08-14 after scoring [Run 6](Runtime-Logs/latest/Run-6/run-analysis.md). **Stage 8
+worked, and recall moved for the first time since Run 2** — 24 → 25 of 36, on model output that
+did not change at all.
+
+### Run 6 is the controlled comparison this plan has wanted since Stage 5
+
+It is a **cache replay**, caught and stamped by the Stage 0 guard: 86,317 output tokens in 3.5 s,
+24,844 tok/s. Eleventh on record. And it is the most useful run in the series, because all **60
+evidence packs and all 60 responses are byte-identical to Run 5**. The only thing that differs is
+the code.
+
+[7.4](#74--re-run-holding-the-extraction) and [8.5](#85--do-the-controlled-re-run-74-which-is-now-overdue--not-done-needs-a-run)
+asked for exactly this and were never arranged deliberately. **Every measurement below is
+attributable, which is not true of any other run in this document.**
+
+| | Run 5 | Run 6 | |
+| --- | --- | --- | --- |
+| **Caught / Partial / Missed** | 24 / 10 / 2 | **25 / 9 / 2** | ▲ |
+| Unverified citations | 61 (18%) | **45 (13%)** | ▲ |
+| — quote failures | 34 | **19** | ▲ |
+| — table-read failures | 27 | **26** | — |
+| Groups carrying a flag | 31 of 60 | **26 of 60** | ▲ |
+| Findings raised then discarded **silently** | 9 groups | **0 — all printed** | ▲▲ |
+| Section declarations matching nothing | unknown | **1, named** | ▲▲ |
+
+**The recall point is F3.1**, which the pipeline had already found and was deleting: CHK-003/G3.6
+named the risk-rating contradiction and returned `NoIssue`, so the renderer dropped the group. It
+now prints. No new retrieval, routing or reasoning was involved.
+
+### 9.1 — Reserve a slot per declared *section*, not only per category *(F1.6, F5.4)* — **DONE**
+
+**These are the last two outright misses in the benchmark, and Run 6 says exactly why.**
+
+Stage 8's instrumentation separated two causes that Run 5's analysis could not, and in doing so
+**corrected that analysis**. It concluded the residency section "never arrived". It did:
+
+| Declaration | Group | What happened |
+| --- | --- | --- |
+| `Current Monthly Cash Flow`, `Total Net Monthly Income`, `Total Monthly Disposable Income` | G1.4, G5.1, G5.2, G5.4 | matched, reached the pack → **4 findings caught** |
+| `Residency`, `Contact Address` | G1.1, G8.1 | **matched a candidate, evicted before the pack** |
+| `Existing Pension Provision` | G1.7 | **matched nothing at all** → 9.2 |
+
+Reading the packs directly confirms it. The Fact Find sections that reach G1.1 are *Personal
+Details*, *Contact Details*, *Family And Dependants* and *ID Verification*. The document has no
+heading `Residency`; the hint matched a row label inside a passage, and that passage then lost its
+slot.
+
+**This is [R3](#51--a-per-category-floor-in-rank-r3--the-one-that-matters) again, one level down.**
+The floor guarantees `ReservedSlotsPerTargetedCategory` — one passage per *category*. A section a
+plan explicitly named has no such guarantee, so it competes on score against eleven other passages
+from the same category and loses.
+
+**Fix.** Extend the floor: a passage matching a declared `evidenceSections` entry gets a reserved
+slot, ahead of the category floor, one per declared section. `Rank` already ranks section matches
+above non-matches — ranking is not the same as keeping, which is the lesson Stage 5 learned about
+categories and Stage 7 did not carry down to sections.
+
+**Watch the pack budget.** `MaxPassagesPerGroup` is 12. G1.1 declares two sections and three
+categories; five reserved slots of twelve is a large share, and the displaced passages are what
+the group would otherwise have reasoned from. **Measure the pack composition before and after, not
+just the recall.**
+
+> **Built.** `ReservedSlotsPerDeclaredSection = 1`, taken *before* the category floor because a
+> named section is the more specific request and usually satisfies the category slot as a side
+> effect. A declaration matching nothing consumes no slot, and the pack is independent of the
+> order sections were listed in — both pinned by test.
+>
+> **An existing test caught a real defect in the first attempt, which is the point of having it.**
+> `ASectionHintDoesNotAdmitAnUntargetedCategory` failed: hints are matched as a *substring of the
+> passage text*, so an unrelated document using the same words claimed the reserved slot and
+> admitted a category the group never asked for. The reservation is now restricted to targeted
+> categories — **a hint promotes within what was requested; it does not widen the request.**
+>
+> **The substring weakness remains and is worth stating.** A hint matches text, not a heading, so
+> `Personal Pensions` can match a provider document that happens to use the phrase. Within a
+> targeted category that is usually harmless; it is the reason 9.2's wording had to be taken from
+> the corpus rather than from the benchmark.
+
+### 9.2 — Correct G1.7's section hint *(F1.9)* — **DONE**
+
+`Existing Pension Provision` matched **no candidate passage anywhere in the run**. It is a plan
+defect — a heading that does not exist in the converted corpus — and it is why F1.9 has been
+Partial for five runs while the Fact Find's pension section sat unreferenced.
+
+**A one-line fix**, now that a run says which of the seven declarations is wrong rather than
+leaving it to be inferred. Read the converted Fact Find, find what that section is actually
+called, and use that string.
+
+> **Built, and the Fact Find does not call it that.** Recovering the headings from Run 6's packs
+> shows the converted Fact Find has no `Existing Pension Provision`. It splits the client's
+> pensions across **`Money Purchase Pension Schemes`**, **`Personal Pensions`** and
+> **`Final Salary Pension Schemes`**, which is what G1.7 now declares. The benchmark's phrase was
+> a description, not a heading, and had been copied into the plan as though it were one.
+>
+> **The same is true of `Residency` and `Contact Address`** in G1.1 and G8.1 — the Fact Find's
+> headings are `Personal Details` and `Contact Details`. Those two were **left alone
+> deliberately**: the instrumentation says they match *something* in a candidate passage, so 9.1's
+> reserved slot is the change under test, and altering both the hint and the mechanism in one run
+> would make the result unattributable. If Run 7 still misses F1.6, correct them next.
+
+**Then re-open the L4 lint idea.** [8.4](#84--work-out-why-the-residency-hint-did-nothing-f16-f54--done-instrumented)
+rejected a build-time rule because `CheckPlanLint` has no corpus. That reasoning holds for a lint
+over the plans alone — but an *indexing-time* check does have the corpus, and could fail the index
+build when a plan names a section no document contains. That is the same guarantee at the only
+point where it is cheap.
+
+### 9.3 — Build 7.6. It is now the only thing between 25 and 27 *(F7.1, F7.2)* — **NOT DONE (blocked)**
+
+Unchanged in substance, and the arithmetic is now unambiguous. Recall is **25 of 36**; the target
+is **27**. Five of the nine remaining partials sit on
+[7.6](#76--stop-the-extraction-merging-two-tables-into-one-value-new-from-73) — the extraction
+storing one reconciled value where the report states two — and **F7.1 and F7.2 are the two
+closest to Caught in the whole set**, because the run already holds both figures and only compares
+them against the wrong document.
+
+This has been blocked on schema coordination with the extraction plan since Stage 4. **It is now
+the single highest-value item in this document** and the block should be escalated rather than
+carried forward a sixth time. See
+[required-implementation.md §2](../required-implementation.md) for the shape the fix wants —
+observations rather than values — which resolves 7.6, 4.3 and 4.4 together.
+
+### 9.4 — Settle what a raised-and-not-carried block scores as *(rubric)* — **DONE (R8)**
+
+Run 6's single recall gain turns on it, so the rubric can no longer be silent.
+
+F3.1 is now printed, both sides named and the conflict stated — but under a heading that says
+**"Not findings"**. [R5](scoring-rubric.md) says outcome is irrelevant to the verdict and
+[R7](scoring-rubric.md) says score what is printed; both point to **Caught**, which is how Run 6
+was scored. A stricter reader could hold that a finding the report disclaims has not been
+delivered, which keeps it **Partial** and leaves recall at 24/36 — **the whole of Stage 8's
+measured gain**.
+
+**Add a rule either way.** The rubric exists because two adjudications of identical output differed
+by five points; this is the same failure arriving again, and the answer matters more than which way
+it goes.
+
+> **Settled as [R8](scoring-rubric.md): a raised-and-not-carried block counts as printed**, so a
+> finding stated there is Caught if it names both sides and the conflict. The reasoning is R5 — the
+> pipeline's own verdict does not decide ours, and a group answering No Issue *is* that verdict.
+> Scoring it Missed would make a finding worth less because the pipeline underrated it.
+>
+> **The cost is recorded in the rule.** Every analysis using R8 must name the findings scored under
+> it, so the strict reading stays computable without re-adjudicating. For Run 6 that is F3.1 alone:
+> **strict reading 24/36, R8 reading 25/36.** The rule does not extend to a group the report omits
+> entirely — that stays R7, and stays Partial at most.
+
+### 9.5 — Make the matcher/downgrade coupling explicit *(no finding at stake, yet)* — **DONE (pinned)**
+
+Run 6 exposed an interaction that was not designed and worked by luck.
+
+The better matcher verified CHK-002/G2.1's quote. That group had stated `NoIssue`, and the
+[0.3](#03--stop-citation-verification-rewriting-the-verdict-a2c) downgrade — a pass resting on an
+untraceable quote becomes a concern — was the *only* reason it printed in full. With the quote
+verified the downgrade lapsed, the group returned to No Issue, and **73 lines left the report**.
+
+Its substance survived only because [8.1](#81--surface-findings-a-group-discards-new--s1--done-steps-12-step-3-held) had
+shipped in the same commit.
+
+> **Every improvement to the citation matcher mechanically removes content from the report**,
+> because the downgrade is what promotes those groups into print. Nothing states this, nothing
+> tests it, and the two changes that cover each other were built for unrelated reasons.
+
+**Fix.** A test that pins the pairing: a group whose only reason for printing is an unverified
+quote must still have its discrepancies rendered when the quote is later verified. And note the
+consequence for [8.1](#81--surface-findings-a-group-discards-new--s1--done-steps-12-step-3-held)'s
+metric — **it will rise as citation trust improves**, because fewer groups get promoted. That is
+correct behaviour and will look like a regression on a chart.
+
+> **Pinned by two tests**, both stating the coupling in their own names.
+> `VerifyingAQuoteMustNotTakeTheGroupsDifferencesWithIt` walks the exact Run 6 transition: the same
+> group, unverified then verified, printing its difference either way.
+> `TheDiscardedCountRisesAsCitationTrustImproves` records the metric's direction, so a future
+> reader does not read the rise as a regression and "fix" it.
+>
+> No behaviour changed here — the pairing already worked. What was missing was anything saying it
+> had to.
+
+### 9.6 — Generate a real Run 7 — **NOT DONE (needs a run)**
+
+Run 6 cost nothing and settled more than any run since Run 2, but **no model call was made**. It
+says nothing about generation, prompts, or extraction — and 9.1, 9.2 and 9.3 all change what the
+assessor sees.
+
+Hold the plans, the settings and the canonical model; change only the code; and **generate**.
+After Run 6 that is a one- or two-variable comparison rather than the four this plan has been
+living with.
+
+**One thing Run 6 did settle about the refactor.** Retrieval genuinely re-executed — embeddings
+were billed at £0.0050 / 2,007 tokens — and produced **60 of 60 byte-identical evidence packs**.
+That is measurement rather than the circumstantial argument
+[8.5](#85--do-the-controlled-re-run-74-which-is-now-overdue--not-done-needs-a-run) had to make, and it covers retrieval,
+ranking, canonical-model resolution and prompt assembly. It does not cover the chat client.
+
+---
+
 ## Exit criteria
 
-Measured across all five generated runs —
+Measured across five generated runs and one replay —
 [Run 2](Runtime-Logs/latest/Run-2/run-analysis.md),
 [Run 3](Runtime-Logs/latest/Run-3/run-analysis.md),
 [Run 4](Runtime-Logs/latest/Run-4/run-analysis.md),
-[Run 5](Runtime-Logs/latest/Run-5/run-analysis.md).
+[Run 5](Runtime-Logs/latest/Run-5/run-analysis.md),
+[Run 6](Runtime-Logs/latest/Run-6/run-analysis.md).
 
-| After | Measure | Run 1 | Target | Run 2 | Run 3 | Run 4 | **Run 5** | |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Stage 0 | Runs mis-reported as generated | 8 of 12+ | 0 | 0 | 0 | 0 | **0** | ✅ |
-| Stage 0 | Plan copies disagreeing | 4 of 9 stale | 1 source | 1 | 1 | 1 | **1** | ✅ |
-| Stage 1 | L1 violations | 17 of 60 | 0, enforced | 0 | 0 | 0 | **0** | ✅ |
-| Stage 1/5 | Checks reaching the Fact Find | 5/10 | every check | 7/10 | 10/10 | 10/10 | **10/10** | ✅ |
-| Stage 2 | Extraction report reaching assessors | 45% | 100% | 100% | 100% | **100%** | ✅ |
-| Stage 6 | **Extraction sections succeeding** | — | all | — | 4 of 12 | 12 of 12 | **12 of 12** | ✅ |
-| **Stage 7** | **Missed** | 8 | ≤3 | 6 | 5 | 8 | **2** | ✅ |
-| Stage 3/5 | **Unverified quote rate** | 36% | <12% | 32% | 14% | 11% ✅ | **18%** | ❌ |
-| Stage 2 | Findings storing the model's requirement text | 25 of 60 | 0 | 0 | 2 | 3 | **1 of 60** | ⚠️ |
-| Stage 2 | Groups vetoed by `comparisonPerformed` | 20 | 0 | 17 | 16 | 18 | **15** | ⚠️ |
-| **Stage 8** | **Groups passing while naming discrepancies** | — | 0 | 12 | 15 | 13 | **9 of 60** | ❌ new |
-| Stage 3/5 | Groups flagged | 70% | <25% | 70% | 45% | 42% | **52%** | ❌ |
-| Stage 4 | **Benchmark recall (caught)** | 16/36 (44%) | ≥26/36 (72%) | 24/36 | 24/36 | 24/36 | **24/36 (67%)** | ❌ |
+**Run 6 is a replay of Run 5's responses through Stage 8's code.** Its column measures rendering
+and post-processing on identical model output; it says nothing about generation or extraction.
 
-**Seven met, and the seventh is the first findings criterion ever to go green.**
+| After | Measure | Run 1 | Target | Run 2 | Run 3 | Run 4 | Run 5 | **Run 6** | |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Stage 0 | Runs mis-reported as generated | 8 of 12+ | 0 | 0 | 0 | 0 | 0 | **0** | ✅ |
+| Stage 0 | Plan copies disagreeing | 4 of 9 stale | 1 source | 1 | 1 | 1 | 1 | **1** | ✅ |
+| Stage 1 | L1 violations | 17 of 60 | 0, enforced | 0 | 0 | 0 | 0 | **0** | ✅ |
+| Stage 1/5 | Checks reaching the Fact Find | 5/10 | every check | 7/10 | 10/10 | 10/10 | 10/10 | **10/10** | ✅ |
+| Stage 2 | Extraction report reaching assessors | 45% | 100% | 100% | 100% | 100% | 100% | **100%** | ✅ |
+| Stage 6 | **Extraction sections succeeding** | — | all | — | 4 of 12 | 12 of 12 | 12 of 12 | *not re-run* | ✅ |
+| **Stage 7** | **Missed** | 8 | ≤3 | 6 | 5 | 8 | 2 | **2** | ✅ |
+| Stage 3/8 | **Unverified quote rate** | 36% | <12% | 32% | 14% | 11% | 18% | **13%** | ❌ narrowly |
+| Stage 2 | Findings storing the model's requirement text | 25 of 60 | 0 | 0 | 2 | 3 | 1 | **1 of 60** | ⚠️ |
+| Stage 2 | Groups vetoed by `comparisonPerformed` | 20 | 0 | 17 | 16 | 18 | 15 | **15** | ⚠️ |
+| **Stage 8** | **Findings raised then discarded *silently*** | — | 0 | 12 | 15 | 13 | 9 | **0 — printed** | ✅ |
+| **Stage 8** | **Section declarations matching nothing** | — | 0 | ? | ? | ? | ? | **1, named** | ❌ → 9.2 |
+| Stage 3/5 | Groups flagged | 70% | <25% | 70% | 45% | 42% | 52% | **43%** | ❌ |
+| Stage 4 | **Benchmark recall (caught)** | 16/36 (44%) | ≥27/36 (75%) | 24/36 | 24/36 | 24/36 | 24/36 | **25/36 (69%)** | ❌ |
 
-**Missed fell 8 → 2**, the lowest of the series and inside target for the first time. That is the
-measure [the benchmark says to gate on](expected-results-benchmark.md), and
-[8.6](#86--report-all-three-counts-and-stop-leading-with-recall--done) promotes it to the headline
-accordingly — it is listed above recall from this run on.
+**Nine met, and two of them are criteria that could not be measured before Stage 8 created the
+quantities.**
 
-**Recall is 24 of 36 for the fourth consecutive run, and means something different this time.**
-Runs 2–4 caught an identical set. Run 5 turned five of them over in each direction, so the flat
-line spans ten changed verdicts. Reading 67% → 67% as "nothing happened" would be wrong in both
-directions: Stage 7.1 worked, and five findings regressed at the same time.
+**Missed has held at 2 across two runs**, inside target, and remains the measure
+[the benchmark says to gate on](expected-results-benchmark.md) — a missed concern leaves no trace;
+a spurious one is visible and can be discarded.
 
-**Two criteria went backwards**, both in Stage 3's citation work, and
-[8.3](#83--fix-the-citation-verifiers-false-rejections--done-measured-34--19) shows the largest cause is the verifier
-rejecting correct table quotations over whitespace — a matcher defect, not a trustworthiness
-regression, but it downgrades real verdicts and so has to be fixed rather than explained away.
+**Recall moved for the first time since Run 2**, 24 → 25, on model output that did not change at
+all. The gain is F3.1, which the pipeline had already found and was deleting before it reached the
+page. That is the whole argument for [8.1](#81--surface-findings-a-group-discards-new--s1--done-steps-12-step-3-held) in one
+number — and it should be read alongside
+[9.4](#94--settle-what-a-raised-and-not-carried-block-scores-as-rubric--done-r8): the rubric does not yet
+say what a *raised and not carried* block scores as, and on the stricter reading this gain is 0.
+
+**Recall is 25 of 36 against a target of 27.** Two findings, and
+[9.3](#93--build-76-it-is-now-the-only-thing-between-25-and-27-f71-f72--not-done-blocked) names them: F7.1 and F7.2
+are the closest in the set, both blocked on the same unbuilt extraction change.
+
+**The citation criterion misses by one point** — 13% against a target of 12% — and what remains is
+mostly table reads checked against the specific passage cited, which is the strict behaviour and
+should not be relaxed to hit a number.
 
 > **Read recall against the noise floor.** Two scorers hand-adjudicating the *same 60 responses*
 > produced 39% and 44%, so **±2 findings is the noise floor**. The 23-point gain is well outside
@@ -1371,37 +1614,39 @@ run holds both figures and compares them against a provider document rather than
 other page. It remains blocked on the same schema coordination as 4.3 and 4.4, and that block is
 no longer cheap.
 
-### What five runs have and have not settled
+### What six runs have and have not settled
 
 - **Run 2 moved four variables at once.** Its 23-point recall gain is real and attributable to
   none of them by measurement.
-- **Runs 3 and 4 each held three of four** — plans, search limit, extraction cap — and re-extracted
-  the canonical model. Run 4 had no choice: Stage 6's change *was* an extraction change. That
-  excuse is now spent, and [7.4](#74--re-run-holding-the-extraction) is the first run that can hold
-  everything.
+- **Runs 3, 4 and 5 each held three of four** and re-extracted the canonical model. Run 4 had no
+  choice: Stage 6's change *was* an extraction change. Run 5 added the decoupling refactor on top.
+- **Run 6 is the first controlled comparison, and it happened by accident.** A cache replay with
+  60 of 60 evidence packs and 60 of 60 responses byte-identical to Run 5, so the only variable is
+  the code. Every measurement in its column is attributable, which is true of no other run here.
+  **Arrange the next one deliberately** — [9.6](#96--generate-a-real-run-7--not-done-needs-a-run).
 - **Each stage has found a defect in the previous stage's output.** Run 2 found
   `CrossGroupContradictions` splitting on decimal points and `DerivedFigures` reading the wrong
   charge lines; Run 3 found the pair-selection heuristic choosing restatements over the one real
-  contradiction available to it; Run 4 found `DerivedFigures` missing the figure a third time and
-  showed Stage 6's own premise to be too narrow. **Shipping a component is not the same as it
-  working, and only a run tells the difference.**
-- **Three stages of machinery did not move recall, and the fourth moved the findings without
-  moving the number.** 44% → 67% → 67% → 67% → 67%. Stages 5 and 6 improved coverage, extraction
-  and citation trust and reached no additional finding. **Stage 7.1 reached four** — and five
-  others regressed in the same run, so the headline is identical for the fourth time. The
-  diagnosis behind Stage 7 was right: the assessor was being handed the right page and not asked
-  the question it answers.
-- **Recall has been measuring two different failures as one.** A finding the pipeline never found
-  and a finding it found and discarded by its own outcome are indistinguishable in the printed
-  report, and [8.1](#81--surface-findings-a-group-discards-new--s1--done-steps-12-step-3-held) shows the
-  second has been happening 9–15 times per run since Run 2. **Every recall figure in this document
-  is an underestimate by an unknown amount**, and step 1 of 8.1 is what bounds it.
-- **Run 5 is the first run where both logs are genuine.** Run 3's extraction was a 2.0 s replay and
-  Run 4's checks were a 24,554 tok/s replay; Run 5 measured 440 s and 563 tok/s. Stage 0's guard is
-  the reason any of that is known.
-- **Still no controlled run.** Run 5 moved three variables plus a refactor claiming to preserve
-  behaviour. [8.5](#85--do-the-controlled-re-run-74-which-is-now-overdue--not-done-needs-a-run) is the cheapest item on
-  the list and the only one that makes the next comparison mean anything.
+  contradiction; Run 4 found `DerivedFigures` missing the figure a third time and Stage 6's premise
+  too narrow; Run 6 corrected Run 5's residency diagnosis and two of my own measurements.
+  **Shipping a component is not the same as it working, and only a run tells the difference.**
+- **Recall: 44% → 67% → 67% → 67% → 67% → 69%.** Stages 5 and 6 improved coverage, extraction and
+  citation trust and reached no additional finding. Stage 7.1 reached four and lost five in the
+  same run. **Stage 8 is the first change to move the number**, and it did so on model output that
+  did not change at all — the finding was already made and was being deleted.
+- **Recall was measuring two different failures as one.** A finding never found and a finding found
+  and discarded by its own outcome were indistinguishable in the printed report, and this happened
+  9 to 15 times per run from Run 2 onward. [8.1](#81--surface-findings-a-group-discards-new--s1--done-steps-12-step-3-held)
+  closed it: **0 silent discards in Run 6.** The correct count of what was ever at stake is smaller
+  than first claimed — most were already promoted into print by the citation downgrade — and
+  9 groups / 27 differences was counting the wrong stage of the pipeline.
+- **The decoupling refactor preserved retrieval behaviour, measured.** Run 6 re-executed the search
+  path with embeddings billed and produced 60 of 60 byte-identical packs. That covers retrieval,
+  ranking, canonical-model resolution and prompt assembly; it does not cover the chat client.
+- **Two of my own measurements were wrong and both were errors of method.** A projected citation
+  rate of 11% (real: 13%) came from a harness passing inputs the runner does not; the discarded-
+  discrepancy count read stated rather than parsed outcomes. **Measure a component with the inputs
+  it actually receives.**
 
 ---
 

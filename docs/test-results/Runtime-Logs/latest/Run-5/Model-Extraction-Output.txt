@@ -1,0 +1,49 @@
+Model: intelliflo-claude-haiku-4-5
+
+Total: £0.6161 for 297,983 tokens
+
+ 
+
+Extracting the canonical model for case ABC-99 (tenant 99)
+
+Schema: C:\work\Prompt-Evaluator-Semantic\src\AiPromptEvaluator\bin\Debug\net8.0-windows\canonical-suitability-model.schema.json
+
+Store:  C:\Users\nshaikh\AppData\Local\AiPromptEvaluator\canonical-models.db
+
+Report: Suitability Report Test 1.md
+
+------------------------------------------------------------------------
+
+Logging extraction to C:\logs\apipromptevaluator\extract_ABC-99_20260814_212954.log
+
+[ 1/12] Case and parties                     8,916 chars (0.3s)
+
+[ 2/12] Financial position                   10,121 chars (21.9s)
+
+[ 3/12] Objectives                           2,254 chars (5.4s)
+
+[ 4/12] Risk, knowledge and vulnerability    10,548 chars (28.9s)
+
+[ 5/12] Existing arrangements                19,693 chars (44.2s)
+
+[ 6/12] Needs analysis and research          18,942 chars (38.5s)
+
+[ 7/12] Solution                             10,677 chars (26.5s)
+
+[ 8/12] Recommendations                      45,924 chars (99.0s)
+
+[ 9/12] Costs and charges                    29,125 chars (52.2s)
+
+[10/12] Replacement analysis                 24,361 chars (55.5s)
+
+[11/12] Disclosures                          23,656 chars (48.3s)
+
+[12/12] Triggers and extraction report       7,536 chars (19.5s)
+
+------------------------------------------------------------------------
+
+Stored 321,940 characters of canonical model for case ABC-99 in 440.1s.
+
+Sections populated: modelVersion, source, case, parties, clientAuthority, financialPosition, objectives, riskAssessment, knowledgeAndExperience, vulnerability, existingArrangements, needsAnalysis, research, solution, recommendations, costsAndCharges, replacementAnalysis, riskWarningsAndDisadvantages, taxTreatment, ongoingService, checkTriggers, extractionReport
+
+ 

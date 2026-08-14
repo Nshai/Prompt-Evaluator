@@ -292,7 +292,7 @@ before anyone else parses a plan file.
 
 ### 0.3 — Stop citation verification rewriting the verdict *(A2c)*
 
-**Defect.** [`GroupFinding.ParsedOutcome`](../../src/AiPromptEvaluator/CheckFinding.cs#L100-L103)
+**Defect.** [`GroupFinding.ParsedOutcome`](../../src/AiPromptEvaluator.Core/CheckFinding.cs)
 converts any finding with an unverified quote to `PotentialConcern`. At a 36% quote-failure rate
 this converted **all nine** `NoIssue` groups, which is why the run summary reads *"0 no issue"*.
 A reader of `output-latest.txt` cannot distinguish an assessed concern from a formatting artefact.
@@ -318,7 +318,7 @@ headline counts stop depending on citation formatting.
 
 **The single largest recall lever in the plan.** Six of the eight missed benchmark findings sit
 behind a document category no query asks for. This is not tunable: `Rank()` re-orders candidates,
-it cannot promote a passage `CaseDocumentSearchTool` was never asked for — which is why raising the
+it cannot promote a passage `CaseDocumentSearchService` was never asked for — which is why raising the
 search limit 8 → 16 bought two passages.
 
 ### 1.1 — Two lint rules over the plans *(L1, L2)*
@@ -420,7 +420,7 @@ input*. A group that names a discrepancy has, by definition, compared something:
 ```
 
 Also fix `Summarise`, which prints discrepancies **only** from `PotentialConcern` groups
-([CheckFinding.cs:215](../../src/AiPromptEvaluator/CheckFinding.cs#L215)) — so all 71 survive only
+([CheckFinding.cs:215](../../src/AiPromptEvaluator.Core/CheckFinding.cs)) — so all 71 survive only
 in the detail body and contribute nothing to the summary a reviewer actually reads.
 
 **Test.** A group with `comparisonPerformed: false` and a populated `discrepancies` array keeps its
@@ -431,7 +431,7 @@ Indeterminate.
 
 ### 2.2 — Stop truncating the extraction report *(E4a)*
 
-**Defect.** [`Truncate(extraction.Json, 4000)`](../../src/AiPromptEvaluator/CheckPlanRunner.cs#L521)
+**Defect.** [`Truncate(extraction.Json, 4000)`](../../src/AiPromptEvaluator.Core/Services/Assessment/CheckPlanRunner.cs)
 cuts the check-level extraction block mid-key. Measured in this run's prompts: **4,986 characters —
 55% — never reach any assessor**, and the cut lands inside the fourth `internalInconsistencies`
 entry, so the assessor sees half a sentence. Everything after, including `ambiguities`, is
@@ -507,7 +507,7 @@ run's best assertion-side finding — is flagged as fabricated for citing the pl
 ### 3.2 — Fold table punctuation in `Normalise`
 
 Add `|` and separator runs (`---`) to the fold in
-[CitationVerifier.cs:69](../../src/AiPromptEvaluator/CitationVerifier.cs#L69), alongside the
+[CitationVerifier.cs:69](../../src/AiPromptEvaluator.Core/Services/Assessment/CitationVerifier.cs), alongside the
 existing quote and dash folding.
 
 ### 3.3 — Accept elisions explicitly
@@ -674,9 +674,9 @@ by measured value, not by tidiness: **5.1 alone accounts for five of the six rem
 ### 5.1 — A per-category floor in `Rank` *(R3 — the one that matters)*
 
 **Stage 1 worked and the pack cap undid it.** The plans now ask for the Fact Find, and
-`CaseDocumentSearchTool.SearchAsync` runs every query twice — once restricted to its target
+`CaseDocumentSearchService.SearchAsync` runs every query twice — once restricted to its target
 categories, once unfiltered — so Fact Find passages **do** enter the candidate set. Then
-[`Rank`](../../src/AiPromptEvaluator/CheckPlanRunner.cs#L388) sorts by a single binary key (in the
+[`Rank`](../../src/AiPromptEvaluator.Core/Services/Assessment/CheckPlanRunner.cs) sorts by a single binary key (in the
 group's targeted set, or not), then by score, and takes twelve:
 
 ```csharp

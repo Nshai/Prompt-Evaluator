@@ -1,6 +1,6 @@
 # Check query plans
 
-A pre-computed semantic-search programme for each of the ten QA checks, executed by [CheckPlanRunner](../../../src/AiPromptEvaluator/CheckPlanRunner.cs) against [CaseDocumentSearchTool](../../../src/AiPromptEvaluator/CaseDocumentSearchTool.cs). Every query group corresponds to exactly one row of [check-coverage-matrix.csv](../check-coverage-matrix.csv).
+A pre-computed semantic-search programme for each of the ten QA checks, executed by [CheckPlanRunner](../../../src/AiPromptEvaluator.Core/Services/Assessment/CheckPlanRunner.cs) against [CaseDocumentSearchService](../../../src/AiPromptEvaluator.Core/Services/Documents/CaseDocumentSearchService.cs). Every query group corresponds to exactly one row of [check-coverage-matrix.csv](../check-coverage-matrix.csv).
 
 These files are deployed beside the executable on build, so editing one changes what the next check run retrieves.
 

@@ -311,7 +311,7 @@ for**, and the fix is a plan edit plus a lint rule, not a retrieval parameter.
 ### 4.2 A3 — the pipeline overrides its own assessor, and throws away the reasoning
 
 The gap register describes A3 as *"Indeterminate fires when one input is absent"*. Measured, it is
-sharper and worse than that. [`GroupFinding.ParsedOutcome`](../../../../../src/AiPromptEvaluator/CheckFinding.cs#L193-L210)
+sharper and worse than that. [`GroupFinding.ParsedOutcome`](../../../../../src/AiPromptEvaluator.Core/CheckFinding.cs)
 reads:
 
 ```csharp
@@ -339,7 +339,7 @@ files the whole thing as unassessable. G7.7 does the same while its discrepancie
 *"9.4% to 10.0% decrease in maturity value"*.
 
 Then `Summarise` compounds it: the rendered summary prints discrepancies **only from groups whose
-`ParsedOutcome` is PotentialConcern** ([CheckFinding.cs:215](../../../../../src/AiPromptEvaluator/CheckFinding.cs#L340)),
+`ParsedOutcome` is PotentialConcern** ([CheckFinding.cs:215](../../../../../src/AiPromptEvaluator.Core/CheckFinding.cs)),
 so all 71 survive only in the detail body, and the Indeterminate groups contribute nothing but a
 list of group ids to the check summary a reviewer actually reads.
 
@@ -396,7 +396,7 @@ page-11 Zurich table conflict (F7.1) is not among them**, and there is no second
 could find it — which is why F7.1 and F9.5 are partial.
 
 There is a second, separate defect in the same path. The check-level prompt injects the extraction
-report through [`Truncate(extraction.Json, 4000)`](../../../../../src/AiPromptEvaluator/CheckPlanRunner.cs#L555).
+report through [`Truncate(extraction.Json, 4000)`](../../../../../src/AiPromptEvaluator.Core/Services/Assessment/CheckPlanRunner.cs).
 Measured in this run's prompts, the block ends:
 
 ```
@@ -495,7 +495,7 @@ Comparing every response's `groupId` and `requirement` fields against the plan t
 | Returned a `requirement` string differing from the plan's | **25 (42%)** |
 | Both | 11 |
 
-**The identifier half is harmless.** [`ParseGroup`](../../../../../src/AiPromptEvaluator/CheckPlanRunner.cs#L794-L804)
+**The identifier half is harmless.** [`ParseGroup`](../../../../../src/AiPromptEvaluator.Core/Services/Assessment/CheckPlanRunner.cs)
 overwrites it unconditionally — *"The plan is the authority on which requirement this is; the model
 only echoes it"* — so nothing is misrouted and the rendered output shows correct group ids
 throughout. It is a prompt-adherence signal, not a bug: **over a third of responses lost track of
@@ -613,7 +613,7 @@ matcher. Loosening the matcher far enough to admit these would re-open the exact
 One earlier hypothesis of mine was wrong and is worth recording: I assumed G1.8's four failures
 were caused by `EvidenceTextOf` omitting the extraction report. It does not — G1.8 receives
 `/extractionReport/internalInconsistencies[]` as a canonical fragment, and
-[`EvidenceTextOf`](../../../../../src/AiPromptEvaluator/CheckPlanRunner.cs#L712) includes fragments.
+[`EvidenceTextOf`](../../../../../src/AiPromptEvaluator.Core/Services/Assessment/CheckPlanRunner.cs) includes fragments.
 The real cause is escaping. The fragment JSON reaches the prompt as:
 
 ```

@@ -1,8 +1,9 @@
 # Remediation plan — assessment pipeline
 
-Acts on the defects in
-[Runtime-Logs/latest/run-analysis.md](Runtime-Logs/latest/run-analysis.md) and the open gaps in
-[gap-analysis.md](gap-analysis.md). Companion to
+Acts on the defects in the
+[Run 1 analysis](Runtime-Logs/latest/Run-1%20%28Before%20changes%20applied%29/run-analysis.md) and
+the open gaps in [gap-analysis.md](gap-analysis.md), and is re-scored against the
+[Run 2 analysis](Runtime-Logs/latest/Run-2/run-analysis.md). Companion to
 [Runtime-Logs/extraction/improvement-plan.md](Runtime-Logs/extraction/improvement-plan.md), which
 closed the extraction side (E1–E6); everything here is retrieval, assessment and reporting.
 
@@ -11,7 +12,13 @@ measurement trustworthy come before the stages that need measuring**.
 
 ---
 
-> ## Build status — implemented 2026-08-14
+> ## Build status — implemented and measured 2026-08-14
+>
+> **Measured on Run 2: benchmark recall 44% → 67% (16 → 24 of 36), all ten checks now
+> matching their expected outcome, five exit criteria met and four missed.** The two
+> causes behind the misses are now understood precisely and are
+> [Stage 5](#stage-5--what-run-2-says-to-do-next). Full scoring in the
+> [Run 2 analysis](Runtime-Logs/latest/Run-2/run-analysis.md).
 >
 > **Stages 0 to 4 are in the build except items 4.3 and 4.5, and the extraction half of 4.4,
 > which are deliberately not — see [What was not done](#what-was-not-done-and-why).**
@@ -103,7 +110,9 @@ unaided. It is being let down by what it is shown and by what happens to its ans
 - [Stage 2 — Stop discarding work already done](#stage-2--stop-discarding-work-already-done) — A3, E4a, N3
 - [Stage 3 — Make citation verification discriminate](#stage-3--make-citation-verification-discriminate) — A2
 - [Stage 4 — New capability](#stage-4--new-capability) — A4, N1, N2, E4b, R1
+- [Stage 5 — What Run 2 says to do next](#stage-5--what-run-2-says-to-do-next) — **R3**, N1 repair, A4 repair, A2
 - [Exit criteria](#exit-criteria)
+- [Scoring rubric](scoring-rubric.md) — how a run is adjudicated, and why it needed writing down
 - [What this plan does not do](#what-this-plan-does-not-do)
 
 ---
@@ -500,34 +509,172 @@ should be measured against a pipeline whose other defects are closed.
 
 ---
 
+> ## Stage 5 status — implemented 2026-08-14
+>
+> **5.1, 5.2, 5.3, 5.4 and 5.6 are in the build. 5.5 is a run, not a change.**
+> Build clean, **343 tests passing** (was 326).
+>
+> | Item | Status |
+> | --- | --- |
+> | 5.1 Per-category floor in `Rank` | **done** — one slot per declared evidence category, then score |
+> | 5.2 `CrossGroupContradictions` | **done** — no splitting inside decimals; recurrence read per figure |
+> | 5.3 `DerivedFigures` inputs | **done** — arrangement charge lines read; both totals compared |
+> | 5.4 Structured table citations | **done** — `cells` on the citation, verified against the named passage |
+> | 5.6 Scoring rubric | **done** — [scoring-rubric.md](scoring-rubric.md) |
+> | 5.5 One controlled run | **not a code change** — re-run at top 16, everything else held |
+>
+> ### One thing Stage 5 got wrong while building it
+>
+> §5.2 said to require the two figures to be "the same kind of quantity", and the first
+> implementation read recurrence from the **sentence**. That broke the case the class exists for:
+> *"the client receives £300 per week as an HGV driver, a monthly income of £1,300"* carries both
+> markers, so whichever matched first won and the other figure was mislabelled — and the monthly
+> half is exactly what pairs against the fact find's £1,200. A test caught it. Recurrence is now
+> read from the words around **each figure**, not the sentence.
+>
+> ### And one thing 5.4 confirmed rather than assumed
+>
+> The near-miss matcher stays rejected. Cells are checked **all-or-nothing against the passage the
+> citation names** — a row read is a claim about the whole row, and admitting a partial match
+> would let a wrong figure ride along with three right ones, which is the altered-quotation
+> failure wearing a different hat.
+
+---
+
+## Stage 5 — What Run 2 says to do next
+
+Added 2026-08-14 after scoring the first genuinely generated run since Stages 0–4 landed. Ordered
+by measured value, not by tidiness: **5.1 alone accounts for five of the six remaining misses.**
+
+### 5.1 — A per-category floor in `Rank` *(R3 — the one that matters)*
+
+**Stage 1 worked and the pack cap undid it.** The plans now ask for the Fact Find, and
+`CaseDocumentSearchTool.SearchAsync` runs every query twice — once restricted to its target
+categories, once unfiltered — so Fact Find passages **do** enter the candidate set. Then
+[`Rank`](../../src/AiPromptEvaluator/CheckPlanRunner.cs#L388) sorts by a single binary key (in the
+group's targeted set, or not), then by score, and takes twelve:
+
+```csharp
+.OrderByDescending(p => targeted.Count == 0 || targeted.Contains(p.CategoryCode) ? 1 : 0)
+.ThenByDescending(p => p.Score)
+.Take(MaxPassagesPerGroup)
+```
+
+Once B joins E/G/H/I in `targeted`, that first key is **uniform across every candidate**, the
+ordering collapses to pure score, and Fact Find prose loses to research and report prose. The
+passages are retrieved and then evicted. Every affected pack sits exactly at the cap — CHK-009's
+seven groups hold 12, 12, 12, 12, 12, 8, 12.
+
+**This is R3, "the passage cap binds before the search limit does" — the lever gap-analysis called
+untested and this plan deferred.** §1.1 said adding a category was not sufficient on its own and
+gave the wrong reason: I blamed query phrasing. The queries are fine.
+
+**Fix.** Reserve slots per declared evidence category before filling the remainder by score — one
+or two each, so a category a group declares cannot be crowded out entirely by a better-scoring
+neighbour. Then re-measure; if the floor helps, `MaxPassagesPerGroup` is worth varying too, which
+remains untested.
+
+**Expected gain.** F1.3, F1.6, F5.1, F5.2, F5.4 — every one a Fact Find fact, and F5.1 the
+starkest: CHK-005 still never sees `Total Monthly Disposable Income | £-288.00`, and G5.1 still
+concludes affordability is supported.
+
+### 5.2 — Fix `CrossGroupContradictions`, which is currently emitting noise
+
+It fires, and its output is unusable:
+
+```
+  Client income
+    [CHK-001/G1.3] (2) Employed as Volunteer with Sea Cadets with income £20 per week (page 3)
+    [CHK-005/G5.1] 55 is deducted from the fund transfer value (£110,185), not from monthly income
+```
+
+`55` is the tail of `£3,305.55`. **The sentence splitter splits on `.` and therefore splits every
+decimal.** Of the six pairs reported, none is a genuine contradiction — all six pair unrelated
+quantities that share a cue word.
+
+**Fix.** Do not split on a period between digits. Then require the two figures to be the same
+*kind* of quantity, not merely to match a cue: a monthly income and a one-off fee are not in
+disagreement just because both are money and both sentences say "income". Until both land, this
+section is worse than absent — it is printed to reviewers and teaches them to skip the addendum.
+
+### 5.3 — Extend `DerivedFigures` to the inputs it missed
+
+**F7.2 regressed from partial to missed**, and the component built to own it never saw the right
+data. Its two charge outputs implied £110,185.71 and £115,195.45 and reported both as *"matches no
+arrangement's current value"* — true, and useless.
+
+Two defects:
+
+- **It reads only `costsAndCharges.*.lines` for implied bases.** The Standard-Life-computed-on-
+  Zurich case lives in the existing arrangements' own charge records, which it consults only for
+  the repeated-value check. Read both.
+- **It compares implied bases against arrangement values alone.** £110,185.71 *is* the transfer
+  total — the amount being invested. Comparing against that, and against the arrangement sum,
+  turns a useless line into a check.
+
+### 5.4 — Structured table citations *(the deferred half of §3.4)*
+
+Re-measured on Run 2: the escape fix cleared **7 of 7**, pipe-folding now recovers 24, and the
+residual is **105 of 129 failures — 81%**. That residual is the bucket §3.4 identified and
+deliberately left: the model reformatting a table into prose and quoting the result.
+
+It now blocks three exit criteria on its own, and it is why the report still prints `0 no issue`
+— eleven passes were downgraded. **This is the largest remaining single cause of anything.** The
+fix is unchanged: allow a citation to be either a verbatim span **or** a structured table reference
+(passage id + row/column + values read), and verify the structured form by checking cells.
+
+### 5.5 — One controlled run
+
+Run 2 moved **four things at once** — search limit 16→8, extraction cap 16k→32k, a re-extracted
+canonical model, and all of Stages 0–4. The recall gain is real and far outside the noise floor,
+but nothing in it is attributable by measurement; §3 of the Run 2 analysis attributes by mechanism
+instead, which is weaker.
+
+**Re-run at top 16 with everything else held.** One variable, one comparison — and the R3 question
+in 5.1 gets a direct answer.
+
+### 5.6 — Write the scoring rubric before the next recall claim
+
+Still owed, and now overdue: F6.2 moved caught → partial between two runs whose evidence for that
+group did not change. Until two readers can reproduce a score, every recall number carries ±2.
+
+---
+
 ## Exit criteria
 
-Measured on a **genuinely generated** run — Stage 0.1 makes that verifiable.
+Measured on Run 2, the first genuinely generated run since the plan landed —
+[Run-2/run-analysis.md](Runtime-Logs/latest/Run-2/run-analysis.md).
 
-| After | Measure | Today | Target |
-| --- | --- | --- | --- |
-| Stage 0 | Runs mis-reported as generated | 8 of 12+ | **0** |
-| Stage 0 | Plan copies disagreeing | 4 of 9 stale | **1 source** |
-| Stage 1 | L1 violations | 17 of 60 groups | **0, enforced at load** |
-| Stage 1 | Groups reaching category B: CHK-005 / 007 / 008 / 009 | 1/6, 0/7, 0/5, 0/7 | **≥1 per group that declares it** |
-| Stage 2 | High-severity concerns demoted by `comparisonPerformed` | 11 | **0** |
-| Stage 2 | Extraction report reaching assessors | 45% | **100%** |
-| Stage 2 | Findings storing the model's requirement text | 25 of 60 | **0** |
-| Stage 3 | Unverified quote rate | 36% | **<12%** |
-| Stage 3 | Groups flagged | 70% | **<25%** |
-| Stage 4 | Benchmark recall (caught) | 16 of 36 (44%) | **≥26 of 36 (72%)** |
-| Stage 4 | Missed | 8 | **≤3** |
+| After | Measure | Run 1 | Target | **Run 2** | |
+| --- | --- | --- | --- | --- | --- |
+| Stage 0 | Runs mis-reported as generated | 8 of 12+ | **0** | **0** — the replay self-announced | ✅ |
+| Stage 0 | Plan copies disagreeing | 4 of 9 stale | 1 source | 1 source, shape pinned | ✅ |
+| Stage 1 | L1 violations | 17 of 60 | 0, enforced | **0**, enforced at load | ✅ |
+| Stage 1 | Groups reaching category B: CHK-005 / 007 / 008 / 009 | 1/6, 0/7, 0/5, 0/7 | ≥1 per group declaring it | 1/6, **1/7**, 0/5, 0/7 | ❌ |
+| Stage 2 | High-severity concerns demoted by `comparisonPerformed` | 11 | 0 | 17 groups still vetoed | ⚠️ |
+| Stage 2 | Extraction report reaching assessors | 45% | 100% | **100%** | ✅ |
+| Stage 2 | Findings storing the model's requirement text | 25 of 60 | 0 | **0** | ✅ |
+| Stage 3 | Unverified quote rate | 36% | <12% | **32%** | ❌ |
+| Stage 3 | Groups flagged | 70% | <25% | **70%** | ❌ |
+| Stage 4 | Benchmark recall (caught) | 16/36 (44%) | ≥26/36 (72%) | **24/36 (67%)** | ⚠️ |
+| Stage 4 | Missed | 8 | ≤3 | **6** | ❌ |
+
+**Five met, two close, four missed.** Recall moved 44% → 67% and every check now lands on its
+expected outcome. The four misses share two causes, and both are now understood precisely rather
+than suspected — which is what Stage 5 acts on.
 
 > **Read recall against the noise floor.** Two scorers hand-adjudicating the *same 60 responses*
-> produced 39% and 44%. **±2 findings is the noise floor**, so only differences larger than that
-> mean anything. Before Stage 4, write down a scoring rubric precise enough for two people to
-> reproduce — it is worth more than another run, and the 72% target is not defensible without it.
+> produced 39% and 44%, so **±2 findings is the noise floor**. The 23-point gain is well outside
+> it. But F6.2 moved from caught to partial between two runs whose evidence for that group did not
+> change at all, which is the noise floor doing exactly what it does.
+> [scoring-rubric.md](scoring-rubric.md) now writes down the rules that settle those cases; the
+> next adjudication is the first that can be reproduced.
 
 ---
 
 ## What was not done, and why
 
-Three items are deliberately unbuilt. Each is blocked on something a code change cannot supply.
+Three items remain unbuilt. Each is blocked on something a code change cannot supply.
 
 **4.3 — carry the report's verbatim claim beside the normalised enum.** This is a change to the
 extraction schema (`knowledgeLevel`, the risk and horizon labels), not to the assessment path,
@@ -535,23 +682,33 @@ and it changes what every stored canonical model contains. It belongs with the e
 and needs its owners: shipping it here would leave the two plans disagreeing about the schema.
 **F4.1 remains neutralised until it lands.**
 
-**4.5 — relevance floor.** Two reasons, and the second is the real one. The `ifEvidenceAbsent`
-rules it needs to trigger into do not exist — **0 of 60 query groups define one** — so a floor
-today would only empty packs. And the threshold has to be calibrated: the admitted band is
-narrow (0.503–0.765), the plan says to sweep it against a case and check no caught finding loses
-its evidence, and **that sweep needs a generated run, which this session did not produce.**
-Guessing a number and calling it done would be the one change here that can *reduce* recall.
+**4.5 — relevance floor.** Still not done, and one of the two reasons has now gone. The
+`ifEvidenceAbsent` rules it needs to trigger into do not exist — **0 of 60 query groups define
+one** — so a floor today would only empty packs; that half stands. The other half was that
+calibration needed a generated run, and **Run 2 supplies one**: the admitted band measured
+0.507–0.765, median 0.620, and *"Nothing was retrieved"* has still never appeared in any log.
+
+**But Run 2 also changed the priority.** A floor removes low-scoring passages; §5.1 shows the
+binding problem is the opposite one — relevant Fact Find passages are being retrieved and then
+**evicted by the twelve-passage cap**. Tightening what enters while the cap still decides what
+survives would trade one silent loss for another. **Do 5.1 first, re-measure, then calibrate this
+against the result.**
 
 **4.4, extraction half.** The assessment-side detection is built: `DerivedFigures` now reports
 when one arrangement's charge is recorded at two different percentages, which is the route to
 F7.1. Feeding repeated-key candidates into the `extractionReport` pass is the other half, sits
 in the extraction pipeline, and is the same coordination question as 4.3.
 
-**No run was executed.** Everything above is verified by tests against the recorded artefacts of
-the observed failures — the two real run logs, the shipped plans, the real figures from case
-ABC-99. None of it is verified end to end, and the exit criteria below are unmeasured. The next
-step is unchanged and is now unblocked: **one genuinely generated run**, which item 0.1 will for
-the first time let you confirm is genuine.
+**Run 2 has now executed** — see the [exit criteria](#exit-criteria) for what it measured and
+[Stage 5](#stage-5--what-run-2-says-to-do-next) for what it says to do next. Two things it did not
+settle:
+
+- **It moved four variables at once** (search limit, extraction cap, canonical model, and all of
+  Stages 0–4), so the 23-point recall gain is real but not attributable by measurement. §5.5 asks
+  for one controlled run.
+- **It found two defects in this plan's own output** — `CrossGroupContradictions` splitting on
+  decimal points, and `DerivedFigures` reading the wrong charge lines. Both are §5.2 and §5.3.
+  Shipping a component is not the same as it working.
 
 ---
 

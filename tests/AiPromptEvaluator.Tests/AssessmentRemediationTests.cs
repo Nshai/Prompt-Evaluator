@@ -289,6 +289,104 @@ public class AssessmentRemediationTests
 
     // ──────────────────────────────────────────────
 
+
+    // ──────────────────────────────────────────────
+    // Table reads — the 81% of citation failures a quotation could never carry
+    // ──────────────────────────────────────────────
+
+    /// <summary>
+    /// The Savings row of case ABC-99, and the shape of most evidence in these cases. Restated
+    /// as prose it is an accurate reading and a fabricated quotation; listed as cells it is a
+    /// checkable claim about a named passage.
+    /// </summary>
+    [Fact]
+    public void ATableReadVerifiesAgainstThePassageItNames()
+    {
+        var row =
+            """
+            | Investment Description   | Owner   | Product Type    |   Opening Value (£) |
+            |--------------------------|---------|-----------------|---------------------|
+            | Savings                  | JS      | Cash Account    |               6,000 |
+            """;
+
+        Assert.Empty(CitationVerifier.Unverified(
+            [Cells("P6", "Savings", "JS", "Cash Account", "6,000")],
+            [row],
+            new Dictionary<string, string> { ["P6"] = row }));
+    }
+
+    /// <summary>
+    /// Prose in place of the row still fails, which is the behaviour the cells field exists to
+    /// give the model an alternative to rather than to excuse.
+    /// </summary>
+    [Fact]
+    public void TheSameRowRestatedAsProseStillFails()
+    {
+        var row = "| Savings | JS | Cash Account | 6,000 |";
+
+        Assert.Single(CitationVerifier.Unverified(
+            [Cite("The client holds Savings of 6,000 in a JS Cash Account per the table")],
+            [row]));
+    }
+
+    /// <summary>
+    /// Every value has to be there. A row read is a claim about the whole row, and letting a
+    /// wrong figure ride along with three right ones is the altered-quotation failure wearing a
+    /// different hat.
+    /// </summary>
+    [Fact]
+    public void ATableReadWithOneWrongValueFails()
+    {
+        var row = "| Savings | JS | Cash Account | 6,000 |";
+
+        var unverified = Assert.Single(CitationVerifier.Unverified(
+            [Cells("P6", "Savings", "JS", "Cash Account", "9,000")],
+            [row],
+            new Dictionary<string, string> { ["P6"] = row }));
+
+        Assert.Contains("9,000", unverified);
+    }
+
+    /// <summary>
+    /// The cells must be in the passage the citation names. Finding them scattered across three
+    /// documents does not support "this row says so".
+    /// </summary>
+    [Fact]
+    public void ATableReadIsCheckedAgainstItsOwnPassageNotThePack()
+    {
+        var passages = new Dictionary<string, string>
+        {
+            ["P1"] = "| Savings | JS | Cash Account | 6,000 |",
+            ["P2"] = "The Zurich plan is valued at 103,439.24.",
+        };
+
+        Assert.Single(CitationVerifier.Unverified(
+            [Cells("P2", "Savings", "JS", "Cash Account", "6,000")],
+            passages.Values,
+            passages));
+    }
+
+    /// <summary>A row read is rendered as a row, not dressed up in quotation marks.</summary>
+    [Fact]
+    public void ATableReadIsNotPrintedAsAQuotation()
+    {
+        var finding = Group() with
+        {
+            Outcome = nameof(CheckOutcome.PotentialConcern),
+            Citations = [Cells("P6", "Savings", "JS", "Cash Account", "6,000")],
+        };
+
+        var text = new FindingsReport(
+            "ABC-99", 99, "m", DateTimeOffset.Now,
+            [CheckFinding.FromGroups("CHK-001", "Completeness", [finding])], null).Format();
+
+        Assert.Contains("table: Savings  |  JS  |  Cash Account  |  6,000", text);
+        Assert.DoesNotContain("\"Savings  |  JS", text);
+    }
+
+    private static FindingCitation Cells(string passageId, params string[] cells) =>
+        new() { PassageId = passageId, Source = "doc.md", Cells = [.. cells] };
+
     private static FindingCitation Cite(string quote) =>
         new() { PassageId = "P1", Source = "doc.md", Quote = quote };
 

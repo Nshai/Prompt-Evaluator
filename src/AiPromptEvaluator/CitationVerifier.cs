@@ -36,18 +36,69 @@ public static class CitationVerifier
     /// </summary>
     public static IReadOnlyList<string> Unverified(
         IEnumerable<FindingCitation> citations,
-        IEnumerable<string> evidence)
+        IEnumerable<string> evidence,
+        IReadOnlyDictionary<string, string>? byPassageId = null)
     {
         var haystack = Normalise(string.Join("\n", evidence));
+        var passages = (byPassageId ?? new Dictionary<string, string>())
+            .ToDictionary(p => p.Key, p => Normalise(p.Value), StringComparer.OrdinalIgnoreCase);
 
-        return citations
-            .Select(c => c.Quote)
-            .Where(q => !string.IsNullOrWhiteSpace(q))
-            .Select(q => q!.Trim())
-            .Where(q => q.Length >= MinimumQuoteLength)
-            .Where(q => !IsPresent(q, haystack))
-            .Distinct(StringComparer.Ordinal)
+        var unverified = new List<string>();
+
+        foreach (var citation in citations)
+        {
+            if (citation.IsTableRead)
+            {
+                // Cells are checked against the passage the citation names, not against the
+                // whole pack: "these values are in this table" is the claim being made, and
+                // finding them scattered across three documents would not support it.
+                var where = citation.PassageId is not null && passages.TryGetValue(citation.PassageId, out var text)
+                    ? text
+                    : haystack;
+
+                if (!CellsPresent(citation.Cells!, where))
+                {
+                    unverified.Add(citation.Describe());
+                }
+
+                continue;
+            }
+
+            var quote = citation.Quote?.Trim();
+
+            if (string.IsNullOrWhiteSpace(quote) || quote.Length < MinimumQuoteLength)
+            {
+                continue;
+            }
+
+            if (!IsPresent(quote, haystack))
+            {
+                unverified.Add(quote);
+            }
+        }
+
+        return unverified.Distinct(StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>
+    /// Whether every value a table read claims is present in the passage it cites.
+    ///
+    /// Every one, not most: a row read is a claim about the whole row, and admitting a partial
+    /// match would let a wrong figure ride along with three right ones — the same failure as an
+    /// altered quotation, wearing a different hat.
+    ///
+    /// Blank cells are skipped, because an empty cell in a converted table carries no claim.
+    /// </summary>
+    private static bool CellsPresent(IEnumerable<string> cells, string haystack)
+    {
+        var claimed = cells
+            .Where(c => !string.IsNullOrWhiteSpace(c))
+            .Select(Normalise)
+            .Where(c => c.Length > 0)
             .ToList();
+
+        return claimed.Count > 0
+               && claimed.All(c => haystack.Contains(c, StringComparison.Ordinal));
     }
 
     /// <summary>
@@ -114,9 +165,12 @@ public static class CitationVerifier
     /// Applies the check to a group finding, recording any quotes that could not be found.
     /// <see cref="GroupFinding.ParsedOutcome"/> then refuses to read the group as a pass.
     /// </summary>
-    public static GroupFinding Verify(GroupFinding finding, IEnumerable<string> evidence)
+    public static GroupFinding Verify(
+        GroupFinding finding,
+        IEnumerable<string> evidence,
+        IReadOnlyDictionary<string, string>? byPassageId = null)
     {
-        var unverified = Unverified(finding.Citations, evidence);
+        var unverified = Unverified(finding.Citations, evidence, byPassageId);
 
         return unverified.Count == 0 ? finding : finding with { UnverifiedQuotes = unverified };
     }

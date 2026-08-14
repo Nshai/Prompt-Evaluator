@@ -187,6 +187,27 @@ public static class DerivedFigures
             .Where(a => a.Value is not null)
             .ToList();
 
+        // The two totals a charge can legitimately be computed on, alongside any single plan.
+        // Reporting only "matches no arrangement" was true and useless on a real run: the
+        // platform charge implied £110,185.71, which is exactly the amount being transferred.
+        var totals = new List<(string Name, double Value)>();
+
+        if (arrangements.Count > 1)
+        {
+            totals.Add(("the total of all arrangements", arrangements.Sum(a => a.Value!.Value)));
+        }
+
+        var transferred = (root["existingArrangements"] as JsonArray ?? [])
+            .OfType<JsonObject>()
+            .Select(a => MoneyOf(a["transferValue"]))
+            .Where(v => v is > 0)
+            .ToList();
+
+        if (transferred.Count > 0)
+        {
+            totals.Add(("the total being transferred", transferred.Sum(v => v!.Value)));
+        }
+
         foreach (var (scope, line) in ChargeLines(root))
         {
             var percentage = Number(line["percentage"]?["value"]);
@@ -202,7 +223,10 @@ public static class DerivedFigures
 
             var match = arrangements
                 .Where(a => Math.Abs(a.Value!.Value - implied) <= implied * ImpliedBaseTolerance)
-                .Select(a => a.Name)
+                .Select(a => $"{a.Name}'s current value")
+                .Concat(totals
+                    .Where(t => Math.Abs(t.Value - implied) <= implied * ImpliedBaseTolerance)
+                    .Select(t => t.Name))
                 .FirstOrDefault();
 
             figures.Add(new Figure(
@@ -210,8 +234,8 @@ public static class DerivedFigures
                 $"{described}: {Money(amount.Value)} at {percentage.Value:0.###}% implies a fund "
                 + $"value of {Money(implied)}"
                 + (match is null
-                    ? ", which matches no arrangement's current value."
-                    : $", which is {match}'s current value.")));
+                    ? ", which matches no arrangement value and neither total."
+                    : $", which is {match}.")));
         }
     }
 
@@ -325,8 +349,30 @@ public static class DerivedFigures
         }
     }
 
+    /// <summary>
+    /// Every charge line in the model, from both places one can live.
+    ///
+    /// Reading only <c>costsAndCharges</c> was the defect that let the benchmark's
+    /// wrong-fund charge escape: on a real model that section held the recommended plan's
+    /// lines and nothing else, so the existing arrangements' own charge records — where a row
+    /// computed against the wrong plan actually sits — were never divided. The scope is the
+    /// arrangement's name, so the resulting figure names the plan a reader can check.
+    /// </summary>
     private static IEnumerable<(string Scope, JsonObject Line)> ChargeLines(JsonObject root)
     {
+        foreach (var arrangement in (root["existingArrangements"] as JsonArray ?? []).OfType<JsonObject>())
+        {
+            var scope = Text(arrangement["provider"])
+                        ?? Text(arrangement["productName"])
+                        ?? Text(arrangement["arrangementId"])
+                        ?? "an existing arrangement";
+
+            foreach (var line in (arrangement["charges"]?["lines"] as JsonArray ?? []).OfType<JsonObject>())
+            {
+                yield return (scope, line);
+            }
+        }
+
         if (root["costsAndCharges"] is not JsonObject costs)
         {
             yield break;

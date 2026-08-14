@@ -86,9 +86,14 @@ public static class CrossGroupContradictions
                         continue;
                     }
 
-                    foreach (var value in MoneyIn(sentence))
+                    // Two figures are only in disagreement if they are the same kind of
+                    // quantity. A £20-per-week volunteer income and a £3,305 one-off fee both
+                    // sit in sentences containing the word "income", and pairing them says
+                    // nothing. Keying the subject by recurrence as well as topic keeps weekly
+                    // against weekly and one-off against one-off.
+                    foreach (var (value, recurrence) in MoneyIn(sentence))
                     {
-                        claims.Add((subject, where, Shorten(sentence), value));
+                        claims.Add(($"{subject} ({recurrence})", where, Shorten(sentence), value));
                     }
                 }
             }
@@ -188,6 +193,16 @@ public static class CrossGroupContradictions
 
     // ──────────────────────────────────────────────
 
+    /// <summary>
+    /// Splits a finding into sentences, without splitting money in half.
+    ///
+    /// The first version split on every <c>.</c> and therefore split every decimal, so a
+    /// sentence about a £3,305.55 fee arrived as a fragment beginning "55 is deducted from…"
+    /// and got paired against an unrelated figure. Of six pairs reported on a real run, none
+    /// was a genuine contradiction and several began mid-number.
+    ///
+    /// A full stop between two digits is a decimal point, not a sentence ending.
+    /// </summary>
     private static IEnumerable<string> Sentences(GroupFinding group)
     {
         var text = string.Join(
@@ -196,10 +211,16 @@ public static class CrossGroupContradictions
                 .Concat(group.Discrepancies)
                 .Where(s => !string.IsNullOrWhiteSpace(s)));
 
-        return text
-            .Split(['.', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        return SentenceBoundary
+            .Split(text)
+            .Select(s => s.Trim())
             .Where(s => s.Length > 12);
     }
+
+    /// <summary>A full stop or semicolon that is not sitting between two digits.</summary>
+    private static readonly Regex SentenceBoundary = new(
+        @"(?<!\d)[.;]|[.;](?!\d)",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     private static string? SubjectOf(string sentence)
     {
@@ -214,14 +235,43 @@ public static class CrossGroupContradictions
         return null;
     }
 
-    private static IEnumerable<decimal> MoneyIn(string sentence) =>
+    /// <summary>
+    /// How often one figure recurs, judged from the words immediately around it rather than
+    /// from the sentence as a whole.
+    ///
+    /// Per-sentence was tried and is wrong: *"the client receives £300 per week as an HGV
+    /// driver, a monthly income of £1,300"* carries both markers, so whichever matched first
+    /// won and the other figure was mislabelled. That sentence is the exact shape this class
+    /// exists to pair against the fact find's monthly figure, and labelling it "weekly" made
+    /// the pairing impossible.
+    ///
+    /// The window reaches further back than forward because the qualifier usually precedes the
+    /// amount — "a monthly income of £1,300" — while a trailing "per week" sits right after it.
+    /// </summary>
+    private static string RecurrenceNear(string sentence, int at, int length)
+    {
+        var from = Math.Max(0, at - 40);
+        var to = Math.Min(sentence.Length, at + length + 12);
+        var window = sentence[from..to];
+
+        if (Says(window, "per week", "weekly", "a week", "/week")) return "weekly";
+        if (Says(window, "per month", "monthly", "a month", "/month", "p/m")) return "monthly";
+        if (Says(window, "per annum", "annually", "annual", "a year", "p.a", "yearly")) return "annual";
+        if (Says(window, "one-off", "one off", "initial fee", "initial advice fee", "lump sum")) return "one-off";
+
+        return "unstated";
+    }
+
+    private static bool Says(string text, params string[] markers) =>
+        markers.Any(m => text.Contains(m, StringComparison.OrdinalIgnoreCase));
+
+    private static IEnumerable<(decimal Value, string Recurrence)> MoneyIn(string sentence) =>
         MoneyPattern.Matches(sentence)
             .Select(m => decimal.TryParse(
                 m.Groups[1].Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var value)
-                ? value
-                : (decimal?)null)
-            .Where(v => v is not null)
-            .Select(v => v!.Value)
+                ? (Value: value, Recurrence: RecurrenceNear(sentence, m.Index, m.Length))
+                : default)
+            .Where(c => c.Value > 0)
             .Distinct();
 
     private static string Shorten(string sentence) =>

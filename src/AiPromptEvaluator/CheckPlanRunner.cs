@@ -195,7 +195,9 @@ public sealed class CheckPlanRunner : IDisposable
                 // the whole check's evidence, or a quote lifted from a neighbouring group's
                 // passages would verify and the check would be worthless.
                 findings[i] = CitationVerifier.Verify(
-                    ParseGroup(result.Response, pack.Group), EvidenceTextOf(pack));
+                    ParseGroup(result.Response, pack.Group),
+                    EvidenceTextOf(pack),
+                    PassagesById(pack));
 
                 progress?.Report(
                     $"{plan.CheckId}: assessed {Interlocked.Increment(ref assessed)}/{packs.Length}");
@@ -377,24 +379,91 @@ public sealed class CheckPlanRunner : IDisposable
         $"{hit.DocumentName.Length}:{hit.DocumentName}{hit.SearchedText}";
 
     /// <summary>
-    /// Orders a group's passages and keeps the best <see cref="MaxPassagesPerGroup"/>.
+    /// Slots held for each category a group says its evidence lives in, before the rest of the
+    /// pack is filled by score.
     ///
-    /// Targeted categories first, then score — and then the passage itself. That last part is
-    /// what makes the cut reproducible: scores collide often enough to matter, and
-    /// <c>Take</c> slices straight through the tie band, so without a final key which passages
-    /// survive depends on the order the vector store happened to return them in. An approximate
-    /// index is under no obligation to keep that order stable.
+    /// One, not two. A group targeting five categories would spend ten of its twelve slots on a
+    /// floor of two, which stops being a floor and becomes the whole pack. One slot per category
+    /// guarantees a hearing without displacing the ranking, and whether two is better is a
+    /// question for a measured run rather than for this comment.
+    /// </summary>
+    public const int ReservedSlotsPerTargetedCategory = 1;
+
+    /// <summary>
+    /// Orders a group's passages and keeps the best <see cref="MaxPassagesPerGroup"/>, holding a
+    /// slot for each category the group declared its evidence lives in.
+    ///
+    /// **The floor exists because the obvious ordering silently lost whole documents.** Ranking
+    /// by "is this category targeted" and then by score looks like it favours the targeted ones,
+    /// and it does — until every candidate is targeted, which is the normal case once a group
+    /// names four or five categories. The first key then returns the same value for everything,
+    /// the ordering collapses to pure score, and <c>Take</c> keeps whichever documents happen to
+    /// embed closest to the query text.
+    ///
+    /// Measured, that meant the Fact Find. Its prose scores below research and report prose for
+    /// almost any query, so passages retrieved *specifically because a plan asked for them* were
+    /// evicted before the assessor saw them: three checks reached it in zero groups out of
+    /// nineteen while every one of their packs sat exactly at the cap. Six of eight missed
+    /// benchmark findings were facts recorded only there. Fixing the plans to ask for the
+    /// category was necessary and did nothing on its own, because asking is not the same as
+    /// keeping.
+    ///
+    /// Within that, the original ordering still decides everything: targeted first, then score,
+    /// then the passage itself. That last key is what makes the cut reproducible — scores collide
+    /// often enough to matter, and a slice through a tie band otherwise depends on the order the
+    /// vector store happened to return, which an approximate index is under no obligation to keep
+    /// stable.
     /// </summary>
     internal static List<CaseDocumentSearchMatch> Rank(
         IEnumerable<CaseDocumentSearchMatch> passages,
-        IReadOnlySet<string> targeted) =>
-        passages
+        IReadOnlySet<string> targeted)
+    {
+        var ordered = passages
             .OrderByDescending(p => targeted.Count == 0 || targeted.Contains(p.CategoryCode) ? 1 : 0)
             .ThenByDescending(p => p.Score)
             .ThenBy(p => p.DocumentName, StringComparer.Ordinal)
             .ThenBy(p => p.SearchedText, StringComparer.Ordinal)
-            .Take(MaxPassagesPerGroup)
             .ToList();
+
+        if (targeted.Count == 0 || ordered.Count <= MaxPassagesPerGroup)
+        {
+            return ordered.Take(MaxPassagesPerGroup).ToList();
+        }
+
+        var keep = new HashSet<int>();
+
+        // The floor, in ordinal category order so a pack does not depend on the order the plan
+        // happened to list its categories in.
+        foreach (var category in targeted.OrderBy(c => c, StringComparer.Ordinal))
+        {
+            var held = 0;
+
+            for (var i = 0; i < ordered.Count && held < ReservedSlotsPerTargetedCategory; i++)
+            {
+                if (keep.Count >= MaxPassagesPerGroup)
+                {
+                    break;
+                }
+
+                if (!keep.Contains(i)
+                    && string.Equals(ordered[i].CategoryCode, category, StringComparison.OrdinalIgnoreCase))
+                {
+                    keep.Add(i);
+                    held++;
+                }
+            }
+        }
+
+        // Then the best of the rest, which is the whole pack whenever nothing was displaced.
+        for (var i = 0; i < ordered.Count && keep.Count < MaxPassagesPerGroup; i++)
+        {
+            keep.Add(i);
+        }
+
+        // Emitted in rank order rather than in the order they were chosen: a reader should meet
+        // the best evidence first, whether or not it got in on the floor.
+        return ordered.Where((_, i) => keep.Contains(i)).ToList();
+    }
 
     /// <summary>
     /// Runs one planned query, telling the store which categories the plan expects the answer
@@ -455,6 +524,12 @@ public sealed class CheckPlanRunner : IDisposable
           it came from. Quotations are checked against the pack automatically. Do not adjust a
           quotation to fit your reasoning: if the evidence contradicts the report, that is the
           finding.
+        - Where the evidence is a TABLE and what you rely on is a row rather than a sentence,
+          do not rewrite the row as prose. Leave "quote" empty, name the passage id, and list
+          the values you read in "cells" — for example
+          ["Savings", "JS", "Cash Account", "6,000"]. A table restated as a sentence is not a
+          quotation and will be rejected, however accurately you read it. Every value you list
+          is checked against that passage, so list what is there and nothing more.
         - Respect the false-positive guards. They describe specific ways this comparison
           produces spurious mismatches, and a finding one of them explains is not a finding.
         - Do not soften, hedge or omit a contradiction to make the finding read more favourably.
@@ -709,6 +784,16 @@ public sealed class CheckPlanRunner : IDisposable
     /// canonical model fragments it was given, since a finding may legitimately quote the
     /// report's own assertion.
     /// </summary>
+    /// <summary>
+    /// The group's passages keyed by the id the assessor saw them under, so a citation that
+    /// reads a table can be checked against the table it names rather than against the pack as
+    /// a whole.
+    /// </summary>
+    internal static IReadOnlyDictionary<string, string> PassagesById(GroupEvidence pack) =>
+        pack.Passages
+            .Select((passage, i) => (Id: PassageId(i), passage.SearchedText))
+            .ToDictionary(p => p.Id, p => p.SearchedText, StringComparer.OrdinalIgnoreCase);
+
     internal static IReadOnlyList<string> EvidenceTextOf(GroupEvidence pack) =>
     [
         .. pack.Passages.Select(p => p.SearchedText),

@@ -31,7 +31,7 @@ public class CrossGroupContradictionTests
 
         var found = Assert.Single(CrossGroupContradictions.In([chk001, chk006]));
 
-        Assert.Equal("Client income", found.Subject);
+        Assert.Equal("Client income (monthly)", found.Subject);
         Assert.Contains("CHK-001/G1.4", found.Left + found.Right);
         Assert.Contains("CHK-006/G6.3", found.Left + found.Right);
     }
@@ -97,7 +97,7 @@ public class CrossGroupContradictionTests
 
         var found = Assert.Single(CrossGroupContradictions.In([a, b]));
 
-        Assert.Equal("Total pension value", found.Subject);
+        Assert.Equal("Total pension value (unstated)", found.Subject);
     }
 
     [Fact]
@@ -113,13 +113,76 @@ public class CrossGroupContradictionTests
 
         Assert.Contains("FIGURES DESCRIBED DIFFERENTLY", text);
         Assert.Contains("They are not findings", text);
-        Assert.Contains("Client income", text);
+        Assert.Contains("Client income", text);  // the recurrence is appended to it
     }
 
     [Fact]
     public void NothingToReportProducesNoSection()
     {
         Assert.Equal(string.Empty, CrossGroupContradictions.Format(CrossGroupContradictions.In([])));
+    }
+
+
+    // ──────────────────────────────────────────────
+    // What Run 2 exposed
+    // ──────────────────────────────────────────────
+
+    /// <summary>
+    /// The splitter used to break on every full stop, including the one inside £3,305.55, so
+    /// fragments arrived beginning "55 is deducted from…" and were paired against whatever
+    /// else shared a cue word. Of six pairs reported on a real run, none was genuine.
+    /// </summary>
+    [Fact]
+    public void AFigureIsNotSplitAtItsDecimalPoint()
+    {
+        var a = CheckFinding.FromGroups("CHK-005", "Affordability",
+            [Group("G5.1", reportSays: "The initial fee of £3,305.55 is deducted from the fund transfer value.")]);
+
+        var b = CheckFinding.FromGroups("CHK-001", "Completeness",
+            [Group("G1.3", reportSays: "Volunteer income of £20 per week is recorded on page 3.")]);
+
+        var found = CrossGroupContradictions.In([a, b]);
+
+        Assert.DoesNotContain(found, c => c.Left.Contains("55 is deducted") || c.Right.Contains("55 is deducted"));
+        Assert.Empty(found);
+    }
+
+    /// <summary>
+    /// A weekly income and a one-off fee are not in disagreement merely because both are money
+    /// and both sentences say "income".
+    /// </summary>
+    [Fact]
+    public void FiguresOnDifferentFootingsAreNotPaired()
+    {
+        var a = CheckFinding.FromGroups("CHK-001", "One",
+            [Group("G1.3", reportSays: "Volunteer income of £20 per week.")]);
+
+        var b = CheckFinding.FromGroups("CHK-005", "Two",
+            [Group("G5.1", reportSays: "An initial fee of £3,305.55 is charged, not taken from income.")]);
+
+        Assert.Empty(CrossGroupContradictions.In([a, b]));
+    }
+
+    /// <summary>
+    /// Recurrence is read from the words around each figure, not from the sentence. F1.1's
+    /// report sentence states a weekly amount and its monthly equivalent together, and the
+    /// monthly half is what pairs against the fact find.
+    /// </summary>
+    [Fact]
+    public void ASentenceCarryingTwoFootingsLabelsEachFigureSeparately()
+    {
+        var a = CheckFinding.FromGroups("CHK-001", "One",
+            [Group("G1.4", reportSays:
+                "Report asserts the client receives £300 per week as an HGV driver, a monthly income of £1,300.")]);
+
+        var b = CheckFinding.FromGroups("CHK-006", "Two",
+            [Group("G6.3", fileSays: "Fact Find records net basic monthly income of £1,200.")]);
+
+        var found = Assert.Single(CrossGroupContradictions.In([a, b]));
+
+        Assert.Equal("Client income (monthly)", found.Subject);
+        Assert.Contains("£1,300", found.Left + found.Right);
+        Assert.Contains("£1,200", found.Left + found.Right);
     }
 
     private static GroupFinding Group(string id, string reportSays = "", string fileSays = "") => new()

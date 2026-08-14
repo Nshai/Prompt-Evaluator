@@ -59,6 +59,33 @@ public sealed record FindingCitation
     [JsonPropertyName("source")] public string Source { get; init; } = string.Empty;
     [JsonPropertyName("category")] public string? Category { get; init; }
     [JsonPropertyName("quote")] public string? Quote { get; init; }
+
+    /// <summary>
+    /// The individual values read out of a table, when the assertion is a row rather than a
+    /// sentence — an alternative to <see cref="Quote"/>, not a companion to it.
+    ///
+    /// This exists because most of the evidence in these cases is converted tables, and a
+    /// quotation is the wrong shape for one. Asked to support "the £6,000 savings are held by
+    /// JS in a cash account", a model reproduced the row as prose — <c>"Savings JS Cash Account
+    /// 6,000"</c> — which is an accurate reading and a fabricated quotation, because no such
+    /// sentence exists. Measured across one run, **81% of all citation failures were this**:
+    /// not invention, but a table restated in a form no verifier could match.
+    ///
+    /// Loosening the matcher to accept them was tried and rejected — a rule tolerant enough
+    /// admits an altered digit, which is the failure the verifier exists for. So the model is
+    /// given a way to say what it actually did instead: name the passage and list the cells it
+    /// read. Each cell is then checked against that passage, which is a stronger claim than a
+    /// reflowed quotation and a checkable one.
+    /// </summary>
+    [JsonPropertyName("cells")] public List<string>? Cells { get; init; }
+
+    /// <summary>True when this citation reads a table rather than quoting a span.</summary>
+    [JsonIgnore] public bool IsTableRead =>
+        string.IsNullOrWhiteSpace(Quote) && Cells is { Count: > 0 };
+
+    /// <summary>How the citation reads in a report, whichever form it took.</summary>
+    public string Describe() =>
+        IsTableRead ? string.Join("  |  ", Cells!) : Quote ?? string.Empty;
 }
 
 /// <summary>
@@ -433,12 +460,17 @@ public static class FindingSchema
               "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["passageId", "source", "category", "quote"],
+                "required": ["passageId", "source", "category", "quote", "cells"],
                 "properties": {
                   "passageId": { "type": ["string", "null"] },
                   "source": { "type": "string" },
                   "category": { "type": ["string", "null"] },
-                  "quote": { "type": ["string", "null"] }
+                  "quote": { "type": ["string", "null"] },
+                  "cells": {
+                    "type": ["array", "null"],
+                    "items": { "type": "string" },
+                    "description": "The values read from a table row, when the evidence is a table and quoting it as a sentence would not be a quotation. Use instead of quote, never as well."
+                  }
                 }
               }
             },
@@ -754,7 +786,13 @@ public sealed record FindingsReport(
                 var passage = string.IsNullOrWhiteSpace(citation.PassageId) ? string.Empty : $" ({citation.PassageId})";
                 sb.AppendLine($"      · {citation.Source}{category}{passage}");
 
-                if (!string.IsNullOrWhiteSpace(citation.Quote))
+                if (citation.IsTableRead)
+                {
+                    // Rendered as a row rather than in quotation marks, because it is not a
+                    // quotation and presenting it as one is the habit this replaced.
+                    sb.AppendLine(Indent($"table: {citation.Describe()}", "        "));
+                }
+                else if (!string.IsNullOrWhiteSpace(citation.Quote))
                 {
                     sb.AppendLine(Indent($"\"{citation.Quote.Trim()}\"", "        "));
                 }

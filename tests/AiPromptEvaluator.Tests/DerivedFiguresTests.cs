@@ -98,7 +98,7 @@ public class DerivedFiguresTests
 
         var charge = Assert.Single(figures, f => f.Topic == "Charge arithmetic");
 
-        Assert.Contains("matches no arrangement's current value", charge.Statement);
+        Assert.Contains("matches no arrangement value and neither total", charge.Statement);
     }
 
     /// <summary>
@@ -196,6 +196,66 @@ public class DerivedFiguresTests
             """);
 
         Assert.DoesNotContain(figures, f => f.Topic == "Charge consistency");
+    }
+
+
+    /// <summary>
+    /// F7.2's real shape. The wrong-fund charge lives on the arrangement itself, not in
+    /// costsAndCharges — which on the observed model held only the recommended plan's lines,
+    /// so nothing was ever divided and the finding escaped.
+    /// </summary>
+    [Fact]
+    public void AChargeLineOnTheArrangementItselfIsDivided()
+    {
+        var figures = DerivedFigures.From(
+            """
+            {
+              "existingArrangements": [
+                { "provider": "Zurich", "currentValue": { "amount": 103439.24 } },
+                { "provider": "Standard Life", "currentValue": { "amount": 3002.00 },
+                  "charges": { "lines": [
+                    { "chargeType": "OngoingCharge", "percentage": { "value": 0.18 },
+                      "amount": { "amount": 186.19 } }] } }
+              ]
+            }
+            """);
+
+        var charge = Assert.Single(figures, f => f.Topic == "Charge arithmetic");
+
+        Assert.Contains("implies a fund value of £103,438.89", charge.Statement);
+        Assert.Contains("which is Zurich's current value", charge.Statement);
+    }
+
+    /// <summary>
+    /// A platform charge is levied on what is being invested, not on any one plan, and the
+    /// amount invested is not the amount held — here two of the five plans are retained.
+    /// Reporting "matches no arrangement" for the transfer total was true and told a reader
+    /// nothing.
+    /// </summary>
+    [Fact]
+    public void AChargeOnTheTransferTotalIsRecognised()
+    {
+        var figures = DerivedFigures.From(
+            """
+            {
+              "existingArrangements": [
+                { "provider": "Zurich", "currentValue": { "amount": 103439.24 }, "transferValue": { "amount": 103439.24 } },
+                { "provider": "Aviva",  "currentValue": { "amount": 3744.36 },   "transferValue": { "amount": 3744.36 } },
+                { "provider": "Standard Life", "currentValue": { "amount": 3002.00 }, "transferValue": { "amount": 3002.00 } },
+                { "provider": "People's Pension", "currentValue": { "amount": 6601.55 } },
+                { "provider": "Scottish Widows",  "currentValue": { "amount": 211.32 } }
+              ],
+              "costsAndCharges": {
+                "recommended": { "scope": "Aviva Platform", "lines": [
+                  { "chargeType": "Platform", "percentage": { "value": 0.21 },
+                    "amount": { "amount": 231.39 } }] }
+              }
+            }
+            """);
+
+        var charge = Assert.Single(figures, f => f.Topic == "Charge arithmetic");
+
+        Assert.Contains("which is the total being transferred", charge.Statement);
     }
 
     // ──────────────────────────────────────────────

@@ -1,15 +1,24 @@
 # Run analysis — `latest`, case ABC-99
 
-Scored against [expected-results-benchmark.md](../../expected-results-benchmark.md).
+Scored against [expected-results-benchmark.md](../../../expected-results-benchmark.md).
 Sources: [`checks_ABC-99_20260814_114031.log`](checks_ABC-99_20260814_114031.log) (33,315 lines,
 60 prompt/response pairs) and [`output-latest.txt`](output-latest.txt) (the rendered findings).
+
+---
+
+> **This analysis describes the pipeline as it was before
+> [remediation-plan.md](../../../remediation-plan.md) was implemented (commits `e775a4c`,
+> `77a2e51`).** Its findings stand as the record of that run; the code it quotes has since been
+> changed in most of the places it names, and the line references point at where each construct
+> lives now rather than where it lived then. For what changed and what it was worth, see
+> [the Run 2 analysis](../Run-2/run-analysis.md).
 
 ---
 
 ## 0. Read this first — these logs are a cache replay
 
 **The run stamped `2026-08-14 11:40:31` did not generate anything. It is a byte-identical replay of
-run [`160653`](../extraction/result/checks_ABC-99_20260813_160653.log) from the previous day.**
+run [`160653`](../../extraction/result/checks_ABC-99_20260813_160653.log) from the previous day.**
 
 Four independent proofs, any one of which is sufficient:
 
@@ -22,7 +31,7 @@ Four independent proofs, any one of which is sufficient:
 | MD5 of the 60 JSON responses, sorted | `8a0494b895c1ad46b61f2e4c01a32dfb` | `8a0494b895c1ad46b61f2e4c01a32dfb` |
 
 660,284 chat tokens in four seconds is 165,000 tok/s. This is precisely the signature
-[gap-analysis §1](../../gap-analysis.md#1-what-the-runs-actually-are) documents, and it is now the
+[gap-analysis §1](../../../gap-analysis.md#1-what-the-runs-actually-are) documents, and it is now the
 **eighth** replay of twelve-plus logs on record. The only thing that differs between the two logs is
 the order groups were emitted in; every `reportSays`, `discrepancies`, `analysis`, `citations`,
 `severity` and `outcome` field is the same byte for byte.
@@ -302,7 +311,7 @@ for**, and the fix is a plan edit plus a lint rule, not a retrieval parameter.
 ### 4.2 A3 — the pipeline overrides its own assessor, and throws away the reasoning
 
 The gap register describes A3 as *"Indeterminate fires when one input is absent"*. Measured, it is
-sharper and worse than that. [`GroupFinding.ParsedOutcome`](../../../../src/AiPromptEvaluator/CheckFinding.cs#L100-L103)
+sharper and worse than that. [`GroupFinding.ParsedOutcome`](../../../../../src/AiPromptEvaluator/CheckFinding.cs#L193-L210)
 reads:
 
 ```csharp
@@ -330,7 +339,7 @@ files the whole thing as unassessable. G7.7 does the same while its discrepancie
 *"9.4% to 10.0% decrease in maturity value"*.
 
 Then `Summarise` compounds it: the rendered summary prints discrepancies **only from groups whose
-`ParsedOutcome` is PotentialConcern** ([CheckFinding.cs:215](../../../../src/AiPromptEvaluator/CheckFinding.cs#L215)),
+`ParsedOutcome` is PotentialConcern** ([CheckFinding.cs:215](../../../../../src/AiPromptEvaluator/CheckFinding.cs#L340)),
 so all 71 survive only in the detail body, and the Indeterminate groups contribute nothing but a
 list of group ids to the check summary a reviewer actually reads.
 
@@ -387,7 +396,7 @@ page-11 Zurich table conflict (F7.1) is not among them**, and there is no second
 could find it — which is why F7.1 and F9.5 are partial.
 
 There is a second, separate defect in the same path. The check-level prompt injects the extraction
-report through [`Truncate(extraction.Json, 4000)`](../../../../src/AiPromptEvaluator/CheckPlanRunner.cs#L521).
+report through [`Truncate(extraction.Json, 4000)`](../../../../../src/AiPromptEvaluator/CheckPlanRunner.cs#L555).
 Measured in this run's prompts, the block ends:
 
 ```
@@ -486,7 +495,7 @@ Comparing every response's `groupId` and `requirement` fields against the plan t
 | Returned a `requirement` string differing from the plan's | **25 (42%)** |
 | Both | 11 |
 
-**The identifier half is harmless.** [`ParseGroup`](../../../../src/AiPromptEvaluator/CheckPlanRunner.cs#L748-L754)
+**The identifier half is harmless.** [`ParseGroup`](../../../../../src/AiPromptEvaluator/CheckPlanRunner.cs#L794-L804)
 overwrites it unconditionally — *"The plan is the authority on which requirement this is; the model
 only echoes it"* — so nothing is misrouted and the rendered output shows correct group ids
 throughout. It is a prompt-adherence signal, not a bug: **over a third of responses lost track of
@@ -532,7 +541,7 @@ The benchmark cannot measure false positives at check level, but group level is 
 Two clear spurious findings, both traceable to R1 (no relevance floor):
 
 - **G9.3 — lost life cover and waiver benefits.** Repeats the error
-  [gap-analysis §4 R1](../../gap-analysis.md#r1--no-relevance-floor-open) already documented:
+  [gap-analysis §4 R1](../../../gap-analysis.md#r1--no-relevance-floor-open) already documented:
   *"the Zurich arrangement contained life cover and waiver of premium benefits [P1], which are
   material features being lost."* The cited passage is boilerplate — *"Both life cover and waiver
   benefits are no longer available on new pension plans"* — a statement about the product range,
@@ -604,7 +613,7 @@ matcher. Loosening the matcher far enough to admit these would re-open the exact
 One earlier hypothesis of mine was wrong and is worth recording: I assumed G1.8's four failures
 were caused by `EvidenceTextOf` omitting the extraction report. It does not — G1.8 receives
 `/extractionReport/internalInconsistencies[]` as a canonical fragment, and
-[`EvidenceTextOf`](../../../../src/AiPromptEvaluator/CheckPlanRunner.cs#L674) includes fragments.
+[`EvidenceTextOf`](../../../../../src/AiPromptEvaluator/CheckPlanRunner.cs#L712) includes fragments.
 The real cause is escaping. The fragment JSON reaches the prompt as:
 
 ```
@@ -622,7 +631,7 @@ and a reminder that "the evidence does not contain the quote" has more than one 
 
 Nothing below is new analysis of a new run — it is what this output evidences about the standing
 priorities. **Sequenced, scoped and given exit criteria in
-[remediation-plan.md](../../remediation-plan.md)**; this table is the register it was built from.
+[remediation-plan.md](../../../remediation-plan.md)**; this table is the register it was built from.
 
 | | Action | Gap | Why this output argues for it |
 | --- | --- | --- | --- |

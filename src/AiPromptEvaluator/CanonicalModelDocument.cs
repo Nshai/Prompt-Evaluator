@@ -98,4 +98,23 @@ public sealed record ExtractionProgress(
     string SectionName,
     int JsonLength,
     TimeSpan Elapsed,
-    string? Error = null);
+    string? Error = null,
+    string? Shortfall = null)
+{
+    /// <summary>
+    /// True when the pass produced nothing usable. Distinguished from <see cref="Shortfall"/>,
+    /// which is a pass that worked and lost something on the way.
+    ///
+    /// The two were reported identically and it was actively misleading: one run announced
+    /// eight of twelve sections "FAILED" when eight of twelve had succeeded and merely dropped a
+    /// value the schema's enum did not allow. A reader looking for the reason a charge line was
+    /// missing had eight false leads to rule out first.
+    /// </summary>
+    public bool Failed => Error is not null;
+
+    /// <summary>How the pass went, for one line of a log.</summary>
+    public string Describe() =>
+        Failed ? $"FAILED — {Error}"
+        : Shortfall is not null ? $"{JsonLength:N0} chars — {Shortfall}"
+        : $"{JsonLength:N0} chars";
+}

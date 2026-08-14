@@ -77,6 +77,71 @@ measurement trustworthy come before the stages that need measuring**.
 
 ---
 
+> ## Stage 6 status — implemented 2026-08-14
+>
+> **6.1/6.2, 6.3, 6.4 and 6.6 are in the build. 6.5 is a run, not a change.**
+> Build clean, **360 tests passing** (was 343).
+>
+> | Item | Status |
+> | --- | --- |
+> | 6.1 + 6.2 Content density | **done, merged** — an unfilled form ranks below anything carrying a value. Demoted, never dropped: an unfilled section is sometimes the finding. |
+> | 6.3 Cross-group pair selection | **done** — relative disagreement, a 5% floor, and report-against-file preferred over two readings of the same evidence |
+> | 6.4 Missing charge lines | **cause found and fixed** — the `basis` enum was stripping them; **all 69 canonical-schema enums are now free text** |
+> | 6.4b Extraction reporting | **done** — a section that lost a value no longer reports as FAILED |
+> | 6.6 Third pension total | **adjudicated — not a finding**, see below |
+> | 6.5 One controlled run | **not a code change** — hold the extraction and re-run |
+>
+> Also fixed, found while reading Run 3's own output: `DerivedFigures` called an implied
+> £115,195.45 "the total of all arrangements" (£116,998.47), 1.57% away and inside a 2% tolerance.
+> A charge divided by its own rate lands on its base to within a rounding, so the tolerance is now
+> 0.5%. **A false attribution is worse than none** — "matches no arrangement" tells a reader to
+> look, naming the wrong plan tells them not to.
+>
+> ### 6.4 in full: the enums were discarding the evidence
+>
+> The extraction log named the cause on its own face, and it had been visible for three runs:
+>
+> ```
+> [ 5/12] Existing arrangements  FAILED — Dropped 2 value(s) the schema's enums do not allow:
+>                                basis = "of fund pa"; basis = "of fund pa (estimated)"
+> [ 9/12] Costs and charges      FAILED — Dropped 8 value(s) … basis = "of fund value pa";
+>                                "of amount invested"; "annual recurring charge"; …
+> ```
+>
+> `Money.basis` allowed `Gross`, `Net`, `Unspecified`. Every charge line in this report carries a
+> basis describing what the amount is *of*, so every one was stripped — which is why `£186.19`,
+> the figure F7.2 turns on, has never once reached an assessor. **The enum was describing a
+> vocabulary the documents do not use.**
+>
+> Per instruction, this was applied to the whole schema rather than the one field: all 69 enums
+> are now string properties, each carrying its former values as guidance in the description
+> (`"One of: Gross, Net, Unspecified."`). The model is still told the convention; nothing rejects
+> it for departing from one. **The response schema for findings is deliberately untouched** — its
+> `outcome` enum is what makes a verdict parseable, and it constrains a decision rather than
+> describing a document.
+>
+> ### 6.6: I had it wrong
+>
+> I read `£116,555.45` in the Fact Find as a third pension total contradicting £116,998.47. In
+> full, it sits beside `Valuation Date | 23/07/2026` — it is the Aviva Platform plan's value
+> *after* consolidation, at a future date. A different quantity, so no contradiction. The real
+> anomaly there, a plan valued nine months after the report, is already **F1.12**. Nothing is
+> added to the scoring set.
+>
+> **Run 3 measured Stage 5: coverage and citations improved sharply, recall did not move.**
+> Fact Find coverage 7/10 → **10/10 checks**, unverified quotes 32% → **14%**, flagged groups
+> 70% → **45%**, missed 6 → **5**, caught unchanged at 24 of 36.
+>
+> The per-category floor put the right document in front of every check and the assessor still
+> could not see the fact, because every Fact Find passage it admitted was an empty form table
+> rather than the income section. **Retrieval coverage is solved; precision within a document is
+> the entire remaining gap**, and four of the five remaining misses are one section of one
+> document. See [Stage 6](#stage-6--what-run-3-says-to-do-next).
+>
+> Nothing in Stage 6 is built yet.
+
+---
+
 ## The shape of the fix
 
 Nineteen defects, but they are not nineteen independent problems. They fall into four groups, and
@@ -111,6 +176,7 @@ unaided. It is being let down by what it is shown and by what happens to its ans
 - [Stage 3 — Make citation verification discriminate](#stage-3--make-citation-verification-discriminate) — A2
 - [Stage 4 — New capability](#stage-4--new-capability) — A4, N1, N2, E4b, R1
 - [Stage 5 — What Run 2 says to do next](#stage-5--what-run-2-says-to-do-next) — **R3**, N1 repair, A4 repair, A2
+- [Stage 6 — What Run 3 says to do next](#stage-6--what-run-3-says-to-do-next) — **chunking**, N1 selection, E-side
 - [Exit criteria](#exit-criteria)
 - [Scoring rubric](scoring-rubric.md) — how a run is adjudicated, and why it needed writing down
 - [What this plan does not do](#what-this-plan-does-not-do)
@@ -640,41 +706,152 @@ group did not change. Until two readers can reproduce a score, every recall numb
 
 ---
 
+## Stage 6 — What Run 3 says to do next
+
+Added 2026-08-14 after scoring Run 3, the first run measured under
+[scoring-rubric.md](scoring-rubric.md) and the closest thing yet to a controlled comparison — the
+plans, the search limit and the extraction cap were all held.
+
+**Run 3 split cleanly: every mechanical measure Stage 5 targeted improved sharply, and recall did
+not move.** Fact Find coverage went from 7 of 10 checks to **10 of 10**, the unverified quote rate
+from 32% to **14%**, flagged groups from 70% to **45%** — and caught findings stayed at 24 of 36.
+Missed fell 6 → 5.
+
+That combination is the whole of Stage 6. The floor put the right *document* in front of every
+check and the assessor still could not see the fact, because **the passage it got was the wrong
+part of that document**. Retrieval coverage is solved. Retrieval precision *within* a document is
+now the entire remaining gap.
+
+### 6.1 — Chunk the Fact Find on its sections, and drop chunks that carry no content
+
+**The measurement.** Every Fact Find passage the per-category floor admitted is form furniture:
+
+| Group | The Fact Find passage it received |
+| --- | --- |
+| CHK-005/G5.2 | `| | In force | In force | Status | | GMP Amount (p.a.) | |` |
+| CHK-005/G5.3 | `| Lump Sum Cont. | | | | | Value | £116,555.45` |
+| CHK-005/G5.4 | `| Year End | | Most Recent Annual Accounts | | Year 2 Annual Accounts…` |
+| CHK-008/G8.1 | `| Statement 5 Answer | Yes` |
+| CHK-009/G9.1 | `| Lump Sum Cont. | | | | | Value | £116,555.45` |
+
+Empty pension-feature grids, a blank accounts table, a questionnaire answer cell. **Not one is the
+income and expenditure section**, which is where four of the five remaining missed findings live.
+The same chunk was admitted to four different groups across three checks — the signature of one
+chunk dominating a category rather than a category being explored.
+
+**Why it happens.** The Fact Find is a 42 KB form of mostly-empty tables. An empty table row is
+short, generic and structurally similar to a query, so it embeds close to almost anything while
+carrying no assertion. Against that, the one section that would settle F5.1, F5.4 and F1.6 loses
+the within-category ranking.
+
+**This is a chunking and embedding problem, and no further work on `Rank` will touch it.** The
+floor is doing its job: it guarantees a passage from the category, and the category's best-scoring
+passage is worthless.
+
+**Fix.** Chunk the Fact Find on its section headings rather than on size, so "Income", "Expenditure"
+and "Residency" are retrievable units. Then drop, at indexing time, chunks whose cells are
+overwhelmingly empty — a row of blank pipes is not evidence and should not be a candidate.
+
+**Expected gain.** F5.1, F5.4, F1.6, and F5.2 by entailment. **Four of the five remaining misses,
+from one change.**
+
+### 6.2 — Rank on content, not only on similarity
+
+The general form of 6.1, and worth doing even after it. A passage reading
+`| GMP Amount (p.a.) | |` should not be able to outrank an income table for any query, and today it
+can. Options, cheapest first: weight retrieval by content density (non-empty cells, digits, words
+per character); index form *labels* separately from form *answers* so a label match does not
+promote an unanswered field; or require an admitted passage to contain at least one of its query's
+`expectSignals`, which the plans already declare and which nothing currently enforces at pack level.
+
+### 6.3 — Fix how the cross-group pass picks its pair
+
+Stage 5.2 fixed what the pass reads. **It did not fix what it chooses.** Run 3's output is now
+coherent — no fragment begins mid-number, and the recurrence keys hold weekly against weekly — and
+of five pairs reported, **none is a contradiction**. They are restatements of the same figures from
+different checks.
+
+Worse, the pair that would have mattered was available and passed over: G1.2 carries the Fact
+Find's `£1,430.00` household total and G1.4 carries the report's `£4,486.67`, both under
+*Client income (monthly)*, and that is F1.3. The "widest spread between two groups" heuristic chose
+a different pair under the same key.
+
+**Selecting extremes was the wrong rule.** What is wanted is the pair that most disagrees *about
+the same claim* — prefer report-side against file-side, prefer pairs whose sentences share more
+than the cue word, and report more than one pair per subject where they exist.
+
+### 6.4 — Find out why no existing-arrangement charge lines reach the model
+
+Stage 5.3 extended `DerivedFigures` to read `existingArrangements[].charges.lines` precisely so
+that F7.2 — £186.19 quoted at 0.18%, which implies Zurich's £103,439 rather than Standard Life's
+£3,002 — would be caught by division rather than by luck. **`£186.19` appears nowhere in Run 3.**
+
+The fix is correct and the data is not there: the canonical model carries no charge line under
+either path the component reads. **This is now an extraction question, not an assessment one**, and
+it belongs with the extraction plan. Until it is answered, F7.2 is unreachable by any amount of
+assessment-side work.
+
+### 6.5 — Hold the extraction too, and re-run
+
+Run 3 held the plans, the search limit and the extraction cap, and **re-extracted the canonical
+model** — so Stage 5 and a fresh extraction moved together. The coverage and citation numbers are
+attributable to Stage 5 by mechanism (the floor and the `cells` field are the only things that
+could produce them); recall being flat is attributable to neither.
+
+**Re-run against a pinned canonical model.** It is the last uncontrolled variable, and the next
+recall number is worth little without it.
+
+### 6.6 — Adjudicate a third pension total
+
+The Fact Find passage the floor admitted states the client's pension total as **£116,555.45**. The
+arrangements sum to **£116,998.47** and the report states **~£110,000**. That is a third figure for
+the same quantity, in a document the benchmark was built from, and **it is not in the benchmark**.
+
+Adjudicate it. If it is a real contradiction it belongs in the scoring set; if it is a different
+quantity the benchmark should say so. Either way it should not sit unremarked in a run's evidence.
+
+---
+
 ## Exit criteria
 
-Measured on Run 2, the first genuinely generated run since the plan landed —
-[Run-2/run-analysis.md](Runtime-Logs/latest/Run-2/run-analysis.md).
+Measured across all three generated runs —
+[Run 2](Runtime-Logs/latest/Run-2/run-analysis.md), [Run 3](Runtime-Logs/latest/Run-3/run-analysis.md).
 
-| After | Measure | Run 1 | Target | **Run 2** | |
-| --- | --- | --- | --- | --- | --- |
-| Stage 0 | Runs mis-reported as generated | 8 of 12+ | **0** | **0** — the replay self-announced | ✅ |
-| Stage 0 | Plan copies disagreeing | 4 of 9 stale | 1 source | 1 source, shape pinned | ✅ |
-| Stage 1 | L1 violations | 17 of 60 | 0, enforced | **0**, enforced at load | ✅ |
-| Stage 1 | Groups reaching category B: CHK-005 / 007 / 008 / 009 | 1/6, 0/7, 0/5, 0/7 | ≥1 per group declaring it | 1/6, **1/7**, 0/5, 0/7 | ❌ |
-| Stage 2 | High-severity concerns demoted by `comparisonPerformed` | 11 | 0 | 17 groups still vetoed | ⚠️ |
-| Stage 2 | Extraction report reaching assessors | 45% | 100% | **100%** | ✅ |
-| Stage 2 | Findings storing the model's requirement text | 25 of 60 | 0 | **0** | ✅ |
-| Stage 3 | Unverified quote rate | 36% | <12% | **32%** | ❌ |
-| Stage 3 | Groups flagged | 70% | <25% | **70%** | ❌ |
-| Stage 4 | Benchmark recall (caught) | 16/36 (44%) | ≥26/36 (72%) | **24/36 (67%)** | ⚠️ |
-| Stage 4 | Missed | 8 | ≤3 | **6** | ❌ |
+| After | Measure | Run 1 | Target | Run 2 | **Run 3** | |
+| --- | --- | --- | --- | --- | --- | --- |
+| Stage 0 | Runs mis-reported as generated | 8 of 12+ | 0 | 0 | **0** | ✅ |
+| Stage 0 | Plan copies disagreeing | 4 of 9 stale | 1 source | 1 source | **1 source** | ✅ |
+| Stage 1 | L1 violations | 17 of 60 | 0, enforced | 0 | **0** | ✅ |
+| Stage 1/5 | **Checks reaching the Fact Find** | 5/10 | every check | 7/10 | **10/10** | ✅ |
+| Stage 2 | Extraction report reaching assessors | 45% | 100% | 100% | **100%** | ✅ |
+| Stage 2 | Findings storing the model's requirement text | 25 of 60 | 0 | 0 | 2 of 60 | ⚠️ |
+| Stage 2 | Groups vetoed by `comparisonPerformed` | 20 | 0 | 17 | 16 | ⚠️ |
+| Stage 3/5 | **Unverified quote rate** | 36% | <12% | 32% | **14%** | ⚠️ close |
+| Stage 3/5 | **Groups flagged** | 70% | <25% | 70% | **45%** | ❌ |
+| Stage 4 | **Benchmark recall (caught)** | 16/36 (44%) | ≥26/36 (72%) | 24/36 | **24/36 (67%)** | ⚠️ |
+| Stage 4 | **Missed** | 8 | ≤3 | 6 | **5** | ❌ |
 
-**Five met, two close, four missed.** Recall moved 44% → 67% and every check now lands on its
-expected outcome. The four misses share two causes, and both are now understood precisely rather
-than suspected — which is what Stage 5 acts on.
+**Five met, three close, two missed** — against four met after Run 2.
+
+**The two hard misses are recall and missed-count, and after Run 3 they have a single cause.**
+Every mechanical measure improved: Fact Find coverage is complete, citation failures more than
+halved. Recall did not move, because the passages the coverage delivered were the wrong part of the
+right document. That is [Stage 6](#stage-6--what-run-3-says-to-do-next), and it is one change.
 
 > **Read recall against the noise floor.** Two scorers hand-adjudicating the *same 60 responses*
 > produced 39% and 44%, so **±2 findings is the noise floor**. The 23-point gain is well outside
 > it. But F6.2 moved from caught to partial between two runs whose evidence for that group did not
 > change at all, which is the noise floor doing exactly what it does.
-> [scoring-rubric.md](scoring-rubric.md) now writes down the rules that settle those cases; the
-> next adjudication is the first that can be reproduced.
+> [scoring-rubric.md](scoring-rubric.md) writes down the rules that settle those cases, and Run 3
+> was the first run scored under it. **24 → 24 therefore means no measured change, not no change** —
+> and it is why Stage 6 is argued from the coverage and citation measurements rather than from the
+> recall figure.
 
 ---
 
 ## What was not done, and why
 
-Three items remain unbuilt. Each is blocked on something a code change cannot supply.
+Four items remain unbuilt. Each is blocked on something a code change here cannot supply.
 
 **4.3 — carry the report's verbatim claim beside the normalised enum.** This is a change to the
 extraction schema (`knowledgeLevel`, the risk and horizon labels), not to the assessment path,
@@ -688,27 +865,37 @@ one** — so a floor today would only empty packs; that half stands. The other h
 calibration needed a generated run, and **Run 2 supplies one**: the admitted band measured
 0.507–0.765, median 0.620, and *"Nothing was retrieved"* has still never appeared in any log.
 
-**But Run 2 also changed the priority.** A floor removes low-scoring passages; §5.1 shows the
-binding problem is the opposite one — relevant Fact Find passages are being retrieved and then
-**evicted by the twelve-passage cap**. Tightening what enters while the cap still decides what
-survives would trade one silent loss for another. **Do 5.1 first, re-measure, then calibrate this
-against the result.**
+**Run 3 settles the priority: it is not this.** A floor removes low-scoring passages. Run 3 shows
+the binding problem is that the *highest*-scoring passage of a category is an empty form table — a
+short, generic chunk that embeds near everything and asserts nothing. A relevance floor would keep
+it and discard something better. **Do [6.1](#61--chunk-the-fact-find-on-its-sections-and-drop-chunks-that-carry-no-content)
+first; a floor calibrated before the chunking is fixed would be calibrated against the wrong
+distribution.**
 
 **4.4, extraction half.** The assessment-side detection is built: `DerivedFigures` now reports
 when one arrangement's charge is recorded at two different percentages, which is the route to
 F7.1. Feeding repeated-key candidates into the `extractionReport` pass is the other half, sits
 in the extraction pipeline, and is the same coordination question as 4.3.
 
-**Run 2 has now executed** — see the [exit criteria](#exit-criteria) for what it measured and
-[Stage 5](#stage-5--what-run-2-says-to-do-next) for what it says to do next. Two things it did not
-settle:
+**A fourth item joined the list after Run 3: [6.4](#64--find-out-why-no-existing-arrangement-charge-lines-reach-the-model).**
+`DerivedFigures` was extended in 5.3 to divide the arrangements' own charge lines, precisely so
+F7.2 would be caught by arithmetic. `£186.19` appears nowhere in Run 3 — the canonical model
+carries no such line under either path. The fix is right and the data is absent, so F7.2 is
+unreachable from the assessment side and the question moves to extraction, alongside 4.3 and 4.4.
 
-- **It moved four variables at once** (search limit, extraction cap, canonical model, and all of
-  Stages 0–4), so the 23-point recall gain is real but not attributable by measurement. §5.5 asks
-  for one controlled run.
-- **It found two defects in this plan's own output** — `CrossGroupContradictions` splitting on
-  decimal points, and `DerivedFigures` reading the wrong charge lines. Both are §5.2 and §5.3.
-  Shipping a component is not the same as it working.
+### What three runs have and have not settled
+
+- **Run 2 moved four variables at once.** Its 23-point recall gain is real and attributable to
+  none of them by measurement.
+- **Run 3 held three of four** — plans, search limit, extraction cap — and re-extracted the
+  canonical model. Coverage and citation gains are attributable to Stage 5 by mechanism; recall
+  being flat is attributable to neither. [6.5](#65--hold-the-extraction-too-and-re-run) closes the
+  last variable.
+- **Each stage has found a defect in the previous stage's output.** Run 2 found
+  `CrossGroupContradictions` splitting on decimal points and `DerivedFigures` reading the wrong
+  charge lines; Run 3 found the pair-selection heuristic choosing restatements over the one real
+  contradiction available to it, and the per-category floor admitting empty form tables. **Shipping
+  a component is not the same as it working, and only a run tells the difference.**
 
 ---
 

@@ -185,6 +185,72 @@ public class CrossGroupContradictionTests
         Assert.Contains("£1,200", found.Left + found.Right);
     }
 
+
+    // ──────────────────────────────────────────────
+    // What Run 3 exposed: the pass was coherent and chose the wrong pair
+    // ──────────────────────────────────────────────
+
+    /// <summary>
+    /// The pair Run 3 had and passed over. G1.2 carried the fact find's £1,430 household total
+    /// and G1.4 the report's £4,486.67, both under "Client income (monthly)" — and the widest-
+    /// spread rule reported a different pair under the same key, because two larger figures
+    /// happened to sit further apart.
+    /// </summary>
+    [Fact]
+    public void TheReportAgainstTheFileOutranksTwoReadingsOfTheFile()
+    {
+        var a = CheckFinding.FromGroups("CHK-001", "Completeness",
+            [Group("G1.2", fileSays: "Fact Find shows Total Net Monthly Income £1,430.00 for the household.")]);
+
+        var b = CheckFinding.FromGroups("CHK-001", "Completeness",
+            [Group("G1.4", reportSays: "Report derives total monthly income of £4,486.67.")]);
+
+        // A second, larger pair that agrees with itself — the shape that used to win.
+        var c = CheckFinding.FromGroups("CHK-005", "Resilience",
+            [Group("G5.1", fileSays: "Planning shows monthly income of £3,484.")]);
+
+        var found = CrossGroupContradictions.In([a, b, c]);
+        var income = Assert.Single(found, f => f.Subject == "Client income (monthly)");
+
+        Assert.Contains("£1,430.00", income.Left + income.Right);
+        Assert.Contains("£4,486.67", income.Left + income.Right);
+    }
+
+    /// <summary>
+    /// Disagreement is proportional. £127,000 against £128,000 is agreement expressed twice;
+    /// £1,430 against £4,486.67 is a threefold difference, and the absolute spread ranks them
+    /// the wrong way round.
+    /// </summary>
+    [Fact]
+    public void ALargeAbsoluteGapDoesNotOutrankALargeProportionalOne()
+    {
+        var a = CheckFinding.FromGroups("CHK-009", "Switch",
+            [Group("G9.1", reportSays: "Projected value at age 75 of £127,000.")]);
+
+        var b = CheckFinding.FromGroups("CHK-007", "Costs",
+            [Group("G7.3", fileSays: "The research shows a projected value of £128,000.")]);
+
+        Assert.DoesNotContain(
+            CrossGroupContradictions.In([a, b]),
+            f => f.Subject.StartsWith("Projected value"));
+    }
+
+    /// <summary>
+    /// Two figures within a rounding of each other are the same figure. Reporting them is how an
+    /// addendum teaches a reviewer to skip it.
+    /// </summary>
+    [Fact]
+    public void FiguresThatAgreeWithinARoundingAreNotReported()
+    {
+        var a = CheckFinding.FromGroups("CHK-001", "One",
+            [Group("G1.4", reportSays: "Monthly income of £1,430.00 is stated.")]);
+
+        var b = CheckFinding.FromGroups("CHK-005", "Two",
+            [Group("G5.1", fileSays: "Fact find records monthly income of £1,432.00.")]);
+
+        Assert.Empty(CrossGroupContradictions.In([a, b]));
+    }
+
     private static GroupFinding Group(string id, string reportSays = "", string fileSays = "") => new()
     {
         GroupId = id,

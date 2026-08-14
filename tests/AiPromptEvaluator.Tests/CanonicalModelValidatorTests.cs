@@ -98,11 +98,27 @@ public class CanonicalModelValidatorTests
     }
 
     /// <summary>
-    /// The real schema slices must not flag their own reference model. If they did, this would
-    /// be deleting good data on every run.
+    /// The canonical schema no longer constrains any property by enum, so the validator has
+    /// nothing to strip from it.
+    ///
+    /// **This is a deliberate loosening, and it was bought with a measured finding.** Every
+    /// charge line the assessor needed to divide — the £186.19 quoted at 0.18%, which implies
+    /// Zurich's £103,439 rather than Standard Life's £3,002 — carries a `basis`, and the model
+    /// wrote bases the report actually uses: "of fund value pa", "of amount invested", "annual
+    /// recurring charge". `Money.basis` allowed Gross, Net and Unspecified. The values were
+    /// stripped, the sections were reported as failures, and three runs in a row could not reach
+    /// the finding because the data never survived extraction.
+    ///
+    /// The enums were describing a vocabulary the documents do not use. They are now free text
+    /// carrying the same values as guidance in their descriptions, which is where a convention
+    /// belongs when the alternative is silently discarding what a document says.
+    ///
+    /// The validator itself is kept and still tested above on synthetic slices: a future schema
+    /// may constrain something, and the stripping behaviour is what stops one bad value costing
+    /// the good ones beside it.
     /// </summary>
     [Fact]
-    public void AllowedValues_ReadsEnumsOutOfTheRealSchema()
+    public void TheRealSchemaConstrainsNothingByEnum()
     {
         var schemaPath = LocateSchema();
         if (schemaPath is null)
@@ -110,14 +126,29 @@ public class CanonicalModelValidatorTests
             return;
         }
 
-        var allowed = CanonicalModelValidator.AllowedValues(File.ReadAllText(schemaPath));
+        var schema = File.ReadAllText(schemaPath);
 
-        Assert.NotEmpty(allowed);
-        Assert.True(
-            allowed.ContainsKey("assertionStatus"),
-            "assertionStatus is an enum in the canonical schema and should be picked up.");
-        Assert.Contains("Stated", allowed["assertionStatus"]);
-        Assert.Contains("Absent", allowed["assertionStatus"]);
+        Assert.Empty(CanonicalModelValidator.AllowedValues(schema));
+        Assert.DoesNotContain("\"enum\"", schema);
+    }
+
+    /// <summary>
+    /// The values the enums used to enforce are kept as guidance, so the model is still told the
+    /// convention even though nothing rejects it for departing from one.
+    /// </summary>
+    [Fact]
+    public void TheFormerEnumValuesSurviveAsGuidance()
+    {
+        var schemaPath = LocateSchema();
+        if (schemaPath is null)
+        {
+            return;
+        }
+
+        var schema = File.ReadAllText(schemaPath);
+
+        Assert.Contains("One of: Stated, Inferred, Derived, Absent.", schema);
+        Assert.Contains("One of: Gross, Net, Unspecified.", schema);
     }
 
     /// <summary>Walks up from the test binary to the repository's canonical model schema.</summary>

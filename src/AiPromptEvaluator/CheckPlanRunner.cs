@@ -420,6 +420,14 @@ public sealed class CheckPlanRunner : IDisposable
     {
         var ordered = passages
             .OrderByDescending(p => targeted.Count == 0 || targeted.Contains(p.CategoryCode) ? 1 : 0)
+
+            // An unfilled form sinks below anything that carries a value. Once the floor
+            // guaranteed each declared category a slot, the passage it admitted turned out to be
+            // a blank form grid in every case measured — short, generic, embeds near any query,
+            // asserts nothing, and beat the section that would have settled four findings.
+            // Ranked here rather than filtered at indexing, because an unfilled section is
+            // sometimes the finding itself.
+            .ThenBy(p => ContentDensity.IsFormSkeleton(p.SearchedText) ? 1 : 0)
             .ThenByDescending(p => p.Score)
             .ThenBy(p => p.DocumentName, StringComparer.Ordinal)
             .ThenBy(p => p.SearchedText, StringComparer.Ordinal)

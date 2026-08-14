@@ -39,11 +39,22 @@ public static class DerivedFigures
     }
 
     /// <summary>
-    /// A percentage and a monetary amount quoted for the same charge imply a fund value. When
-    /// that implied value does not match the arrangement the row is about, the row has been
+    /// How close an implied fund value must be to a real one before they are called the same.
+    ///
+    /// A percentage and a monetary amount quoted for the same charge imply a fund value, and
+    /// when that implied value does not match the arrangement the row is about, the row has been
     /// computed on the wrong plan — which is invisible unless someone divides.
+    ///
+    /// Tightened from 2% after Run 3 reported an implied £115,195.45 as "the total of all
+    /// arrangements", which is £116,998.47 — 1.57% away, inside the old tolerance and not the
+    /// same number. A charge divided by its own rate lands on its base to within a rounding, so
+    /// the honest tolerance is small: the real case, £186.19 at 0.18%, implies £103,438.89
+    /// against Zurich's £103,439.24, which is 0.0003% out.
+    ///
+    /// A false attribution is worse here than none. "Matches no arrangement" tells a reader to
+    /// look; naming the wrong plan tells them not to.
     /// </summary>
-    private const double ImpliedBaseTolerance = 0.02;
+    private const double ImpliedBaseTolerance = 0.005;
 
     public static IReadOnlyList<Figure> From(string modelJson)
     {

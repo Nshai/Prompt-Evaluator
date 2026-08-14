@@ -258,6 +258,36 @@ public class DerivedFiguresTests
         Assert.Contains("which is the total being transferred", charge.Statement);
     }
 
+
+    /// <summary>
+    /// Run 3 reported an implied £115,195.45 as "the total of all arrangements" (£116,998.47).
+    /// They are 1.57% apart and are not the same number. A charge divided by its own rate lands
+    /// on its base to within a rounding, so anything looser invents an attribution.
+    /// </summary>
+    [Fact]
+    public void AnImpliedValueOnePercentOutIsNotCalledAMatch()
+    {
+        var figures = DerivedFigures.From(
+            """
+            {
+              "existingArrangements": [
+                { "provider": "Zurich", "currentValue": { "amount": 103439.24 } },
+                { "provider": "Aviva",  "currentValue": { "amount": 13559.23 } }
+              ],
+              "costsAndCharges": {
+                "recommended": { "scope": "Aviva Platform", "lines": [
+                  { "chargeType": "OngoingCharge", "percentage": { "value": 0.22 },
+                    "amount": { "amount": 253.43 } }] }
+              }
+            }
+            """);
+
+        var charge = Assert.Single(figures, f => f.Topic == "Charge arithmetic");
+
+        Assert.Contains("£115,195.45", charge.Statement);
+        Assert.Contains("matches no arrangement value and neither total", charge.Statement);
+    }
+
     // ──────────────────────────────────────────────
     // It has to be safe on models that do not carry these values
     // ──────────────────────────────────────────────

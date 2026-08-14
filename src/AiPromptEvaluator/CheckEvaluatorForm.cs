@@ -572,12 +572,8 @@ public partial class CheckEvaluatorForm : Form
 
             var progress = new Progress<ExtractionProgress>(p =>
             {
-                var outcome = p.Error is not null
-                    ? $"FAILED — {p.Error}"
-                    : $"{p.JsonLength:N0} chars";
-
                 AppendResponseLine(
-                    $"[{p.Done,2}/{p.Total}] {p.SectionName,-36} {outcome} ({p.Elapsed.TotalSeconds:0.0}s)");
+                    $"[{p.Done,2}/{p.Total}] {p.SectionName,-36} {p.Describe()} ({p.Elapsed.TotalSeconds:0.0}s)");
                 statusLabel.Text = $"Extracting {p.Done}/{p.Total}...";
             });
 

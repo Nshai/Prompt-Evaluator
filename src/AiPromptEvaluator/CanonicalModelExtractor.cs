@@ -113,6 +113,7 @@ public sealed class CanonicalModelExtractor
             var startedAt = Stopwatch.GetTimestamp();
             var length = 0;
             string? error = null;
+            string? shortfallNote = null;
 
             try
             {
@@ -127,11 +128,9 @@ public sealed class CanonicalModelExtractor
                 // pass is choosing from a table rather than inventing its own naming.
                 identity.Adopt(root);
 
-                if (shortfall is not null)
-                {
-                    failures.Add((section.Name, shortfall));
-                    error = shortfall;
-                }
+                // A section that lost a value still succeeded. Recording it as a failure is
+                // what made a run announce eight broken sections when none was broken.
+                shortfallNote = shortfall;
             }
             catch (OperationCanceledException)
             {
@@ -146,7 +145,7 @@ public sealed class CanonicalModelExtractor
             done++;
             progress?.Report(new ExtractionProgress(
                 done, ExtractionSection.All.Count, section.Name, length,
-                Stopwatch.GetElapsedTime(startedAt), error));
+                Stopwatch.GetElapsedTime(startedAt), error, shortfallNote));
         }
 
         if (failures.Count == ExtractionSection.All.Count)
@@ -248,6 +247,8 @@ public sealed class CanonicalModelExtractor
                 + string.Join("; ", dropped.Take(5)) + (dropped.Count > 5 ? "; …" : string.Empty));
         }
 
+        // These are losses, not failures: the fragment is usable and is kept. Reporting them
+        // as failures is what made eight succeeding sections look broken.
         return (fragment, result.Breakdown.Usage,
             shortfalls.Count == 0 ? null : string.Join(" ", shortfalls));
     }

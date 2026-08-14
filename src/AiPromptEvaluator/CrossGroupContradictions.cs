@@ -51,6 +51,14 @@ public static class CrossGroupContradictions
     /// figures being different is not a contradiction unless they are meant to be the same
     /// thing.
     /// </summary>
+    /// <summary>
+    /// How far apart two figures must be, in proportion, before they are worth a reviewer's
+    /// attention. Below this they are the same number rounded differently, or the same number
+    /// read from two documents — agreement, reported as disagreement, which is how an addendum
+    /// teaches people to skip it.
+    /// </summary>
+    public const double MinimumDisagreement = 0.05;
+
     private static readonly (string Subject, string[] Cues)[] Subjects =
     [
         ("Client income", ["net income", "monthly income", "income of", "earns", "earning", "per week", "weekly income"]),
@@ -69,7 +77,7 @@ public static class CrossGroupContradictions
     /// </summary>
     public static IReadOnlyList<Contradiction> In(IEnumerable<CheckFinding> findings)
     {
-        var claims = new List<(string Subject, string Where, string Sentence, decimal Value)>();
+        var claims = new List<(string Subject, string Where, string Sentence, decimal Value, string Side)>();
 
         foreach (var finding in findings)
         {
@@ -77,7 +85,7 @@ public static class CrossGroupContradictions
             {
                 var where = $"{finding.CheckId}/{group.GroupId}";
 
-                foreach (var sentence in Sentences(group))
+                foreach (var (sentence, side) in Sentences(group))
                 {
                     var subject = SubjectOf(sentence);
 
@@ -93,7 +101,7 @@ public static class CrossGroupContradictions
                     // against weekly and one-off against one-off.
                     foreach (var (value, recurrence) in MoneyIn(sentence))
                     {
-                        claims.Add(($"{subject} ({recurrence})", where, Shorten(sentence), value));
+                        claims.Add(($"{subject} ({recurrence})", where, Shorten(sentence), value, side));
                     }
                 }
             }
@@ -114,43 +122,63 @@ public static class CrossGroupContradictions
                 continue;
             }
 
-            // The widest disagreement between two *different* groups.
+            // The pair that most disagrees about the same claim.
             //
-            // Taking the overall extremes looked equivalent and is not: a single group often
-            // states several figures for one subject — a weekly amount and its monthly
-            // equivalent in the same sentence — so both extremes can belong to it, and the
-            // cross-group disagreement sitting between them is passed over. That is precisely
-            // the case this class exists for, and the first version of it silently found
-            // nothing.
-            (string Where, string Sentence, decimal Value)? low = null;
-            (string Where, string Sentence, decimal Value)? high = null;
+            // Widest absolute spread was tried and reports the wrong pair. Measured on a real
+            // run, five pairs came back and none was a contradiction: they were restatements of
+            // the same figures from different checks, chosen because the largest numbers were
+            // furthest apart. Meanwhile the one pair that mattered — the fact find's £1,430
+            // household total against the report's £4,486.67, both filed under
+            // "Client income (monthly)" — was available under the right key and passed over.
+            //
+            // Three changes. A disagreement is *relative*, so £127,000 against £128,000 stops
+            // outranking £1,430 against £4,486.67. Figures within a rounding of each other are
+            // agreement and are not reported at all. And a pair straddling the report and the
+            // file outranks one that does not, because an assertion contradicting the evidence
+            // is the thing being looked for, while two readings of the same evidence are not.
+            var best = (Low: default((string Where, string Sentence, decimal Value)),
+                        High: default((string Where, string Sentence, decimal Value)),
+                        CrossSide: false,
+                        Disagreement: 0.0);
 
             foreach (var a in distinct)
             {
                 foreach (var b in distinct)
                 {
-                    if (a.Where == b.Where || b.Value <= a.Value)
+                    if (a.Where == b.Where || b.Value <= a.Value || a.Value <= 0)
                     {
                         continue;
                     }
 
-                    if (low is null || b.Value - a.Value > high!.Value.Value - low.Value.Value)
+                    var disagreement = (double)((b.Value - a.Value) / a.Value);
+
+                    if (disagreement < MinimumDisagreement)
                     {
-                        low = (a.Where, a.Sentence, a.Value);
-                        high = (b.Where, b.Sentence, b.Value);
+                        continue;
+                    }
+
+                    var crossSide = !string.Equals(a.Side, b.Side, StringComparison.Ordinal);
+
+                    var better = best.Disagreement == 0
+                                 || (crossSide, disagreement).CompareTo((best.CrossSide, best.Disagreement)) > 0;
+
+                    if (better)
+                    {
+                        best = ((a.Where, a.Sentence, a.Value), (b.Where, b.Sentence, b.Value),
+                                crossSide, disagreement);
                     }
                 }
             }
 
-            if (low is null)
+            if (best.Disagreement == 0)
             {
                 continue;
             }
 
             contradictions.Add(new Contradiction(
                 bySubject.Key,
-                $"[{low.Value.Where}] {low.Value.Sentence}",
-                $"[{high!.Value.Where}] {high.Value.Sentence}"));
+                $"[{best.Low.Where}] {best.Low.Sentence}",
+                $"[{best.High.Where}] {best.High.Sentence}"));
         }
 
         return contradictions;
@@ -203,18 +231,47 @@ public static class CrossGroupContradictions
     ///
     /// A full stop between two digits is a decimal point, not a sentence ending.
     /// </summary>
-    private static IEnumerable<string> Sentences(GroupFinding group)
+    private static IEnumerable<(string Sentence, string Side)> Sentences(GroupFinding group)
     {
-        var text = string.Join(
-            " ",
-            new[] { group.ReportSays, group.FileSays }
-                .Concat(group.Discrepancies)
-                .Where(s => !string.IsNullOrWhiteSpace(s)));
+        // Which side a figure came from is what turns two numbers into a contradiction. An
+        // assertion disagreeing with the evidence is the finding; two restatements of the same
+        // evidence are not, however far apart they look.
+        var sources = new (string Text, string Side)[]
+        {
+            (group.ReportSays, "report"),
+            (group.FileSays, "file"),
+        };
 
-        return SentenceBoundary
-            .Split(text)
-            .Select(s => s.Trim())
-            .Where(s => s.Length > 12);
+        foreach (var (text, side) in sources)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                continue;
+            }
+
+            foreach (var sentence in SentenceBoundary.Split(text))
+            {
+                var trimmed = sentence.Trim();
+
+                if (trimmed.Length > 12)
+                {
+                    yield return (trimmed, side);
+                }
+            }
+        }
+
+        foreach (var discrepancy in group.Discrepancies.Where(d => !string.IsNullOrWhiteSpace(d)))
+        {
+            foreach (var sentence in SentenceBoundary.Split(discrepancy))
+            {
+                var trimmed = sentence.Trim();
+
+                if (trimmed.Length > 12)
+                {
+                    yield return (trimmed, "discrepancy");
+                }
+            }
+        }
     }
 
     /// <summary>A full stop or semicolon that is not sitting between two digits.</summary>

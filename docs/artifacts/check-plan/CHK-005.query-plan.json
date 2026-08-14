@@ -59,8 +59,9 @@
       "queries": [
         { "id": "Q5.2.1", "text": "cashflow modelling projection of income and expenditure year on year to age", "side": "Either", "targetCategories": ["I", "F"], "expectSignals": ["cashflow", "projection", "modelled", "to age", "forecast"], "priority": "Core" },
         { "id": "Q5.2.2", "text": "cashflow assumptions inflation rate growth rate used in the plan", "side": "Either", "targetCategories": ["F", "I"], "expectSignals": ["inflation", "growth rate", "assumption", "%"], "canonicalPaths": ["/needsAnalysis/assumptions[]"], "priority": "Core" },
-        { "id": "Q5.2.3", "text": "figures entered into the cashflow model income sources and expenditure", "side": "Either", "targetCategories": ["F", "I"], "expectSignals": ["we have input", "entered", "included", "per week", "per annum"], "priority": "Core", "note": "The inputs listed in the report are directly comparable with the fact find figures retrieved by CHK-001 G1.4." },
-        { "id": "Q5.2.4", "text": "no shortfall projected throughout your lifetime funds last", "side": "Either", "targetCategories": ["I", "F"], "expectSignals": ["shortfall", "no shortfall", "sustainable", "run out", "last"], "priority": "Core" }
+        { "id": "Q5.2.3", "text": "figures entered into the cashflow model income sources and expenditure", "side": "Either", "targetCategories": ["F", "I", "B"], "expectSignals": ["we have input", "entered", "included", "per week", "per annum"], "priority": "Core", "note": "The inputs listed in the report are directly comparable with the fact find figures retrieved by CHK-001 G1.4." },
+        { "id": "Q5.2.4", "text": "no shortfall projected throughout your lifetime funds last", "side": "Either", "targetCategories": ["I", "F"], "expectSignals": ["shortfall", "no shortfall", "sustainable", "run out", "last"], "priority": "Core" },
+        { "id": "Q5.2.5", "text": "total net monthly income total monthly expenditure total monthly disposable income", "side": "Evidence", "targetCategories": ["B"], "expectSignals": ["disposable", "total monthly", "net monthly income", "expenditure"], "priority": "Core", "note": "The fact find states disposable income as a figure of its own and it can be negative. Q5.2.3 compares what the report says was modelled; this retrieves what the client actually recorded." }
       ],
       "comparison": {
         "method": "ValueMatch",
@@ -103,7 +104,8 @@
       "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"] },
       "queries": [
         { "id": "Q5.4.1", "text": "impact of the charges on your fund value each year in monetary terms", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["£", "per annum", "charge", "reduce"], "priority": "Core" },
-        { "id": "Q5.4.2", "text": "can the client sustain the payments if income reduces or stops", "side": "Evidence", "targetCategories": ["F", "C"], "expectSignals": ["sustain", "if income", "reduce", "stop", "afford"], "priority": "Supplementary" }
+        { "id": "Q5.4.2", "text": "can the client sustain the payments if income reduces or stops", "side": "Evidence", "targetCategories": ["F", "C", "B"], "expectSignals": ["sustain", "if income", "reduce", "stop", "afford"], "priority": "Supplementary" },
+        { "id": "Q5.4.3", "text": "net basic monthly income earnings frequency state pension amount frequency", "side": "Evidence", "targetCategories": ["B"], "expectSignals": ["net basic", "frequency", "monthly", "weekly", "state pension"], "priority": "Core", "note": "Frequency is recorded beside each amount in the fact find income table, and a weekly figure read as monthly overstates income roughly fourfold." }
       ],
       "comparison": {
         "method": "RangeMatch",
@@ -120,7 +122,7 @@
       "canonicalPaths": ["/financialPosition/emergencyFund/shortfall", "/financialPosition/liquidityAndAccessNeeds[]/fundedFrom"],
       "expectedCategories": { "assertion": ["I"], "evidence": ["B", "F"] },
       "queries": [
-        { "id": "Q5.5.1", "text": "all of your available capital is being invested leaving nothing accessible", "side": "Either", "targetCategories": ["I", "F"], "expectSignals": ["all", "entire", "remaining", "left", "retain"], "priority": "Core" },
+        { "id": "Q5.5.1", "text": "all of your available capital is being invested leaving nothing accessible", "side": "Either", "targetCategories": ["I", "F", "B"], "expectSignals": ["all", "entire", "remaining", "left", "retain"], "priority": "Core" },
         { "id": "Q5.5.2", "text": "money withdrawn from the pension will be placed into your savings account", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["savings account", "withdraw", "place", "into your"], "priority": "Supplementary" }
       ],
       "comparison": { "method": "NarrativeAlignment", "falsePositiveGuards": ["A transfer between pension wrappers does not deplete an emergency fund — only new money from cash does."] },

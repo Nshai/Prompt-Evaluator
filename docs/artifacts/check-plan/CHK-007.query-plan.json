@@ -31,7 +31,7 @@
       "canonicalPaths": ["/costsAndCharges/disclosureCompleteness", "/costsAndCharges/recommended/lines[]"],
       "expectedCategories": { "assertion": ["I"], "evidence": ["E", "G", "H"] },
       "queries": [
-        { "id": "Q7.1.1", "text": "platform charge product charge percentage per annum on the recommended plan", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["platform", "product charge", "%", "per annum"], "canonicalPaths": ["/costsAndCharges/recommended/lines[]"], "priority": "Core" },
+        { "id": "Q7.1.1", "text": "platform charge product charge percentage per annum on the recommended plan", "side": "Either", "targetCategories": ["I", "H", "E"], "expectSignals": ["platform", "product charge", "%", "per annum"], "canonicalPaths": ["/costsAndCharges/recommended/lines[]"], "priority": "Core" },
         { "id": "Q7.1.2", "text": "fund ongoing charges figure OCF investment management charge", "side": "Either", "targetCategories": ["H", "G", "I"], "expectSignals": ["OCF", "ongoing charges figure", "AMC", "fund charge", "%"], "priority": "Core" },
         { "id": "Q7.1.3", "text": "transaction costs of the underlying funds excluded from these figures", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["transaction cost", "exclude", "broker", "trading"], "priority": "Core", "note": "Transaction costs are the most commonly omitted layer; retrieve the exclusion wording as well as any figure." },
         { "id": "Q7.1.4", "text": "discretionary fund manager charge DFM model portfolio management fee", "side": "Either", "targetCategories": ["H", "G", "I"], "expectSignals": ["DFM", "discretionary", "management fee", "model"], "priority": "Supplementary" },
@@ -62,7 +62,7 @@
       "queries": [
         { "id": "Q7.2.1", "text": "our charges initial advice fee percentage of the amount invested in monetary terms", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["initial", "advice fee", "%", "£", "of the amount invested"], "priority": "Core" },
         { "id": "Q7.2.2", "text": "ongoing service fee per annum based on the value of your investments", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["ongoing", "per annum", "%", "£", "annual"], "priority": "Core" },
-        { "id": "Q7.2.3", "text": "client agreement fee tariff initial and ongoing charging structure", "side": "Evidence", "targetCategories": ["A"], "expectSignals": ["fee", "tariff", "initial", "ongoing", "%", "agreement"], "canonicalPaths": ["/costsAndCharges/adviserFees[]/matchesClientAgreement"], "priority": "Core", "note": "The only place the agreed fee basis can be verified. Category A is named in the matrix specifically for this comparison." },
+        { "id": "Q7.2.3", "text": "client agreement fee tariff initial and ongoing charging structure", "side": "Evidence", "targetCategories": ["A", "H"], "expectSignals": ["fee", "tariff", "initial", "ongoing", "%", "agreement"], "canonicalPaths": ["/costsAndCharges/adviserFees[]/matchesClientAgreement"], "priority": "Core", "note": "The only place the agreed fee basis can be verified. Category A is named in the matrix specifically for this comparison." },
         { "id": "Q7.2.4", "text": "how the adviser fee will be paid facilitated from the product or paid directly", "side": "Either", "targetCategories": ["I", "A"], "expectSignals": ["facilitated", "deducted", "paid by", "directly", "from the plan"], "priority": "Core" },
         { "id": "Q7.2.5", "text": "VAT treatment of the advice fee", "side": "Either", "targetCategories": ["A", "I"], "expectSignals": ["VAT", "plus VAT", "exempt"], "priority": "Supplementary" }
       ],
@@ -82,10 +82,10 @@
       "requirement": "Cumulative impact of costs and charges",
       "limb": "Consistency",
       "canonicalPaths": ["/costsAndCharges/reductionInYield[]"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["H"] },
+      "expectedCategories": { "assertion": ["I"], "evidence": ["H", "F"] },
       "queries": [
         { "id": "Q7.3.1", "text": "reduction in yield effect of charges over the term critical yield", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["reduction in yield", "RIY", "critical yield", "%"], "priority": "Core" },
-        { "id": "Q7.3.2", "text": "projected value at retirement age at low mid and high growth rates", "side": "Either", "targetCategories": ["H", "I"], "expectSignals": ["projected value", "growth rate", "low", "mid", "high", "at age"], "priority": "Core" },
+        { "id": "Q7.3.2", "text": "projected value at retirement age at low mid and high growth rates", "side": "Either", "targetCategories": ["H", "I", "F"], "expectSignals": ["projected value", "growth rate", "low", "mid", "high", "at age"], "priority": "Core" },
         { "id": "Q7.3.3", "text": "effect of switching on the maturity value decrease over the term", "side": "Either", "targetCategories": ["I", "H"], "expectSignals": ["effect of switching", "decrease", "£", "%"], "priority": "Core" },
         { "id": "Q7.3.4", "text": "cumulative effect of charges on your investment returns over time", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["cumulative", "over time", "compound", "effect"], "priority": "Supplementary" }
       ],
@@ -104,12 +104,12 @@
       "requirement": "Cost comparison with alternative options",
       "limb": "Consistency",
       "canonicalPaths": ["/costsAndCharges/comparison"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["E", "G"] },
+      "expectedCategories": { "assertion": ["I"], "evidence": ["E", "G", "C"] },
       "queries": [
         { "id": "Q7.4.1", "text": "comparison of the annual recurring charge of the existing plan against the recommended alternative", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["existing", "recommended", "difference", "%", "£", "impact"], "priority": "Core" },
         { "id": "Q7.4.2", "text": "like for like cost comparison the new plan is cheaper or more expensive than your current plans", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["like for like", "less expensive", "more expensive", "cheaper", "%"], "priority": "Core" },
         { "id": "Q7.4.3", "text": "existing plan charges annual management charge policy fee from the provider", "side": "Evidence", "targetCategories": ["E"], "expectSignals": ["AMC", "annual management charge", "policy fee", "%", "charge"], "canonicalPaths": ["/costsAndCharges/existing"], "priority": "Core" },
-        { "id": "Q7.4.4", "text": "cost comparison of alternative providers and products considered in research", "side": "Evidence", "targetCategories": ["G"], "expectSignals": ["comparison", "cheaper", "cost", "versus", "alternative"], "priority": "Core" }
+        { "id": "Q7.4.4", "text": "cost comparison of alternative providers and products considered in research", "side": "Evidence", "targetCategories": ["G", "C"], "expectSignals": ["comparison", "cheaper", "cost", "versus", "alternative"], "priority": "Core" }
       ],
       "comparison": {
         "method": "ValueMatch",
@@ -127,11 +127,12 @@
       "requirement": "Benefit versus cost — fair value",
       "limb": "Consistency",
       "canonicalPaths": ["/costsAndCharges/valueAssessment"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H"] },
+      "expectedCategories": { "assertion": ["I"], "evidence": ["G", "H", "B"] },
       "queries": [
         { "id": "Q7.5.1", "text": "what you receive in return for these charges benefits of the ongoing service", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["benefit", "in return", "service includes", "you will receive"], "priority": "Core" },
         { "id": "Q7.5.2", "text": "the plan would need to outperform by in order to justify the additional cost", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["outperform", "need to grow", "in order to", "%", "£"], "priority": "Core" },
-        { "id": "Q7.5.3", "text": "past performance of the recommended funds compared with the existing funds", "side": "Either", "targetCategories": ["G", "H", "I"], "expectSignals": ["performance", "5 years", "cumulative", "%", "annualised"], "priority": "Core" }
+        { "id": "Q7.5.3", "text": "past performance of the recommended funds compared with the existing funds", "side": "Either", "targetCategories": ["G", "H", "I"], "expectSignals": ["performance", "5 years", "cumulative", "%", "annualised"], "priority": "Core" },
+        { "id": "Q7.5.4", "text": "client income expenditure savings and rate of income tax recorded in the fact find", "side": "Evidence", "targetCategories": ["B"], "expectSignals": ["income", "savings", "rate of income tax", "expenditure"], "priority": "Supporting", "note": "Fair value is relative to the client's means, and the marginal rate decides the tax consequence of any encashment the recommendation relies on." }
       ],
       "comparison": {
         "method": "NarrativeAlignment",

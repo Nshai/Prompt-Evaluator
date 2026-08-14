@@ -22,7 +22,26 @@ public sealed record CanonicalFragment(string Path, string Json, bool Found)
 /// </summary>
 public sealed class CanonicalModelAccessor
 {
-    private static readonly JsonSerializerOptions Indented = new() { WriteIndented = true };
+    /// <summary>
+    /// Indented so a fragment is readable in a prompt, and unescaped so it is quotable.
+    ///
+    /// The encoder matters more than it looks. By default <c>System.Text.Json</c> escapes
+    /// anything outside a conservative ASCII set, so a fragment reaches the assessor reading
+    /// <c>£116,997.47</c> where the document said <c>£116,997.47</c>. The model quotes it
+    /// back the way a person would write it, the citation check compares two different strings,
+    /// and the finding is reported as a fabricated quotation. That is not hypothetical: it is
+    /// what happened to the group that caught the report's own £6,997 inconsistency in
+    /// pension totals — the best assertion-side finding of the run, flagged as unsupported for
+    /// citing the place it came from.
+    ///
+    /// Relaxed escaping is safe here because the destination is a prompt, not a browser: these
+    /// strings are never interpolated into HTML or a script.
+    /// </summary>
+    private static readonly JsonSerializerOptions Indented = new()
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
 
     private readonly JsonObject _root;
 

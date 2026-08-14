@@ -97,7 +97,7 @@
       "expectedCategories": { "assertion": ["I"], "evidence": ["C", "D", "H"] },
       "queries": [
         { "id": "Q4.4.1", "text": "the client understands the features and risks of the recommended product", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["you understand", "you are aware", "explained", "confirmed"], "priority": "Core" },
-        { "id": "Q4.4.2", "text": "explanation given to the client about how the product works and what was said in response", "side": "Evidence", "targetCategories": ["C"], "expectSignals": ["explained", "client asked", "responded", "confirmed", "discussed"], "priority": "Core" }
+        { "id": "Q4.4.2", "text": "explanation given to the client about how the product works and what was said in response", "side": "Evidence", "targetCategories": ["C", "D", "H"], "expectSignals": ["explained", "client asked", "responded", "confirmed", "discussed"], "priority": "Core" }
       ],
       "comparison": {
         "method": "NarrativeAlignment",

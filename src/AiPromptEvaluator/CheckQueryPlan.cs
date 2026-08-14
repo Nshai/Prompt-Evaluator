@@ -45,15 +45,48 @@ public sealed record PlanSufficiency
     [JsonPropertyName("ifBothAbsent")] public string? IfBothAbsent { get; init; }
 }
 
+/// <summary>
+/// Where a group expects each side of its comparison to come from: the assertion from the
+/// canonical model's own category, the evidence from one or more document categories.
+///
+/// This was authored into every plan and then never read by anything, which is how seventeen
+/// groups came to declare an evidence category none of their queries asked for. Declaring
+/// where the answer lives and then not looking there is silent under-assessment: the group
+/// reports what it found in the categories it did search, and nothing reports the omission.
+/// Modelled here so <see cref="CheckPlanLint"/> can hold the plans to their own word.
+/// </summary>
+public sealed record PlanExpectedCategories
+{
+    [JsonPropertyName("assertion")] public List<string> Assertion { get; init; } = [];
+    [JsonPropertyName("evidence")] public List<string> Evidence { get; init; } = [];
+}
+
 public sealed record PlanQueryGroup
 {
     [JsonPropertyName("groupId")] public string GroupId { get; init; } = string.Empty;
     [JsonPropertyName("requirement")] public string Requirement { get; init; } = string.Empty;
     [JsonPropertyName("limb")] public string Limb { get; init; } = "Consistency";
     [JsonPropertyName("canonicalPaths")] public List<string> CanonicalPaths { get; init; } = [];
+    [JsonPropertyName("expectedCategories")] public PlanExpectedCategories? ExpectedCategories { get; init; }
     [JsonPropertyName("queries")] public List<PlannedQuery> Queries { get; init; } = [];
     [JsonPropertyName("comparison")] public PlanComparison? Comparison { get; init; }
     [JsonPropertyName("sufficiency")] public PlanSufficiency? Sufficiency { get; init; }
+
+    /// <summary>Evidence categories this group's queries actually ask the store for.</summary>
+    public IReadOnlySet<string> QueriedCategories =>
+        Queries
+            .Where(q => q.IsEvidenceSearch)
+            .SelectMany(q => q.TargetCategories)
+            .Select(c => c.Trim())
+            .Where(c => c.Length > 0)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Evidence categories this group declares its answer lives in.</summary>
+    public IReadOnlySet<string> DeclaredEvidenceCategories =>
+        (ExpectedCategories?.Evidence ?? [])
+            .Select(c => c.Trim())
+            .Where(c => c.Length > 0)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Paths cited on the group and on its queries, de-duplicated in first-seen order.</summary>
     public IReadOnlyList<string> AllCanonicalPaths =>
@@ -87,6 +120,20 @@ public sealed record PlanTriggerProbe
     /// <summary>True when the plan says a missing trigger settles the check as N/A.</summary>
     public bool ReturnsNotApplicable =>
         string.Equals(OnAbsent, "ReturnNA", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// True when the plan says the check runs anyway with a missing trigger — an overlay that
+    /// applies to every case, where the absence of an assessment is the thing being assessed.
+    ///
+    /// The distinction has to reach the assessor. Told only that "the trigger appears absent",
+    /// CHK-010 returned Indeterminate on all four of its requirements and argued in its own
+    /// analysis that the case presented no vulnerability drivers — in a file recording "No
+    /// understanding / knowledge" of pensions four times over, which is the textbook FG21/1
+    /// low-capability driver. A missing vulnerability flag is not evidence that the client is
+    /// not vulnerable; it is evidence that nobody looked.
+    /// </summary>
+    public bool ContinuesWithReducedScope =>
+        string.Equals(OnAbsent, "ContinueWithReducedScope", StringComparison.OrdinalIgnoreCase);
 }
 
 public sealed record PlanDecision

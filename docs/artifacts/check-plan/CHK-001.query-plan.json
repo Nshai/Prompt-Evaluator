@@ -33,7 +33,7 @@
       "expectedCategories": { "assertion": ["I"], "evidence": ["A", "B", "C"] },
       "queries": [
         { "id": "Q1.1.1", "text": "your current situation you are currently aged and married with children", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["aged", "married", "children", "spouse", "partner"], "canonicalPaths": ["/parties/clients[]/age", "/parties/clients[]/maritalStatus"], "priority": "Core" },
-        { "id": "Q1.1.2", "text": "client personal details date of birth marital status national insurance number", "side": "Evidence", "targetCategories": ["B", "A"], "expectSignals": ["Date of birth", "Marital status", "NI number", "Title", "Surname"], "canonicalPaths": ["/parties/clients[]/dateOfBirth"], "priority": "Core" },
+        { "id": "Q1.1.2", "text": "client personal details date of birth marital status national insurance number", "side": "Evidence", "targetCategories": ["B", "A", "C"], "expectSignals": ["Date of birth", "Marital status", "NI number", "Title", "Surname"], "canonicalPaths": ["/parties/clients[]/dateOfBirth"], "priority": "Core" },
         { "id": "Q1.1.3", "text": "dependants children financially dependent living at home", "side": "Either", "targetCategories": ["B", "I"], "expectSignals": ["dependant", "children", "financially independent", "age"], "canonicalPaths": ["/parties/dependants[]"], "priority": "Supplementary" },
         { "id": "Q1.1.4", "text": "health status smoker in good health medical conditions", "side": "Evidence", "targetCategories": ["B"], "expectSignals": ["good health", "smoker", "medical"], "canonicalPaths": ["/parties/clients[]/health"], "priority": "Supplementary" }
       ],

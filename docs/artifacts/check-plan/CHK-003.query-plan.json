@@ -32,7 +32,7 @@
       "expectedCategories": { "assertion": ["I"], "evidence": ["B", "D"] },
       "queries": [
         { "id": "Q3.1.1", "text": "your attitude to risk you are a risk rating balanced cautious adventurous investor", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["risk rating", "Balanced", "Cautious", "Moderate", "attitude to risk"], "priority": "Core" },
-        { "id": "Q3.1.2", "text": "attitude to risk questionnaire result score profile outcome", "side": "Evidence", "targetCategories": ["D"], "expectSignals": ["questionnaire", "score", "profile", "risk level", "result"], "canonicalPaths": ["/riskAssessment/perClient[]/attitudeToRisk/assessedCode"], "priority": "Core" },
+        { "id": "Q3.1.2", "text": "attitude to risk questionnaire result score profile outcome", "side": "Evidence", "targetCategories": ["D", "B"], "expectSignals": ["questionnaire", "score", "profile", "risk level", "result"], "canonicalPaths": ["/riskAssessment/perClient[]/attitudeToRisk/assessedCode"], "priority": "Core" },
         { "id": "Q3.1.3", "text": "risk profile description what this risk level means for your investments", "side": "Either", "targetCategories": ["D", "I"], "expectSignals": ["as a", "investor", "you may be suited", "description"], "priority": "Core" },
         { "id": "Q3.1.4", "text": "risk scale one to ten definition of each risk category", "side": "Evidence", "targetCategories": ["D", "G"], "expectSignals": ["1-10", "scale", "level", "Dynamic Planner", "FE", "Defaqto"], "canonicalPaths": ["/riskAssessment/perClient[]/attitudeToRisk/scaleName"], "priority": "Core", "note": "Establishes which scale is in use. Without it, no comparison of numeric risk ratings is safe." }
       ],
@@ -102,7 +102,7 @@
       "expectedCategories": { "assertion": ["I"], "evidence": ["B", "D", "F"] },
       "queries": [
         { "id": "Q3.4.1", "text": "invest over a period of years growth potential over the long term", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["over a", "year period", "long term", "growth potential"], "priority": "Core" },
-        { "id": "Q3.4.2", "text": "investment term recorded in the risk assessment how long until the money is needed", "side": "Evidence", "targetCategories": ["D", "B"], "expectSignals": ["term", "years", "horizon", "until"], "priority": "Core" }
+        { "id": "Q3.4.2", "text": "investment term recorded in the risk assessment how long until the money is needed", "side": "Evidence", "targetCategories": ["D", "B", "F"], "expectSignals": ["term", "years", "horizon", "until"], "priority": "Core" }
       ],
       "comparison": {
         "method": "RangeMatch",
@@ -168,7 +168,7 @@
       "expectedCategories": { "assertion": ["I"], "evidence": ["D", "E", "G"] },
       "queries": [
         { "id": "Q3.7.1", "text": "how the recommended strategy aligns with your attitude to risk and capacity for loss", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["aligns", "in line with", "consistent with", "matches"], "priority": "Core" },
-        { "id": "Q3.7.2", "text": "existing plan fund risk level compared with your agreed risk profile", "side": "Either", "targetCategories": ["E", "I", "G"], "expectSignals": ["risk level", "rated", "higher than", "lower than", "outside"], "canonicalPaths": ["/existingArrangements[]/riskRating"], "priority": "Core" },
+        { "id": "Q3.7.2", "text": "existing plan fund risk level compared with your agreed risk profile", "side": "Either", "targetCategories": ["E", "I", "G", "D"], "expectSignals": ["risk level", "rated", "higher than", "lower than", "outside"], "canonicalPaths": ["/existingArrangements[]/riskRating"], "priority": "Core" },
         { "id": "Q3.7.3", "text": "lifestyling strategy automatically reduces risk as you approach retirement", "side": "Either", "targetCategories": ["E", "H", "I"], "expectSignals": ["lifestyling", "de-risk", "glide path", "automatically"], "priority": "Core", "note": "Lifestyling moves a portfolio outside the agreed profile over time and is a recurring appropriateness point." },
         { "id": "Q3.7.4", "text": "volatility and potential loss of the recommended portfolio maximum drawdown", "side": "Evidence", "targetCategories": ["G", "H"], "expectSignals": ["volatility", "drawdown", "loss", "standard deviation"], "priority": "Supplementary" }
       ],

@@ -44,6 +44,17 @@ public sealed class CheckPlanRunner : IDisposable
     /// </summary>
     public const int MaxPassagesPerGroup = 12;
 
+    /// <summary>
+    /// How much of the extraction's self-report reaches an assessor.
+    ///
+    /// The extraction report is what lets a group tell a report that is genuinely silent from
+    /// one the extraction failed to read, and it carries the contradictions extraction found in
+    /// the report itself — which is the only route CHK-001's internal-consistency requirement
+    /// has to them. Sized to hold a whole report; the observed model is around 9,000 characters
+    /// and the previous 4,000 dropped 55% of it.
+    /// </summary>
+    public const int ExtractionReportMaxChars = 24_000;
+
     /// <summary>Output cap for a decision. Enough for a structured finding across every group.</summary>
     private const int DecisionMaxTokens = 8000;
 
@@ -52,6 +63,7 @@ public sealed class CheckPlanRunner : IDisposable
     private readonly CaseDocumentSearchTool _search;
     private readonly CanonicalModelDocument _model;
     private readonly CanonicalModelAccessor _accessor;
+    private readonly IReadOnlyList<DerivedFigures.Figure> _derived;
     private readonly PromptLogWriter? _promptLog;
     private readonly ConcurrencyGate _modelCalls;
     private readonly ConcurrencyGate _searches;
@@ -77,6 +89,11 @@ public sealed class CheckPlanRunner : IDisposable
         _search = search;
         _model = model;
         _accessor = new CanonicalModelAccessor(model.Json);
+
+        // Computed once for the run rather than per check: the arithmetic is a property of the
+        // model, and asking the assessor to redo it per group is how it came to be done
+        // differently in different groups.
+        _derived = DerivedFigures.From(model.Json);
         _promptLog = promptLog;
 
         _ownsGates = modelCalls is null && searches is null;
@@ -188,9 +205,16 @@ public sealed class CheckPlanRunner : IDisposable
 
             startedAt.Stop();
 
+            // An overlay that ran with a missing trigger has not been excused anything, so its
+            // summary must not open by implying the check did not really apply.
+            var triggerNote =
+                trigger.Applies ? null
+                : plan.TriggerProbe?.ContinuesWithReducedScope == true
+                    ? "No trigger was recorded; this check applies to every case and was assessed anyway."
+                    : "The trigger appears absent.";
+
             var finding = CheckFinding.FromGroups(
-                plan.CheckId, plan.CheckName, findings,
-                trigger.Applies ? null : "The trigger appears absent.");
+                plan.CheckId, plan.CheckName, findings, triggerNote);
 
             return finding with
             {
@@ -477,7 +501,12 @@ public sealed class CheckPlanRunner : IDisposable
         sb.AppendLine(trigger.Detail);
         sb.AppendLine(trigger.Applies
             ? "The check applies to this case."
-            : "The trigger appears absent; say so if the evidence below bears that out.");
+            : plan.TriggerProbe?.ContinuesWithReducedScope == true
+                ? "The trigger was not found, and this check runs anyway — it applies to every "
+                  + "case. Do not read the missing trigger as evidence that the check's subject "
+                  + "is absent: whether it was ever considered is part of what you are assessing. "
+                  + "Assess the requirements below on the evidence supplied."
+                : "The trigger appears absent; say so if the evidence below bears that out.");
         sb.AppendLine();
 
         if (plan.Decision is not null)
@@ -518,10 +547,19 @@ public sealed class CheckPlanRunner : IDisposable
                 "Use this to tell report silence from extraction failure where a canonical path "
                 + "below is absent.");
             sb.AppendLine("```json");
-            sb.AppendLine(Truncate(extraction.Json, 4000));
+
+            // Sized to hold the whole report rather than a prefix of it. At 4,000 characters
+            // the cut landed 45% of the way through an observed model, mid-key inside the
+            // fourth recorded inconsistency — so every assessor read half a sentence and none
+            // of them saw the ambiguities section at all.
+            sb.AppendLine(Truncate(extraction.Json, ExtractionReportMaxChars));
             sb.AppendLine("```");
             sb.AppendLine();
         }
+
+        // Sums, percentage-of relationships and frequency conversions, done in code. Asking
+        // the model for these produced both misses and inventions; see DerivedFigures.
+        sb.Append(DerivedFigures.Format(_derived));
 
         return sb.ToString();
     }
@@ -744,13 +782,23 @@ public sealed class CheckPlanRunner : IDisposable
             var finding = json.Deserialize<GroupFinding>(FindingOptions)
                 ?? throw new JsonException("The finding deserialised to null.");
 
-            // The plan is the authority on which requirement this is; the model only echoes it.
+            // The plan is the authority on which requirement this is, and on what it says. The
+            // model only echoes both.
+            //
+            // The identifier was always taken from the plan. The requirement text was not, and
+            // in one measured run 25 of 60 findings printed and stored the model's wording
+            // rather than the catalogue's. Most were harmless expansions of a short label, but
+            // the mechanism permits scope change and one group took it — asked about "Existing
+            // products (pensions and investments)", it answered, and recorded, "Existing
+            // products (pensions, investments and protection plans)". A requirement the
+            // assessor can redefine is not auditable, so both fields now come from the plan and
+            // the divergence is counted instead.
             return finding with
             {
                 GroupId = group.GroupId,
-                Requirement = string.IsNullOrWhiteSpace(finding.Requirement)
-                    ? group.Requirement
-                    : finding.Requirement,
+                Requirement = group.Requirement,
+                EchoedGroupId = finding.GroupId,
+                EchoedRequirement = finding.Requirement,
             };
         }
         catch (JsonException ex)

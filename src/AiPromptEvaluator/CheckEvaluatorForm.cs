@@ -964,6 +964,11 @@ public partial class CheckEvaluatorForm : Form
             // written — and would paint the progress board back over them.
             var settled = false;
 
+            // Wall clock for the whole run. Read back against the output tokens to tell a
+            // generated run from a gateway cache replay, which is otherwise indistinguishable
+            // from one — see RunAuthenticity.
+            var runClock = Stopwatch.StartNew();
+
             var ui = new Progress<Action>(update =>
             {
                 if (!settled)
@@ -1046,6 +1051,7 @@ public partial class CheckEvaluatorForm : Form
             // Collected by position, so the report reads in the order the checks were listed
             // however the run happened to interleave them.
             settled = true;
+            runClock.Stop();
 
             var findings = findingsByIndex.Where(f => f is not null).Select(f => f!).ToList();
             usage = findings.Aggregate(TokenUsage.Empty, (total, f) => AddUsage(total, f.Usage));
@@ -1054,7 +1060,8 @@ public partial class CheckEvaluatorForm : Form
                 caseReference, _settings.TenantId, _settings.SelectedModel,
                 DateTimeOffset.Now, findings, _model,
                 RunFingerprint.For(
-                    _settings, _model, planFolder, plans.Count, CheckPlanRunner.MaxPassagesPerGroup));
+                    _settings, _model, planFolder, plans.Count, CheckPlanRunner.MaxPassagesPerGroup),
+                runClock.Elapsed);
 
             responseTextBox.Text = report.Format();
 

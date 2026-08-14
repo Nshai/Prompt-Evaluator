@@ -6,6 +6,24 @@ using Microsoft.Extensions.AI;
 
 namespace AiPromptEvaluator;
 
+/// <summary>
+/// How far a finding's quotations could be traced back to the evidence it was shown. Reported
+/// beside the outcome rather than folded into it: what the evidence supports and how far the
+/// working can be traced are different questions, and answering the second by overwriting the
+/// first cost a whole run its No Issue verdicts.
+/// </summary>
+public enum CitationConfidence
+{
+    /// <summary>Every quotation of checkable length was found in the evidence.</summary>
+    Verified,
+
+    /// <summary>Some quotations were found and some were not.</summary>
+    PartiallyVerified,
+
+    /// <summary>No quotation could be traced. Read this finding before the others.</summary>
+    Unverified,
+}
+
 /// <summary>The outcomes a check can carry.</summary>
 public enum CheckOutcome
 {
@@ -90,17 +108,124 @@ public sealed record GroupFinding
     [JsonIgnore] public IReadOnlyList<string> UnverifiedQuotes { get; init; } = [];
 
     /// <summary>
+    /// What the model echoed back for <c>groupId</c> and <c>requirement</c>, kept after the
+    /// plan's values have been substituted.
+    ///
+    /// Neither is used to decide anything — they are a prompt-adherence measure. In one run,
+    /// 22 of 60 responses returned a check id where a group id was asked for, and 25 rewrote
+    /// the requirement. That is a third of responses losing track of which requirement they
+    /// were answering while still answering it, which is worth knowing before it costs
+    /// something rather than after.
+    /// </summary>
+    [JsonIgnore] public string? EchoedGroupId { get; init; }
+
+    /// <inheritdoc cref="EchoedGroupId"/>
+    [JsonIgnore] public string? EchoedRequirement { get; init; }
+
+    /// <summary>True when the model did not echo back the group id it was asked about.</summary>
+    public bool GroupIdDiverged =>
+        !string.IsNullOrWhiteSpace(EchoedGroupId)
+        && !string.Equals(EchoedGroupId, GroupId, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// True when the model rewrote the requirement rather than echoing it. A leading "[G3.1] "
+    /// is ignored: prefixing the identifier is a formatting habit, not a redefinition.
+    /// </summary>
+    public bool RequirementDiverged
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(EchoedRequirement) || string.IsNullOrWhiteSpace(Requirement))
+            {
+                return false;
+            }
+
+            var echoed = EchoedRequirement.AsSpan().Trim();
+
+            if (echoed.StartsWith("[") && echoed.IndexOf(']') > 0)
+            {
+                echoed = echoed[(echoed.IndexOf(']') + 1)..].Trim();
+            }
+
+            return !echoed.StartsWith(Requirement.AsSpan().Trim(), StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    /// <summary>
+    /// True when the group could not complete its comparison but nonetheless named a
+    /// difference between the two sides. Whatever it could not close, it compared something.
+    ///
+    /// The distinction matters because <c>comparisonPerformed</c> is a field the model fills
+    /// in, and reading it as a veto let the model overrule its own verdict. Over sixty groups
+    /// of one run, twenty set it false — and of those, thirteen had written Potential Concern
+    /// and eleven had written it at High severity. Seventy-one discrepancies were reported and
+    /// then filed as unassessable. One of them was the recommendation retaining a fund rated 9
+    /// against an agreed attitude to risk of 5, discarded because the group could not establish
+    /// how the provider's scale mapped onto the firm's.
+    /// </summary>
+    public bool ComparedSomething => Discrepancies.Count > 0;
+
+    /// <summary>
     /// The outcome as it stands after the deterministic checks, which can only ever move it
     /// away from a pass:
     ///
-    /// a comparison that could not be performed is Indeterminate whatever the model concluded;
-    /// and a finding resting on a quote that is not in its own evidence is a Potential Concern,
-    /// because the reasoning cannot be relied on even where the conclusion happens to be right.
+    /// a comparison that could not be performed <em>and found nothing to report</em> is
+    /// Indeterminate whatever the model concluded; and a finding resting on a quote that is not
+    /// in its own evidence is a Potential Concern, because the reasoning cannot be relied on
+    /// even where the conclusion happens to be right.
+    ///
+    /// A group that could not close its comparison but did name discrepancies keeps its
+    /// outcome, and carries <see cref="MissingInputs"/> as a caveat rather than as a verdict.
+    /// "I could not compare" and "I compared, and separately could not close one input" are
+    /// different answers, and only the first is unassessable.
     /// </summary>
-    public CheckOutcome ParsedOutcome =>
-        !ComparisonPerformed ? CheckOutcome.Indeterminate
-        : UnverifiedQuotes.Count > 0 ? CheckOutcome.PotentialConcern
-        : CheckFinding.ParseOutcome(Outcome);
+    /// A finding that <em>passes</em> on the strength of a quotation which is not in its own
+    /// evidence is still forced to Potential Concern. That is the failure this whole mechanism
+    /// exists for: an assessor handed "a Risk rating of 6" reported "a Risk rating of 5" and
+    /// cleared the check. Moving that onto <see cref="Confidence"/> alone was tried and
+    /// reverted — it let the altered quotation clear the check again, which is the entire
+    /// defect.
+    ///
+    /// What did move is everything else. A finding that already reports a concern is not made
+    /// more concerning by a citation that will not match, and the run where this rule converted
+    /// all nine No Issue verdicts was suffering from a broken matcher, not from nine bad
+    /// findings. The fix for the count is the matcher; the fix for a fabricated pass is this.
+    public CheckOutcome ParsedOutcome
+    {
+        get
+        {
+            if (!ComparisonPerformed && !ComparedSomething)
+            {
+                return CheckOutcome.Indeterminate;
+            }
+
+            var stated = CheckFinding.ParseOutcome(Outcome);
+
+            return UnverifiedQuotes.Count > 0
+                   && stated is CheckOutcome.NoIssue or CheckOutcome.NotApplicable
+                ? CheckOutcome.PotentialConcern
+                : stated;
+        }
+    }
+
+    /// <summary>
+    /// How far this finding's quotations could be traced back to the evidence it was given.
+    ///
+    /// Confidence and verdict are different questions. The verdict is what the evidence
+    /// supports; the confidence is how far the working can be traced. They were conflated:
+    /// any unverified quote forced a Potential Concern, and at a 36% quote-failure rate that
+    /// converted every one of a run's nine No Issue verdicts, so the report announced "0 no
+    /// issue" and a reader could not tell an assessed concern from a formatting artefact.
+    ///
+    /// Reporting confidence separately makes the working visible without overwriting the
+    /// verdict — but only for findings that already report something. A <em>pass</em> resting
+    /// on an untraceable quotation is still downgraded; see
+    /// <see cref="ParsedOutcome"/> for why that half cannot move here.
+    /// </summary>
+    public CitationConfidence Confidence =>
+        UnverifiedQuotes.Count == 0 ? CitationConfidence.Verified
+        : UnverifiedQuotes.Count >= Citations.Count ? CitationConfidence.Unverified
+        : CitationConfidence.PartiallyVerified;
 }
 
 /// <summary>
@@ -235,6 +360,17 @@ public sealed record CheckFinding
             sb.Append(indeterminate.Count)
               .Append(" could not be assessed for want of a value the comparison needs (")
               .Append(string.Join(", ", indeterminate.Select(g => g.GroupId))).Append("). ");
+
+            // A group that could not close its comparison may still have named a difference on
+            // the way. Those used to reach the detail body and nothing else, so the summary a
+            // reviewer actually reads listed the group ids and threw the findings away.
+            var noted = indeterminate.SelectMany(g => g.Discrepancies).Take(2).ToList();
+
+            if (noted.Count > 0)
+            {
+                sb.Append("Those groups still noted: ")
+                  .Append(string.Join(" ", noted.Select(d => d.TrimEnd('.') + "."))).Append(' ');
+            }
         }
 
         var unverified = groups.Sum(g => g.UnverifiedQuotes.Count);
@@ -349,9 +485,17 @@ public sealed record FindingsReport(
     DateTimeOffset RunAt,
     IReadOnlyList<CheckFinding> Findings,
     CanonicalModelDocument? Model,
-    RunFingerprint? Fingerprint = null)
+    RunFingerprint? Fingerprint = null,
+    TimeSpan RunDuration = default)
 {
     public int Count(CheckOutcome outcome) => Findings.Count(f => f.ParsedOutcome == outcome);
+
+    /// <summary>
+    /// Whether the run's output could have been generated in the time the run took. A report
+    /// built without a measured duration reports <see cref="RunAuthenticity.Unknown"/>, which
+    /// accuses nothing.
+    /// </summary>
+    public RunAuthenticity Authenticity => new(TotalUsage.OutputTokens, RunDuration);
 
     public TokenUsage TotalUsage => Findings.Aggregate(TokenUsage.Empty, (total, f) => new TokenUsage(
         total.InputTokens + f.Usage.InputTokens,
@@ -361,7 +505,8 @@ public sealed record FindingsReport(
 
     /// <summary>A one-line count of the outcomes, for the status bar.</summary>
     public string Headline =>
-        $"{Count(CheckOutcome.PotentialConcern)} potential concern(s), "
+        (Authenticity.IsReplay ? "REPLAY (cached) — " : string.Empty)
+        + $"{Count(CheckOutcome.PotentialConcern)} potential concern(s), "
         + $"{Count(CheckOutcome.NoIssue)} no issue, "
         + $"{Count(CheckOutcome.NotApplicable)} N/A"
         + (Count(CheckOutcome.Indeterminate) > 0
@@ -377,6 +522,24 @@ public sealed record FindingsReport(
     public int UnverifiedCitations => Findings.Sum(f => f.Groups.Sum(g => g.UnverifiedQuotes.Count));
 
     /// <summary>
+    /// Responses that did not echo back the group id or the requirement they were asked about.
+    /// Nothing downstream depends on either — the plan's values are used — but a climbing
+    /// count means the assessor is losing track of the question, and that is worth a number.
+    /// </summary>
+    public (int GroupIds, int Requirements, int Total) Adherence
+    {
+        get
+        {
+            var groups = Findings.SelectMany(f => f.Groups).ToList();
+
+            return (
+                groups.Count(g => g.GroupIdDiverged),
+                groups.Count(g => g.RequirementDiverged),
+                groups.Count);
+        }
+    }
+
+    /// <summary>
     /// The full report. Concerns come first and in full; passes are summarised. A reviewer
     /// opens this to find what needs attention, not to read ten clean checks.
     /// </summary>
@@ -386,6 +549,16 @@ public sealed record FindingsReport(
         var rule = new string('=', 78);
 
         sb.AppendLine(rule);
+
+        // Before anything else. A replay carries a fresh timestamp, a fresh cost line and
+        // findings that look generated, so a reader who reaches the summary without being told
+        // has already been misled.
+        if (Authenticity.IsReplay)
+        {
+            sb.AppendLine(Authenticity.Banner);
+            sb.AppendLine(rule);
+        }
+
         sb.AppendLine($"QA FINDINGS — case {CaseReference} (tenant {TenantId})");
         sb.AppendLine($"Run {RunAt:yyyy-MM-dd HH:mm}    Model {ModelId}");
 
@@ -465,11 +638,34 @@ public sealed record FindingsReport(
             $"Tokens: {TotalUsage.TotalTokens:N0} "
             + $"(the suitability report was read once at extraction, not per check).");
 
+        if (RunDuration > TimeSpan.Zero)
+        {
+            sb.AppendLine(
+                $"Wall clock: {RunDuration.TotalSeconds:N0}s for {TotalUsage.OutputTokens:N0} "
+                + $"output token(s) — {Authenticity.TokensPerSecond:N0} tok/s."
+                + (Authenticity.IsReplay ? "  *** REPLAY — see the head of this report. ***" : string.Empty));
+        }
+
         if (UnverifiedCitations > 0)
         {
             sb.AppendLine(
                 $"Citations: {UnverifiedCitations} quote(s) could not be found in the evidence they "
-                + "were drawn from. Those findings were downgraded and should be read first.");
+                + "were drawn from. Those findings are marked and should be read first; any that "
+                + "would otherwise have passed were downgraded.");
+        }
+
+        // Read across the finished findings rather than within any one of them, because the
+        // check catalogue is exactly what splits these contradictions in half.
+        sb.Append(CrossGroupContradictions.Format(CrossGroupContradictions.In(Findings)));
+
+        var (ids, requirements, total) = Adherence;
+
+        if (ids > 0 || requirements > 0)
+        {
+            sb.AppendLine(
+                $"Prompt adherence: of {total} response(s), {ids} echoed the wrong requirement id "
+                + $"and {requirements} rewrote the requirement text. The plan's values were used "
+                + "for both.");
         }
 
         return sb.ToString();
@@ -502,7 +698,10 @@ public sealed record FindingsReport(
             sb.AppendLine();
             sb.AppendLine($"  [{group.GroupId}] {group.Requirement}");
             sb.AppendLine($"  {CheckFinding.Describe(group.ParsedOutcome)}"
-                + (string.IsNullOrWhiteSpace(group.Severity) ? string.Empty : $" — severity {group.Severity}"));
+                + (string.IsNullOrWhiteSpace(group.Severity) ? string.Empty : $" — severity {group.Severity}")
+                + (group.Confidence == CitationConfidence.Verified
+                    ? string.Empty
+                    : $" — citations {(group.Confidence == CitationConfidence.Unverified ? "unverified" : "partly verified")}"));
 
             // Both sides before the reasoning, mirroring the order the assessor answered in —
             // a reviewer checking a finding wants the two claims side by side first.

@@ -59,7 +59,7 @@
       "expectedCategories": { "assertion": ["I"], "evidence": ["B", "C", "F"] },
       "queries": [
         { "id": "Q2.2.1", "text": "you want to retire in years time at age target retirement date", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["retire in", "at age", "target", "years time"], "priority": "Core" },
-        { "id": "Q2.2.2", "text": "intended retirement age selected retirement age recorded on the fact find", "side": "Evidence", "targetCategories": ["B", "E"], "expectSignals": ["intended retirement", "selected retirement age", "SRA"], "priority": "Core" },
+        { "id": "Q2.2.2", "text": "intended retirement age selected retirement age recorded on the fact find", "side": "Evidence", "targetCategories": ["B", "E", "C"], "expectSignals": ["intended retirement", "selected retirement age", "SRA"], "priority": "Core" },
         { "id": "Q2.2.3", "text": "investment term time horizon how long you wish to invest for years", "side": "Either", "targetCategories": ["I", "D", "F"], "expectSignals": ["term", "time horizon", "years", "long term", "medium term"], "canonicalPaths": ["/objectives[]/timeHorizon"], "priority": "Core", "note": "The horizon used to justify the risk profile is often stated in the risk section, not the objectives section — retrieve both and compare." },
         { "id": "Q2.2.4", "text": "when do you need to access this money planned date of withdrawal", "side": "Evidence", "targetCategories": ["B", "F"], "expectSignals": ["access", "when", "date", "withdrawal"], "priority": "Supplementary" }
       ],

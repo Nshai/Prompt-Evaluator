@@ -45,10 +45,70 @@ public static class CitationVerifier
             .Where(q => !string.IsNullOrWhiteSpace(q))
             .Select(q => q!.Trim())
             .Where(q => q.Length >= MinimumQuoteLength)
-            .Where(q => !haystack.Contains(Normalise(q), StringComparison.Ordinal))
+            .Where(q => !IsPresent(q, haystack))
             .Distinct(StringComparer.Ordinal)
             .ToList();
     }
+
+    /// <summary>
+    /// Whether one quote can be traced to the evidence, allowing for elision.
+    ///
+    /// A quote written as "the first part … the last part" is a claim about two spans, not one,
+    /// and both are checked, in order. This is how a model quotes a long sentence without
+    /// reproducing the middle of it, and it accounts for a share of the failures that were
+    /// being reported as fabrication.
+    ///
+    /// **A near-miss rule was designed and then rejected here, and the reason is worth keeping.**
+    /// Measuring the failures of one run suggested accepting a quote when a contiguous run
+    /// covering most of it appears in the evidence — 39 of 105 failures looked like that. But
+    /// the altered quotation this class was built to catch has a **96% contiguous run**: the
+    /// evidence reads "You are happy to proceed with a Risk rating of 6" and the finding
+    /// reported "…of 5", which differs by one character at the end. Any threshold loose enough
+    /// to admit the near-misses admits that too, and admitting that is the whole failure. A
+    /// quotation differing from its source by a digit is not a near-miss; it is the defect.
+    ///
+    /// So elision only — an explicit ellipsis is the model *saying* it has skipped something,
+    /// which is a different claim from a silent alteration.
+    /// </summary>
+    private static bool IsPresent(string quote, string haystack)
+    {
+        var normalised = Normalise(quote);
+
+        if (haystack.Contains(normalised, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        var spans = normalised
+            .Split(Ellipses, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(s => s.Length > 0)
+            .ToList();
+
+        if (spans.Count < 2)
+        {
+            return false;
+        }
+
+        // In order, and each after the last — otherwise "A … B" would verify against evidence
+        // reading "B … A", which reverses the meaning of most comparisons.
+        var from = 0;
+
+        foreach (var span in spans)
+        {
+            var at = haystack.IndexOf(span, from, StringComparison.Ordinal);
+
+            if (at < 0)
+            {
+                return false;
+            }
+
+            from = at + span.Length;
+        }
+
+        return true;
+    }
+
+    private static readonly string[] Ellipses = ["...", "…"];
 
     /// <summary>
     /// Applies the check to a group finding, recording any quotes that could not be found.
@@ -63,8 +123,16 @@ public static class CitationVerifier
 
     /// <summary>
     /// Folds away the differences that are formatting rather than substance: case, runs of
-    /// whitespace, and the typographic characters that survive a round trip through a document
-    /// converter as something slightly different.
+    /// whitespace, the typographic characters that survive a round trip through a document
+    /// converter as something slightly different, and markdown table punctuation.
+    ///
+    /// Table punctuation is folded because so much of this evidence is tables. A quote lifted
+    /// from a converted table carries its cell separators, and whether a model reproduces
+    /// <c>| Savings | JS | 6,000 |</c> or <c>Savings JS 6,000</c> is a fact about markdown, not
+    /// about whether it read the document. Collapsing the pipes to spaces — and the
+    /// <c>|---|---|</c> separator rows with them — puts both spellings in the same shape.
+    ///
+    /// This cannot hide a substantive difference, because a digit or a word is not punctuation.
     /// </summary>
     internal static string Normalise(string text)
     {
@@ -79,6 +147,9 @@ public static class CitationVerifier
                 '“' or '”' => '"',
                 '‐' or '‑' or '‒' or '–' or '—' or '−' => '-',
                 ' ' or ' ' or ' ' => ' ',
+                // Markdown table furniture. The pipe becomes a space so cells stay separated
+                // as words; a run of them collapses with the surrounding whitespace below.
+                '|' => ' ',
                 _ => raw,
             };
 
@@ -97,6 +168,50 @@ public static class CitationVerifier
             sb.Append(char.ToLowerInvariant(c));
         }
 
-        return sb.ToString().TrimEnd();
+        return CollapseSeparatorRuns(sb.ToString()).TrimEnd();
+    }
+
+    /// <summary>
+    /// Removes the dashes of a markdown separator row (<c>|---|:---:|</c>), which carry no
+    /// content and survive the pipe fold as a run of hyphens and colons. Left in place they
+    /// would be the only difference between two spellings of the same table.
+    /// </summary>
+    private static string CollapseSeparatorRuns(string text)
+    {
+        var sb = new StringBuilder(text.Length);
+        var i = 0;
+
+        while (i < text.Length)
+        {
+            if (text[i] is '-' or ':')
+            {
+                var start = i;
+
+                while (i < text.Length && text[i] is '-' or ':')
+                {
+                    i++;
+                }
+
+                // Two or more is table furniture; a single hyphen is a hyphen, and a lone
+                // colon punctuates a sentence.
+                if (i - start >= 2)
+                {
+                    if (sb.Length > 0 && sb[^1] != ' ')
+                    {
+                        sb.Append(' ');
+                    }
+
+                    continue;
+                }
+
+                sb.Append(text, start, i - start);
+                continue;
+            }
+
+            sb.Append(text[i]);
+            i++;
+        }
+
+        return sb.ToString();
     }
 }

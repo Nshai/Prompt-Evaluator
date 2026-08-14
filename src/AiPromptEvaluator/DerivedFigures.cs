@@ -1,0 +1,405 @@
+using System.Globalization;
+using System.Text;
+using System.Text.Json.Nodes;
+
+namespace AiPromptEvaluator;
+
+/// <summary>
+/// Arithmetic the checks turn on, computed from the canonical model before any model call.
+///
+/// This exists because delegating arithmetic to the assessor fails in both directions, and the
+/// failures were measured rather than imagined.
+///
+/// **It misses things it is standing on.** Asked whether a charge comparison was sound, one
+/// group back-solved the fund value implied by one row — "at 0.93% this would require a fund
+/// value of approximately £103,430" — and then listed the same calculation for the next row as
+/// a *missing input*. £186.19 at 0.18% implies £103,439: the same fund, four sentences apart,
+/// which is the whole finding. It had both numbers and did not divide.
+///
+/// **It invents things that are not there.** Handed a report that mis-stated a monthly figure
+/// as "your annual expenditure to be approximately £1,700", another group reasoned that the
+/// monthly figure must therefore be £141.67 and carried that forward. A unit contradiction was
+/// converted into a confident wrong number.
+///
+/// **And where it succeeds, it succeeds by luck.** The one arithmetic finding the run did
+/// reach — five plans summing to £116,997.47 against a stated £110,000 — was right only
+/// because the *extraction* had summed them and written the total into a string. Nothing in
+/// the assessment path adds five values.
+///
+/// So the sums, the percentage-of relationships and the frequency conversions are done here,
+/// deterministically, and handed to the assessor as facts. None of them need retrieval and all
+/// of them are decidable.
+/// </summary>
+public static class DerivedFigures
+{
+    /// <summary>One computed fact, with the working shown so a reader can check it.</summary>
+    public sealed record Figure(string Topic, string Statement)
+    {
+        public override string ToString() => $"{Topic}: {Statement}";
+    }
+
+    /// <summary>
+    /// A percentage and a monetary amount quoted for the same charge imply a fund value. When
+    /// that implied value does not match the arrangement the row is about, the row has been
+    /// computed on the wrong plan — which is invisible unless someone divides.
+    /// </summary>
+    private const double ImpliedBaseTolerance = 0.02;
+
+    public static IReadOnlyList<Figure> From(string modelJson)
+    {
+        JsonObject? root;
+
+        try
+        {
+            root = JsonNode.Parse(modelJson) as JsonObject;
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            // A model that will not parse is a problem for the code that stored it, not a
+            // reason to fail the run here. The assessor simply gets no computed figures.
+            return [];
+        }
+
+        if (root is null)
+        {
+            return [];
+        }
+
+        var figures = new List<Figure>();
+
+        AddArrangementTotals(root, figures);
+        AddImpliedChargeBases(root, figures);
+        AddRepeatedChargeValues(root, figures);
+        AddIncomeFrequencies(root, figures);
+
+        return figures;
+    }
+
+    /// <summary>
+    /// Renders the figures for a prompt, framed so the assessor knows they are computed rather
+    /// than asserted — the distinction decides whether a mismatch is the report's error or the
+    /// arithmetic's.
+    /// </summary>
+    public static string Format(IReadOnlyList<Figure> figures)
+    {
+        if (figures.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine("## Figures computed from the canonical model");
+        sb.AppendLine(
+            "These were calculated from the report's own extracted values, not asserted by the "
+            + "report and not retrieved from any document. Where one contradicts a figure the "
+            + "report states, the report is what is in question. Do not recompute them.");
+        sb.AppendLine();
+
+        foreach (var group in figures.GroupBy(f => f.Topic))
+        {
+            sb.AppendLine($"**{group.Key}**");
+
+            foreach (var figure in group)
+            {
+                sb.AppendLine($"- {figure.Statement}");
+            }
+
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
+    }
+
+    // ──────────────────────────────────────────────
+
+    /// <summary>
+    /// What the existing arrangements actually sum to. A report quoting a total anywhere can
+    /// then be checked against it rather than taken on trust.
+    /// </summary>
+    private static void AddArrangementTotals(JsonObject root, List<Figure> figures)
+    {
+        if (root["existingArrangements"] is not JsonArray arrangements || arrangements.Count == 0)
+        {
+            return;
+        }
+
+        var current = new List<(string Name, double Value)>();
+        var transfer = new List<(string Name, double Value)>();
+
+        foreach (var node in arrangements.OfType<JsonObject>())
+        {
+            var name = Text(node["provider"]) ?? Text(node["productName"]) ?? Text(node["arrangementId"]) ?? "unnamed";
+
+            if (MoneyOf(node["currentValue"]) is { } c)
+            {
+                current.Add((name, c));
+            }
+
+            if (MoneyOf(node["transferValue"]) is { } t)
+            {
+                transfer.Add((name, t));
+            }
+        }
+
+        if (current.Count > 1)
+        {
+            figures.Add(new Figure(
+                "Existing arrangements",
+                $"The {current.Count} arrangements with a current value sum to "
+                + $"{Money(current.Sum(a => a.Value))} "
+                + $"({string.Join(" + ", current.Select(a => $"{a.Name} {Money(a.Value)}"))})."));
+        }
+
+        if (transfer.Count > 1)
+        {
+            var sum = transfer.Sum(a => a.Value);
+
+            figures.Add(new Figure(
+                "Existing arrangements",
+                $"The {transfer.Count} arrangements with a transfer value sum to {Money(sum)}."));
+
+            // The distinction that makes a stated total wrong: what is being moved is not what
+            // is held, and a report quoting one as the other understates the client's position.
+            if (current.Count > transfer.Count)
+            {
+                figures.Add(new Figure(
+                    "Existing arrangements",
+                    $"{current.Count - transfer.Count} arrangement(s) have a current value but no "
+                    + "transfer value, so the total held and the total being transferred are "
+                    + "different figures."));
+            }
+        }
+    }
+
+    /// <summary>
+    /// For every charge line quoting both a percentage and an amount, the fund value that pair
+    /// implies — and, where the line belongs to a named arrangement, whether it matches that
+    /// arrangement's own value.
+    /// </summary>
+    private static void AddImpliedChargeBases(JsonObject root, List<Figure> figures)
+    {
+        var arrangements = (root["existingArrangements"] as JsonArray ?? [])
+            .OfType<JsonObject>()
+            .Select(a => (
+                Name: Text(a["provider"]) ?? Text(a["productName"]) ?? Text(a["arrangementId"]) ?? "unnamed",
+                Value: MoneyOf(a["currentValue"])))
+            .Where(a => a.Value is not null)
+            .ToList();
+
+        foreach (var (scope, line) in ChargeLines(root))
+        {
+            var percentage = Number(line["percentage"]?["value"]);
+            var amount = MoneyOf(line["amount"]);
+
+            if (percentage is not > 0 || amount is not > 0)
+            {
+                continue;
+            }
+
+            var implied = amount.Value / (percentage.Value / 100);
+            var described = Text(line["description"]) ?? Text(line["chargeType"]) ?? scope;
+
+            var match = arrangements
+                .Where(a => Math.Abs(a.Value!.Value - implied) <= implied * ImpliedBaseTolerance)
+                .Select(a => a.Name)
+                .FirstOrDefault();
+
+            figures.Add(new Figure(
+                "Charge arithmetic",
+                $"{described}: {Money(amount.Value)} at {percentage.Value:0.###}% implies a fund "
+                + $"value of {Money(implied)}"
+                + (match is null
+                    ? ", which matches no arrangement's current value."
+                    : $", which is {match}'s current value.")));
+        }
+    }
+
+    /// <summary>
+    /// Where one arrangement's ongoing charge is recorded at two different percentages.
+    ///
+    /// A report can state the same plan's charge twice — once in a table of existing
+    /// arrangements and once in a switching comparison — and give different answers. On the
+    /// case this was written against, Zurich appears at 0.18% on one page and 0.93% on another,
+    /// and Standard Life at 0.52% and 0.18%. Both cost comparisons drive the recommendation,
+    /// and neither the assessor nor the extraction noticed, because seeing it requires holding
+    /// two pages together and comparing a repeated key rather than reading either page.
+    ///
+    /// The model already holds both. Comparing them is arithmetic, not judgement.
+    /// </summary>
+    private static void AddRepeatedChargeValues(JsonObject root, List<Figure> figures)
+    {
+        var byArrangement = new Dictionary<string, List<(double Percentage, string Where)>>(
+            StringComparer.OrdinalIgnoreCase);
+
+        void Record(string? name, double? percentage, string where)
+        {
+            if (name is null || percentage is not > 0)
+            {
+                return;
+            }
+
+            if (!byArrangement.TryGetValue(name, out var seen))
+            {
+                byArrangement[name] = seen = [];
+            }
+
+            seen.Add((percentage.Value, where));
+        }
+
+        foreach (var node in (root["existingArrangements"] as JsonArray ?? []).OfType<JsonObject>())
+        {
+            var name = Text(node["provider"]) ?? Text(node["productName"]);
+            var charges = node["charges"];
+
+            Record(name, Number(charges?["totalOngoingPercentage"]), "the existing arrangements table");
+
+            foreach (var line in (charges?["lines"] as JsonArray ?? []).OfType<JsonObject>())
+            {
+                Record(name, Number(line["percentage"]?["value"]), "the existing arrangements table");
+            }
+        }
+
+        foreach (var (scope, line) in ChargeLines(root))
+        {
+            Record(scope, Number(line["percentage"]?["value"]), "the charges comparison");
+        }
+
+        foreach (var (name, values) in byArrangement)
+        {
+            var distinct = values
+                .GroupBy(v => Math.Round(v.Percentage, 4))
+                .Select(g => (Percentage: g.Key, g.First().Where))
+                .OrderBy(v => v.Percentage)
+                .ToList();
+
+            if (distinct.Count < 2 || distinct.Select(v => v.Where).Distinct().Count() < 2)
+            {
+                continue;
+            }
+
+            figures.Add(new Figure(
+                "Charge consistency",
+                $"{name}'s ongoing charge is recorded at "
+                + string.Join(" and ", distinct.Select(v => $"{v.Percentage:0.###}% in {v.Where}"))
+                + ". These describe the same plan and do not agree."));
+        }
+    }
+
+    /// <summary>
+    /// Every income amount restated monthly and annually, with the frequency it was recorded
+    /// under. A weekly figure read as monthly overstates income roughly fourfold, and the
+    /// affordability case for a whole report can rest on it.
+    /// </summary>
+    private static void AddIncomeFrequencies(JsonObject root, List<Figure> figures)
+    {
+        if (root["financialPosition"]?["income"] is not JsonArray income)
+        {
+            return;
+        }
+
+        foreach (var item in income.OfType<JsonObject>())
+        {
+            var amount = MoneyOf(item["net"]) ?? MoneyOf(item["gross"]);
+            var frequency = Text(item["frequency"]);
+
+            if (amount is not > 0 || frequency is null)
+            {
+                continue;
+            }
+
+            var perYear = TimesPerYear(frequency);
+
+            if (perYear is null)
+            {
+                continue;
+            }
+
+            var annual = amount.Value * perYear.Value;
+            var described = Text(item["description"]) ?? Text(item["category"]) ?? "income";
+
+            figures.Add(new Figure(
+                "Income restated",
+                $"{described}: {Money(amount.Value)} {frequency.ToLowerInvariant()} is "
+                + $"{Money(annual / 12)} monthly, {Money(annual)} a year."));
+        }
+    }
+
+    private static IEnumerable<(string Scope, JsonObject Line)> ChargeLines(JsonObject root)
+    {
+        if (root["costsAndCharges"] is not JsonObject costs)
+        {
+            yield break;
+        }
+
+        foreach (var key in new[] { "existing", "recommended" })
+        {
+            var sets = costs[key] switch
+            {
+                JsonArray array => array.OfType<JsonObject>().ToList(),
+                JsonObject single => [single],
+                _ => [],
+            };
+
+            foreach (var set in sets)
+            {
+                var scope = Text(set["scope"]) ?? key;
+
+                foreach (var line in (set["lines"] as JsonArray ?? []).OfType<JsonObject>())
+                {
+                    yield return (scope, line);
+                }
+            }
+        }
+    }
+
+    // ──────────────────────────────────────────────
+
+    /// <summary>
+    /// Weeks and fortnights are converted on the calendar year, not on four-week months —
+    /// 52 weeks is 12 months, and treating a weekly figure as four-weekly loses a month a year.
+    /// </summary>
+    private static double? TimesPerYear(string frequency) => frequency.ToLowerInvariant() switch
+    {
+        "weekly" => 52,
+        "fortnightly" => 26,
+        "fourweekly" => 13,
+        "monthly" => 12,
+        "quarterly" => 4,
+        "halfyearly" => 2,
+        "annually" => 1,
+        _ => null,
+    };
+
+    private static double? MoneyOf(JsonNode? node) => Number(node?["amount"]) ?? Number(node);
+
+    private static double? Number(JsonNode? node)
+    {
+        if (node is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return node.GetValue<double>();
+        }
+        catch (Exception)
+        {
+            return double.TryParse(
+                node.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var parsed)
+                ? parsed
+                : null;
+        }
+    }
+
+    private static string? Text(JsonNode? node)
+    {
+        var value = node?.ToString().Trim();
+
+        return string.IsNullOrEmpty(value) ? null : value;
+    }
+
+    private static string Money(double value) =>
+        "£" + value.ToString("N2", CultureInfo.InvariantCulture);
+}

@@ -1,0 +1,44 @@
+Model: intelliflo-claude-haiku-4-5
+Total: £1.0557 for 422,279 tokens — chat £0.0000 (0 tokens) · embeddings £1.0557 (422,279 tokens)
+
+Indexing Markdown from C:\work\Prompt-Evaluator-Forms\docs\QA-Checks\Feasability-test-case-converted
+Case reference: ABC-99    Tenant: 99
+------------------------------------------------------------------------
+Chunking: semantic similarity (amazon.titan-embed-text-v2:0), max 600 tokens per chunk, 100 overlap
+Vector store: http://localhost:6334/ collection "case_documents"
+------------------------------------------------------------------------
+[  1/28] A   IMPORT_2.md                                      11 chunk(s) (1.2s)
+[  2/28] A   TFAS Wealth Client Agreement Privacy.md          14 chunk(s) (0.6s)
+[  3/28] B   Fact Find (Test 1).md                            11 chunk(s) (1.8s)
+[  4/28] C   File notes notes - updated.md                    4 chunk(s) (0.3s)
+[  5/28] D   Risk profile report.md                           6 chunk(s) (0.4s)
+[  6/28] E   Aviva Policy Info.md                             13 chunk(s) (1.9s)
+[  7/28] E   People's Pension Fund FactSheet.md               4 chunk(s) (0.4s)
+[  8/28] E   Peoples Pension Policy Info.md                   54 chunk(s) (1.3s)
+[  9/28] E   Scottish Widows Policy Info.md                   12 chunk(s) (1.6s)
+[ 10/28] E   Standard Life Policy illustration.md             6 chunk(s) (0.5s)
+[ 11/28] E   Standard_Life_Policy Value.md                    3 chunk(s) (0.2s)
+[ 12/28] E   Standard_Life_Policy_Info.md                     17 chunk(s) (0.7s)
+[ 13/28] E   SW Charges Info 2.md                             3 chunk(s) (0.3s)
+[ 14/28] E   SW Further Info 4.md                             3 chunk(s) (0.2s)
+[ 15/28] E   SW Illustration 3.md                             5 chunk(s) (0.3s)
+[ 16/28] E   SW MT Plan Schedule.md                           7 chunk(s) (0.5s)
+[ 17/28] E   Zurich Policy Info.md                            35 chunk(s) (5.0s)
+[ 18/28] F   intelliflo planning Baseline scenario.md         26 chunk(s) (1.2s)
+[ 19/28] F   intelliflo planning proposed scenario.md         24 chunk(s) (1.3s)
+[ 20/28] G   Pension switch report - updated.md               26 chunk(s) (0.8s)
+[ 21/28] G   SIPP research report.md                          19 chunk(s) (0.9s)
+[ 22/28] G   Test Case 1 - Policy Research -2025.md           13 chunk(s) (1.8s)
+[ 23/28] H   Fund Factsheet (1).md                            18 chunk(s) (0.5s)
+[ 24/28] H   Illustration - new.md                            9 chunk(s) (0.5s)
+[ 25/28] H   Key Features (1).md                              26 chunk(s) (1.6s)
+[ 26/28] H   KIIDs (1).md                                     13 chunk(s) (0.5s)
+[ 27/28] H   Terms and conditions (1).md                      63 chunk(s) (3.1s)
+[ 28/28] I   Suitability Report Test 1.md                     30 chunk(s) (1.2s)
+------------------------------------------------------------------------
+Ready: 475 chunks from 28 document(s) indexed for case ABC-99 (tenant 99) in 31.1s, 1 non-Markdown file(s) skipped.
+Total: £1.0557 for 422,279 tokens — chat £0.0000 (0 tokens) · embeddings £1.0557 (422,279 tokens)
+
+Skipped 1 file(s) that are not Markdown. Convert them to .md first if their content needs to be searchable:
+  _conversion-summary.json
+

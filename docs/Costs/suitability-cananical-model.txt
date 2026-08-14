@@ -1,0 +1,28 @@
+Model: intelliflo-claude-haiku-4-5
+Total: £0.6416 for 286,118 tokens
+
+Extracting the canonical model for case ABC-99 (tenant 99)
+Schema: C:\work\Prompt-Evaluator-Semantic\src\AiPromptEvaluator\bin\Debug\net8.0-windows\canonical-suitability-model.schema.json
+Store:  C:\Users\nshaikh\AppData\Local\AiPromptEvaluator\canonical-models.db
+Report: Suitability Report Test 1.md
+------------------------------------------------------------------------
+[ 1/12] Case and parties                     10,896 chars (0.2s)
+[ 2/12] Financial position                   13,387 chars (0.2s)
+[ 3/12] Objectives                           2,176 chars (0.2s)
+[ 4/12] Risk, knowledge and vulnerability    19,317 chars (0.1s)
+[ 5/12] Existing arrangements                34,542 chars (0.1s)
+[ 6/12] Needs analysis and research          28,323 chars (0.1s)
+[ 7/12] Recommendations                      FAILED — The model did not return a JSON object for this section. (0.1s)
+[ 8/12] Solution                             23,946 chars (0.1s)
+[ 9/12] Costs and charges                    33,627 chars (0.1s)
+[10/12] Replacement analysis                 42,772 chars (0.1s)
+[11/12] Disclosures                          33,398 chars (0.1s)
+[12/12] Triggers and extraction report       4,579 chars (0.1s)
+------------------------------------------------------------------------
+Stored 353,912 characters of canonical model for case ABC-99 in 1.7s.
+Sections populated: modelVersion, source, case, parties, clientAuthority, financialPosition, objectives, riskAssessment, knowledgeAndExperience, vulnerability, existingArrangements, needsAnalysis, research, solution, costsAndCharges, replacementAnalysis, riskWarningsAndDisadvantages, taxTreatment, ongoingService, checkTriggers, extractionReport
+
+1 section(s) failed and are missing from the model:
+  Recommendations — The model did not return a JSON object for this section.
+Extract again to retry them; checks that rely on a missing section will report the data as absent.
+

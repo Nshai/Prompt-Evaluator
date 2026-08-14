@@ -396,6 +396,26 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     public const int ReservedSlotsPerTargetedCategory = 1;
 
     /// <summary>
+    /// Slots held for each *section* a group names, taken before the category floor.
+    ///
+    /// **Ranking a section match above a non-match is not the same as keeping it, and one run
+    /// measured the difference.** Stage 7 added section hints and ordered matches higher; four
+    /// findings landed. Two did not, and the instrumentation added afterwards said why: the
+    /// declarations naming the client's residency matched a candidate passage and were then
+    /// evicted before the pack was built, because the floor guarantees a slot per *category* and
+    /// a named section competes on score against every other passage of the same category.
+    ///
+    /// This is the same defect as <see cref="ReservedSlotsPerTargetedCategory"/>, one level down,
+    /// and it was left in place for a run because Stage 7 fixed the ordering and assumed that was
+    /// enough. It was not enough for categories either.
+    ///
+    /// Taken *before* the category floor because a section is the more specific request: a plan
+    /// naming "Current Monthly Cash Flow" has said something a plan naming "B" has not, and the
+    /// section slot will usually satisfy the category slot as a side effect.
+    /// </summary>
+    public const int ReservedSlotsPerDeclaredSection = 1;
+
+    /// <summary>
     /// Orders a group's passages and keeps the best <see cref="MaxPassagesPerGroup"/>, holding a
     /// slot for each category the group declared its evidence lives in.
     ///
@@ -451,12 +471,42 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             .ThenBy(p => p.SearchedText, StringComparer.Ordinal)
             .ToList();
 
-        if (targeted.Count == 0 || ordered.Count <= MaxPassagesPerGroup)
+        if ((targeted.Count == 0 && hints.Count == 0) || ordered.Count <= MaxPassagesPerGroup)
         {
             return ordered.Take(MaxPassagesPerGroup).ToList();
         }
 
         var keep = new HashSet<int>();
+
+        // Sections first. A plan naming "Current Monthly Cash Flow" has asked for something more
+        // specific than one naming category B, and the section slot usually satisfies the
+        // category slot as a side effect. Ordinal order for the same reason as the categories
+        // below: the pack must not depend on the order the plan happened to list them in.
+        foreach (var hint in hints.OrderBy(h => h, StringComparer.Ordinal))
+        {
+            var held = 0;
+
+            for (var i = 0; i < ordered.Count && held < ReservedSlotsPerDeclaredSection; i++)
+            {
+                if (keep.Count >= MaxPassagesPerGroup)
+                {
+                    break;
+                }
+
+                // Targeted categories only. A hint is matched as a substring of the passage
+                // text, so an unrelated document using the same words — "Total Monthly
+                // Disposable Income appears here too" — would otherwise claim the slot and
+                // admit a category the group never asked for. A hint promotes within what was
+                // requested; it does not widen the request.
+                if (!keep.Contains(i)
+                    && (targeted.Count == 0 || targeted.Contains(ordered[i].CategoryCode))
+                    && ordered[i].SearchedText.Contains(hint, StringComparison.OrdinalIgnoreCase))
+                {
+                    keep.Add(i);
+                    held++;
+                }
+            }
+        }
 
         // The floor, in ordinal category order so a pack does not depend on the order the plan
         // happened to list its categories in.

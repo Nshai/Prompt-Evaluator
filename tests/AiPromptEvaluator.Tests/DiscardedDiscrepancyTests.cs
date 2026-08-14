@@ -128,4 +128,52 @@ public class DiscardedDiscrepancyTests
         Assert.Equal((0, 0), report.DiscardedDiscrepancies);
         Assert.DoesNotContain("Raised and not carried", report.Format(), StringComparison.Ordinal);
     }
+
+    /// <summary>
+    /// **The coupling Run 6 exposed, which worked by luck.**
+    ///
+    /// A group that states No Issue while resting on an untraceable quote is forced to Potential
+    /// Concern, and that downgrade is the *only* reason it prints in full. So when the citation
+    /// matcher improves and the quote verifies, the downgrade lapses, the group returns to No
+    /// Issue, and its whole detail block leaves the report. Run 6 measured exactly that: CHK-002's
+    /// G2.1 lost 73 lines when its quote was recovered.
+    ///
+    /// Its substance survived only because the discarded-difference surfacing had shipped in the
+    /// same commit, for unrelated reasons. **Every improvement to the matcher mechanically removes
+    /// content from the report**, and nothing said so until this test.
+    /// </summary>
+    [Fact]
+    public void VerifyingAQuoteMustNotTakeTheGroupsDifferencesWithIt()
+    {
+        var named = "Fact Find shows monthly disposable income of -£288.00";
+
+        // Before: the untraceable quote forces the group up, so it prints as a concern.
+        var unverified = Group("G2.1", "NoIssue", named) with { UnverifiedQuotes = ["a quote not in evidence"] };
+        Assert.Equal(CheckOutcome.PotentialConcern, unverified.ParsedOutcome);
+        Assert.Contains(named, Report(Check("CHK-002", unverified)).Format(), StringComparison.Ordinal);
+
+        // After: the quote verifies, the downgrade lapses, and the group falls back to a pass —
+        // taking its detail block out of the report. The difference must still be printed.
+        var verified = Group("G2.1", "NoIssue", named);
+        Assert.Equal(CheckOutcome.NoIssue, verified.ParsedOutcome);
+        Assert.Contains(named, Report(Check("CHK-002", verified)).Format(), StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// And the consequence for the metric: as citation trust improves, fewer groups are promoted,
+    /// so *more* fall into raised-and-not-carried. That rise is correct behaviour and will look
+    /// like a regression on a chart.
+    /// </summary>
+    [Fact]
+    public void TheDiscardedCountRisesAsCitationTrustImproves()
+    {
+        var named = "a difference the group waved through";
+
+        var whileBroken = Report(Check("CHK-002",
+            Group("G2.1", "NoIssue", named) with { UnverifiedQuotes = ["untraceable"] }));
+        var whenFixed = Report(Check("CHK-002", Group("G2.1", "NoIssue", named)));
+
+        Assert.Equal((0, 0), whileBroken.DiscardedDiscrepancies);
+        Assert.Equal((1, 1), whenFixed.DiscardedDiscrepancies);
+    }
 }

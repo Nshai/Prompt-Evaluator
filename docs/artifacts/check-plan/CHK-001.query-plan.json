@@ -158,7 +158,7 @@
       "requirement": "Existing products (pensions, investments and protection plans) are consistent with the evidence",
       "limb": "Consistency",
       "canonicalPaths": ["/existingArrangements[]/provider", "/existingArrangements[]/policyNumber", "/existingArrangements[]/currentValue", "/existingArrangements[]/transferValue", "/existingArrangements[]/contributions[]", "/existingArrangements[]/planType"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "E"], "evidenceSections": ["Existing Pension Provision"] },
+      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "E"], "evidenceSections": ["Money Purchase Pension Schemes", "Personal Pensions", "Final Salary Pension Schemes"] },
       "queries": [
         { "id": "Q1.7.1", "text": "existing arrangements table provider policy number fund value transfer value", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["Provider", "Policy number", "Fund Value", "Transfer Value"], "priority": "Core" },
         { "id": "Q1.7.2", "text": "policy information current fund value as at valuation date plan number", "side": "Evidence", "targetCategories": ["E"], "expectSignals": ["Plan number", "Policy number", "value as at", "Fund value"], "priority": "Core" },

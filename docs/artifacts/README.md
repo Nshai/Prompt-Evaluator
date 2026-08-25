@@ -26,9 +26,20 @@ The plan chooses the searches, not the model, so two runs over the same case ret
 
 ## The workflow, end to end
 
-Two pre-steps have to have happened before a check can run, and the run refuses to start without them. Source: [check-run-workflow.mmd](check-run-workflow.mmd).
+Two pre-steps have to have happened before a check can run, and the run refuses to start without them — that refusal is drawn, as the edge from each store into lane 1's precondition check. Source: [check-run-workflow.mmd](check-run-workflow.mmd).
 
-**Reading the shapes:** rectangles are actions, diamonds are branches, **cylinders are where data comes to rest** — Qdrant, SQLite, the PDF conversion cache and the prompt log. Dashed edges are reads and writes against those stores; dotted-outline nodes are paths that stop.
+**Reading it:** the diagram is six **swimlanes stacked top to bottom**, and every lane-crossing edge runs downward — there is no path back to an earlier lane. Work flows left to right *within* a lane and only ever descends *between* them.
+
+| Lane | |
+|---|---|
+| **0 · Prerequisites** | The two pre-steps. Nothing below can start until both have populated their store |
+| **1 · Start the run** | Preconditions, plan loading, fingerprint |
+| **2 · Per check** | Does this check apply to this case at all? |
+| **3 · Retrieval** | What the assessor is allowed to see |
+| **4 · Verification** | What the assessor may make of it |
+| **5 · Roll up** | Group findings to a check outcome to a report |
+
+**Shapes:** rectangles are actions, diamonds are branches, **cylinders are where data comes to rest** — Qdrant, SQLite, the PDF conversion cache and the prompt log. Dashed edges are reads and writes against those stores; dotted-outline nodes are paths that stop.
 
 **Steps 3 and 4 are the split the plan structure is built around.** Step 3 is retrieval: it decides *what the assessor is allowed to see*, and is driven entirely by a group's `retrieval` block. Step 4 is verification: it decides *what the assessor may make of it*, and is driven by the `verification` block. The evidence pack is the only thing that crosses between them, and the crossing is one-way — nothing in step 4 can go back and retrieve more. Each node names the plan field behind it.
 
@@ -39,6 +50,9 @@ flowchart TD
     classDef skip stroke-dasharray:2 2
 
     %% ─────────────────────────────────────────────────────────────
+    subgraph PREREQ["LANE 0 &nbsp;·&nbsp; PREREQUISITES &nbsp;—&nbsp; both must have completed before any check can run"]
+        direction LR
+
     subgraph PRE1["PRE-STEP 1 &nbsp;·&nbsp; Load Docs &nbsp;—&nbsp; case file into the semantic store"]
         direction TB
         S1["Case folder<br/>sub-folders A to I carry the category code"]
@@ -77,9 +91,11 @@ flowchart TD
         E5 -->|"no"| E6 --> E7
     end
 
+    end
+
     %% ─────────────────────────────────────────────────────────────
-    subgraph RUN["STEP 1 &nbsp;·&nbsp; Start the run"]
-        direction TB
+    subgraph RUN["LANE 1 &nbsp;·&nbsp; START THE RUN"]
+        direction LR
         R0{"Case indexed<br/>and model stored?"}
         R0N["Refuse and say which pre-step is missing"]
         R1["Load CHK-*.query-plan.json"]
@@ -95,8 +111,8 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph CHECK["STEP 2 &nbsp;·&nbsp; Per check &nbsp;—&nbsp; does it apply?"]
-        direction TB
+    subgraph CHECK["LANE 2 &nbsp;·&nbsp; PER CHECK &nbsp;—&nbsp; does it apply at all?"]
+        direction LR
         T1["Resolve the plan's checkTriggers field"]
         T2["Run the trigger probe searches"]
         T3{"Trigger present?"}
@@ -114,8 +130,8 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph GROUP["STEP 3 &nbsp;·&nbsp; RETRIEVAL &nbsp;—&nbsp; what the assessor is allowed to see<br/><i>driven by group.retrieval — a mistake here is invisible in the output</i>"]
-        direction TB
+    subgraph GROUP["LANE 3 &nbsp;·&nbsp; RETRIEVAL &nbsp;—&nbsp; what the assessor is allowed to see<br/><i>driven by group.retrieval — a mistake here is invisible in the output</i>"]
+        direction LR
         Q1{"retrieval.queries[].side"}
         QA["Resolve retrieval.canonicalPaths<br/>from SQLite &mdash; NOT searched"]
         QP{"CoreQueriesOnly and<br/>queries[].priority = Supplementary?"}
@@ -146,8 +162,8 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph DECIDE["STEP 4 &nbsp;·&nbsp; VERIFICATION &nbsp;—&nbsp; what the assessor may make of it<br/><i>driven by group.verification — cannot retrieve, only judge</i>"]
-        direction TB
+    subgraph DECIDE["LANE 4 &nbsp;·&nbsp; VERIFICATION &nbsp;—&nbsp; what the assessor may make of it<br/><i>driven by group.verification — cannot retrieve, only judge</i>"]
+        direction LR
         D0{"verification.comparison<br/>.method numeric?"}
         D0Y["Figures checked in code<br/>every asserted number against every passage number"]
         D1["Build the prompt: check header + decision rubric,<br/>assertions, passages, verification.comparison guards,<br/>verification.sufficiency rules"]
@@ -161,8 +177,8 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph OUT["STEP 5 &nbsp;·&nbsp; Roll up"]
-        direction TB
+    subgraph OUT["LANE 5 &nbsp;·&nbsp; ROLL UP"]
+        direction LR
         O1["Check outcome COMPUTED from the group findings<br/>never asked for, so it cannot disagree with them"]
         O2["Findings collected by position<br/>report order matches the plan, not the interleaving"]
         O3["Findings report + run fingerprint"]
@@ -171,6 +187,8 @@ flowchart TD
 
     LOG[("Prompt log file<br/>fingerprint written up front, so a cancelled run<br/>still says what it was configured to do")]
 
+    S7 --> R0
+    E7 --> R0
     S7 -.->|"read by every evidence query"| QE1
     E7 -.->|"read by every assertion query"| QA
     R3 --> T1

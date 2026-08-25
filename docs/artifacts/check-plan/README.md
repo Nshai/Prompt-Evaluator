@@ -20,6 +20,10 @@ These files are deployed beside the executable on build, so editing one changes 
 
 Schema: [query-plan.schema.json](query-plan.schema.json). All ten validate against it, and every field's description names its role — `retrieval`, `verification`, `build-time` or `load`.
 
+**Fixed vocabularies are stated in prose, not as JSON Schema enums**, matching the canonical model's own convention — `side`, `priority`, `onAbsent`, `limb`, `comparison.method` and the A–I category codes all read `"One of: …"` in their description. The schema will therefore accept any string in those fields, so [CheckPlanLint](../../../src/AiPromptEvaluator.Core/Services/Assessment/CheckPlanLint.cs) rule **L4** enforces them instead and fails the build on a value outside the list.
+
+That enforcement has to live somewhere, because every one of these fails silently rather than loudly. `"priority": "Supporting"` is not `Supplementary`, so `IsCore` returns true and the query runs even under `CoreQueriesOnly` — a value that is wrong and changes behaviour without breaking anything. A category code outside A–I reaches the Qdrant filter and matches nothing, so the group retrieves less than it declared. Both were real: `"Supporting"` was found in CHK-007 and CHK-008.
+
 The plans track [Revised checks.csv](../../QA-Checks/Revised%20checks.csv). The app-loadable form of that file is [Revised checks (loadable).csv](../../QA-Checks/Revised%20checks%20(loadable).csv) — see [Known gaps](#known-gaps).
 
 ---

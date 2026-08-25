@@ -23,6 +23,13 @@ namespace AiPromptEvaluator;
 /// <item><b>L2</b> — a check's <c>primaryCategories</c> must be declared by at least one of its
 /// groups. Category B was named as primary by CHK-007, CHK-008 and CHK-009 and declared by no
 /// group in any of them, so L1 alone sees nothing wrong.</item>
+/// <item><b>L4</b> — every field with a fixed vocabulary must use a value from it. The
+/// query-plan schema states those vocabularies in prose rather than as JSON Schema enums, so
+/// nothing else enforces them. The failure they guard against is silent: a query written
+/// <c>"priority": "Supporting"</c> is not Supplementary, so <c>IsCore</c> returns true and the
+/// query runs even under CoreQueriesOnly; a category code outside A–I reaches the Qdrant
+/// filter and matches nothing. Both were real — "Supporting" was found in CHK-007 and
+/// CHK-008.</item>
 /// <item><b>L3</b> — a plan that omits the category the evidence actually lives in is
 /// internally consistent and simply wrong. <b>No rule here can catch that</b>; it needs review
 /// against the check catalogue. CHK-010 was the observed case: the vulnerability overlay never
@@ -118,7 +125,134 @@ public static class CheckPlanLint
                 + "primaryCategories is wrong."));
         }
 
+        violations.AddRange(InspectVocabularies(plan));
+
         return violations;
+    }
+
+    /// <summary>The vocabularies the query-plan schema documents in prose, keyed by field.</summary>
+    private static readonly (string Field, string[] Allowed)[] Vocabularies =
+    [
+        ("side", ["Assertion", "Evidence", "Either"]),
+        ("priority", ["Core", "Supplementary"]),
+        ("onAbsent", ["Skip", "ReturnNA", "ContinueWithReducedScope", "Continue"]),
+        ("limb", ["Consistency", "Appropriateness", "Both"]),
+        ("comparison.method",
+            ["ValueMatch", "SetCoverage", "PresenceOnly", "RangeMatch", "NarrativeAlignment"]),
+    ];
+
+    private static readonly string[] CategoryCodes =
+        ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+
+    /// <summary>
+    /// L4. Every fixed-vocabulary field, and every category code, checked against its list.
+    ///
+    /// Empty is not a violation: an absent optional field takes its default. A value that is
+    /// present and wrong is, because nothing downstream will refuse it — it will simply mean
+    /// something other than what the plan author intended.
+    /// </summary>
+    private static IEnumerable<Violation> InspectVocabularies(CheckQueryPlan plan)
+    {
+        var probe = plan.TriggerProbe;
+
+        if (probe is not null)
+        {
+            foreach (var v in Check(plan, string.Empty, "onAbsent", probe.OnAbsent))
+            {
+                yield return v;
+            }
+
+            foreach (var query in probe.Queries)
+            {
+                foreach (var v in CheckQuery(plan, "triggerProbe", query))
+                {
+                    yield return v;
+                }
+            }
+        }
+
+        foreach (var code in plan.PrimaryCategories)
+        {
+            foreach (var v in Check(plan, string.Empty, "primaryCategories", code, CategoryCodes))
+            {
+                yield return v;
+            }
+        }
+
+        foreach (var group in plan.QueryGroups)
+        {
+            foreach (var v in Check(plan, group.GroupId, "limb", group.Verification?.Limb))
+            {
+                yield return v;
+            }
+
+            foreach (var v in Check(
+                plan, group.GroupId, "comparison.method", group.Comparison?.Method))
+            {
+                yield return v;
+            }
+
+            foreach (var code in group.DeclaredEvidenceCategories
+                         .Concat(group.DeclaredAssertionCategories))
+            {
+                foreach (var v in Check(
+                    plan, group.GroupId, "declares categories", code, CategoryCodes))
+                {
+                    yield return v;
+                }
+            }
+
+            foreach (var query in group.Queries)
+            {
+                foreach (var v in CheckQuery(plan, group.GroupId, query))
+                {
+                    yield return v;
+                }
+            }
+        }
+    }
+
+    private static IEnumerable<Violation> CheckQuery(
+        CheckQueryPlan plan, string groupId, PlannedQuery query)
+    {
+        foreach (var v in Check(plan, groupId, "side", query.Side))
+        {
+            yield return v;
+        }
+
+        foreach (var v in Check(plan, groupId, "priority", query.Priority))
+        {
+            yield return v;
+        }
+
+        foreach (var code in query.TargetCategories)
+        {
+            foreach (var v in Check(plan, groupId, "targetCategories", code, CategoryCodes))
+            {
+                yield return v;
+            }
+        }
+    }
+
+    private static IEnumerable<Violation> Check(
+        CheckQueryPlan plan, string groupId, string field, string? value, string[]? allowed = null)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            yield break;
+        }
+
+        allowed ??= Vocabularies.First(v => v.Field == field).Allowed;
+
+        if (allowed.Contains(value.Trim(), StringComparer.OrdinalIgnoreCase))
+        {
+            yield break;
+        }
+
+        yield return new Violation(
+            plan.CheckId, groupId, "L4",
+            $"{field} is \"{value}\", which is not one of: {string.Join(", ", allowed)}. "
+            + "Nothing downstream refuses it; it will simply mean something other than intended.");
     }
 
     private static string Describe(IReadOnlySet<string> categories) =>

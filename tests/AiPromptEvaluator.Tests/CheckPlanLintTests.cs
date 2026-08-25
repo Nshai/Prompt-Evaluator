@@ -190,6 +190,87 @@ public class CheckPlanLintTests
         Assert.Contains(plans[checkId].QueryGroups, g => g.QueriedCategories.Contains("B"));
     }
 
+    // ── L4: the vocabularies the schema no longer enforces ────────────────────
+
+    /// <summary>
+    /// The exact bug this rule exists for. "Supporting" is not "Supplementary", so IsCore
+    /// returns true and the query runs even under CoreQueriesOnly — a value that is wrong and
+    /// changes behaviour without failing anything. It was found in CHK-007 and CHK-008.
+    /// </summary>
+    [Fact]
+    public void APriorityOutsideTheVocabularyIsCaught()
+    {
+        var group = Group("G1", ["B"], ["B"]);
+        group.Retrieval.Queries[0] = group.Retrieval.Queries[0] with { Priority = "Supporting" };
+
+        var violations = CheckPlanLint.Inspect(Plan(["B"], group));
+
+        var l4 = Assert.Single(violations, v => v.Rule == "L4");
+        Assert.Contains("priority", l4.Detail);
+        Assert.Contains("Supporting", l4.Detail);
+    }
+
+    [Fact]
+    public void ASideOutsideTheVocabularyIsCaught()
+    {
+        var group = Group("G1", ["B"], ["B"]);
+        group.Retrieval.Queries[0] = group.Retrieval.Queries[0] with { Side = "Assertions" };
+
+        Assert.Contains(
+            CheckPlanLint.Inspect(Plan(["B"], group)),
+            v => v.Rule == "L4" && v.Detail.Contains("side"));
+    }
+
+    /// <summary>
+    /// A category code outside A–I reaches the Qdrant filter and matches nothing, so the group
+    /// retrieves less than it declared and no error is raised anywhere.
+    /// </summary>
+    [Fact]
+    public void ACategoryCodeOutsideTheTaxonomyIsCaught()
+    {
+        var violations = CheckPlanLint.Inspect(Plan(["B"], Group("G1", ["B"], ["Z"])));
+
+        Assert.Contains(
+            violations,
+            v => v.Rule == "L4" && v.Detail.Contains("targetCategories") && v.Detail.Contains("Z"));
+    }
+
+    [Fact]
+    public void AValidPlanRaisesNoVocabularyViolation()
+    {
+        var violations = CheckPlanLint.Inspect(Plan(["B"], Group("G1", ["B"], ["B"])));
+
+        Assert.DoesNotContain(violations, v => v.Rule == "L4");
+    }
+
+    /// <summary>
+    /// An absent optional field takes its default and is not a violation; only a value that is
+    /// present and wrong is.
+    /// </summary>
+    [Fact]
+    public void AnAbsentOptionalFieldIsNotAViolation()
+    {
+        var group = Group("G1", ["B"], ["B"]);
+        group = group with { Verification = new PlanVerification { Limb = string.Empty } };
+
+        Assert.DoesNotContain(CheckPlanLint.Inspect(Plan(["B"], group)), v => v.Rule == "L4");
+    }
+
+    /// <summary>
+    /// The shipped plans must be clean, since the schema no longer refuses these values.
+    /// </summary>
+    [Fact]
+    public void TheShippedPlansUseOnlyDocumentedVocabulary()
+    {
+        var (plans, _) = CheckQueryPlanLoader.Load(PlanFolder);
+
+        var violations = CheckPlanLint.Inspect(plans.Values).Where(v => v.Rule == "L4").ToList();
+
+        Assert.True(
+            violations.Count == 0,
+            "Vocabulary violations: " + string.Join("; ", violations));
+    }
+
     // ──────────────────────────────────────────────
 
     private static string PlanFolder =>

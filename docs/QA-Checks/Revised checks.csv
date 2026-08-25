@@ -1,0 +1,193 @@
+Check ID,Check Name,Applies To,Primary Document Categories (revised),Prompt (revised),What to Look For (revised),Decision Logic
+"Rules:
+1. Suitability report first perspective: The suitability report is the primary document under review and each prompt must be conducted from a suitability report-first perspective. Whatever is contained within the suitability report must be supported by the evidence provided and must not be contradicted by any available evidence. Where information is repeated or relied upon in multiple places throughout the suitability report, it should be applied consistently throughout.
+2. Vulnerability overlay for CHK-002 to CHK-009: You must consider whether any actual or potential drivers and characteristics of vulnerability, support needs, communication requirements or reasonable adjustments identified in the evidence materially affect the suitability assessment or conclusions reached by each of the prompts 2 to 9.",,,,,,
+"CHK-001
+",Suitability completeness against client information ,All advised investment and pension cases,"Client Authority (A)
+Know Your Client (B)
+Meeting & Communications (C)
+Existing Plans & Portfolios (E)
+Recommendations & Advice (I)","Where client and family facts and financial information have been included in the Suitability Report, are they consistent throughout the suitability report (including facts used in all narrative sections, calculations, cashflow modelling, projections and assumptions) and with all supporting evidence files provided?","Personal details (name, age, date of birth, marital status, dependants, employment, residency, tax status etc.).
+Financial situation (income, expenditure, assets, liabilities, emergency funds, state pension entitlement).
+Existing products (investments, pensions, protection plans and provider details).
+Look for data mismatches, unsupported statements and figures, missing evidence, conflicting information and values that do not reconcile when expressed using different frequencies or formats (e.g. weekly/monthly/annual, gross/net, percentages and totals).
+Values, dates, names and holdings should reconcile across the file.
+
+Do not assess:
+Suitability of recommendations.
+Attitude to Risk.
+Capacity for Loss.
+Knowledge and experience.
+Investment suitability.
+Product selection rationale.","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required
+ 
+N/A: trigger absent."
+CHK-002,"Objectives, Needs and Time-Horizon Alignment",All advised investment and pension cases,"Know Your Client (B)
+Meetings & Communications (C)
+Recommendations & Advice (I)","Where the client goals, priorities, time horizons, access requirements and foreseeable life changes are stated in the Suitability Report, is this consistent with and supported by the evidence provided?","Stated client goals and objectives
+Priority of goals
+Retirement target age/date
+Evidence supporting stated investment or planning time horizons
+Emergency fund and liquidity requirements
+Planned or anticipated withdrawals
+Ad-hoc access requirements
+Foreseeable life changes disclosed by the client
+Any goals, assumptions or planning requirements included in the Suitability Report that are not supported by the evidence provided.","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required
+ 
+N/A: trigger absent."
+CHK-003,"Risk, Capacity for Loss and Investment Strategy Match",All investment and pension accumulation/decumulation cases,"Know Your Client (B)
+Meetings & Communications (C)
+Risk, Capacity & Experience (D)
+Existing Plans & Portfolios (E)
+Research (G)
+Recommendations & Advice (I)","Where the Suitability Report contains information relating to the client's attitude to risk, capacity for loss, tolerance for loss, investment term, asset allocation and recommended investment strategy, is this consistent with and supported by the evidence provided?","Risk rating and risk profile.
+Capacity for loss assessment and rationale.
+Investment term/time horizon.
+Recommended investment strategy and asset allocation.
+Recommended funds/portfolio strategy.
+Whether the recommended funds, portfolio and strategy aligns with the client's ATR, CFL and investment term.
+Whether any risk-profile overrides, amendments or adviser adjustments are clearly explained and evidenced.
+Whether all statements relating to risk, loss capacity, time horizon and investment strategy are accurate, consistent and supported by the evidence.
+Any unsupported, contradictory or unexplained statements.
+Identify any conflicting risk scores, descriptions or labels.
+
+Do not assess:
+Existing arrangements or existing fund suitability.
+Pension switch, transfer or replacement business rationale.
+Provider comparisons.
+Product charges or cost comparisons.
+Objectives unless they are explicitly used to justify the client's risk profile, capacity for loss or investment strategy.
+Knowledge and experience.
+Appropriateness of the client's understanding of investments.
+Whether the client's knowledge or experience supports the recommendation, unless it is explicitly used to justify or explain the client's attitude to risk, capacity for loss, agreed risk rating, investment term or recommended investment strategy.","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required. 
+
+N/A: trigger absent."
+CHK-004,"Knowledge, Experience and Product Complexity",Client Circumstances & Suitability,"Know Your Client (B)
+Meetings & Communications (C)
+Risk, Capacity & Experience (D)
+Research (G)
+Solution Design (H)
+Recommendations & Advice (I)","Where detailed in the suitability report, are the client's knowledge, experience and investment understanding accurately reflected and supported by the available evidence and the recommended product(s) complexity consistent with the client's demonstrated knowledge and experience, and rationale adequately justified?
+
+","Stated knowledge and understanding.
+Previous investment and pension experience.
+Existing holdings evidencing experience.
+Consistency between evidence and report narrative.
+Complexity of recommended products and investments.
+Suitability of complexity for the client's knowledge and experience.
+Adequacy of the supporting rationale.
+
+Exclude consideration of attitude to risk, capacity for loss, risk profiling, risk-rating overrides, transfer analysis, critical yield, charges and switching suitability unless directly relied upon to evidence the client's knowledge, experience or understanding.","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required. 
+
+N/A: trigger absent."
+CHK-005,"Financial Resilience, Affordability and Liquidity","All cases involving capital, contributions, withdrawals or charges","Know Your Client (B)
+Meetings & Communications (C)
+Needs Analysis (F)
+Recommendations & Advice (I)","Is the affordability of the recommendation detailed in the suitability report from a financial resilience and liquidity perspective fully supported by, and consistent with, the evidence provided?","Income, expenditure and surplus income.
+Assets, liabilities and available cash reserves.
+Initial and ongoing contribution commitments.
+Emergency fund provision and access to liquid assets.
+Planned future expenditure and foreseeable financial needs.
+State Pension and other anticipated income sources.
+Cashflow and affordability assessments.
+Commentary on financial resilience and liquidity requirements.
+Consistency of financial information and conclusions across the Fact Find, File Notes, Needs Analysis and Suitability Report.","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required. 
+
+N/A: trigger absent."
+CHK-006,Recommendation Rationale and Suitable Alternatives,All cases requiring a suitability report,"Know Your Client (B)
+Meetings & Communications (C)
+Needs Analysis (F)
+Research (G)
+Solution Design (H)
+Recommendations & Advice (I)","Does the Suitability Report contain a clear, client-specific explanation of why the recommended product, provider, wrapper, investment solution and/or strategy meets the client's demands and needs (goals/objectives), including consideration of relevant alternatives, and is this explanation fully supported by and consistent with the evidence provided?","Client-specific rationale for each recommendation, clearly linked to the client's stated objectives, needs and circumstances, explaining why the recommendation is suitable.
+Justification for the recommended product, provider, wrapper, investment strategy and fund selection.
+Personalised language that demonstrates consideration of the client's individual circumstances.
+Any alternatives considered and the reasons they were rejected.
+For every existing arrangement, a clear recommended outcome and a rationale that supports that outcome.
+Where the report suggests any change, clearly state:
+whether the adviser is recommending the change;
+whether the adviser will arrange or implement the change; and
+the intended outcome of the change.
+Flag any recommendation that presents multiple possible outcomes without explaining which option is recommended and why.
+Recommendations clearly state what action will be taken, when it will be taken, and by whom where this is material to suitability.","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required. 
+
+N/A: trigger absent."
+CHK-007,"Costs, Charges and Value of the Recommendation",All advised investment and pension cases,"Client Authority (A)
+Know Your Client (B)
+Meetings & Communications (C)
+Existing Plans & Portfolios (E)
+Needs Analysis (F)
+Research (G)
+Solution Design (H)
+Recommendations & Advice (I)","Where costs, charges and the value of recommendations are referenced within the Suitability Report,?
+Does the Suitability Report disclose all material charges relevant to the recommendation, including applicable initial, ongoing, product, platform, investment and transaction costs, and where higher costs arise, does the report clearly explain the benefits expected to be received by the client in exchange for those costs and are they supported by and consistent with the evidence provided?","Initial, ongoing, adviser, product, platform, fund, transaction, transfer and exit charges.
+Charges in provider illustrations, suitability reports, research reports, switching analysis, product literature and key features documents.
+Existing arrangement charges and recommended arrangement charges.
+RIY, Critical Yield, projected values and cumulative cost illustrations.
+Initial advice fee deductions and ongoing adviser remuneration.
+Statements describing recommendations as cheaper, lower cost, better value or likely to improve outcomes.
+Value and benefit statements used to support higher-cost recommendations.
+Evidence of the service proposition attached to ongoing adviser charges.
+Platform, product, investment, retirement flexibility, servicing and consolidation benefits relied upon to justify additional costs.
+Consistency of charges, projections, benefits and value statements across all available documents.
+Any contradictions between the suitability report, provider illustrations, research reports, switching analysis and supporting evidence.
+Instances where higher charges result in lower projected outcomes, higher RIY or increased critical yield requirements.
+Evidence supporting the overall value of the recommendation relative to available alternatives.","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required
+
+N/A: trigger absent."
+CHK-008,"Disadvantages, Risks and Customer Understanding",All advised investment and pension cases,"Know Your Client (B)
+Meetings & Communications (C)
+Research (G)
+Solution Design (H)
+Recommendations & Advice (I)","Does the Suitability Report fairly, clearly, accurately and prominently explain all material disadvantages, risks, limitations, tax consequences, potential loss scenarios and consumer harms associated with the recommendations (including pension withdrawals and pension transfers where relevant), and are these explanations consistent with the supporting evidence provided, and does the report adequately disclose any material information, risks or limitations identified elsewhere in the supporting evidence?","Material disadvantages and limitations of the recommendation
+Tax consequences of the recommendation
+Material investment or product risks disclosed where relevant to the recommendation
+Loss scenarios and potential consumer harms illustrated
+Benefits, features or protections the client is giving up
+Justification for any increased costs or reduced projected outcomes","No Issue: evidence complete, consistent and supports outcome.
+
+Potential Concern: material clarification or additional evidence required. 
+
+N/A: trigger absent."
+CHK-009,Replacement or Switch Justification,Replacement/switch cases only; N/A otherwise,"Know Your Client (B)
+Existing Plans & Portfolios (E)
+Needs Analysis (F)
+Research (G)
+Solution Design (H)
+Recommendations & Advice (I)","Where the Suitability Report contains a recommendation to replace, switch, transfer, consolidate, encash or surrender an existing product or investment, is this consistent with and supported by the evidence provided?","Product and investment comparison between the existing and recommended arrangements.
+Evidence supporting any stated advantages of the recommended arrangement.
+Evidence supporting any stated disadvantages of the existing arrangement.
+Charges, costs and any switching cost analysis.
+Evidence supporting claims that higher costs are justified by additional benefits.
+Safeguarded benefits, guarantees or other valuable features that may be lost.
+Alternative options considered and any comparison analysis.
+Evidence supporting the reasons alternatives were discounted.
+Any evidence that supports or contradicts the replacement rationale.
+Any material replacement-related information omitted from the recommendation.","No Issue: evidence complete, consistent and supports outcome. 
+
+N/A: trigger absent."
+CHK-010,"Vulnerability, Support Needs and Foreseeable Harm Overlay",All cases requiring a suitability report,"Know Your Client (B)
+Meetings & Communications (C)
+Recommendations & Advice (I)","Where the Suitability Report includes information relating to client vulnerabilities, support needs, communication preferences, capacity, comprehension requirements or duty of care considerations, is this information fully supported by the evidence provided? ","Details of any vulnerabilities recorded
+Details of additional support needs or adjustments.
+Requests for third-party involvement, family support, Power of Attorney, trusted contacts, or representatives.
+Preferred communication methods, accessible formats, language requirements, or literacy considerations.
+Measures taken to support client understanding and informed decision-making.","No Issue: evidence complete, consistent and supports outcome. 
+
+Potential Concern: material clarification or additional evidence required. 
+
+N/A: trigger absent."

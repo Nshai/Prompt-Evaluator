@@ -23,9 +23,30 @@ public sealed record AssessmentCheck(
              .OrderBy(c => c)
              .ToList();
 
-    public static AssessmentCheck FromRow(List<string> row)
+    /// <summary>
+    /// Positional read, kept for callers that already know their column order.
+    /// </summary>
+    public static AssessmentCheck FromRow(List<string> row) =>
+        FromRow(row, [0, 1, 2, 3, 4, 5, 6, 7]);
+
+    /// <summary>
+    /// Reads one row through a field-to-column map, as produced by
+    /// <see cref="AssessmentCheckLoader.MapColumns"/>. A field mapped to -1 is a column the
+    /// file does not carry and comes back empty — never the next column's value.
+    /// </summary>
+    public static AssessmentCheck FromRow(List<string> row, IReadOnlyList<int> columns)
     {
-        string Get(int i) => i < row.Count ? row[i].Trim() : string.Empty;
+        string Get(int field)
+        {
+            if (field >= columns.Count)
+            {
+                return string.Empty;
+            }
+
+            var column = columns[field];
+            return column >= 0 && column < row.Count ? row[column].Trim() : string.Empty;
+        }
+
         return new AssessmentCheck(
             CheckId: Get(0),
             CheckName: Get(1),

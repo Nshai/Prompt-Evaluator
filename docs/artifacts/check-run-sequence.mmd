@@ -29,7 +29,7 @@ sequenceDiagram
             Runner-->>Form: NotApplicable, quoting absentWhen
             Note over Runner: Zero retrieval. A case with no switch<br/>skips all 37 CHK-009 queries.
         else check applies
-            par one gather per queryGroup, gated by the searches budget
+            par RETRIEVAL: one per queryGroup, gated by the searches budget
                 Runner->>Acc: Resolve(group.AllCanonicalPaths)
                 Acc-->>Runner: assertion fragments, found and missing
                 Note over Runner,Acc: Assertion-side queries are never searched.<br/>Their canonicalPaths resolve from the stored model.
@@ -53,7 +53,7 @@ sequenceDiagram
 
             Runner->>Runner: BuildSystemPrompt + BuildCheckHeader
 
-            par one decision per group, gated by the model-call budget
+            par VERIFICATION: one decision per group, gated by the model-call budget
                 Runner->>Chat: System prompt, check header, this group's pack
                 Chat-->>Runner: Structured GroupFinding
                 Runner->>Log: LogExchange(checkId/groupId)

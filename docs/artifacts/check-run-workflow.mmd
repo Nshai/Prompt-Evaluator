@@ -43,7 +43,7 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph RUN["RUN CHECKS"]
+    subgraph RUN["STEP 1 &nbsp;·&nbsp; Start the run"]
         direction TB
         R0{"Case indexed<br/>and model stored?"}
         R0N["Refuse and say which pre-step is missing"]
@@ -51,18 +51,16 @@ flowchart TD
         R1V{"planVersion<br/>supported?"}
         R1N["Plan refused by name, check skipped"]
         R2["Write the run fingerprint before the first prompt"]
-        R2L[("Prompt log file<br/>written up front, so a cancelled run still says what it was")]
         R3["Fan out over checks, up to MaxParallelChecks"]
 
         R0 -->|"no"| R0N
         R0 -->|"yes"| R1 --> R1V
         R1V -->|"no"| R1N
-        R1V -->|"yes"| R2 --> R2L
-        R2 --> R3
+        R1V -->|"yes"| R2 --> R3
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph CHECK["PER CHECK"]
+    subgraph CHECK["STEP 2 &nbsp;·&nbsp; Per check &nbsp;—&nbsp; does it apply?"]
         direction TB
         T1["Resolve the plan's checkTriggers field"]
         T2["Run the trigger probe searches"]
@@ -81,23 +79,23 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph GROUP["PER GROUP &nbsp;·&nbsp; gather"]
+    subgraph GROUP["STEP 3 &nbsp;·&nbsp; RETRIEVAL &nbsp;—&nbsp; what the assessor is allowed to see<br/><i>driven by group.retrieval — a mistake here is invisible in the output</i>"]
         direction TB
-        Q1{"query.side"}
-        QA["Resolve canonicalPaths<br/>NOT searched"]
-        QP{"CoreQueriesOnly<br/>and Supplementary?"}
+        Q1{"retrieval.queries[].side"}
+        QA["Resolve retrieval.canonicalPaths<br/>from SQLite &mdash; NOT searched"]
+        QP{"CoreQueriesOnly and<br/>queries[].priority = Supplementary?"}
         QPN["Query not run"]
-        QE["Embed the query text once"]
+        QE["Embed retrieval.queries[].text once"]
         QE1["Qdrant query 1: tenant + case only"]
-        QE2["Qdrant query 2: tenant + case + category_code"]
+        QE2["Qdrant query 2: + category_code<br/>from queries[].targetCategories"]
         QM["Merge, targeted hits first"]
         QD["De-duplicate on passage text<br/>not its hash, which is per-process seeded"]
-        QS{"any expectSignals<br/>present?"}
-        QSN["Record as ABSENT FROM THE FILE<br/>not merely unretrieved"]
-        QR["Rank, then reserve slots:<br/>declared sections, declared categories, then targeted<br/>cap at 12"]
-        QC{"categories reached<br/>&lt; minEvidenceCategories?"}
-        QCN["Evidence shortfall stated in code"]
-        PACK["Evidence pack"]
+        QS{"any queries[].expectSignals<br/>present in the hits?"}
+        QSN["Record as ABSENT FROM THE FILE<br/>not merely unretrieved<br/><i>evaluated here, read in step 4</i>"]
+        QR["Rank, then reserve slots:<br/>retrieval.evidenceSections, declares.evidenceCategories,<br/>then targeted &mdash; cap at 12"]
+        QC{"categories reached &lt;<br/>verification.sufficiency<br/>.minEvidenceCategories?"}
+        QCN["Evidence shortfall stated in code<br/><i>a verification rule, computed on the pack</i>"]
+        PACK(["EVIDENCE PACK<br/>the only thing that crosses the boundary"])
 
         Q1 -->|"Assertion"| QA --> PACK
         Q1 -->|"Evidence / Either"| QP
@@ -113,12 +111,12 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph DECIDE["PER GROUP &nbsp;·&nbsp; decide"]
+    subgraph DECIDE["STEP 4 &nbsp;·&nbsp; VERIFICATION &nbsp;—&nbsp; what the assessor may make of it<br/><i>driven by group.verification — cannot retrieve, only judge</i>"]
         direction TB
-        D0{"comparison.method<br/>numeric?"}
+        D0{"verification.comparison<br/>.method numeric?"}
         D0Y["Figures checked in code<br/>every asserted number against every passage number"]
-        D1["Build the prompt: check header, assertions, passages,<br/>guards, sufficiency, decision rubric"]
-        D2["ONE model call for this group<br/>knows nothing of its neighbours"]
+        D1["Build the prompt: check header + decision rubric,<br/>assertions, passages, verification.comparison guards,<br/>verification.sufficiency rules"]
+        D2["ONE model call for this group<br/>knows nothing of its neighbours<br/>and cannot search"]
         D3["Verify citations against THIS group's evidence only"]
         D4["Group finding<br/>+ shortfall attached by the runner, not the model"]
 
@@ -128,7 +126,7 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph OUT["ROLL UP"]
+    subgraph OUT["STEP 5 &nbsp;·&nbsp; Roll up"]
         direction TB
         O1["Check outcome COMPUTED from the group findings<br/>never asked for, so it cannot disagree with them"]
         O2["Findings collected by position<br/>report order matches the plan, not the interleaving"]
@@ -136,14 +134,17 @@ flowchart TD
         O1 --> O2 --> O3
     end
 
+    LOG[("Prompt log file<br/>fingerprint written up front, so a cancelled run<br/>still says what it was configured to do")]
+
     S7 -.->|"read by every evidence query"| QE1
     E7 -.->|"read by every assertion query"| QA
     R3 --> T1
     G0 --> Q1
-    PACK --> D0
+    PACK ==>|"handoff — retrieval is finished and cannot be reopened"| D0
     D4 --> O1
     T4A --> O2
-    D2 -.->|"prompt and response"| R2L
+    R2 -.->|"run fingerprint"| LOG
+    D2 -.->|"prompt and response"| LOG
 
-    class S2C,S7,E7,R2L store
+    class S2C,S7,E7,LOG store
     class S3N,QPN,R0N,R1N,E2N skip

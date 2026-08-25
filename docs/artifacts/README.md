@@ -30,6 +30,8 @@ Two pre-steps have to have happened before a check can run, and the run refuses 
 
 **Reading the shapes:** rectangles are actions, diamonds are branches, **cylinders are where data comes to rest** — Qdrant, SQLite, the PDF conversion cache and the prompt log. Dashed edges are reads and writes against those stores; dotted-outline nodes are paths that stop.
 
+**Steps 3 and 4 are the split the plan structure is built around.** Step 3 is retrieval: it decides *what the assessor is allowed to see*, and is driven entirely by a group's `retrieval` block. Step 4 is verification: it decides *what the assessor may make of it*, and is driven by the `verification` block. The evidence pack is the only thing that crosses between them, and the crossing is one-way — nothing in step 4 can go back and retrieve more. Each node names the plan field behind it.
+
 ```mermaid
 flowchart TD
     classDef store stroke-width:2px,stroke-dasharray:0
@@ -76,7 +78,7 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph RUN["RUN CHECKS"]
+    subgraph RUN["STEP 1 &nbsp;·&nbsp; Start the run"]
         direction TB
         R0{"Case indexed<br/>and model stored?"}
         R0N["Refuse and say which pre-step is missing"]
@@ -84,18 +86,16 @@ flowchart TD
         R1V{"planVersion<br/>supported?"}
         R1N["Plan refused by name, check skipped"]
         R2["Write the run fingerprint before the first prompt"]
-        R2L[("Prompt log file<br/>written up front, so a cancelled run still says what it was")]
         R3["Fan out over checks, up to MaxParallelChecks"]
 
         R0 -->|"no"| R0N
         R0 -->|"yes"| R1 --> R1V
         R1V -->|"no"| R1N
-        R1V -->|"yes"| R2 --> R2L
-        R2 --> R3
+        R1V -->|"yes"| R2 --> R3
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph CHECK["PER CHECK"]
+    subgraph CHECK["STEP 2 &nbsp;·&nbsp; Per check &nbsp;—&nbsp; does it apply?"]
         direction TB
         T1["Resolve the plan's checkTriggers field"]
         T2["Run the trigger probe searches"]
@@ -114,23 +114,23 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph GROUP["PER GROUP &nbsp;·&nbsp; gather"]
+    subgraph GROUP["STEP 3 &nbsp;·&nbsp; RETRIEVAL &nbsp;—&nbsp; what the assessor is allowed to see<br/><i>driven by group.retrieval — a mistake here is invisible in the output</i>"]
         direction TB
-        Q1{"query.side"}
-        QA["Resolve canonicalPaths<br/>NOT searched"]
-        QP{"CoreQueriesOnly<br/>and Supplementary?"}
+        Q1{"retrieval.queries[].side"}
+        QA["Resolve retrieval.canonicalPaths<br/>from SQLite &mdash; NOT searched"]
+        QP{"CoreQueriesOnly and<br/>queries[].priority = Supplementary?"}
         QPN["Query not run"]
-        QE["Embed the query text once"]
+        QE["Embed retrieval.queries[].text once"]
         QE1["Qdrant query 1: tenant + case only"]
-        QE2["Qdrant query 2: tenant + case + category_code"]
+        QE2["Qdrant query 2: + category_code<br/>from queries[].targetCategories"]
         QM["Merge, targeted hits first"]
         QD["De-duplicate on passage text<br/>not its hash, which is per-process seeded"]
-        QS{"any expectSignals<br/>present?"}
-        QSN["Record as ABSENT FROM THE FILE<br/>not merely unretrieved"]
-        QR["Rank, then reserve slots:<br/>declared sections, declared categories, then targeted<br/>cap at 12"]
-        QC{"categories reached<br/>&lt; minEvidenceCategories?"}
-        QCN["Evidence shortfall stated in code"]
-        PACK["Evidence pack"]
+        QS{"any queries[].expectSignals<br/>present in the hits?"}
+        QSN["Record as ABSENT FROM THE FILE<br/>not merely unretrieved<br/><i>evaluated here, read in step 4</i>"]
+        QR["Rank, then reserve slots:<br/>retrieval.evidenceSections, declares.evidenceCategories,<br/>then targeted &mdash; cap at 12"]
+        QC{"categories reached &lt;<br/>verification.sufficiency<br/>.minEvidenceCategories?"}
+        QCN["Evidence shortfall stated in code<br/><i>a verification rule, computed on the pack</i>"]
+        PACK(["EVIDENCE PACK<br/>the only thing that crosses the boundary"])
 
         Q1 -->|"Assertion"| QA --> PACK
         Q1 -->|"Evidence / Either"| QP
@@ -146,12 +146,12 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph DECIDE["PER GROUP &nbsp;·&nbsp; decide"]
+    subgraph DECIDE["STEP 4 &nbsp;·&nbsp; VERIFICATION &nbsp;—&nbsp; what the assessor may make of it<br/><i>driven by group.verification — cannot retrieve, only judge</i>"]
         direction TB
-        D0{"comparison.method<br/>numeric?"}
+        D0{"verification.comparison<br/>.method numeric?"}
         D0Y["Figures checked in code<br/>every asserted number against every passage number"]
-        D1["Build the prompt: check header, assertions, passages,<br/>guards, sufficiency, decision rubric"]
-        D2["ONE model call for this group<br/>knows nothing of its neighbours"]
+        D1["Build the prompt: check header + decision rubric,<br/>assertions, passages, verification.comparison guards,<br/>verification.sufficiency rules"]
+        D2["ONE model call for this group<br/>knows nothing of its neighbours<br/>and cannot search"]
         D3["Verify citations against THIS group's evidence only"]
         D4["Group finding<br/>+ shortfall attached by the runner, not the model"]
 
@@ -161,7 +161,7 @@ flowchart TD
     end
 
     %% ─────────────────────────────────────────────────────────────
-    subgraph OUT["ROLL UP"]
+    subgraph OUT["STEP 5 &nbsp;·&nbsp; Roll up"]
         direction TB
         O1["Check outcome COMPUTED from the group findings<br/>never asked for, so it cannot disagree with them"]
         O2["Findings collected by position<br/>report order matches the plan, not the interleaving"]
@@ -169,16 +169,19 @@ flowchart TD
         O1 --> O2 --> O3
     end
 
+    LOG[("Prompt log file<br/>fingerprint written up front, so a cancelled run<br/>still says what it was configured to do")]
+
     S7 -.->|"read by every evidence query"| QE1
     E7 -.->|"read by every assertion query"| QA
     R3 --> T1
     G0 --> Q1
-    PACK --> D0
+    PACK ==>|"handoff — retrieval is finished and cannot be reopened"| D0
     D4 --> O1
     T4A --> O2
-    D2 -.->|"prompt and response"| R2L
+    R2 -.->|"run fingerprint"| LOG
+    D2 -.->|"prompt and response"| LOG
 
-    class S2C,S7,E7,R2L store
+    class S2C,S7,E7,LOG store
     class S3N,QPN,R0N,R1N,E2N skip
 ```
 
@@ -198,7 +201,17 @@ The suitability report and any covering letter live in category `I`, and this is
 
 Every `side: "Assertion"` query in every plan resolves against that stored model. The report is never sent to a model a second time, which is why a check cannot quietly re-interpret it.
 
-### The run
+### The run, and why steps 3 and 4 are separate
+
+The two halves fail differently, which is the whole reason for drawing them apart.
+
+A **step 3** mistake is invisible in the output. A query written in check vocabulary rather than document vocabulary retrieves nothing useful, a `side` mislabelled `Assertion` is never searched at all, and in both cases the check goes on to report confidently on a pack that never held the answer. Nothing in the finding says so, because as far as the assessor knows it saw the evidence there was.
+
+A **step 4** mistake shows up in the finding's own reasoning. The model was given the right passages and drew the wrong conclusion from them, which a reviewer reading the analysis and its citations can see.
+
+That asymmetry is why retrieval is entirely pre-decided by the plan and the model is not consulted until step 4 — and why it cannot reach back. Two runs over the same case build the same pack.
+
+Two fields deliberately straddle the line, and the diagram marks both. `expectSignals` is *evaluated* in step 3 but only *read* in step 4: the substring scan runs over hits already returned and cannot cause a re-search. `sufficiency.minEvidenceCategories` is a verification rule computed on the pack at the boundary, because that is the moment both operands exist.
 
 The branches worth tracing:
 
@@ -253,7 +266,7 @@ sequenceDiagram
             Runner-->>Form: NotApplicable, quoting absentWhen
             Note over Runner: Zero retrieval. A case with no switch<br/>skips all 37 CHK-009 queries.
         else check applies
-            par one gather per queryGroup, gated by the searches budget
+            par RETRIEVAL: one per queryGroup, gated by the searches budget
                 Runner->>Acc: Resolve(group.AllCanonicalPaths)
                 Acc-->>Runner: assertion fragments, found and missing
                 Note over Runner,Acc: Assertion-side queries are never searched.<br/>Their canonicalPaths resolve from the stored model.
@@ -277,7 +290,7 @@ sequenceDiagram
 
             Runner->>Runner: BuildSystemPrompt + BuildCheckHeader
 
-            par one decision per group, gated by the model-call budget
+            par VERIFICATION: one decision per group, gated by the model-call budget
                 Runner->>Chat: System prompt, check header, this group's pack
                 Chat-->>Runner: Structured GroupFinding
                 Runner->>Log: LogExchange(checkId/groupId)
@@ -306,13 +319,13 @@ sequenceDiagram
 | 5 | **Fan out over checks** | `MaxParallelChecks`, default 4. Checks share nothing: each reads the same model and the same store, and writes only its own array slot. |
 | 6–9 | **`triggerProbe`** | The stored model's `checkTriggers` field decides, because it was written when the report was read in full. The probe searches only corroborate; where the model has no value, the fallback is whether any passage came back. |
 | 10 | **N/A short-circuit** | `onAbsent: ReturnNA` settles the check with **zero retrieval** — a case with no switch skips all 37 CHK-009 queries. The summary quotes the plan's `absentWhen`, so the reader sees why. |
-| 11–12 | **Assertion side** | `AllCanonicalPaths` — the group's paths plus its queries' — resolve against the stored model. `side: "Assertion"` queries are **never embedded**; their text exists so a reader can see what the report was expected to say. |
-| 13–19 | **Evidence side** | Each `Evidence` / `Either` query embeds once and queries Qdrant **twice**: unfiltered, then again with a `category_code` condition, targeted hits first. Not a narrowing filter — evidence can sit in a category the plan never named, so the unfiltered query stays. Tenant and case are constructor-bound and cannot be overridden per call. |
+| 11–12 | **Retrieval — assertion side** | `AllCanonicalPaths` — the group's paths plus its queries' — resolve against the stored model. `side: "Assertion"` queries are **never embedded**; their text exists so a reader can see what the report was expected to say. |
+| 13–19 | **Retrieval — evidence side** | Each `Evidence` / `Either` query embeds once and queries Qdrant **twice**: unfiltered, then again with a `category_code` condition, targeted hits first. Not a narrowing filter — evidence can sit in a category the plan never named, so the unfiltered query stays. Tenant and case are constructor-bound and cannot be overridden per call. |
 | 20 | **De-duplicate** | On the passage text itself, not its hash — `GetHashCode()` is per-process seeded, so a collision would drop a different passage on each launch and the pack would differ between sessions with nothing visible changing. |
 | 21 | **`expectSignals`** | None of a query's signals appearing in any hit means the data point is **absent from the case file**, not merely unretrieved. For most checks that is the finding. |
 | 22 | **Rank and cap** | Targeted category, then not-a-form-skeleton, then named section, then score, then two tiebreak keys for reproducibility. One slot reserved per declared section and per targeted category, then a cap of 12. The floor exists because pure score ordering evicted the Fact Find from every pack — three checks reached it in 0 of 19 groups. |
 | 23 | **Assemble the prompt** | System prompt and check header built once per check. The header carries the CSV's prompt, *What to look for*, decision logic, trigger outcome and the plan's `decision` block — byte-identical across every group, so the provider's prefix cache covers it. |
-| 24–27 | **Decide** | **One model call per group**, not per check, run concurrently under the model-call budget. Each sees its own pack and nothing of its neighbours. Citations are verified against *that group's* evidence only — otherwise a quote lifted from a neighbouring group's passages would verify. |
+| 24–27 | **Verification** | **One model call per group**, not per check, run concurrently under the model-call budget. Each sees its own pack and nothing of its neighbours. Citations are verified against *that group's* evidence only — otherwise a quote lifted from a neighbouring group's passages would verify. |
 | 28–29 | **Roll up** | `CheckFinding.FromGroups` computes the check outcome from the group findings. It is never asked for, so it cannot disagree with them or be stated before they exist. |
 | 30–31 | **Report** | Findings are collected by position, so the report reads in the order the checks were listed however the run interleaved. |
 

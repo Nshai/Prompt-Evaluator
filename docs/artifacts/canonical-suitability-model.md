@@ -126,6 +126,40 @@ Every entity carries a `Provenance` block:
 
 `quote` is mandatory for Stated and Inferred, and it is what a compliance reviewer sees next to a finding. A finding without a citation is not actionable, so the model refuses to represent one.
 
+### A missing section is not an absent value
+
+`Absent` means the extraction read the report and the report did not say it. A section whose
+extraction pass **failed** means nobody read it. Those are opposite conclusions, and the model
+carries no field that distinguishes them — a failed section simply has no key, and a check
+reading a canonical path under it sees exactly what it sees for a value the report never
+contained.
+
+That is not hypothetical. In an observed run of case ABC-99, two passes failed on a single
+stray closing brace apiece, taking `financialPosition` and `recommendations` with them — the
+payload of eight of the ten checks, since CHK-006 reads 22 canonical paths under
+`/recommendations` and CHK-001 reads 21 under `/financialPosition`. Every one of those checks
+still ran, because their triggers live in `checkTriggers`, which succeeded, and would have
+reported the data as absent from the file: a finding about the adviser, caused by a bracket.
+
+Two things now stand between that failure and a false finding:
+
+- **A malformed reply is retried once.** A reply that is *complete but mis-nested* is a
+  different animal from one cut off at the token cap: nothing was lost, one bracket is in the
+  wrong place, and the same prompt run again normally lands. Repairing the brackets was the
+  alternative and was rejected — where an unmatched closer belongs is a guess, and a wrongly
+  re-nested fragment is worse than a second call, because it would be merged and believed.
+  Both attempts are counted in the cost.
+- **A failed section is named to the self-report pass.** That pass is shown a summary of what
+  the previous passes produced, and it was built by walking the keys present in the model —
+  so a failed pass, having written no key, was neither populated nor empty. It was invisible.
+  The run above told it *"Sections that came back empty: none"* while two sections were
+  missing outright, and the resulting `extractionReport` mentioned neither at 0.78 confidence.
+  Failed sections now appear on their own line, and the pass is told to record them as
+  `expectedButAbsent` with reason `PresentButUnparseable` and to lower its confidence.
+
+What still does not exist is a way for a **check** to tell the two apart. The extraction report
+records it; the canonical model does not. See [Known limitations](#8-known-limitations).
+
 ### Where provenance is *not* attached
 
 Provenance sits at entity and statement level, not on every scalar — with the exception of `Money` and `Percentage`, which carry their own because financial figures are the most-cited values in the checks. Putting it on every scalar would triple token cost at extraction for no analytical gain.
@@ -239,6 +273,12 @@ That reporting is the actual repair. A value outside the vocabulary is not neces
 
 ## 8. Known limitations
 
+- **A check cannot tell an absent value from an unread section.** Where an extraction pass
+  fails, its properties are simply missing, and a canonical path under them resolves to nothing
+  — the same answer a check gets for a value the report genuinely does not contain. The
+  extraction report names the failed sections and the run output lists them, but nothing in the
+  stored model marks the difference, so a finding drawn from that run needs the run's own log
+  beside it. Carrying a per-section extraction status in the model would fix it.
 - **`isClientSpecific` is a judgement, not a fact.** It will be the least reliable field in the model. Treat it as a ranking signal for reviewer attention, not as a pass/fail gate.
 - **Provider risk-scale normalisation is out of scope.** The model records scales faithfully and flags comparability; mapping between Dynamic Planner, FE, Defaqto and provider-internal scales needs a reference dataset the model does not carry.
 - **Charts are not parsed.** Cashflow and performance charts in the example arrive as OCR noise. Numeric performance data is only reliably captured where the report also tabulates it; `PerformanceLine.provenance.confidence` should reflect that.

@@ -34,13 +34,24 @@ flowchart TD
         E2N["Stop: nothing to extract from"]
         E3["Slice the canonical schema per section<br/>one pass per section, not one prompt for the whole model"]
         E4["Extract section<br/>identity registry carried forward so passes agree on ids"]
+        EP{"reply parses?"}
+        ET{"cut off, or<br/>mis-nested?"}
+        ES["Salvage the whole elements<br/>and record the shortfall"]
+        ER["Retry once<br/>both attempts counted in the cost"]
+        EF["Section FAILED &mdash; named to the self-report pass<br/>not the same as the report being silent"]
         E5{"More sections?"}
         E6["Merge fragments, validate against the schema"]
         E7[("SQLite<br/>keyed by case reference + tenant<br/>this is the report's only reading")]
 
         E1 --> E2
         E2 -->|"no"| E2N
-        E2 -->|"yes"| E3 --> E4 --> E5
+        E2 -->|"yes"| E3 --> E4 --> EP
+        EP -->|"yes"| E5
+        EP -->|"no"| ET
+        ET -->|"cut off"| ES --> E5
+        ET -->|"mis-nested"| ER
+        ER -->|"parses"| E5
+        ER -->|"still not"| EF --> E5
         E5 -->|"yes"| E4
         E5 -->|"no"| E6 --> E7
     end

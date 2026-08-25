@@ -551,6 +551,13 @@ The suitability report itself is read **once**, at extraction, not per check.
 - **`CHK-004`'s revised `Applies To` reads "Client Circumstances & Suitability"** — a theme, not a case population, where every other check names one. Carried through as given; it looks like a data-entry slip in the source.
 - **`CHK-010` keeps primary categories A and D**, which the revised check drops. Category D holds the risk and capability answers that identify an FG21/1 low-capability driver, and A holds the third-party authority the revised check asks about by name. Both are pinned by a regression test recording a real miss; the narrower revised list would undo it.
 - **`CHK-009`'s revised Decision Logic omits Potential Concern**, giving only No Issue and N/A. The plan keeps its existing `potentialConcern` text, since a switch check that cannot raise a concern would be inert.
+- **An assertion path cannot tell "the report does not say it" from "we never read it."** A
+  `side: "Assertion"` query resolves against the stored canonical model, and where the section
+  it reads failed to extract, the path resolves to nothing — which is exactly what a genuinely
+  absent value looks like. The group then reports the data as absent from the file, which is a
+  finding about the advice rather than about the run. Extraction now retries a malformed reply
+  once and names any section that still failed, so the run output says which ones to distrust,
+  but the plans themselves have no way to see it.
 - **Query text is tuned to UK retail pension and investment reports.** Protection, mortgage and equity release cases will need their own vocabulary; the group structure holds, the phrasings do not.
 - **`expectSignals` are heuristics.** They tell you a search probably landed; they do not confirm the passage is relevant. The model still has to read.
 - **Chunk boundaries can split tables.** With `MaxTokensPerChunk` at 600, a wide existing-arrangements table may be cut mid-row, so a per-plan value can retrieve without its column header. Several plans query the same table from different angles for this reason.

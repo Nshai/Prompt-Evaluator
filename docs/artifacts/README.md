@@ -80,13 +80,24 @@ flowchart TD
         E2N["Stop: nothing to extract from"]
         E3["Slice the canonical schema per section<br/>one pass per section, not one prompt for the whole model"]
         E4["Extract section<br/>identity registry carried forward so passes agree on ids"]
+        EP{"reply parses?"}
+        ET{"cut off, or<br/>mis-nested?"}
+        ES["Salvage the whole elements<br/>and record the shortfall"]
+        ER["Retry once<br/>both attempts counted in the cost"]
+        EF["Section FAILED &mdash; named to the self-report pass<br/>not the same as the report being silent"]
         E5{"More sections?"}
         E6["Merge fragments, validate against the schema"]
         E7[("SQLite<br/>keyed by case reference + tenant<br/>this is the report's only reading")]
 
         E1 --> E2
         E2 -->|"no"| E2N
-        E2 -->|"yes"| E3 --> E4 --> E5
+        E2 -->|"yes"| E3 --> E4 --> EP
+        EP -->|"yes"| E5
+        EP -->|"no"| ET
+        ET -->|"cut off"| ES --> E5
+        ET -->|"mis-nested"| ER
+        ER -->|"parses"| E5
+        ER -->|"still not"| EF --> E5
         E5 -->|"yes"| E4
         E5 -->|"no"| E6 --> E7
     end
@@ -218,6 +229,16 @@ Chunking is semantic, not fixed-width: the chunker embeds every element to find 
 The suitability report and any covering letter live in category `I`, and this is **the only time they are read**. Extraction runs one pass per schema section rather than one prompt for the whole model, carrying an identity registry forward so a later pass names an arrangement the same way an earlier one did. The merged result is validated against the canonical schema and stored in SQLite against the case reference and tenant.
 
 Every `side: "Assertion"` query in every plan resolves against that stored model. The report is never sent to a model a second time, which is why a check cannot quietly re-interpret it.
+
+**A pass that does not parse is not simply lost.** Three outcomes, and the difference between them matters:
+
+| Reply | What happens |
+|---|---|
+| **Cut off** at the token cap | The whole elements that finished are salvaged and the shortfall recorded — an observed run had four of five recommendations complete when the fifth was half-written |
+| **Complete but mis-nested** | Retried once, both attempts counted in the cost. A stray closing brace is not a lost answer, and re-nesting it by hand would be a guess that then got merged and believed |
+| **Still failing** | The section is named — to the run output and to the self-report pass, which previously could not see it at all |
+
+That last one is the one to know about. A failed section writes no key, so it used to be neither populated nor empty in the summary the self-report pass is shown: an observed run was told *"Sections that came back empty: none"* while `financialPosition` and `recommendations` were missing outright. Those are the payload of eight of the ten checks, and every one of them still ran and would have reported the data as absent from the file — **a finding about the adviser, caused by a bracket**. Empty means the report was silent; failed means nobody read it.
 
 ### The run, and why steps 3 and 4 are separate
 

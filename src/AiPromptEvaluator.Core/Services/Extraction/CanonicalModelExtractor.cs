@@ -114,6 +114,11 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         };
 
         var failures = new List<(string Section, string Error)>();
+
+        // The canonical properties of every pass that failed. Without this the self-report
+        // pass cannot see them at all: a failed pass never writes its key, so it is neither
+        // populated nor empty in the summary it is shown.
+        var failedProperties = new List<string>();
         var usage = TokenUsage.Empty;
         var done = 0;
 
@@ -133,8 +138,8 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
             try
             {
                 var (fragment, sectionUsage, shortfall) = await ExtractSectionAsync(
-                    section, schemaJson, documentText, caseReference, identity, root, promptLog,
-                    cancellationToken).ConfigureAwait(false);
+                    section, schemaJson, documentText, caseReference, identity, root,
+                    failedProperties, promptLog, cancellationToken).ConfigureAwait(false);
 
                 usage = Add(usage, sectionUsage);
 
@@ -160,6 +165,7 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
             {
                 error = ex.Message.Trim();
                 failures.Add((section.Name, error));
+                failedProperties.AddRange(section.Properties);
             }
 
             done++;
@@ -214,13 +220,14 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         string caseReference,
         CanonicalModelIdentityRegistry identity,
         JsonObject modelSoFar,
+        IReadOnlyCollection<string> failedProperties,
         PromptLogWriter? promptLog,
         CancellationToken cancellationToken)
     {
         var slice = StripCodeOwnedFields(JsonSchemaSlicer.Slice(schemaJson, section.Properties));
         var systemPrompt = BuildSystemPrompt();
         var userPrompt = BuildSectionPrompt(
-            section, slice, documentText, caseReference, identity, modelSoFar);
+            section, slice, documentText, caseReference, identity, modelSoFar, failedProperties);
 
         var result = await _chat
             .RunRawAsync(
@@ -235,14 +242,51 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         promptLog?.LogExchange("extract", section.Name, systemPrompt, userPrompt, result.Response);
 
         var shortfalls = new List<string>();
+        var usage = result.Breakdown.Usage;
         var fragment = ExtractionResponseReader.ParseObject(result.Response);
+
+        // A malformed reply — as distinct from a truncated one — is usually one stray bracket
+        // in an otherwise complete answer, and the same prompt run again normally lands. An
+        // observed run lost financialPosition and recommendations to a single extra brace
+        // apiece, and with them the payload of eight of the ten checks: CHK-006 reads 22
+        // canonical paths under /recommendations, CHK-001 reads 21 under /financialPosition.
+        //
+        // Repairing the brackets was the alternative and was rejected: where an unmatched
+        // closer belongs is a guess, and a wrongly re-nested fragment is worse than a retry,
+        // because it would be merged and believed.
+        if (fragment is null && !ExtractionResponseReader.LooksTruncated(result.Response))
+        {
+            result = await _chat
+                .RunRawAsync(
+                    systemPrompt,
+                    userPrompt,
+                    _settings.ExtractionMaxTokens,
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            promptLog?.LogExchange(
+                "extract", section.Name + " (retry)", systemPrompt, userPrompt, result.Response);
+
+            // Both attempts were paid for, so both are counted. A retry that vanished from the
+            // cost would make the run cheaper on paper than it was.
+            usage = Add(usage, result.Breakdown.Usage);
+            fragment = ExtractionResponseReader.ParseObject(result.Response);
+
+            if (fragment is not null)
+            {
+                shortfalls.Add(
+                    "The first reply was not valid JSON; the pass was retried once and the "
+                    + "retry parsed. Both attempts are counted in the cost.");
+            }
+        }
 
         if (fragment is null)
         {
             if (!ExtractionResponseReader.LooksTruncated(result.Response))
             {
                 throw new InvalidOperationException(
-                    "The model did not return a JSON object for this section.");
+                    "The model did not return a JSON object for this section, on the first "
+                    + "attempt or on the retry.");
             }
 
             // Cut off at the output cap. Whatever finished is worth keeping — an observed run
@@ -272,7 +316,7 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
 
         // These are losses, not failures: the fragment is usable and is kept. Reporting them
         // as failures is what made eight succeeding sections look broken.
-        return (fragment, result.Breakdown.Usage,
+        return (fragment, usage,
             shortfalls.Count == 0 ? null : string.Join(" ", shortfalls));
     }
 
@@ -292,7 +336,8 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         string documentText,
         string caseReference,
         CanonicalModelIdentityRegistry identity,
-        JsonObject modelSoFar)
+        JsonObject modelSoFar,
+        IReadOnlyCollection<string> failedProperties)
     {
         var sb = new StringBuilder();
 
@@ -316,7 +361,7 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         // being asked to report on work it could not see.
         if (section.Properties.Contains(ExtractionReportProperty, StringComparer.Ordinal))
         {
-            sb.AppendLine(SummariseExtraction(modelSoFar));
+            sb.AppendLine(SummariseExtraction(modelSoFar, failedProperties));
             sb.AppendLine();
         }
 
@@ -342,8 +387,13 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
     /// the report saying nothing or the extraction having missed it. Those mean opposite
     /// things to a check, and only one of them is a finding about the advice.
     /// </summary>
-    internal static string SummariseExtraction(JsonObject modelSoFar)
+    internal static string SummariseExtraction(
+        JsonObject modelSoFar, IReadOnlyCollection<string>? failedProperties = null)
     {
+        var failed = failedProperties is null
+            ? new List<string>()
+            : failedProperties.OrderBy(x => x, StringComparer.Ordinal).ToList();
+
         var populated = new List<string>();
         var empty = new List<string>();
 
@@ -365,6 +415,19 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
             empty.Count == 0
                 ? "Sections that came back empty: none."
                 : $"Sections that came back empty ({empty.Count}): {string.Join(", ", empty)}");
+
+        // A failed pass never wrote its key, so it was neither populated nor empty — it was
+        // invisible here. In an observed run this summary said "came back empty: none" while
+        // financialPosition and recommendations were missing outright, and the one pass whose
+        // job is to report what the extraction missed reported neither, at 0.78 confidence.
+        //
+        // The distinction is the whole point: empty means the report was silent, failed means
+        // we never read it. Those are opposite conclusions for a check to draw.
+        sb.AppendLine(
+            failed.Count == 0
+                ? "Sections whose extraction pass failed: none."
+                : $"Sections whose extraction pass failed ({failed.Count}): {string.Join(", ", failed)}");
+
         sb.AppendLine();
         sb.AppendLine(
             """
@@ -373,6 +436,11 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
             reason that applies. Where the report states two different figures for the same
             thing, that is an "internalInconsistency": list every one you can find, including
             any not implied by the summary above.
+
+            A section whose pass FAILED is not the same as one that came back empty. The report
+            was never read for it, so its absence says nothing about the advice. List each such
+            property under "expectedButAbsent" with reason "PresentButUnparseable", and lower
+            overallConfidence to reflect that those sections are missing altogether.
             """);
 
         return sb.ToString();

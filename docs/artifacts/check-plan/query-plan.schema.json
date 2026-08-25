@@ -62,8 +62,8 @@
           "description": "ROLE: verification. Quoted verbatim in the N/A summary, so a skipped check says why rather than returning a bare verdict."
         },
         "onAbsent": {
-          "type": "string",
-          "description": "One of: Skip, ReturnNA, ContinueWithReducedScope, Continue. ROLE: retrieval. Skip settles the check with zero retrieval; ReturnNA is the older spelling of the same thing and is still accepted. ContinueWithReducedScope proceeds and says so in the header, so an overlay is not read as excused. Continue proceeds silently."
+          "enum": ["Skip", "ReturnNA", "ContinueWithReducedScope", "Continue"],
+          "description": "ROLE: retrieval. Skip settles the check with zero retrieval; ReturnNA is the older spelling of the same thing and is still accepted. ContinueWithReducedScope proceeds and says so in the header, so an overlay is not read as excused. Continue proceeds silently."
         }
       }
     },
@@ -97,8 +97,8 @@
 
   "$defs": {
     "CategoryCode": {
-      "type": "string",
-      "description": "One of: A, B, C, D, E, F, G, H, I. A Client Authority; B Know Your Client; C Meetings & Communications; D Risk, Capacity & Experience; E Existing Plans & Portfolios; F Needs Analysis; G Research; H Solution Design; I Recommendations & Advice. Enforced by CheckPlanLint rule L4 rather than by this schema: a code outside the taxonomy reaches the Qdrant filter and matches nothing, which is silent under-retrieval rather than a load error."
+      "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+      "description": "A Client Authority; B Know Your Client; C Meetings & Communications; D Risk, Capacity & Experience; E Existing Plans & Portfolios; F Needs Analysis; G Research; H Solution Design; I Recommendations & Advice."
     },
 
     "ApplicabilityRule": {
@@ -140,8 +140,8 @@
           "description": "ROLE: retrieval. The string that gets embedded, and the single most consequential field in the plan, because it is the query. Written in the vocabulary of the target document rather than the vocabulary of the check: the embedding matches document language, so a query phrased in check vocabulary fails silently and completely."
         },
         "side": {
-          "type": "string",
-          "description": "One of: Assertion, Evidence, Either. ROLE: retrieval. Decides whether the query runs at all. Assertion is never embedded: its canonicalPaths resolve against the stored canonical model, which is how a check avoids re-reading the suitability report. Evidence and Either both go to the vector store, because an Either phrasing still has an evidence half to find."
+          "enum": ["Assertion", "Evidence", "Either"],
+          "description": "ROLE: retrieval. Decides whether the query runs at all. Assertion is never embedded: its canonicalPaths resolve against the stored canonical model, which is how a check avoids re-reading the suitability report. Evidence and Either both go to the vector store, because an Either phrasing still has an evidence half to find."
         },
         "targetCategories": {
           "type": "array",
@@ -160,8 +160,8 @@
           "$comment": "JSON Pointer with one addition: a trailing [] fans out across an array's elements. Use it wherever the target is an array."
         },
         "priority": {
-          "type": "string",
-          "description": "One of: Core, Supplementary. ROLE: retrieval. Honoured when AppSettings.CoreQueriesOnly is set: a Supplementary query is then not run at all. Roughly one query in seven is Supplementary, so the switch is the cheapest retrieval saving available, and the plan author chose what it costs rather than a score threshold choosing for them."
+          "enum": ["Core", "Supplementary"],
+          "description": "ROLE: retrieval. Honoured when AppSettings.CoreQueriesOnly is set: a Supplementary query is then not run at all. Roughly one query in seven is Supplementary, so the switch is the cheapest retrieval saving available, and the plan author chose what it costs rather than a score threshold choosing for them."
         }
       }
     },
@@ -229,8 +229,8 @@
           "additionalProperties": false,
           "properties": {
             "limb": {
-              "type": "string",
-              "description": "One of: Consistency, Appropriateness, Both. One line of the group prompt. Consistency groups diff the report against the file; appropriateness groups apply rules to the merged model. No code branches on it."
+              "enum": ["Consistency", "Appropriateness", "Both"],
+              "description": "One line of the group prompt. Consistency groups diff the report against the file; appropriateness groups apply rules to the merged model. No code branches on it."
             },
             "comparison": {
               "type": "object",
@@ -238,8 +238,8 @@
               "additionalProperties": false,
               "properties": {
                 "method": {
-                  "type": "string",
-                  "description": "One of: ValueMatch, SetCoverage, PresenceOnly, RangeMatch, NarrativeAlignment. Printed into the prompt as a string, so the model knows what kind of agreement counts. Naming a fixed vocabulary does not mean code branches on it: ValueMatch reaches the model as the word 'ValueMatch'."
+                  "enum": ["ValueMatch", "SetCoverage", "PresenceOnly", "RangeMatch", "NarrativeAlignment"],
+                  "description": "Printed into the prompt as a string, so the model knows what kind of agreement counts. Despite being an enum, no code branches on it: ValueMatch reaches the model as the word 'ValueMatch'."
                 },
                 "tolerance": {
                   "type": "string",

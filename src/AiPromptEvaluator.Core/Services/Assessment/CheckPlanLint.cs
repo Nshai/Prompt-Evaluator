@@ -24,8 +24,9 @@ namespace AiPromptEvaluator;
 /// groups. Category B was named as primary by CHK-007, CHK-008 and CHK-009 and declared by no
 /// group in any of them, so L1 alone sees nothing wrong.</item>
 /// <item><b>L4</b> — every field with a fixed vocabulary must use a value from it. The
-/// query-plan schema states those vocabularies in prose rather than as JSON Schema enums, so
-/// nothing else enforces them. The failure they guard against is silent: a query written
+/// query-plan schema declares these as enums too, and the duplication is deliberate: nothing
+/// in the build validates a plan against that schema, so this is the check that actually runs.
+/// The failure it guards against is silent: a query written
 /// <c>"priority": "Supporting"</c> is not Supplementary, so <c>IsCore</c> returns true and the
 /// query runs even under CoreQueriesOnly; a category code outside A–I reaches the Qdrant
 /// filter and matches nothing. Both were real — "Supporting" was found in CHK-007 and
@@ -130,7 +131,7 @@ public static class CheckPlanLint
         return violations;
     }
 
-    /// <summary>The vocabularies the query-plan schema documents in prose, keyed by field.</summary>
+    /// <summary>The vocabularies the query-plan schema declares, mirrored here, keyed by field.</summary>
     private static readonly (string Field, string[] Allowed)[] Vocabularies =
     [
         ("side", ["Assertion", "Evidence", "Either"]),

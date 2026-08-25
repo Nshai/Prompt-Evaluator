@@ -115,6 +115,12 @@ public static class Prompts
           conflict; do not quietly pick one.
         - Boilerplate is data. Capture generic paragraphs with isClientSpecific false rather
           than skipping them — their presence without personalisation is itself a finding.
-        - Enumerated fields must use a value from the schema's enum, or be omitted.
+        - A description reading "One of: A, B, C." is a closed vocabulary, not a suggestion.
+          Use one of those values, spelled and capitalised exactly as listed, or omit the field.
+          Do not coin a variant: "RetirementObjective" where the list says "Pension" is a new
+          value, not a more precise one, and every rule that reads the field will miss it.
+        - Where the report describes something the vocabulary has no value for, use "Other" if
+          the list offers it and omit the field otherwise. Say what the report actually said in
+          the neighbouring free-text or provenance field, where nothing is constrained.
         """;
 }

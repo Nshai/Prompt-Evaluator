@@ -10,7 +10,17 @@ namespace AiPromptEvaluator;
 public sealed record ExtractionResult(
     CanonicalModelDocument Document,
     IReadOnlyList<(string Section, string Error)> Failures,
-    CostBreakdown Breakdown);
+    CostBreakdown Breakdown)
+{
+    /// <summary>
+    /// Vocabulary values the extraction wrote that the schema does not document, and the
+    /// near-misses that were corrected on the way in.
+    ///
+    /// Reported rather than silently applied, because the whole reason objectiveType drifted
+    /// to "RetirementObjective" unnoticed is that nothing was looking.
+    /// </summary>
+    public IReadOnlyList<CanonicalVocabulary.Correction> VocabularyCorrections { get; init; } = [];
+}
 
 /// <summary>
 /// Turns the suitability report into a canonical model instance.
@@ -91,6 +101,11 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         }
 
         var schemaJson = await File.ReadAllTextAsync(schemaPath, cancellationToken).ConfigureAwait(false);
+
+        // Read out of the schema itself, so there is never a second copy of the vocabulary to
+        // fall out of step with the one the model is shown.
+        var vocabularies = CanonicalVocabulary.Parse(schemaJson);
+        var corrections = new List<CanonicalVocabulary.Correction>();
         var documentText = await ReadReportsAsync(reportFiles, cancellationToken).ConfigureAwait(false);
 
         var root = new JsonObject
@@ -122,6 +137,11 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
                     cancellationToken).ConfigureAwait(false);
 
                 usage = Add(usage, sectionUsage);
+
+                // Before the merge, so the stored model carries the documented spelling and a
+                // check reading it by value is not defeated by capitalisation.
+                corrections.AddRange(CanonicalVocabulary.Normalise(fragment, vocabularies));
+
                 length = Merge(root, fragment, section);
 
                 // Ids are adopted the moment the pass that defines them lands, so the next
@@ -176,7 +196,10 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
             ExtractedAt: DateTimeOffset.Now,
             Usage: usage);
 
-        return new ExtractionResult(document, failures, CostBreakdown.Create(_settings.SelectedModel, usage));
+        return new ExtractionResult(document, failures, CostBreakdown.Create(_settings.SelectedModel, usage))
+        {
+            VocabularyCorrections = corrections.Distinct().ToList(),
+        };
     }
 
     /// <summary>

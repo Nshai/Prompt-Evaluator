@@ -214,6 +214,23 @@ The revised CHK-006 asks four things the model could not express, so `Recommenda
 
 ---
 
+### Closed vocabularies, and where they are enforced
+
+58 properties document a closed vocabulary in their `description` — `"One of: Pension, Investment, …"` — rather than as a JSON Schema `enum`. That is deliberate, and it was bought with a measured finding: an enum is enforced by `CanonicalModelValidator.StripEnumViolations`, which **deletes** values it does not recognise, and the values it deleted were the ones the documents actually use. Three runs in a row could not reach a charge finding because the `basis` strings never survived extraction.
+
+Guidance drifts, though, and nothing was watching it. The extractor's rule said *"Enumerated fields must use a value from the schema's enum"* — pointing at a construct the schema does not contain. `objectiveType` is documented `Pension`; extraction wrote `RetirementObjective`; the worked example still carries it; nothing said so.
+
+Two changes, neither of which deletes anything:
+
+- **The rule now names the convention the schema uses.** A description reading `"One of: A, B, C."` is a closed vocabulary, to be used exactly as spelled, with `Other` or omission where nothing fits — and coining a variant is called out as what it is.
+- **`CanonicalVocabulary` corrects the near-misses in code**, reading the vocabularies out of the schema itself so there is never a second copy to fall out of step. It fixes capitalisation, spacing and separators, and a documented value wearing a generic word (`PensionObjective` → `Pension`). It stops there.
+
+What it will not do is guess. `RetirementObjective` is not a misspelling of any documented value, and deciding it means `Pension` is a judgement about what the author meant — the same "quietly pick one" the extractor is explicitly told not to do. It is **left exactly as written and reported**, in the run output and on `ExtractionResult.VocabularyCorrections`.
+
+That reporting is the actual repair. A value outside the vocabulary is not necessarily wrong — it may be the report using a word the model lacks, which is a gap in the model — but it is always something a rule matching that field by value will miss, and now it is visible either way.
+
+---
+
 ## 7. Worked example
 
 [examples/suitability-report-test-1.extract.json](examples/suitability-report-test-1.extract.json) is a populated instance from `example-documents/I/Suitability Report Test 1.md` — a five-plan pension consolidation. It exercises the harder parts of the model: the 4→5 risk override, five arrangements with three different advice actions, per-plan replacement analysis, layered charges with a critical-yield table, and three internally inconsistent portfolio totals.

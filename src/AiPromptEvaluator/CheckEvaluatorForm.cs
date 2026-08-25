@@ -624,6 +624,41 @@ public partial class CheckEvaluatorForm : Form
                 + $"in {elapsed.Elapsed.TotalSeconds:0.0}s.");
             AppendResponseLine($"Sections populated: {string.Join(", ", accessor.PopulatedSections)}");
 
+            // Vocabulary drift used to be silent. objectiveType is documented Pension /
+            // Investment / ..., extraction wrote "RetirementObjective", and nothing said so —
+            // which is exactly how a rule that reads the field by value comes to match nothing.
+            if (result.VocabularyCorrections.Count > 0)
+            {
+                var corrected = result.VocabularyCorrections.Where(c => c.WasMapped).ToList();
+                var unmapped = result.VocabularyCorrections.Where(c => !c.WasMapped).ToList();
+
+                AppendResponseLine(string.Empty);
+
+                if (corrected.Count > 0)
+                {
+                    AppendResponseLine($"{corrected.Count} value(s) corrected to the documented vocabulary:");
+                    foreach (var correction in corrected)
+                    {
+                        AppendResponseLine($"  {correction}");
+                    }
+                }
+
+                if (unmapped.Count > 0)
+                {
+                    AppendResponseLine(
+                        $"{unmapped.Count} value(s) are outside the documented vocabulary and were left as written:");
+                    foreach (var correction in unmapped)
+                    {
+                        AppendResponseLine($"  {correction}");
+                    }
+
+                    AppendResponseLine(
+                        "Nothing was discarded. A check matching one of these fields by value will "
+                        + "not see them, so either the report uses a word the model does not have "
+                        + "or the extraction invented one.");
+                }
+            }
+
             if (result.Failures.Count > 0)
             {
                 AppendResponseLine(string.Empty);

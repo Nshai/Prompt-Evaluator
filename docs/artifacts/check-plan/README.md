@@ -97,12 +97,54 @@ The worked example is [CHK-004.query-plan.json](CHK-004.query-plan.json) — amo
 
 | Element | Drives | Purpose | How it is used |
 |---|---|---|---|
+| `applicability` | **Retrieval** | The rules the case must satisfy for this check to run | **ANDed** — every rule must pass. Each rule looks for one of its accepted values at one of its `canonicalPaths` in the stored model, case-insensitively. A rule can only ever narrow a check: it cannot rescue one another rule has ruled out. Evaluated before any group is gathered, so an inapplicable check costs nothing — not one embedding, not one vector query |
 | `triggerField` | **Retrieval** | The `checkTriggers` field this probe settles | Resolved from the **stored model first** — decided when the report was read in full, which beats a similarity search. Where the model has no value, the fallback is whether the probe found any passage. Its answer can eliminate every search the check would have run |
 | `queries` | **Retrieval** | Cheap searches that corroborate the trigger | Run before any group is gathered. Assertion-side probe queries are skipped, as everywhere else |
 | `absentWhen` | Verification | Why the check would not apply | Quoted verbatim in the N/A summary, so the reader sees the reason rather than a bare verdict |
-| `onAbsent` | **Retrieval** | What to do when the trigger is missing | `ReturnNA` settles the check with **zero retrieval**; `ContinueWithReducedScope` proceeds and says so in the header, so an overlay is not read as excused; `Continue` proceeds silently |
+| `onAbsent` | **Retrieval** | What to do when the trigger is missing | `Skip` settles the check with **zero retrieval**; `ContinueWithReducedScope` proceeds and says so in the header, so an overlay is not read as excused; `Continue` proceeds silently |
 
 `presentWhen` and `note` used to sit here and were read by nothing.
+
+#### Applicability rules
+
+```jsonc
+"triggerProbe": {
+  "triggerField": "checkTriggers.isAdvisedCase",
+  "applicability": [
+    {
+      "advisedCase": [
+        "true"
+      ],
+      "canonicalPaths": [
+        "/checkTriggers/isAdvisedCase"
+      ]
+    },
+    {
+      "goalTypes": [
+        "Investment",
+        "Pension",
+        "Retirement",
+        "RetirementObjective"
+      ],
+      "canonicalPaths": [
+        "/objectives[]/objectiveType"
+      ]
+    }
+  ],
+  "absentWhen": "No investment or pension objective is stated anywhere in the report.",
+  "onAbsent": "Continue"
+}
+```
+
+A rule is named by its own key, so it reads as a sentence: `goalTypes: ["Investment", "Pension"]` over `/objectives[]/objectiveType` is *"the client's goals include an investment or a pension"*. The name is carried into the N/A summary, so a skipped check says **which** condition it failed rather than only that one did.
+
+The values are matched case-insensitively against everything found at the rule's paths — a fan-out path such as `/objectives[]/objectiveType` yields one value per objective, and the rule passes if any of them matches. A rule with no accepted values is never satisfied rather than vacuously true, because a rule that silently disables itself is the worst possible failure in something that decides whether a check runs at all.
+
+**Where the vocabulary is enforced matters more than it looks.** These value sets duplicate the "One of:" lists in the canonical schema, and that duplication is deliberate. An enum in the *schema* is enforced by `CanonicalModelValidator.StripEnumViolations`, which deletes values it does not recognise — extraction has been observed writing `RetirementObjective` where the schema documents `Pension`, and an enum would have thrown that away, leaving the objective untyped. Enforced *here*, an unrecognised value means the check does not apply; enforced *there*, it means the data disappears. Same vocabulary, opposite blast radius.
+
+That is also why the goal-type rule sits on CHK-002, whose `onAbsent` is `Continue`, and not on CHK-003, which can `Skip`. A check that can skip should not depend on a vocabulary nothing enforces.
+
+---
 
 ### 3. `queryGroups[]` — one group per requirement
 

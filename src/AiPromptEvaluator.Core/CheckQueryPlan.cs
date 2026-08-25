@@ -207,18 +207,96 @@ public sealed record PlanQueryGroup
     public bool IsModelOnly => Queries.Count > 0 && !Queries.Any(q => q.IsEvidenceSearch);
 }
 
+/// <summary>
+/// One applicability rule: a set of values the case must show at one or more canonical paths
+/// before the check applies.
+///
+/// The value set is named by its own key, so a rule reads as a sentence —
+/// <c>{ "goalTypes": ["Investment", "Pension"], "canonicalPaths": ["/objectives[]/objectiveType"] }</c>
+/// is "the client's goals include an investment or a pension". The name is carried into the
+/// N/A summary, so a skipped check says which condition it failed rather than only that one did.
+///
+/// A rule passes when <b>any</b> value found at <b>any</b> of its paths matches <b>any</b> of the
+/// accepted values, case-insensitively. Rules are ANDed: every rule must pass for the check to
+/// run. Widening a rule therefore widens the check, and adding one narrows it.
+/// </summary>
+public sealed record PlanApplicability
+{
+    /// <summary>Where in the canonical model to look. Fan-out paths are read element by element.</summary>
+    [JsonPropertyName("canonicalPaths")] public List<string> CanonicalPaths { get; init; } = [];
+
+    /// <summary>
+    /// The named value set. Exactly one property other than <c>canonicalPaths</c> is expected,
+    /// and its name is the rule's own label.
+    /// </summary>
+    [JsonExtensionData] public Dictionary<string, JsonElement> Named { get; init; } = [];
+
+    /// <summary>What this rule is called, for the summary a skipped check writes.</summary>
+    public string Name => Named.Keys.FirstOrDefault() ?? "values";
+
+    /// <summary>The values that satisfy this rule.</summary>
+    public IReadOnlyList<string> AcceptedValues
+    {
+        get
+        {
+            if (Named.Count == 0)
+            {
+                return [];
+            }
+
+            var element = Named.Values.First();
+
+            return element.ValueKind switch
+            {
+                JsonValueKind.Array => [.. element.EnumerateArray().Select(Scalar).Where(v => v.Length > 0)],
+                _ => Scalar(element) is { Length: > 0 } single ? [single] : [],
+            };
+        }
+    }
+
+    private static string Scalar(JsonElement element) => element.ValueKind switch
+    {
+        JsonValueKind.String => element.GetString() ?? string.Empty,
+        JsonValueKind.True => "true",
+        JsonValueKind.False => "false",
+        JsonValueKind.Number => element.ToString(),
+        _ => string.Empty,
+    };
+
+    /// <summary>
+    /// Whether any of <paramref name="found"/> satisfies this rule. Case-insensitive, because
+    /// a plan author writing "investment" should not have to know the schema capitalises it.
+    /// </summary>
+    public bool IsSatisfiedBy(IEnumerable<string> found) =>
+        AcceptedValues.Count > 0
+        && found.Any(v => AcceptedValues.Contains(v, StringComparer.OrdinalIgnoreCase));
+}
+
 public sealed record PlanTriggerProbe
 {
     [JsonPropertyName("triggerField")] public string? TriggerField { get; init; }
+
+    /// <summary>
+    /// Rules the case must satisfy for this check to run, ANDed together. Evaluated against the
+    /// stored canonical model before any group is gathered, so a check that does not apply
+    /// costs nothing rather than retrieving evidence it will not use.
+    /// </summary>
+    [JsonPropertyName("applicability")] public List<PlanApplicability> Applicability { get; init; } = [];
     [JsonPropertyName("queries")] public List<PlannedQuery> Queries { get; init; } = [];
     /// <summary>Quoted verbatim in the N/A summary, so a skipped check says why.</summary>
     [JsonPropertyName("absentWhen")] public string? AbsentWhen { get; init; }
 
     [JsonPropertyName("onAbsent")] public string? OnAbsent { get; init; }
 
-    /// <summary>True when the plan says a missing trigger settles the check as N/A.</summary>
+    /// <summary>
+    /// True when the plan says a missing trigger settles the check without assessing it.
+    ///
+    /// <c>Skip</c> is the current spelling; <c>ReturnNA</c> is the older one and still accepted,
+    /// because a plan should not stop loading over a synonym.
+    /// </summary>
     public bool ReturnsNotApplicable =>
-        string.Equals(OnAbsent, "ReturnNA", StringComparison.OrdinalIgnoreCase);
+        string.Equals(OnAbsent, "Skip", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(OnAbsent, "ReturnNA", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// True when the plan says the check runs anyway with a missing trigger — an overlay that

@@ -1286,7 +1286,7 @@
         },
         "objectiveType": {
           "type": "string",
-          "description": "One of: RetirementObjective, InvestmentObjective, ProtectionObjective, MortgageObjective, EstatePlanningObjective, BudgetObjective, EquityReleaseObjective, Other."
+          "description": "One of: Pension, Investment, Protection, Mortgage, EstatePlanning, Budget, EquityRelease, Other. Guidance, not a constraint: an enum here would be enforced by CanonicalModelValidator.StripEnumViolations, which deletes values it does not recognise. Extraction has been observed writing RetirementObjective for this field, and stripping that would leave the objective untyped and silently take CHK-002 and CHK-003 out of the run. The vocabulary is enforced where a mismatch is harmless instead — in each plan's triggerProbe.applicability, where an unrecognised value means the check does not apply rather than the data disappearing."
         },
         "summary": {
           "type": "string"

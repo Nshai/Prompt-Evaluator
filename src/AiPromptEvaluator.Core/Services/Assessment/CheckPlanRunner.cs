@@ -284,6 +284,48 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             }
         }
 
+        // Applicability rules, ANDed. Every rule must find one of its accepted values at one of
+        // its canonical paths, or the check does not apply to this case.
+        //
+        // This runs before any group is gathered, so a check that does not apply costs nothing
+        // — not one embedding, not one vector query. It is also read from the stored model
+        // rather than searched for: whether a case has pension objectives is a fact the
+        // extraction settled when it read the report in full, and re-deriving it from passage
+        // similarity would be guessing at something already known.
+        bool? fromApplicability = null;
+
+        if (probe.Applicability.Count > 0)
+        {
+            var failed = new List<string>();
+            var passed = new List<string>();
+
+            foreach (var rule in probe.Applicability)
+            {
+                var found = rule.CanonicalPaths
+                    .Select(_accessor.Resolve)
+                    .Where(f => f.Found)
+                    .SelectMany(f => ScalarsOf(f.Json))
+                    .ToList();
+
+                if (rule.IsSatisfiedBy(found))
+                {
+                    passed.Add(rule.Name);
+                }
+                else
+                {
+                    failed.Add(found.Count == 0
+                        ? $"{rule.Name} (nothing at {string.Join(", ", rule.CanonicalPaths)})"
+                        : $"{rule.Name} (found {string.Join(", ", found.Distinct().Take(6))})");
+                }
+            }
+
+            fromApplicability = failed.Count == 0;
+
+            detail.Append(failed.Count == 0
+                ? $"Applicability satisfied: {string.Join(", ", passed)}. "
+                : $"Applicability not satisfied: {string.Join("; ", failed)}. ");
+        }
+
         var searches = 0;
         var passages = 0;
 
@@ -299,11 +341,74 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
 
         detail.Append($"{passages} corroborating passage(s) from {searches} probe search(es).");
 
-        // The model's trigger field decides when it has one; otherwise fall back to whether
-        // the probe searches found anything at all.
-        var applies = fromModel ?? passages > 0;
+        // Both sources are read from the stored model, and both must agree the check applies —
+        // the AND is the point: a rule can only ever narrow, never rescue a check whose trigger
+        // field says no. The probe searches are the fallback, used only where neither spoke.
+        var applies = (fromModel, fromApplicability) switch
+        {
+            (null, null) => passages > 0,
+            (bool m, null) => m,
+            (null, bool a) => a,
+            (bool m, bool a) => m && a,
+        };
 
         return new TriggerOutcome(applies, probe.ReturnsNotApplicable, detail.ToString(), searches, passages);
+    }
+
+    /// <summary>
+    /// Every scalar in a resolved fragment, flattened.
+    ///
+    /// A fan-out path such as <c>/objectives[]/objectiveType</c> resolves to an array of the
+    /// per-element values, a plain path to a single scalar, and an applicability rule should not
+    /// have to care which it got.
+    /// </summary>
+    internal static IReadOnlyList<string> ScalarsOf(string json)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(json);
+            var found = new List<string>();
+            Walk(document.RootElement, found);
+            return found;
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
+
+        static void Walk(JsonElement element, List<string> into)
+        {
+            switch (element.ValueKind)
+            {
+                case JsonValueKind.Array:
+                    foreach (var item in element.EnumerateArray())
+                    {
+                        Walk(item, into);
+                    }
+
+                    break;
+
+                case JsonValueKind.String:
+                    if (element.GetString() is { Length: > 0 } s)
+                    {
+                        into.Add(s);
+                    }
+
+                    break;
+
+                case JsonValueKind.True:
+                    into.Add("true");
+                    break;
+
+                case JsonValueKind.False:
+                    into.Add("false");
+                    break;
+
+                case JsonValueKind.Number:
+                    into.Add(element.ToString());
+                    break;
+            }
+        }
     }
 
     internal sealed record GroupEvidence(

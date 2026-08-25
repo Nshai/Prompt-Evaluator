@@ -113,18 +113,18 @@ flowchart TD
     %% ─────────────────────────────────────────────────────────────
     subgraph CHECK["LANE 2 &nbsp;·&nbsp; PER CHECK &nbsp;—&nbsp; does it apply at all?"]
         direction LR
-        T1["Resolve the plan's checkTriggers field"]
+        T1["Resolve triggerProbe.applicability rules<br/>from the stored model &mdash; ANDed"]
         T2["Run the trigger probe searches"]
-        T3{"Trigger present?"}
+        T3{"all rules satisfied<br/>AND trigger present?"}
         T4{"onAbsent"}
-        T4A["Return N/A, quoting absentWhen<br/>ZERO retrieval"]
+        T4A["Skip: N/A, quoting absentWhen<br/>and the rule that failed &mdash; ZERO retrieval"]
         T4B["Continue, and say the trigger was absent<br/>so an overlay is not read as excused"]
         G0["Fan out over query groups"]
 
         T1 --> T2 --> T3
         T3 -->|"yes"| G0
         T3 -->|"no"| T4
-        T4 -->|"ReturnNA"| T4A
+        T4 -->|"Skip"| T4A
         T4 -->|"ContinueWithReducedScope"| T4B --> G0
         T4 -->|"Continue"| G0
     end
@@ -237,7 +237,8 @@ The branches worth tracing:
 |---|---|
 | **Preconditions** | No index or no stored model → the run refuses and says which pre-step is missing |
 | **`planVersion`** | Unsupported → that plan is refused by name and its check skipped, rather than half-read |
-| **Trigger** | `ReturnNA` on a missing trigger → the check ends with **zero retrieval**; `ContinueWithReducedScope` → runs anyway and says the trigger was absent, so an overlay is not read as excused |
+| **Applicability** | Every `triggerProbe.applicability` rule must pass, ANDed, read from the stored model. A failed rule names itself in the N/A summary |
+| **Trigger** | `Skip` on a missing trigger → the check ends with **zero retrieval**; `ContinueWithReducedScope` → runs anyway and says the trigger was absent, so an overlay is not read as excused |
 | **`side`** | `Assertion` → resolved from SQLite, never searched. `Evidence`/`Either` → embedded once, then **two** Qdrant queries, unfiltered and category-filtered, targeted hits first |
 | **`priority`** | With `CoreQueriesOnly` set, a Supplementary query is not run at all |
 | **`expectSignals`** | None present in any hit → the data point is recorded as *absent from the file*, not merely unretrieved |

@@ -14,6 +14,16 @@
   ],
   "triggerProbe": {
     "triggerField": "checkTriggers.hasCostsAndChargesSection",
+    "applicability": [
+      {
+        "advisedCase": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/isAdvisedCase"
+        ]
+      }
+    ],
     "queries": [
       {
         "id": "T7.1",
@@ -32,7 +42,7 @@
         "priority": "Core"
       }
     ],
-    "absentWhen": "No costs or charges are disclosed anywhere in the report.",
+    "absentWhen": "The case is not an advised one.",
     "onAbsent": "ContinueWithReducedScope"
   },
   "queryGroups": [

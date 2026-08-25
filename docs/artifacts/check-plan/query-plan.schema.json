@@ -47,9 +47,14 @@
           "type": "string",
           "description": "ROLE: retrieval. The checkTriggers field in the canonical model this probe settles. Resolved from the stored model first, because it was written when the report was read in full, which beats a similarity search. Where the model holds no value, the fallback is whether the probe searches found anything."
         },
+        "applicability": {
+          "type": "array",
+          "description": "ROLE: retrieval. Rules the case must satisfy for this check to run, ANDed together and evaluated against the stored canonical model before any group is gathered. A check that does not apply then costs nothing: not one embedding, not one vector query. Read from the model rather than searched for, because whether a case has pension objectives is a fact the extraction settled when it read the report in full.",
+          "items": { "$ref": "#/$defs/ApplicabilityRule" }
+        },
         "queries": {
           "type": "array",
-          "description": "ROLE: retrieval. Cheap searches corroborating the trigger field.",
+          "description": "ROLE: retrieval. Cheap searches corroborating the trigger field. Used as the fallback only where neither triggerField nor applicability could decide.",
           "items": { "$ref": "#/$defs/Query" }
         },
         "absentWhen": {
@@ -57,8 +62,8 @@
           "description": "ROLE: verification. Quoted verbatim in the N/A summary, so a skipped check says why rather than returning a bare verdict."
         },
         "onAbsent": {
-          "enum": ["ReturnNA", "ContinueWithReducedScope", "Continue"],
-          "description": "ROLE: retrieval. ReturnNA settles the check with zero retrieval. ContinueWithReducedScope proceeds and says so in the header, so an overlay is not read as excused. Continue proceeds silently."
+          "enum": ["Skip", "ReturnNA", "ContinueWithReducedScope", "Continue"],
+          "description": "ROLE: retrieval. Skip settles the check with zero retrieval; ReturnNA is the older spelling of the same thing and is still accepted. ContinueWithReducedScope proceeds and says so in the header, so an overlay is not read as excused. Continue proceeds silently."
         }
       }
     },
@@ -94,6 +99,31 @@
     "CategoryCode": {
       "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
       "description": "A Client Authority; B Know Your Client; C Meetings & Communications; D Risk, Capacity & Experience; E Existing Plans & Portfolios; F Needs Analysis; G Research; H Solution Design; I Recommendations & Advice."
+    },
+
+    "ApplicabilityRule": {
+      "type": "object",
+      "description": "One condition the case must meet. The value set is named by its own key, so a rule reads as a sentence: { \"goalTypes\": [\"Investment\", \"Pension\"], \"canonicalPaths\": [\"/objectives[]/objectiveType\"] } is \"the client's goals include an investment or a pension\". A rule passes when any value found at any of its paths matches any accepted value, case-insensitively. Rules are ANDed, so adding one narrows the check and widening one widens it. The key name is carried into the N/A summary, so a skipped check says which condition it failed.",
+      "required": ["canonicalPaths"],
+      "minProperties": 2,
+      "maxProperties": 2,
+      "properties": {
+        "canonicalPaths": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" },
+          "description": "Where to look in the canonical model. A fan-out path is read element by element."
+        }
+      },
+      "patternProperties": {
+        "^(?!canonicalPaths$)[a-zA-Z][a-zA-Z0-9]*$": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": ["string", "boolean", "number"] },
+          "description": "The values that satisfy this rule. The property name labels the rule."
+        }
+      },
+      "additionalProperties": false
     },
 
     "Query": {

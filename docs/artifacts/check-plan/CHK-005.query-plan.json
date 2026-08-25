@@ -10,6 +10,16 @@
   ],
   "triggerProbe": {
     "triggerField": "checkTriggers.hasCapitalContributionsOrWithdrawals",
+    "applicability": [
+      {
+        "capitalContributionsOrWithdrawals": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/hasCapitalContributionsOrWithdrawals"
+        ]
+      }
+    ],
     "queries": [
       {
         "id": "T5.1",
@@ -30,8 +40,8 @@
         "priority": "Core"
       }
     ],
-    "absentWhen": "No capital, contribution, withdrawal or charge arises.",
-    "onAbsent": "ReturnNA"
+    "absentWhen": "The recommendation involves no capital, contributions, withdrawals or charges.",
+    "onAbsent": "Skip"
   },
   "queryGroups": [
     {

@@ -11,6 +11,16 @@
   ],
   "triggerProbe": {
     "triggerField": "checkTriggers.isAdvisedCase",
+    "applicability": [
+      {
+        "advisedCase": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/isAdvisedCase"
+        ]
+      }
+    ],
     "queries": [
       {
         "id": "T1.1",
@@ -27,8 +37,8 @@
         "priority": "Core"
       }
     ],
-    "absentWhen": "No category I passage exists in the case.",
-    "onAbsent": "ReturnNA"
+    "absentWhen": "The case is not an advised one, so there is no suitability report to test.",
+    "onAbsent": "Skip"
   },
   "queryGroups": [
     {

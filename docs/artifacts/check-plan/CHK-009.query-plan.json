@@ -12,6 +12,28 @@
   ],
   "triggerProbe": {
     "triggerField": "checkTriggers.hasReplacementOrSwitch",
+    "applicability": [
+      {
+        "replacementOrSwitch": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/hasReplacementOrSwitch"
+        ]
+      },
+      {
+        "adviceActions": [
+          "Switch",
+          "PartialTransfer",
+          "FullTransfer",
+          "Encash",
+          "Surrender"
+        ],
+        "canonicalPaths": [
+          "/existingArrangements[]/adviceAction"
+        ]
+      }
+    ],
     "queries": [
       {
         "id": "T9.1",
@@ -60,8 +82,8 @@
         "priority": "Core"
       }
     ],
-    "absentWhen": "All existing plans are retained, or there are no existing plans.",
-    "onAbsent": "ReturnNA"
+    "absentWhen": "Nothing is being replaced, switched, transferred, encashed or surrendered.",
+    "onAbsent": "Skip"
   },
   "queryGroups": [
     {

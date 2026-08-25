@@ -11,6 +11,16 @@
   ],
   "triggerProbe": {
     "triggerField": "checkTriggers.hasVulnerabilityIndicators",
+    "applicability": [
+      {
+        "advisedCase": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/isAdvisedCase"
+        ]
+      }
+    ],
     "queries": [
       {
         "id": "T10.1",
@@ -49,7 +59,7 @@
         "priority": "Core"
       }
     ],
-    "absentWhen": "No characteristic and no assessment appears anywhere.",
+    "absentWhen": "The case is not an advised one, so no suitability report is required.",
     "onAbsent": "ContinueWithReducedScope"
   },
   "queryGroups": [

@@ -12,6 +12,16 @@
   ],
   "triggerProbe": {
     "triggerField": "checkTriggers.isAdvisedCase",
+    "applicability": [
+      {
+        "advisedCase": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/isAdvisedCase"
+        ]
+      }
+    ],
     "queries": [
       {
         "id": "T6.1",
@@ -28,8 +38,8 @@
         "priority": "Core"
       }
     ],
-    "absentWhen": "No recommendation is made.",
-    "onAbsent": "ReturnNA"
+    "absentWhen": "The case is not an advised one, so no suitability report is required.",
+    "onAbsent": "Skip"
   },
   "queryGroups": [
     {

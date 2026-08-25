@@ -12,6 +12,16 @@
   ],
   "triggerProbe": {
     "triggerField": "checkTriggers.hasInvestmentOrPensionRecommendation",
+    "applicability": [
+      {
+        "investmentOrPensionRecommendation": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/hasInvestmentOrPensionRecommendation"
+        ]
+      }
+    ],
     "queries": [
       {
         "id": "T3.1",
@@ -31,8 +41,8 @@
         "priority": "Core"
       }
     ],
-    "absentWhen": "No investment recommendation is made (e.g. pure protection advice).",
-    "onAbsent": "ReturnNA"
+    "absentWhen": "No investment or pension recommendation was made.",
+    "onAbsent": "Skip"
   },
   "queryGroups": [
     {

@@ -11,6 +11,16 @@
   ],
   "triggerProbe": {
     "triggerField": "checkTriggers.isAdvisedCase",
+    "applicability": [
+      {
+        "advisedCase": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/isAdvisedCase"
+        ]
+      }
+    ],
     "queries": [
       {
         "id": "T8.1",
@@ -29,7 +39,7 @@
         "priority": "Core"
       }
     ],
-    "absentWhen": "Never.",
+    "absentWhen": "The case is not an advised one.",
     "onAbsent": "Continue"
   },
   "queryGroups": [

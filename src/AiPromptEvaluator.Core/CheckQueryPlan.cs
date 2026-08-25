@@ -18,8 +18,18 @@ public sealed record PlannedQuery
     [JsonPropertyName("targetCategories")] public List<string> TargetCategories { get; init; } = [];
     [JsonPropertyName("expectSignals")] public List<string> ExpectSignals { get; init; } = [];
     [JsonPropertyName("canonicalPaths")] public List<string> CanonicalPaths { get; init; } = [];
+    /// <summary>
+    /// <c>Core</c> or <c>Supplementary</c>. Honoured when
+    /// <see cref="AppSettings.CoreQueriesOnly"/> is set: a Supplementary query is then not run
+    /// at all. The plans mark roughly one query in seven that way, so the switch is the
+    /// cheapest retrieval saving available, and the plan authors have already chosen what it
+    /// costs rather than leaving it to a threshold.
+    /// </summary>
     [JsonPropertyName("priority")] public string Priority { get; init; } = "Core";
-    [JsonPropertyName("note")] public string? Note { get; init; }
+
+    /// <summary>True unless the plan marked this query Supplementary.</summary>
+    public bool IsCore =>
+        !Priority.Equals("Supplementary", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// True when this query should be run against the vector store. "Either" counts: those
@@ -46,19 +56,17 @@ public sealed record PlanSufficiency
 }
 
 /// <summary>
-/// Where a group expects each side of its comparison to come from: the assertion from the
-/// canonical model's own category, the evidence from one or more document categories.
-///
-/// This was authored into every plan and then never read by anything, which is how seventeen
-/// groups came to declare an evidence category none of their queries asked for. Declaring
-/// where the answer lives and then not looking there is silent under-assessment: the group
-/// reports what it found in the categories it did search, and nothing reports the omission.
-/// Modelled here so <see cref="CheckPlanLint"/> can hold the plans to their own word.
+/// Everything that decides <b>what the assessor is allowed to see</b>. A mistake in this
+/// block is invisible in the output: the check reports confidently on a pack that never
+/// contained the answer.
 /// </summary>
-public sealed record PlanExpectedCategories
+public sealed record PlanRetrieval
 {
-    [JsonPropertyName("assertion")] public List<string> Assertion { get; init; } = [];
-    [JsonPropertyName("evidence")] public List<string> Evidence { get; init; } = [];
+    /// <summary>
+    /// Where the answer lives in the canonical model. This is the assertion side — retrieval
+    /// from the stored extract rather than from the vector store.
+    /// </summary>
+    [JsonPropertyName("canonicalPaths")] public List<string> CanonicalPaths { get; init; } = [];
 
     /// <summary>
     /// Words naming the part of a document this group's answer lives in — "disposable income",
@@ -67,27 +75,87 @@ public sealed record PlanExpectedCategories
     /// A category is too coarse a target for a form. The Fact Find is one 42 KB document with a
     /// dozen unrelated sections, and once a floor guaranteed it a slot the slot went to whichever
     /// section embedded best for the group's wording. Measured on a real run, the income section
-    /// — carrying the client's <b>£-288.00 monthly disposable income</b> — was delivered to four
-    /// groups assessing personal details, tax status, employment and the emergency fund, and to
-    /// none of the groups that needed it. Not one mentioned it. Retrieval had stopped being the
-    /// problem and routing had become it.
+    /// was delivered to four groups assessing personal details, tax status, employment and the
+    /// emergency fund, and to none of the groups that needed it. Not one mentioned it.
     ///
     /// Matched against the passage text rather than a stored section id, because converted
     /// documents carry their headings inline and a heading is what the hint is really naming.
     /// </summary>
     [JsonPropertyName("evidenceSections")] public List<string> EvidenceSections { get; init; } = [];
+
+    [JsonPropertyName("queries")] public List<PlannedQuery> Queries { get; init; } = [];
+}
+
+/// <summary>
+/// Everything that decides <b>what the assessor makes of what it was given</b>. Every field
+/// here is a string interpolated into one group's prompt; nothing in the runner branches on
+/// any of them.
+/// </summary>
+public sealed record PlanVerification
+{
+    [JsonPropertyName("limb")] public string Limb { get; init; } = "Consistency";
+    [JsonPropertyName("comparison")] public PlanComparison? Comparison { get; init; }
+    [JsonPropertyName("sufficiency")] public PlanSufficiency? Sufficiency { get; init; }
+}
+
+/// <summary>
+/// What the group says about itself. Checked at build time by <see cref="CheckPlanLint"/> and
+/// never read at run time.
+///
+/// This was authored into every plan and then never read by anything, which is how seventeen
+/// groups came to declare an evidence category none of their queries asked for. Declaring
+/// where the answer lives and then not looking there is silent under-assessment: the group
+/// reports what it found in the categories it did search, and nothing reports the omission.
+/// </summary>
+public sealed record PlanDeclares
+{
+    [JsonPropertyName("assertionCategories")] public List<string> AssertionCategories { get; init; } = [];
+    [JsonPropertyName("evidenceCategories")] public List<string> EvidenceCategories { get; init; } = [];
+}
+
+/// <summary>
+/// Retrieval settings for the plan as a whole, as distinct from one group's
+/// <see cref="PlanRetrieval"/> block.
+/// </summary>
+public sealed record PlanRetrievalSettings
+{
+    /// <summary>
+    /// How many hits each of this check's queries may return, where the check needs a wider
+    /// pool than <see cref="AppSettings.MaxSearchResults"/> gives it.
+    ///
+    /// Checks are not alike in how far they fan out. CHK-007 reaches eight document categories
+    /// across eleven groups; CHK-010 reaches three across five. Held to the same eight hits per
+    /// query, the wide checks compete for slots against a much larger case file and lose
+    /// passages the narrow ones never had to.
+    ///
+    /// Raising it costs vector lookups, not prompt tokens. MaxPassagesPerGroup still caps what
+    /// reaches the assessor, so a wider pool changes what ranking gets to choose from and not
+    /// how much the model reads. Values below the global setting are ignored rather than
+    /// honoured — see CaseDocumentSearchService.
+    /// </summary>
+    [JsonPropertyName("resultsPerCall")] public int? ResultsPerCall { get; init; }
 }
 
 public sealed record PlanQueryGroup
 {
     [JsonPropertyName("groupId")] public string GroupId { get; init; } = string.Empty;
     [JsonPropertyName("requirement")] public string Requirement { get; init; } = string.Empty;
-    [JsonPropertyName("limb")] public string Limb { get; init; } = "Consistency";
-    [JsonPropertyName("canonicalPaths")] public List<string> CanonicalPaths { get; init; } = [];
-    [JsonPropertyName("expectedCategories")] public PlanExpectedCategories? ExpectedCategories { get; init; }
-    [JsonPropertyName("queries")] public List<PlannedQuery> Queries { get; init; } = [];
-    [JsonPropertyName("comparison")] public PlanComparison? Comparison { get; init; }
-    [JsonPropertyName("sufficiency")] public PlanSufficiency? Sufficiency { get; init; }
+    [JsonPropertyName("declares")] public PlanDeclares? Declares { get; init; }
+    [JsonPropertyName("retrieval")] public PlanRetrieval Retrieval { get; init; } = new();
+    [JsonPropertyName("verification")] public PlanVerification? Verification { get; init; }
+
+    // ── Flattened access. The nesting exists to make the retrieval/verification split legible
+    //    to whoever edits a plan, not to make it awkward to read one.
+
+    public List<PlannedQuery> Queries => Retrieval.Queries;
+    public List<string> CanonicalPaths => Retrieval.CanonicalPaths;
+    public string Limb => Verification?.Limb ?? "Consistency";
+    public PlanComparison? Comparison => Verification?.Comparison;
+    public PlanSufficiency? Sufficiency => Verification?.Sufficiency;
+
+    /// <summary>The queries that will actually run, after the Core-only switch.</summary>
+    public IEnumerable<PlannedQuery> QueriesToRun(bool coreOnly) =>
+        coreOnly ? Queries.Where(q => q.IsCore) : Queries;
 
     /// <summary>Evidence categories this group's queries actually ask the store for.</summary>
     public IReadOnlySet<string> QueriedCategories =>
@@ -100,21 +168,28 @@ public sealed record PlanQueryGroup
 
     /// <summary>Words naming the sections this group's evidence lives in, if the plan says.</summary>
     public IReadOnlyList<string> DeclaredEvidenceSections =>
-        (ExpectedCategories?.EvidenceSections ?? [])
+        Retrieval.EvidenceSections
             .Select(s => s.Trim())
             .Where(s => s.Length > 0)
             .ToList();
 
     /// <summary>Evidence categories this group declares its answer lives in.</summary>
     public IReadOnlySet<string> DeclaredEvidenceCategories =>
-        (ExpectedCategories?.Evidence ?? [])
+        (Declares?.EvidenceCategories ?? [])
             .Select(c => c.Trim())
             .Where(c => c.Length > 0)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>Categories this group declares the report's own claim comes from.</summary>
+    public IReadOnlyList<string> DeclaredAssertionCategories =>
+        (Declares?.AssertionCategories ?? [])
+            .Select(c => c.Trim())
+            .Where(c => c.Length > 0)
+            .ToList();
+
     /// <summary>Paths cited on the group and on its queries, de-duplicated in first-seen order.</summary>
     public IReadOnlyList<string> AllCanonicalPaths =>
-        CanonicalPaths
+        Retrieval.CanonicalPaths
             .Concat(Queries.SelectMany(q => q.CanonicalPaths))
             .Distinct(StringComparer.Ordinal)
             .ToList();
@@ -136,10 +211,10 @@ public sealed record PlanTriggerProbe
 {
     [JsonPropertyName("triggerField")] public string? TriggerField { get; init; }
     [JsonPropertyName("queries")] public List<PlannedQuery> Queries { get; init; } = [];
-    [JsonPropertyName("presentWhen")] public string? PresentWhen { get; init; }
+    /// <summary>Quoted verbatim in the N/A summary, so a skipped check says why.</summary>
     [JsonPropertyName("absentWhen")] public string? AbsentWhen { get; init; }
+
     [JsonPropertyName("onAbsent")] public string? OnAbsent { get; init; }
-    [JsonPropertyName("note")] public string? Note { get; init; }
 
     /// <summary>True when the plan says a missing trigger settles the check as N/A.</summary>
     public bool ReturnsNotApplicable =>
@@ -176,12 +251,24 @@ public sealed record PlanDecision
 /// </summary>
 public sealed record CheckQueryPlan
 {
+    /// <summary>
+    /// The plan format this file is written for. Checked at load: a plan the runner does not
+    /// understand is refused by name rather than half-read, which is what "const 1.0" always
+    /// implied and never did.
+    /// </summary>
     [JsonPropertyName("planVersion")] public string PlanVersion { get; init; } = string.Empty;
+
     [JsonPropertyName("checkId")] public string CheckId { get; init; } = string.Empty;
     [JsonPropertyName("checkName")] public string CheckName { get; init; } = string.Empty;
-    [JsonPropertyName("appliesTo")] public string? AppliesTo { get; init; }
-    [JsonPropertyName("regulatoryBasis")] public string? RegulatoryBasis { get; init; }
+
+    /// <summary>
+    /// Category codes from the check's Primary Document Categories column. Read by
+    /// <see cref="CheckPlanLint"/> at build time and by nothing at run time.
+    /// </summary>
     [JsonPropertyName("primaryCategories")] public List<string> PrimaryCategories { get; init; } = [];
+
+    /// <summary>Retrieval settings for the whole plan. Absent means the global defaults.</summary>
+    [JsonPropertyName("retrieval")] public PlanRetrievalSettings? Retrieval { get; init; }
     [JsonPropertyName("triggerProbe")] public PlanTriggerProbe? TriggerProbe { get; init; }
     [JsonPropertyName("queryGroups")] public List<PlanQueryGroup> QueryGroups { get; init; } = [];
     [JsonPropertyName("decision")] public PlanDecision? Decision { get; init; }
@@ -202,6 +289,14 @@ public static class CheckQueryPlanLoader
 
     /// <summary>File name pattern the plans are published under.</summary>
     public const string SearchPattern = "*.query-plan.json";
+
+    /// <summary>
+    /// The only plan format this runner understands. A plan declaring anything else is
+    /// refused with its version named, rather than loaded and silently misread — the fields
+    /// a future format moves or renames would otherwise come back empty and the check would
+    /// assess a pack assembled from half a plan.
+    /// </summary>
+    public const string SupportedPlanVersion = "1.0";
 
     /// <summary>
     /// Every plan in the folder, keyed by check id. A file that will not parse is skipped
@@ -227,6 +322,15 @@ public static class CheckQueryPlanLoader
                 if (plan is null || string.IsNullOrWhiteSpace(plan.CheckId))
                 {
                     failures.Add((Path.GetFileName(file), "No checkId in the plan."));
+                    continue;
+                }
+
+                if (!string.Equals(plan.PlanVersion, SupportedPlanVersion, StringComparison.Ordinal))
+                {
+                    failures.Add((
+                        Path.GetFileName(file),
+                        $"planVersion \"{plan.PlanVersion}\" is not supported; this build reads "
+                        + $"\"{SupportedPlanVersion}\"."));
                     continue;
                 }
 

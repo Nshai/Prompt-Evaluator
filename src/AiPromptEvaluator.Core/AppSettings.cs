@@ -123,6 +123,17 @@ public class AppSettings
     public int MaxSearchResults { get; set; } = 8;
 
     /// <summary>
+    /// Run only the queries the plans mark <c>Core</c>, skipping <c>Supplementary</c> ones.
+    ///
+    /// Roughly one query in seven is Supplementary across the ten plans, so this is the
+    /// cheapest retrieval saving available — and the plan authors chose which queries are
+    /// expendable, rather than a score threshold choosing for them. Off by default: the
+    /// full set is what the coverage matrix describes.
+    /// </summary>
+    [JsonPropertyName("coreQueriesOnly")]
+    public bool CoreQueriesOnly { get; set; }
+
+    /// <summary>
     /// How many requests the whole run may have in flight at once.
     ///
     /// A run-wide budget rather than a per-check one. Checks are assessed in parallel and so are

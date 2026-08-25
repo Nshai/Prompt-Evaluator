@@ -145,7 +145,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             await ForEachAsync(plan.QueryGroups.Count, async (i, token) =>
             {
                 packs[i] = await _searches
-                    .RunAsync(t => GatherAsync(plan.QueryGroups[i], t), token)
+                    .RunAsync(t => GatherAsync(plan.QueryGroups[i], plan.Retrieval?.ResultsPerCall, t), token)
                     .ConfigureAwait(false);
 
                 progress?.Report(
@@ -197,7 +197,13 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 findings[i] = CitationVerifier.Verify(
                     ParseGroup(result.Response, pack.Group),
                     EvidenceTextOf(pack),
-                    PassagesById(pack));
+                    PassagesById(pack)) with
+                {
+                    // From the pack, not from the answer. The assessor is told about the
+                    // shortfall and asked to weigh it, but whether it is recorded is not left
+                    // to whether it chose to mention it.
+                    EvidenceShortfall = pack.EvidenceShortfall,
+                };
 
                 progress?.Report(
                     $"{plan.CheckId}: assessed {Interlocked.Increment(ref assessed)}/{packs.Length}");
@@ -281,10 +287,12 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         var searches = 0;
         var passages = 0;
 
-        foreach (var query in probe.Queries.Where(q => q.IsEvidenceSearch))
+        foreach (var query in probe.Queries.Where(q => q.IsEvidenceSearch)
+                                   .Where(q => !_settings.CoreQueriesOnly || q.IsCore))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var hits = await SearchAsync(query, cancellationToken).ConfigureAwait(false);
+            var hits = await SearchAsync(query, cancellationToken, plan.Retrieval?.ResultsPerCall)
+                .ConfigureAwait(false);
             searches++;
             passages += hits.Count;
         }
@@ -306,13 +314,41 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         int TotalPassages,
         IReadOnlyList<string> CategoriesFound,
         IReadOnlyList<string> MissedSignals,
-        IReadOnlyList<string> UnmatchedSections);
+        IReadOnlyList<string> UnmatchedSections)
+    {
+        /// <summary>
+        /// How many corroborating categories the plan asked for, where it said.
+        /// </summary>
+        public int? RequiredCategories => Group.Sufficiency?.MinEvidenceCategories;
+
+        /// <summary>
+        /// The plan asked for corroboration from more categories than the pack reached.
+        ///
+        /// A model-only group is exempt: it has no evidence side by design, and reporting a
+        /// shortfall against a requirement that deliberately searches for nothing would turn a
+        /// sound finding into a spurious gap.
+        /// </summary>
+        public bool IsUnderEvidenced =>
+            !Group.IsModelOnly
+            && RequiredCategories is { } required
+            && CategoriesFound.Count < required;
+
+        /// <summary>The shortfall in words, or null where there is none.</summary>
+        public string? EvidenceShortfall =>
+            IsUnderEvidenced
+                ? $"The plan requires corroboration from {RequiredCategories} document "
+                  + $"categor{(RequiredCategories == 1 ? "y" : "ies")}; the evidence reached "
+                  + $"{CategoriesFound.Count} "
+                  + $"({(CategoriesFound.Count == 0 ? "none" : string.Join(", ", CategoriesFound))})."
+                : null;
+    }
 
     /// <summary>
     /// Assembles one group's evidence: the assertion side from the stored model, the evidence
     /// side from the vector store, de-duplicated and trimmed to what is worth reading.
     /// </summary>
-    private async Task<GroupEvidence> GatherAsync(PlanQueryGroup group, CancellationToken cancellationToken)
+    private async Task<GroupEvidence> GatherAsync(
+        PlanQueryGroup group, int? resultsPerCall, CancellationToken cancellationToken)
     {
         var fragments = _accessor.Resolve(group.AllCanonicalPaths);
 
@@ -322,11 +358,11 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         var total = 0;
         var missedSignals = new List<string>();
 
-        foreach (var query in group.Queries.Where(q => q.IsEvidenceSearch))
+        foreach (var query in group.QueriesToRun(_settings.CoreQueriesOnly).Where(q => q.IsEvidenceSearch))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var hits = await SearchAsync(query, cancellationToken).ConfigureAwait(false);
+            var hits = await SearchAsync(query, cancellationToken, resultsPerCall).ConfigureAwait(false);
             searches++;
             total += hits.Count;
 
@@ -354,7 +390,8 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             .SelectMany(q => q.TargetCategories)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        var ranked = Rank(passages, targeted, group.DeclaredEvidenceSections);
+        var ranked = Rank(
+            passages, targeted, group.DeclaredEvidenceSections, group.DeclaredEvidenceCategories);
 
         var categories = ranked
             .Select(p => p.CategoryCode)
@@ -434,6 +471,11 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     /// category was necessary and did nothing on its own, because asking is not the same as
     /// keeping.
     ///
+    /// Reserved slots are served to the group's <c>declares.evidenceCategories</c> before the
+    /// rest of its targeted ones. Lint holds declared to a subset of targeted, so this cannot
+    /// widen a request — it settles who keeps a slot once the cap bites, which is the first
+    /// retrieval effect that declaration has ever had.
+    ///
     /// Within that, the original ordering still decides everything: targeted first, then score,
     /// then the passage itself. That last key is what makes the cut reproducible — scores collide
     /// often enough to matter, and a slice through a tie band otherwise depends on the order the
@@ -443,7 +485,8 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     internal static List<CaseDocumentSearchMatch> Rank(
         IEnumerable<CaseDocumentSearchMatch> passages,
         IReadOnlySet<string> targeted,
-        IReadOnlyList<string>? sections = null)
+        IReadOnlyList<string>? sections = null,
+        IReadOnlySet<string>? declared = null)
     {
         var hints = (sections ?? [])
             .Where(h => !string.IsNullOrWhiteSpace(h))
@@ -508,9 +551,27 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             }
         }
 
-        // The floor, in ordinal category order so a pack does not depend on the order the plan
+        // The floor, declared categories first.
+        //
+        // `targeted` is where the queries look; `declared` is where the group says the answer
+        // lives. Lint keeps declared a subset of targeted, so this never widens the request —
+        // it decides who gets a reserved slot when the cap bites. A group naming four target
+        // categories across its queries but declaring one is saying which of the four actually
+        // answers the requirement, and until now that statement did nothing at all: the slots
+        // went out in alphabetical order and a declared category could be squeezed out by a
+        // category some query happened to mention.
+        //
+        // Within each tier, ordinal order, so a pack does not depend on the order the plan
         // happened to list its categories in.
-        foreach (var category in targeted.OrderBy(c => c, StringComparer.Ordinal))
+        var floorOrder = (declared ?? (IReadOnlySet<string>)new HashSet<string>())
+            .Where(targeted.Contains)
+            .OrderBy(c => c, StringComparer.Ordinal)
+            .Concat(targeted
+                .Where(c => declared is null || !declared.Contains(c))
+                .OrderBy(c => c, StringComparer.Ordinal))
+            .ToList();
+
+        foreach (var category in floorOrder)
         {
             var held = 0;
 
@@ -589,9 +650,9 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     /// a passage that never entered the candidate set could not be re-ranked into it.
     /// </summary>
     private async Task<IReadOnlyList<CaseDocumentSearchMatch>> SearchAsync(
-        PlannedQuery query, CancellationToken cancellationToken) =>
+        PlannedQuery query, CancellationToken cancellationToken, int? resultsPerCall) =>
         await _search
-            .SearchAsync(query.Text, query.TargetCategories, cancellationToken)
+            .SearchAsync(query.Text, query.TargetCategories, cancellationToken, resultsPerCall)
             .ConfigureAwait(false);
 
     /// <summary>
@@ -800,6 +861,20 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 + "Treat those data points as absent from the case file, not merely unretrieved.");
         }
 
+        // The numeric half of a ValueMatch or RangeMatch, settled in code before the assessor
+        // is asked anything. Placed above "How to compare" so the guards read as qualifications
+        // on an established result rather than instructions for work still to be done.
+        var figures = NumericComparison.Format(
+            group.Comparison?.Method,
+            pack.Fragments.Where(f => f.Found).Select(f => f.Json),
+            PassagesById(pack));
+
+        if (figures is not null)
+        {
+            sb.AppendLine();
+            sb.Append(figures);
+        }
+
         if (group.Comparison is { } comparison)
         {
             sb.AppendLine();
@@ -833,6 +908,21 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             {
                 sb.AppendLine($"- Minimum corroborating categories: {min}");
             }
+        }
+
+        // Computed here rather than left to the model to spot: both numbers are known, and
+        // whether a thinly evidenced requirement says so should not depend on the assessor
+        // comparing two figures printed in different parts of a long prompt.
+        if (pack.EvidenceShortfall is { } shortfall)
+        {
+            sb.AppendLine();
+            sb.AppendLine("#### Evidence shortfall");
+            sb.AppendLine(shortfall);
+            sb.AppendLine(
+                "This is established, not a matter for you to re-derive. Say so in your finding "
+                + "and apply the sufficiency rule above. It does not by itself decide the "
+                + "outcome — thin evidence that still settles the question is not a concern, "
+                + "and a requirement the file genuinely cannot answer may be one.");
         }
 
         sb.AppendLine();

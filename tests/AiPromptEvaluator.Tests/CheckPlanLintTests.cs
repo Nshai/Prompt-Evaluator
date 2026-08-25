@@ -81,11 +81,14 @@ public class CheckPlanLintTests
             new PlanQueryGroup
             {
                 GroupId = "G1.8",
-                ExpectedCategories = new PlanExpectedCategories { Evidence = ["I"] },
-                Queries =
-                [
-                    new PlannedQuery { Id = "Q1", Side = "Assertion", TargetCategories = ["I"] },
-                ],
+                Declares = new PlanDeclares { EvidenceCategories = ["I"] },
+                Retrieval = new PlanRetrieval
+                {
+                    Queries =
+                    [
+                        new PlannedQuery { Id = "Q1", Side = "Assertion", TargetCategories = ["I"] },
+                    ],
+                },
             });
 
         Assert.Empty(CheckPlanLint.Inspect(plan));
@@ -130,6 +133,7 @@ public class CheckPlanLintTests
     /// The plan set's shape, pinned. A dropped query group is otherwise silent: the check runs,
     /// reports success, and assesses one requirement fewer than the catalogue says it has.
     /// The stale build output that prompted this had CHK-001 at eight groups against nine.
+    /// Re-pinned when the plans were rebuilt against "Revised checks.csv": 60 groups to 85.
     /// </summary>
     [Fact]
     public void TheShippedPlanSetHasTheGroupsTheCatalogueExpects()
@@ -141,18 +145,18 @@ public class CheckPlanLintTests
             p => p.QueryGroups.Count,
             StringComparer.OrdinalIgnoreCase);
 
-        Assert.Equal(9, counts["CHK-001"]);
-        Assert.Equal(6, counts["CHK-002"]);
-        Assert.Equal(7, counts["CHK-003"]);
-        Assert.Equal(5, counts["CHK-004"]);
-        Assert.Equal(6, counts["CHK-005"]);
-        Assert.Equal(4, counts["CHK-006"]);
-        Assert.Equal(7, counts["CHK-007"]);
-        Assert.Equal(5, counts["CHK-008"]);
-        Assert.Equal(7, counts["CHK-009"]);
-        Assert.Equal(4, counts["CHK-010"]);
+        Assert.Equal(11, counts["CHK-001"]);
+        Assert.Equal(7, counts["CHK-002"]);
+        Assert.Equal(10, counts["CHK-003"]);
+        Assert.Equal(7, counts["CHK-004"]);
+        Assert.Equal(8, counts["CHK-005"]);
+        Assert.Equal(8, counts["CHK-006"]);
+        Assert.Equal(11, counts["CHK-007"]);
+        Assert.Equal(8, counts["CHK-008"]);
+        Assert.Equal(10, counts["CHK-009"]);
+        Assert.Equal(5, counts["CHK-010"]);
 
-        Assert.Equal(60, counts.Values.Sum());
+        Assert.Equal(85, counts.Values.Sum());
     }
 
     /// <summary>
@@ -204,10 +208,13 @@ public class CheckPlanLintTests
         new()
         {
             GroupId = id,
-            ExpectedCategories = new PlanExpectedCategories { Evidence = [.. declares] },
-            Queries =
-            [
-                new PlannedQuery { Id = "Q1", Side = "Evidence", TargetCategories = [.. queries] },
-            ],
+            Declares = new PlanDeclares { EvidenceCategories = [.. declares] },
+            Retrieval = new PlanRetrieval
+            {
+                Queries =
+                [
+                    new PlannedQuery { Id = "Q1", Side = "Evidence", TargetCategories = [.. queries] },
+                ],
+            },
         };
 }

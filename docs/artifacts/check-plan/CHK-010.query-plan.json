@@ -2,123 +2,579 @@
   "planVersion": "1.0",
   "checkId": "CHK-010",
   "checkName": "Vulnerability, Support Needs and Foreseeable Harm Overlay",
-  "appliesTo": "All cases as an overlay; enhanced where vulnerability is present",
-  "regulatoryBasis": "PRIN 2A.2.1R; PRIN 2A.5; PRIN 2A.6; FCA FG21/1",
-  "primaryCategories": ["A", "B", "C", "D", "I"],
-
-  "tool": {
-    "name": "search_case_documents",
-    "parameters": ["searchText"],
-    "resultsPerCall": 8,
-    "categoryFilterAvailable": false
-  },
-
+  "primaryCategories": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "I"
+  ],
   "triggerProbe": {
     "triggerField": "checkTriggers.hasVulnerabilityIndicators",
     "queries": [
-      { "id": "T10.1", "text": "client vulnerability assessment characteristics of vulnerability recorded", "side": "Evidence", "targetCategories": ["B", "C", "A"], "expectSignals": ["vulnerab", "vulnerability", "characteristic", "assessment"], "priority": "Core" },
-      { "id": "T10.2", "text": "health condition bereavement life event low resilience or difficulty understanding", "side": "Evidence", "targetCategories": ["B", "C"], "expectSignals": ["health", "bereave", "illness", "divorce", "redundan", "capability", "resilience"], "priority": "Core", "note": "Probes the four FG21/1 drivers directly, because a case with no vulnerability section may still hold indicators in the fact find or file notes." }
+      {
+        "id": "T10.1",
+        "text": "client vulnerability assessment characteristics of vulnerability recorded",
+        "side": "Evidence",
+        "targetCategories": [
+          "B",
+          "C",
+          "A"
+        ],
+        "expectSignals": [
+          "vulnerab",
+          "vulnerability",
+          "characteristic",
+          "assessment"
+        ],
+        "priority": "Core"
+      },
+      {
+        "id": "T10.2",
+        "text": "health condition bereavement life event low resilience or difficulty understanding",
+        "side": "Evidence",
+        "targetCategories": [
+          "B",
+          "C"
+        ],
+        "expectSignals": [
+          "health",
+          "bereave",
+          "illness",
+          "divorce",
+          "redundan",
+          "capability",
+          "resilience"
+        ],
+        "priority": "Core"
+      }
     ],
-    "presentWhen": "Any vulnerability characteristic or driver is recorded anywhere in the case.",
     "absentWhen": "No characteristic and no assessment appears anywhere.",
-    "onAbsent": "ContinueWithReducedScope",
-    "note": "This check is an overlay and always runs. Where nothing is found, the finding is about whether vulnerability was ever considered — not automatically N/A."
+    "onAbsent": "ContinueWithReducedScope"
   },
-
   "queryGroups": [
     {
       "groupId": "G10.1",
       "requirement": "Details of additional support and needs, including third-party support",
-      "limb": "Consistency",
-      "canonicalPaths": ["/vulnerability/perClient[]/supportNeeds[]", "/vulnerability/perClient[]/thirdPartySupport"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["A", "B", "C", "D"] },
-      "queries": [
-        { "id": "Q10.1.1", "text": "additional support needs identified for this client and how they were met", "side": "Either", "targetCategories": ["I", "B", "C"], "expectSignals": ["support", "needs", "assistance", "help", "adjust"], "priority": "Core" },
-        { "id": "Q10.1.2", "text": "family member attorney or third party attending the meeting on behalf of the client", "side": "Evidence", "targetCategories": ["C", "A", "B"], "expectSignals": ["attended", "present", "son", "daughter", "attorney", "third party", "on behalf"], "priority": "Core" },
-        { "id": "Q10.1.3", "text": "power of attorney registered authority to act consent to share information", "side": "Either", "targetCategories": ["A", "B", "I"], "expectSignals": ["power of attorney", "LPA", "authority", "consent", "deputy"], "priority": "Core" },
-        { "id": "Q10.1.4", "text": "client requested that a relative be involved in the advice process", "side": "Evidence", "targetCategories": ["C", "A"], "expectSignals": ["requested", "involve", "relative", "wanted", "present"], "priority": "Supplementary" },
-        { "id": "Q10.1.5", "text": "understanding of investments and pensions no understanding knowledge questionnaire response", "side": "Evidence", "targetCategories": ["D"], "expectSignals": ["no understanding", "knowledge", "do you understand", "experience"], "priority": "Core", "note": "FG21/1 names low capability as a driver of vulnerability, and it is recorded in the investor experience questionnaire rather than anywhere this check previously looked." }
-      ],
-      "comparison": {
-        "method": "SetCoverage",
-        "falsePositiveGuards": [
-          "A recommendation to put a power of attorney in place is future planning, not evidence of current third-party support — distinguish the two.",
-          "A spouse present at a meeting is not automatically third-party support for a vulnerability."
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "A",
+          "B",
+          "C",
+          "D"
         ]
       },
-      "sufficiency": {
-        "ifAssertionAbsent": "Where the file records support needs the report never mentions, that gap is the finding.",
-        "ifEvidenceAbsent": "Where the report claims support arrangements with nothing in the file, treat the claim as unsupported."
+      "retrieval": {
+        "canonicalPaths": [
+          "/vulnerability/perClient[]/supportNeeds[]",
+          "/vulnerability/perClient[]/thirdPartySupport",
+          "/vulnerability/perClient[]/thirdPartySupport/authorityType",
+          "/vulnerability/perClient[]/thirdPartySupport/relationship"
+        ],
+        "queries": [
+          {
+            "id": "Q10.1.1",
+            "text": "additional support needs identified for this client and how they were met",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "B",
+              "C"
+            ],
+            "expectSignals": [
+              "support",
+              "needs",
+              "assistance",
+              "help",
+              "adjust"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.1.2",
+            "text": "family member attorney or third party attending the meeting on behalf of the client",
+            "side": "Evidence",
+            "targetCategories": [
+              "C",
+              "A",
+              "B"
+            ],
+            "expectSignals": [
+              "attended",
+              "present",
+              "son",
+              "daughter",
+              "attorney",
+              "third party",
+              "on behalf"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.1.3",
+            "text": "power of attorney registered authority to act consent to share information",
+            "side": "Either",
+            "targetCategories": [
+              "A",
+              "B",
+              "I"
+            ],
+            "expectSignals": [
+              "power of attorney",
+              "LPA",
+              "authority",
+              "consent",
+              "deputy"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.1.4",
+            "text": "client requested that a relative be involved in the advice process",
+            "side": "Evidence",
+            "targetCategories": [
+              "C",
+              "A"
+            ],
+            "expectSignals": [
+              "requested",
+              "involve",
+              "relative",
+              "wanted",
+              "present"
+            ],
+            "priority": "Supplementary"
+          },
+          {
+            "id": "Q10.1.5",
+            "text": "understanding of investments and pensions no understanding knowledge questionnaire response",
+            "side": "Evidence",
+            "targetCategories": [
+              "D"
+            ],
+            "expectSignals": [
+              "no understanding",
+              "knowledge",
+              "do you understand",
+              "experience"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "comparison": {
+          "method": "SetCoverage",
+          "falsePositiveGuards": [
+            "A recommendation to put a power of attorney in place is future planning, not evidence of current third-party support — distinguish the two.",
+            "A spouse present at a meeting is not automatically third-party support for a vulnerability."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Where the file records support needs the report never mentions, that gap is the finding.",
+          "ifEvidenceAbsent": "Where the report claims support arrangements with nothing in the file, treat the claim as unsupported."
+        }
       }
     },
-
     {
       "groupId": "G10.2",
       "requirement": "Communication preferences and formats",
-      "limb": "Consistency",
-      "canonicalPaths": ["/vulnerability/perClient[]/communicationPreferences"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["A", "C"] },
-      "queries": [
-        { "id": "Q10.2.1", "text": "preferred method of communication email post telephone large print", "side": "Either", "targetCategories": ["A", "B", "C", "I"], "expectSignals": ["prefer", "communication", "email", "post", "telephone", "large print", "format"], "priority": "Core" },
-        { "id": "Q10.2.2", "text": "documents provided in an accessible format or explained verbally", "side": "Either", "targetCategories": ["C", "I"], "expectSignals": ["accessible", "format", "verbally", "explained", "read out"], "priority": "Core" },
-        { "id": "Q10.2.3", "text": "client agreement communication preferences and marketing consents", "side": "Evidence", "targetCategories": ["A"], "expectSignals": ["communication", "preference", "consent", "contact"], "priority": "Supplementary" }
-      ],
-      "comparison": {
-        "method": "ValueMatch",
-        "falsePositiveGuards": ["A standard contact preference is not a vulnerability adjustment; record it, but do not treat its presence as evidence that vulnerability was assessed."]
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "A",
+          "C"
+        ]
       },
-      "sufficiency": { "ifBothAbsent": "Note as a gap where vulnerability indicators are present." }
+      "retrieval": {
+        "canonicalPaths": [
+          "/vulnerability/perClient[]/communicationPreferences"
+        ],
+        "queries": [
+          {
+            "id": "Q10.2.1",
+            "text": "preferred method of communication email post telephone large print",
+            "side": "Either",
+            "targetCategories": [
+              "A",
+              "B",
+              "C",
+              "I"
+            ],
+            "expectSignals": [
+              "prefer",
+              "communication",
+              "email",
+              "post",
+              "telephone",
+              "large print",
+              "format"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.2.2",
+            "text": "documents provided in an accessible format or explained verbally",
+            "side": "Either",
+            "targetCategories": [
+              "C",
+              "I"
+            ],
+            "expectSignals": [
+              "accessible",
+              "format",
+              "verbally",
+              "explained",
+              "read out"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.2.3",
+            "text": "client agreement communication preferences and marketing consents",
+            "side": "Evidence",
+            "targetCategories": [
+              "A"
+            ],
+            "expectSignals": [
+              "communication",
+              "preference",
+              "consent",
+              "contact"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "comparison": {
+          "method": "ValueMatch",
+          "falsePositiveGuards": [
+            "A standard contact preference is not a vulnerability adjustment; record it, but do not treat its presence as evidence that vulnerability was assessed."
+          ]
+        },
+        "sufficiency": {
+          "ifBothAbsent": "Note as a gap where vulnerability indicators are present."
+        }
+      }
     },
-
     {
       "groupId": "G10.3",
       "requirement": "Adjustments made to support client comprehension",
-      "limb": "Consistency",
-      "canonicalPaths": ["/vulnerability/perClient[]/adjustmentsMade[]", "/vulnerability/perClient[]/characteristics[]"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["C"] },
-      "queries": [
-        { "id": "Q10.3.1", "text": "extra time given information repeated explained in simpler terms to aid understanding", "side": "Evidence", "targetCategories": ["C"], "expectSignals": ["repeated", "explained again", "simpler", "extra time", "second meeting"], "priority": "Core" },
-        { "id": "Q10.3.2", "text": "follow up call to confirm the client understood the recommendation", "side": "Evidence", "targetCategories": ["C"], "expectSignals": ["follow up", "confirmed", "checked", "understood", "called"], "priority": "Core" },
-        { "id": "Q10.3.3", "text": "adjustments made because of the client's circumstances health or capability", "side": "Either", "targetCategories": ["C", "I", "B"], "expectSignals": ["adjust", "because of", "given your", "to help you"], "priority": "Core" },
-        { "id": "Q10.3.4", "text": "cooling off period client given time to consider before proceeding", "side": "Either", "targetCategories": ["C", "I"], "expectSignals": ["time to consider", "cooling off", "no pressure", "think about"], "priority": "Supplementary" }
-      ],
-      "comparison": {
-        "method": "SetCoverage",
-        "falsePositiveGuards": ["Standard cancellation rights are a regulatory feature, not an adjustment made for this client."]
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "C"
+        ]
       },
-      "sufficiency": { "ifEvidenceAbsent": "Where indicators are present and no adjustment is recorded anywhere, that is the finding." }
+      "retrieval": {
+        "canonicalPaths": [
+          "/vulnerability/perClient[]/adjustmentsMade[]",
+          "/vulnerability/perClient[]/characteristics[]"
+        ],
+        "queries": [
+          {
+            "id": "Q10.3.1",
+            "text": "extra time given information repeated explained in simpler terms to aid understanding",
+            "side": "Evidence",
+            "targetCategories": [
+              "C"
+            ],
+            "expectSignals": [
+              "repeated",
+              "explained again",
+              "simpler",
+              "extra time",
+              "second meeting"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.3.2",
+            "text": "follow up call to confirm the client understood the recommendation",
+            "side": "Evidence",
+            "targetCategories": [
+              "C"
+            ],
+            "expectSignals": [
+              "follow up",
+              "confirmed",
+              "checked",
+              "understood",
+              "called"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.3.3",
+            "text": "adjustments made because of the client's circumstances health or capability",
+            "side": "Either",
+            "targetCategories": [
+              "C",
+              "I",
+              "B"
+            ],
+            "expectSignals": [
+              "adjust",
+              "because of",
+              "given your",
+              "to help you"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.3.4",
+            "text": "cooling off period client given time to consider before proceeding",
+            "side": "Either",
+            "targetCategories": [
+              "C",
+              "I"
+            ],
+            "expectSignals": [
+              "time to consider",
+              "cooling off",
+              "no pressure",
+              "think about"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "comparison": {
+          "method": "SetCoverage",
+          "falsePositiveGuards": [
+            "Standard cancellation rights are a regulatory feature, not an adjustment made for this client."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Where indicators are present and no adjustment is recorded anywhere, that is the finding."
+        }
+      }
     },
-
     {
       "groupId": "G10.4",
       "requirement": "Vulnerability has a material impact on the recommendation (overlay)",
-      "limb": "Appropriateness",
-      "canonicalPaths": ["/vulnerability/perClient[]/impactOnRecommendation[]", "/vulnerability/foreseeableHarms[]"],
-      "expectedCategories": { "assertion": ["I"], "evidence": ["B", "C", "F", "D"] },
-      "queries": [
-        { "id": "Q10.4.1", "text": "how the client's circumstances shaped the recommendation given their needs", "side": "Assertion", "targetCategories": ["I"], "expectSignals": ["given your", "because of your", "taking into account", "reflects your"], "priority": "Core" },
-        { "id": "Q10.4.2", "text": "risk of foreseeable harm to the client and how it has been mitigated", "side": "Either", "targetCategories": ["I", "C", "F"], "expectSignals": ["harm", "risk to", "mitigate", "protect", "safeguard"], "priority": "Core" },
-        { "id": "Q10.4.3", "text": "client age approaching retirement reliance on this money for essential income", "side": "Either", "targetCategories": ["B", "F", "I"], "expectSignals": ["age", "reliant", "essential", "depend", "only source"], "priority": "Core", "note": "Structural vulnerability indicators that rarely appear under a vulnerability heading but bear directly on foreseeable harm." },
-        { "id": "Q10.4.4", "text": "complexity of the recommendation relative to the client's ability to engage with it", "side": "Either", "targetCategories": ["C", "I"], "expectSignals": ["complex", "simple", "keep it simple", "straightforward", "understand"], "priority": "Supplementary" },
-        { "id": "Q10.4.5", "text": "attitude to risk questionnaire capacity for loss recorded understanding of risk", "side": "Evidence", "targetCategories": ["D"], "expectSignals": ["no understanding", "capacity for loss", "questionnaire", "risk"], "priority": "Core", "note": "A recorded inability to understand the recommendation bears directly on whether it can cause foreseeable harm." }
-      ],
-      "comparison": {
-        "method": "NarrativeAlignment",
-        "falsePositiveGuards": [
-          "Age alone is not vulnerability; combine it with reliance, health or capability indicators before concluding.",
-          "Where vulnerability is genuinely absent and that has been assessed and recorded, the overlay adds nothing — say so rather than manufacturing a concern."
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C",
+          "F",
+          "D"
         ]
       },
-      "sufficiency": {
-        "ifBothAbsent": "Where no vulnerability assessment exists anywhere in the case, record that as the finding — the overlay was never applied.",
-        "ifEvidenceAbsent": "Where the report asserts no vulnerability but nothing in the file shows it was considered, treat the assertion as unsupported."
+      "retrieval": {
+        "canonicalPaths": [
+          "/vulnerability/perClient[]/impactOnRecommendation[]",
+          "/vulnerability/foreseeableHarms[]"
+        ],
+        "queries": [
+          {
+            "id": "Q10.4.1",
+            "text": "how the client's circumstances shaped the recommendation given their needs",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "given your",
+              "because of your",
+              "taking into account",
+              "reflects your"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.4.2",
+            "text": "risk of foreseeable harm to the client and how it has been mitigated",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "C",
+              "F"
+            ],
+            "expectSignals": [
+              "harm",
+              "risk to",
+              "mitigate",
+              "protect",
+              "safeguard"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.4.3",
+            "text": "client age approaching retirement reliance on this money for essential income",
+            "side": "Either",
+            "targetCategories": [
+              "B",
+              "F",
+              "I"
+            ],
+            "expectSignals": [
+              "age",
+              "reliant",
+              "essential",
+              "depend",
+              "only source"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.4.4",
+            "text": "complexity of the recommendation relative to the client's ability to engage with it",
+            "side": "Either",
+            "targetCategories": [
+              "C",
+              "I"
+            ],
+            "expectSignals": [
+              "complex",
+              "simple",
+              "keep it simple",
+              "straightforward",
+              "understand"
+            ],
+            "priority": "Supplementary"
+          },
+          {
+            "id": "Q10.4.5",
+            "text": "attitude to risk questionnaire capacity for loss recorded understanding of risk",
+            "side": "Evidence",
+            "targetCategories": [
+              "D"
+            ],
+            "expectSignals": [
+              "no understanding",
+              "capacity for loss",
+              "questionnaire",
+              "risk"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "comparison": {
+          "method": "NarrativeAlignment",
+          "falsePositiveGuards": [
+            "Age alone is not vulnerability; combine it with reliance, health or capability indicators before concluding.",
+            "Where vulnerability is genuinely absent and that has been assessed and recorded, the overlay adds nothing — say so rather than manufacturing a concern."
+          ]
+        },
+        "sufficiency": {
+          "ifBothAbsent": "Where no vulnerability assessment exists anywhere in the case, record that as the finding — the overlay was never applied.",
+          "ifEvidenceAbsent": "Where the report asserts no vulnerability but nothing in the file shows it was considered, treat the assertion as unsupported."
+        }
+      }
+    },
+    {
+      "groupId": "G10.5",
+      "requirement": "Vulnerabilities recorded in the file and in the report",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/vulnerability/perClient[]/hasVulnerability",
+          "/vulnerability/perClient[]/categories[]",
+          "/vulnerability/perClient[]/characteristics[]",
+          "/vulnerability/perClient[]/assessedOn"
+        ],
+        "queries": [
+          {
+            "id": "Q10.5.1",
+            "text": "we discussed your personal circumstances and any support you may need",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "vulnerab",
+              "support",
+              "circumstance",
+              "health",
+              "bereave"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.5.2",
+            "text": "client vulnerability recorded health bereavement caring responsibilities",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "C"
+            ],
+            "expectSignals": [
+              "vulnerab",
+              "health",
+              "bereave",
+              "caring",
+              "illness"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q10.5.3",
+            "text": "file note recording a change in the client's personal circumstances",
+            "side": "Evidence",
+            "targetCategories": [
+              "C"
+            ],
+            "expectSignals": [
+              "note",
+              "circumstance",
+              "health",
+              "recently",
+              "diagnos"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "comparison": {
+          "method": "SetCoverage",
+          "falsePositiveGuards": [
+            "Age alone is not vulnerability; a recorded age is not a characteristic to be matched.",
+            "A vulnerability the client asked not to have written into the report may still have been handled correctly; read the file notes before reporting silence as a gap.",
+            "A resolved or historic vulnerability is recorded but may no longer apply; check the date before treating it as current."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Note as a gap where the file records a vulnerability the report never acknowledges.",
+          "ifEvidenceAbsent": "Note as a gap; a vulnerability asserted in the report with no record of how it was identified.",
+          "ifBothAbsent": "No issue on this requirement; no vulnerability is recorded anywhere.",
+          "minEvidenceCategories": 1
+        }
       }
     }
   ],
-
   "decision": {
-    "noIssue": "Vulnerability was assessed and recorded, any characteristics found are reflected in the report's description of support needs, communication and adjustments, and the recommendation accounts for them.",
-    "potentialConcern": "Indicators exist in the file that the report never reflects, support arrangements are asserted without evidence, or no vulnerability assessment appears anywhere in a case carrying clear drivers.",
+    "noIssue": "Evidence complete, consistent and supports the outcome. Vulnerability was assessed and recorded, any characteristics found are reflected in the report's description of support needs, communication and adjustments, and the recommendation accounts for them.",
+    "potentialConcern": "Material clarification or additional evidence required. Indicators exist in the file that the report never reflects, support arrangements are asserted without evidence, or no vulnerability assessment appears anywhere in a case carrying clear drivers.",
     "notApplicable": "Rarely applicable — this check is an overlay on all cases. Use N/A only where the case type places it out of scope entirely.",
     "severityHints": [
       "Highest: a recorded vulnerability that materially affects suitability and is absent from the report's reasoning.",
@@ -126,8 +582,6 @@
       "Moderate: support needs recorded in the file but not reflected in the report's communication or adjustments.",
       "Low: communication preferences captured but not referenced in the report."
     ],
-    "overlayInstruction": "After deciding this check, revisit the appropriateness limbs of CHK-002 to CHK-009 with any identified characteristics in scope. A recommendation that is appropriate for a resilient client may not be appropriate for this one."
-  },
-
-  "budget": { "coreQueries": 13, "supplementaryQueries": 4, "estimatedPassages": 136 }
+    "overlayInstruction": "After deciding this check, revisit the appropriateness limbs of CHK-002 to CHK-009 with any identified characteristics in scope. A recommendation that is appropriate for a resilient client may not be appropriate for this one. Primary categories keep A and D even though the revised check names only B, C and I. Category D holds the risk and capability answers that identify a low-capability driver under FG21/1, and category A holds the third-party authority the revised check asks about by name (Power of Attorney, trusted contacts). Both are queried by the groups below and are pinned by a regression test."
+  }
 }

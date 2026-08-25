@@ -144,6 +144,17 @@ public sealed record GroupFinding
     /// were answering while still answering it, which is worth knowing before it costs
     /// something rather than after.
     /// </summary>
+    /// <summary>
+    /// Set by the runner, never by the assessor: the group's plan asked for corroboration from
+    /// at least N document categories and the pack reached fewer.
+    ///
+    /// The minimum was printed into the prompt for months beside the categories actually
+    /// reached, and the comparison left to prose — so whether a thinly evidenced requirement
+    /// said so depended on the model noticing two numbers in different parts of a long prompt.
+    /// Both operands are known in code, so the shortfall is stated in code.
+    /// </summary>
+    [JsonIgnore] public string? EvidenceShortfall { get; init; }
+
     [JsonIgnore] public string? EchoedGroupId { get; init; }
 
     /// <inheritdoc cref="EchoedGroupId"/>
@@ -823,6 +834,14 @@ public sealed record FindingsReport(
                 + (group.Confidence == CitationConfidence.Verified
                     ? string.Empty
                     : $" — citations {(group.Confidence == CitationConfidence.Unverified ? "unverified" : "partly verified")}"));
+
+            // Established in code, so it is printed whether or not the assessor mentioned it.
+            // A requirement judged on one category where the plan asked for two is a fact about
+            // the run, and a reviewer should not have to infer it from the passage list.
+            if (!string.IsNullOrWhiteSpace(group.EvidenceShortfall))
+            {
+                sb.AppendLine(Indent($"Evidence: {group.EvidenceShortfall}", "    "));
+            }
 
             // Both sides before the reasoning, mirroring the order the assessor answered in —
             // a reviewer checking a finding wants the two claims side by side first.

@@ -1,0 +1,149 @@
+flowchart TD
+    classDef store stroke-width:2px,stroke-dasharray:0
+    classDef cache stroke-dasharray:4 3
+    classDef skip stroke-dasharray:2 2
+
+    %% ─────────────────────────────────────────────────────────────
+    subgraph PRE1["PRE-STEP 1 &nbsp;·&nbsp; Load Docs &nbsp;—&nbsp; case file into the semantic store"]
+        direction TB
+        S1["Case folder<br/>sub-folders A to I carry the category code"]
+        S2["Convert to Markdown<br/>Word and PDF via Docling, spreadsheets via SpreadsheetToMarkdownConverter"]
+        S2C[("PDF conversion cache<br/>TEMP/AiPromptEvaluator/pdf-cache<br/>reused while the source file is unchanged")]
+        S3{"Markdown?"}
+        S3N["Skipped and named in the output<br/>never silently dropped"]
+        S4["Delete every chunk for this case and tenant<br/>a reload replaces, it does not merge"]
+        S5["Semantic chunking<br/>cut points found by embedding every element"]
+        S6["Embed chunks, batches of 64"]
+        S7[("Qdrant collection<br/>payload: tenant_id, case_reference, category_code<br/>category_code is indexed")]
+
+        S1 --> S2 -.->|"hit"| S2C
+        S2C -.->|"miss: convert and store"| S2
+        S2 --> S3
+        S3 -->|"no"| S3N
+        S3 -->|"yes"| S4 --> S5 --> S6 --> S7
+    end
+
+    %% ─────────────────────────────────────────────────────────────
+    subgraph PRE2["PRE-STEP 2 &nbsp;·&nbsp; Extract Model &nbsp;—&nbsp; suitability report into the canonical model"]
+        direction TB
+        E1["Read category I documents<br/>the suitability report and any letter"]
+        E2{"Any category I<br/>Markdown found?"}
+        E2N["Stop: nothing to extract from"]
+        E3["Slice the canonical schema per section<br/>one pass per section, not one prompt for the whole model"]
+        E4["Extract section<br/>identity registry carried forward so passes agree on ids"]
+        E5{"More sections?"}
+        E6["Merge fragments, validate against the schema"]
+        E7[("SQLite<br/>keyed by case reference + tenant<br/>this is the report's only reading")]
+
+        E1 --> E2
+        E2 -->|"no"| E2N
+        E2 -->|"yes"| E3 --> E4 --> E5
+        E5 -->|"yes"| E4
+        E5 -->|"no"| E6 --> E7
+    end
+
+    %% ─────────────────────────────────────────────────────────────
+    subgraph RUN["RUN CHECKS"]
+        direction TB
+        R0{"Case indexed<br/>and model stored?"}
+        R0N["Refuse and say which pre-step is missing"]
+        R1["Load CHK-*.query-plan.json"]
+        R1V{"planVersion<br/>supported?"}
+        R1N["Plan refused by name, check skipped"]
+        R2["Write the run fingerprint before the first prompt"]
+        R2L[("Prompt log file<br/>written up front, so a cancelled run still says what it was")]
+        R3["Fan out over checks, up to MaxParallelChecks"]
+
+        R0 -->|"no"| R0N
+        R0 -->|"yes"| R1 --> R1V
+        R1V -->|"no"| R1N
+        R1V -->|"yes"| R2 --> R2L
+        R2 --> R3
+    end
+
+    %% ─────────────────────────────────────────────────────────────
+    subgraph CHECK["PER CHECK"]
+        direction TB
+        T1["Resolve the plan's checkTriggers field"]
+        T2["Run the trigger probe searches"]
+        T3{"Trigger present?"}
+        T4{"onAbsent"}
+        T4A["Return N/A, quoting absentWhen<br/>ZERO retrieval"]
+        T4B["Continue, and say the trigger was absent<br/>so an overlay is not read as excused"]
+        G0["Fan out over query groups"]
+
+        T1 --> T2 --> T3
+        T3 -->|"yes"| G0
+        T3 -->|"no"| T4
+        T4 -->|"ReturnNA"| T4A
+        T4 -->|"ContinueWithReducedScope"| T4B --> G0
+        T4 -->|"Continue"| G0
+    end
+
+    %% ─────────────────────────────────────────────────────────────
+    subgraph GROUP["PER GROUP &nbsp;·&nbsp; gather"]
+        direction TB
+        Q1{"query.side"}
+        QA["Resolve canonicalPaths<br/>NOT searched"]
+        QP{"CoreQueriesOnly<br/>and Supplementary?"}
+        QPN["Query not run"]
+        QE["Embed the query text once"]
+        QE1["Qdrant query 1: tenant + case only"]
+        QE2["Qdrant query 2: tenant + case + category_code"]
+        QM["Merge, targeted hits first"]
+        QD["De-duplicate on passage text<br/>not its hash, which is per-process seeded"]
+        QS{"any expectSignals<br/>present?"}
+        QSN["Record as ABSENT FROM THE FILE<br/>not merely unretrieved"]
+        QR["Rank, then reserve slots:<br/>declared sections, declared categories, then targeted<br/>cap at 12"]
+        QC{"categories reached<br/>&lt; minEvidenceCategories?"}
+        QCN["Evidence shortfall stated in code"]
+        PACK["Evidence pack"]
+
+        Q1 -->|"Assertion"| QA --> PACK
+        Q1 -->|"Evidence / Either"| QP
+        QP -->|"yes"| QPN
+        QP -->|"no"| QE --> QE1 --> QM
+        QE --> QE2 --> QM
+        QM --> QD --> QS
+        QS -->|"none"| QSN --> QR
+        QS -->|"some"| QR
+        QR --> QC
+        QC -->|"yes"| QCN --> PACK
+        QC -->|"no"| PACK
+    end
+
+    %% ─────────────────────────────────────────────────────────────
+    subgraph DECIDE["PER GROUP &nbsp;·&nbsp; decide"]
+        direction TB
+        D0{"comparison.method<br/>numeric?"}
+        D0Y["Figures checked in code<br/>every asserted number against every passage number"]
+        D1["Build the prompt: check header, assertions, passages,<br/>guards, sufficiency, decision rubric"]
+        D2["ONE model call for this group<br/>knows nothing of its neighbours"]
+        D3["Verify citations against THIS group's evidence only"]
+        D4["Group finding<br/>+ shortfall attached by the runner, not the model"]
+
+        D0 -->|"ValueMatch / RangeMatch"| D0Y --> D1
+        D0 -->|"other"| D1
+        D1 --> D2 --> D3 --> D4
+    end
+
+    %% ─────────────────────────────────────────────────────────────
+    subgraph OUT["ROLL UP"]
+        direction TB
+        O1["Check outcome COMPUTED from the group findings<br/>never asked for, so it cannot disagree with them"]
+        O2["Findings collected by position<br/>report order matches the plan, not the interleaving"]
+        O3["Findings report + run fingerprint"]
+        O1 --> O2 --> O3
+    end
+
+    S7 -.->|"read by every evidence query"| QE1
+    E7 -.->|"read by every assertion query"| QA
+    R3 --> T1
+    G0 --> Q1
+    PACK --> D0
+    D4 --> O1
+    T4A --> O2
+    D2 -.->|"prompt and response"| R2L
+
+    class S2C,S7,E7,R2L store
+    class S3N,QPN,R0N,R1N,E2N skip

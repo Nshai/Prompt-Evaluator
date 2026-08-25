@@ -1,0 +1,71 @@
+sequenceDiagram
+    autonumber
+    actor User
+    participant Form as CheckEvaluatorForm
+    participant Runner as CheckPlanRunner
+    participant Acc as CanonicalModelAccessor
+    participant Svc as CaseDocumentSearchService
+    participant Store as CaseDocumentStore + Qdrant
+    participant Chat as IChatCompletionClient
+    participant Log as PromptLogWriter
+
+    User->>Form: Run Checks
+    Note over Form: Refuses unless the case is indexed and a<br/>canonical model has been extracted. The<br/>suitability report is never read again here.
+    Form->>Form: CheckQueryPlanLoader.Load(planFolder)
+    Note over Form: CHK-*.query-plan.json, deployed beside the exe.<br/>A check with no plan is skipped and reported,<br/>never improvised by the model.
+    Form->>Log: LogRunConfiguration(RunFingerprint)
+    Form->>Form: Build embeddings generator, search service,<br/>two ConcurrencyGates, runner
+
+    par one lane per check, up to MaxParallelChecks
+        Form->>Runner: RunAsync(check, plan, progress, token)
+
+        Runner->>Acc: Resolve(checkTriggers field named by the plan)
+        Acc-->>Runner: fragment, Found or absent
+        Runner->>Svc: triggerProbe queries, evidence side only
+        Svc-->>Runner: corroborating passage count
+        Note over Runner: The stored model decides. It was written when the<br/>report was read in full, which beats a similarity<br/>search. Probe searches only corroborate it.
+
+        alt trigger absent and onAbsent is ReturnNA
+            Runner-->>Form: NotApplicable, quoting absentWhen
+            Note over Runner: Zero retrieval. A case with no switch<br/>skips all 37 CHK-009 queries.
+        else check applies
+            par one gather per queryGroup, gated by the searches budget
+                Runner->>Acc: Resolve(group.AllCanonicalPaths)
+                Acc-->>Runner: assertion fragments, found and missing
+                Note over Runner,Acc: Assertion-side queries are never searched.<br/>Their canonicalPaths resolve from the stored model.
+
+                loop each Evidence or Either query
+                    Runner->>Svc: SearchAsync(query.text, query.targetCategories)
+                    Svc->>Svc: Embed the text once
+                    Svc->>Store: Vector query, filter tenant + caseReference
+                    Store-->>Svc: up to MaxSearchResults hits
+                    Svc->>Store: Same vector, plus a category_code condition
+                    Store-->>Svc: up to MaxSearchResults hits
+                    Svc-->>Runner: targeted hits first, then the unfiltered ones
+                    Note over Svc,Store: Not a narrowing filter. Evidence can sit in a<br/>category the plan never named, so the unfiltered<br/>query stays and the targeted one is added.
+                end
+
+                Runner->>Runner: De-duplicate on passage text
+                Runner->>Runner: expectSignals all missed, record as absent from the file
+                Runner->>Runner: Rank, reserve a slot per section and category, cap at 12
+                Note over Runner: Reserved slots exist because pure score ordering<br/>evicted the Fact Find from every pack.
+            end
+
+            Runner->>Runner: BuildSystemPrompt + BuildCheckHeader
+
+            par one decision per group, gated by the model-call budget
+                Runner->>Chat: System prompt, check header, this group's pack
+                Chat-->>Runner: Structured GroupFinding
+                Runner->>Log: LogExchange(checkId/groupId)
+                Runner->>Runner: CitationVerifier.Verify against this group's evidence only
+                Note over Runner,Chat: One call per requirement, not per check, and each<br/>knows nothing of its neighbours. The header is byte<br/>identical every time so the prefix cache covers it.
+            end
+
+            Runner->>Runner: CheckFinding.FromGroups(group findings)
+            Note over Runner: The check outcome is computed, never asked for,<br/>so it cannot disagree with the groups or be<br/>stated before they exist.
+            Runner-->>Form: Finding, search and passage counts, usage, elapsed
+        end
+    end
+
+    Form->>Form: FindingsReport(findings, model, RunFingerprint, elapsed)
+    Form-->>User: Per-check board and the formatted report

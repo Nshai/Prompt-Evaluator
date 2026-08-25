@@ -184,7 +184,7 @@ The model is designed to be filled by a multi-pass extraction rather than one pr
 
 ## 6. Check coverage
 
-Every check maps to a defined set of canonical paths. Full matrix in [check-coverage-matrix.csv](check-coverage-matrix.csv); summary:
+Every check maps to a defined set of canonical paths. The full matrix — 85 rows, one per query-plan group — is [check-coverage-matrix.csv](check-coverage-matrix.csv), and it is **generated from the query plans** rather than maintained alongside them, so a group added to a plan cannot go unrecorded. Summary:
 
 | Check | Primary canonical paths | Trigger |
 |---|---|---|
@@ -193,11 +193,24 @@ Every check maps to a defined set of canonical paths. Full matrix in [check-cove
 | CHK-003 Risk, CFL, investment strategy match | `riskAssessment.*`, `solution.investmentStrategy`, `existingArrangements[].riskRating` | investment/pension |
 | CHK-004 Knowledge, experience, complexity | `knowledgeAndExperience.*`, `solution.recommendedPlans[]` | always |
 | CHK-005 Resilience, affordability, liquidity | `financialPosition.affordabilityAssessment`, `.emergencyFund`, `.liquidityAndAccessNeeds`, `needsAnalysis.scenarios[]`, `costsAndCharges` | contributions/withdrawals/charges present |
-| CHK-006 Rationale and alternatives | `recommendations[].rationale`, `.alternativesConsidered`, `research.optionsConsidered[]`, `solution.providerSelection.rationale` | always |
+| CHK-006 Rationale and alternatives | `recommendations[].rationale`, `.alternativesConsidered`, `.adviceStatus`, `.intendedOutcome`, `.implementation`, `.optionsPresented[]`, `research.optionsConsidered[]`, `solution.providerSelection.rationale`, `existingArrangements[].adviceAction` | always |
 | CHK-007 Costs, charges, value | `costsAndCharges.*` (all branches) | always; second limb on `hasCostsAndChargesSection` |
 | CHK-008 Disadvantages, risks, understanding | `riskWarningsAndDisadvantages.*`, `recommendations[].disadvantages`, `.risks`, `taxTreatment` | always |
 | CHK-009 Replacement/switch justification | `replacementAnalysis[]`, `existingArrangements[].safeguardedBenefits`, `.exitPenalties`, `costsAndCharges.reductionInYield` | `checkTriggers.hasReplacementOrSwitch` |
 | CHK-010 Vulnerability and foreseeable harm | `vulnerability.*` (overlay on all others) | always; enhanced on `hasVulnerabilityIndicators` |
+
+### v1.0 extension for the revised checks
+
+The revised CHK-006 asks four things the model could not express, so `Recommendation` gained fields for them. All are optional and nullable, and the worked example still validates unchanged.
+
+| Field | Why the existing model could not answer it |
+|---|---|
+| `adviceStatus` | *Whether the adviser is recommending the change.* `action` says what the change is — Transfer, Switch, Retain — never whether it is advised. "You may wish to consider" is not a recommendation, and nothing in the model could record that distinction. `NotStated` is the value that produces the finding. |
+| `intendedOutcome` | *The intended outcome of the change.* `rationale[]` argues why the recommendation is suitable; the intended outcome is what it is expected to produce. A report can carry one without the other, so they cannot share a field. |
+| `implementation` | *Whether the adviser will arrange or implement the change.* `solution.implementation` records this for the case as a whole; CHK-006 asks it of each change, and a case mixing adviser-implemented and client-implemented actions collapses into one answer otherwise. |
+| `optionsPresented[]` / `presentsUnresolvedOptions` | *Recommendations presenting multiple possible outcomes without saying which is recommended.* Options left open to the client had no representation at all — they read as an ordinary recommendation, which is exactly the failure the check is looking for. |
+
+`RecommendationImplementation` and `PresentedOption` are the two new `$defs`. Both carry `provenance`, like every other evidenced structure in the model.
 
 ---
 

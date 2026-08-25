@@ -2599,6 +2599,74 @@
     "___SECTION_RECOMMENDATIONS___": {
       "description": "Categories H and I"
     },
+    "RecommendationImplementation": {
+      "type": "object",
+      "description": "Who will carry out a recommended change, and when. CHK-006 requires a report suggesting a change to say whether the adviser will arrange it.",
+      "additionalProperties": false,
+      "properties": {
+        "willAdviserImplement": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Null where the report does not say, which is itself the CHK-006 finding."
+        },
+        "responsibleParty": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Who acts. One of: Adviser, Firm, Client, Provider, ThirdParty, NotStated."
+        },
+        "expectedTimescale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "When, as the report states it. Material to suitability where the client is out of the market or working to a deadline."
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      }
+    },
+
+    "PresentedOption": {
+      "type": "object",
+      "description": "One outcome the report puts to the client. Where several are presented and none is recommended, CHK-006 treats the recommendation as unresolved.",
+      "additionalProperties": false,
+      "required": [
+        "label"
+      ],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "isRecommended": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "reasonGiven": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Why this option was recommended or set aside. Absent where the report leaves the choice open without explaining it."
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      }
+    },
+
     "Recommendation": {
       "type": "object",
       "description": "Aligned to Intelliflo Office Recommendation2Document + BaseRecommendation2Proposal. proposalType reuses the IO proposal discriminator so a recommendation can be pushed into Office as a proposal.",
@@ -2663,6 +2731,38 @@
         },
         "amount": {
           "$ref": "#/$defs/Money"
+        },
+        "adviceStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Whether the report actually recommends this change, or only raises it. CHK-006 requires the report to say which, and \"you may wish to consider\" is not a recommendation. Distinct from action, which says what the change is rather than whether it is advised. One of: Recommended, Suggested, ClientInstructed, InformationOnly, NotStated."
+        },
+        "intendedOutcome": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "What the change is meant to achieve for the client, as the report states it. Separate from rationale: the rationale argues why the recommendation is suitable, the intended outcome is what it is expected to produce. CHK-006 requires both."
+        },
+        "implementation": {
+          "$ref": "#/$defs/RecommendationImplementation",
+          "description": "Who acts, and when. solution.implementation carries this for the case as a whole; CHK-006 asks it of each change."
+        },
+        "optionsPresented": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PresentedOption"
+          },
+          "description": "Where the report offers the client a choice rather than a recommendation. CHK-006 flags any recommendation presenting several possible outcomes without naming one and saying why."
+        },
+        "presentsUnresolvedOptions": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "True where optionsPresented holds more than one option and none is marked isRecommended. Derived, and stated so the finding does not depend on re-deriving it."
         },
         "rationale": {
           "type": "array",

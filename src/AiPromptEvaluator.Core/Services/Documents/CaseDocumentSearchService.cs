@@ -67,12 +67,19 @@ public sealed class CaseDocumentSearchService : ICaseDocumentSearchService
     public async Task<IReadOnlyList<CaseDocumentSearchMatch>> SearchAsync(
         string searchText,
         IReadOnlyCollection<string>? categoryCodes,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        int? resultsPerCall = null)
     {
         if (string.IsNullOrWhiteSpace(searchText))
         {
             return [];
         }
+
+        // A plan may ask for a wider pool than the global setting. It may not ask for a
+        // narrower one: the floor is what every other check is held to, and a plan quietly
+        // retrieving less than the rest of the run is the kind of difference nothing in the
+        // output would show.
+        var limit = Math.Max(_settings.MaxSearchResults, resultsPerCall ?? 0);
 
         var vector = await _embeddings
             .GenerateVectorAsync(searchText, cancellationToken: cancellationToken)
@@ -80,7 +87,7 @@ public sealed class CaseDocumentSearchService : ICaseDocumentSearchService
 
         var hits = await _store
             .SearchAsync(
-                _caseReference, _settings.TenantId, vector, _settings.MaxSearchResults,
+                _caseReference, _settings.TenantId, vector, limit,
                 categoryCodes: null, cancellationToken)
             .ConfigureAwait(false);
 
@@ -88,7 +95,7 @@ public sealed class CaseDocumentSearchService : ICaseDocumentSearchService
         {
             var targeted = await _store
                 .SearchAsync(
-                    _caseReference, _settings.TenantId, vector, _settings.MaxSearchResults,
+                    _caseReference, _settings.TenantId, vector, limit,
                     categoryCodes, cancellationToken)
                 .ConfigureAwait(false);
 

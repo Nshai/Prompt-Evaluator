@@ -97,7 +97,7 @@ public static class CheckPlanLint
         // Comparing against the evidence side alone reports every check as broken.
         var declaredAnywhere = plan.QueryGroups
             .SelectMany(g => g.DeclaredEvidenceCategories
-                .Concat(g.ExpectedCategories?.Assertion ?? []))
+                .Concat(g.DeclaredAssertionCategories))
             .Select(c => c.Trim())
             .Where(c => c.Length > 0)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);

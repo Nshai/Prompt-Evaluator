@@ -219,17 +219,30 @@ public static class DerivedFigures
             totals.Add(("the total being transferred", transferred.Sum(v => v!.Value)));
         }
 
+        // The arrangement each charge line is *labelled* for, so a row computed on a different
+        // plan can be named as such rather than left to the reader to infer.
+        var byId = (root[CanonicalModel.ExistingArrangements] as JsonArray ?? [])
+            .OfType<JsonObject>()
+            .Select(a => (
+                Id: Text(a[CanonicalModel.ArrangementId]),
+                Name: Text(a[CanonicalModel.Provider]) ?? Text(a[CanonicalModel.ProductName]),
+                Value: MoneyOf(a[CanonicalModel.CurrentValue])))
+            .Where(a => !string.IsNullOrWhiteSpace(a.Id))
+            .ToList();
+
         foreach (var (described, percentage, amount) in ChargePairs(root))
         {
             var implied = amount / (percentage / 100);
 
-            var match = arrangements
-                .Where(a => Math.Abs(a.Value!.Value - implied) <= implied * ImpliedBaseTolerance)
-                .Select(a => $"{a.Name}'s current value")
-                .Concat(totals
+            var matched = arrangements
+                .FirstOrDefault(a => Math.Abs(a.Value!.Value - implied) <= implied * ImpliedBaseTolerance);
+
+            var match = matched.Name is not null
+                ? $"{matched.Name}'s current value"
+                : totals
                     .Where(t => Math.Abs(t.Value - implied) <= implied * ImpliedBaseTolerance)
-                    .Select(t => t.Name))
-                .FirstOrDefault();
+                    .Select(t => t.Name)
+                    .FirstOrDefault();
 
             figures.Add(new Figure(
                 "Charge arithmetic",
@@ -237,7 +250,8 @@ public static class DerivedFigures
                 + $"value of {Money(implied)}"
                 + (match is null
                     ? ", which matches no arrangement value and neither total."
-                    : $", which is {match}.")));
+                    : $", which is {match}.")
+                + WrongPlan(described, matched.Name, byId)));
         }
     }
 
@@ -282,13 +296,13 @@ public static class DerivedFigures
 
             foreach (var line in (charges?[CanonicalModel.Lines] as JsonArray ?? []).OfType<JsonObject>())
             {
-                Record(name, Number(line[CanonicalModel.Percentage]?[CanonicalModel.Value]), "the existing arrangements table");
+                Record(name, Number(Percent(line)), "the existing arrangements table");
             }
         }
 
         foreach (var (scope, line) in ChargeLines(root))
         {
-            Record(scope, Number(line[CanonicalModel.Percentage]?[CanonicalModel.Value]), "the charges comparison");
+            Record(scope, Number(Percent(line)), "the charges comparison");
         }
 
         foreach (var (name, values) in byArrangement)
@@ -380,6 +394,72 @@ public static class DerivedFigures
     /// structurally: any object holding a <c>…Percentage</c> and a <c>…Amount</c> under the same
     /// prefix is describing one charge, whatever the surrounding schema calls it.
     /// </summary>
+    /// <summary>
+    /// Says so when a charge row labelled for one arrangement is computed on another's fund.
+    ///
+    /// <b>Stating the arithmetic was not enough, and a measured run proved it.</b> Every one of
+    /// the eighty-five group prompts of 2026-08-26 already carried
+    /// <c>"EA5 existing annual charge: £186.19 at 0.18% implies a fund value of £103,438.89, which
+    /// is Zurich Managed Pn AP's current value"</c> — EA5 being Standard Life, whose own fund is
+    /// £3,002. One check in ten drew the conclusion. The other two that needed it read the same
+    /// charge table at face value and reported the switch as a saving, because the sentence
+    /// reported a coincidence and left the significance to the reader.
+    ///
+    /// So the significance is now part of the sentence. This is not the assessor's arithmetic to
+    /// redo — the numbers are already decided here — and a fact whose consequence is left implicit
+    /// is a fact that gets used by whichever model happens to be sharp enough that day, which is
+    /// the opposite of what deterministic pre-computation is for.
+    ///
+    /// Deliberately narrow: it fires only where the label carries an arrangement id, that id is
+    /// known, and the implied base is a *different* arrangement. A row that matches a total, or
+    /// matches nothing, or matches its own plan, is left exactly as it was.
+    /// </summary>
+    private static string WrongPlan(
+        string described,
+        string? impliedName,
+        IReadOnlyList<(string? Id, string? Name, double? Value)> byId)
+    {
+        if (impliedName is null)
+        {
+            return string.Empty;
+        }
+
+        var owner = byId.FirstOrDefault(a =>
+            a.Id is not null
+            && described.Contains(a.Id, StringComparison.OrdinalIgnoreCase));
+
+        if (owner.Id is null
+            || owner.Name is null
+            || string.Equals(owner.Name, impliedName, StringComparison.OrdinalIgnoreCase))
+        {
+            return string.Empty;
+        }
+
+        return $" That is a different arrangement from the {owner.Id} this row is labelled for"
+             + (owner.Value is { } own ? $", whose own current value is {Money(own)}" : string.Empty)
+             + ", so the row is computed on the wrong plan and any comparison resting on it is "
+             + "unreliable.";
+    }
+
+    /// <summary>
+    /// A charge line's percentage node, tolerating the scalar form.
+    ///
+    /// <b>The indexer throws on a JsonValue, and that took the whole run down.</b> The schema
+    /// models a percentage as an object with a <c>value</c>, and an extraction pass that writes
+    /// <c>"percentage": 0.18</c> instead is not malformed enough for anything upstream to reject —
+    /// it is a number where an object was expected, which every reader tolerates until one asks it
+    /// for a property. Reaching through it with <c>?[]</c> raised "the node must be of type
+    /// JsonObject" out of the derived-figures pass, which runs before any model call, so a single
+    /// scalar would have failed every check in the run at once.
+    /// </summary>
+    private static JsonNode? Percent(JsonObject line) =>
+        line[CanonicalModel.Percentage] switch
+        {
+            JsonObject o => o[CanonicalModel.Value],
+            JsonValue v => v,
+            _ => null,
+        };
+
     private static IEnumerable<(string Described, double Percentage, double Amount)> ChargePairs(
         JsonObject root)
     {

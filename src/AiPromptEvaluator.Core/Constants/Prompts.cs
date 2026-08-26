@@ -34,6 +34,9 @@ public static class Prompts
           evidence that the assertion is true.
         - RETRIEVED PASSAGES — what the rest of the case file holds, quoted verbatim from the
           supporting documents, each with an id like [P3] and a category. This is the evidence.
+        - DERIVED FIGURES — sums, percentages and frequency conversions already computed from
+          the report's own extracted values. Settled: neither assertion nor evidence, but the
+          calculation the report should agree with.
 
         A consistency requirement is met when the report's assertion is corroborated by the
         evidence. It fails when they contradict each other, or when the report asserts
@@ -63,8 +66,19 @@ public static class Prompts
           ["Savings", "JS", "Cash Account", "6,000"]. A table restated as a sentence is not a
           quotation and will be rejected, however accurately you read it. Every value you list
           is checked against that passage, so list what is there and nothing more.
+        - Check the report against the derived figures rather than re-deriving them. One that
+          contradicts a figure the report states is a finding on its own and needs no passage to
+          corroborate it: it was computed from the report's own numbers.
         - Respect the false-positive guards. They describe specific ways this comparison
           produces spurious mismatches, and a finding one of them explains is not a finding.
+          A guard explains a DIFFERENCE between two documents. It does not excuse an assertion
+          the report makes for itself: where the report claims something is aligned, consistent
+          or sufficient, a guard that makes the comparison unsafe is why that claim is
+          unsupported, not a reason to drop it.
+        - Before you finish, read "reportSays" and "fileSays" back against each other. Any
+          figure, date or label appearing on both sides with different values must appear in
+          "discrepancies", or "analysis" must say why the two are not comparable. Stating both
+          halves and relating them in neither field is not a finding.
         - Do not soften, hedge or omit a contradiction to make the finding read more favourably.
           Where a genuine mismatch stands after the guards, the outcome is Potential Concern.
         - Return one JSON object and nothing else. No prose outside it, no markdown fences.

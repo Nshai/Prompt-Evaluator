@@ -531,6 +531,22 @@
               "property"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q1.5.5",
+            "text": "address line city postcode address type residency status registered on electoral roll time at address",
+            "side": "Evidence",
+            "targetCategories": [
+              "B"
+            ],
+            "expectSignals": [
+              "Residency Status",
+              "Tenant",
+              "Address Type",
+              "Postcode",
+              "Electoral Roll"
+            ],
+            "priority": "Core"
           }
         ],
         "evidenceSections": [
@@ -773,6 +789,22 @@
               "/existingArrangements[]/holdings[]"
             ],
             "priority": "Supplementary"
+          },
+          {
+            "id": "Q1.7.8",
+            "text": "existing pension provision scheme name provider plan number employer scheme type recorded on the fact find",
+            "side": "Evidence",
+            "targetCategories": [
+              "B"
+            ],
+            "expectSignals": [
+              "Existing Pension Provision",
+              "Scheme",
+              "Provider",
+              "Plan number",
+              "Employer"
+            ],
+            "priority": "Core"
           }
         ]
       },
@@ -784,7 +816,8 @@
           "falsePositiveGuards": [
             "Fund value and transfer value are different figures; a report quoting one against a statement quoting the other is not automatically a mismatch.",
             "Values move between the provider statement date and the report date — check both dates before flagging.",
-            "A protection plan has no fund value to reconcile — compare sum assured and premium instead."
+            "A protection plan has no fund value to reconcile — compare sum assured and premium instead.",
+            "Membership is part of consistency, and it is the part a value comparison cannot reach. Every arrangement the report tabulates must appear in the fact find's own pension schedule, and every arrangement the fact find records must be accounted for in the report. A plan present in one document and absent from the other is a finding in its own right — list the plans on each side by provider before comparing any figure."
           ]
         },
         "sufficiency": {

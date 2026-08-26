@@ -113,6 +113,22 @@
               "experience"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q4.1.4",
+            "text": "compared to other people I would describe myself as I associate the phrase investment risk with the idea of when investing money to meet my objectives I would prefer to use",
+            "side": "Evidence",
+            "targetCategories": [
+              "D"
+            ],
+            "expectSignals": [
+              "I have no understanding of investments",
+              "Compared to other people",
+              "More cautious",
+              "Caution",
+              "Low risk investments"
+            ],
+            "priority": "Core"
           }
         ],
         "evidenceSections": [

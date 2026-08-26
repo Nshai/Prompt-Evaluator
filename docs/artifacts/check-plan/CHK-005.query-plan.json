@@ -290,6 +290,21 @@
               "assets"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q5.2.7",
+            "text": "address line city postcode address type residency status registered on electoral roll time at address",
+            "side": "Evidence",
+            "targetCategories": [
+              "B"
+            ],
+            "expectSignals": [
+              "Residency Status",
+              "Tenant",
+              "Address Type",
+              "Postcode"
+            ],
+            "priority": "Core"
           }
         ]
       },
@@ -563,6 +578,22 @@
               "1ST",
               "2ND",
               "Surplus Account",
+              "Savings"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q5.5.4",
+            "text": "investments surplus account savings cash account liquidated 1st 2nd expected return per annum liquidated on death",
+            "side": "Evidence",
+            "targetCategories": [
+              "F"
+            ],
+            "expectSignals": [
+              "LIQUIDATED",
+              "Surplus Account",
+              "Cash Account",
+              "expected return",
               "Savings"
             ],
             "priority": "Core"

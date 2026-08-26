@@ -713,8 +713,8 @@
         "comparison": {
           "method": "RangeMatch",
           "falsePositiveGuards": [
-            "Retained plans invested outside the agreed profile are only a concern where the report claims alignment for the whole portfolio.",
-            "Compare on one scale only; where scales differ and no mapping is given, report the incomparability rather than a breach."
+            "A retained plan invested outside the agreed profile is a concern wherever the report claims alignment for it — for the whole portfolio or for that plan alone. Silence about a retained plan's risk level is a gap; a claim of alignment that the plan's own rating contradicts is a finding.",
+            "Compare on one scale only; where scales differ and no mapping is given, report the incomparability rather than a breach. This does not excuse an assertion the report makes for itself: where the report says a specific fund or plan aligns with the client's risk appetite, that claim is testable on its own terms, and the scales being incomparable is the reason the claim is unsupported rather than a reason to leave it unassessed."
           ]
         },
         "sufficiency": {
@@ -980,6 +980,22 @@
               "support"
             ],
             "priority": "Supplementary"
+          },
+          {
+            "id": "Q3.10.4",
+            "text": "compared to other people I would describe myself as I associate the phrase investment risk with the idea of taking risks when making investments",
+            "side": "Evidence",
+            "targetCategories": [
+              "D"
+            ],
+            "expectSignals": [
+              "More cautious",
+              "Caution",
+              "Low risk investments",
+              "anxious",
+              "More than £4,000"
+            ],
+            "priority": "Core"
           }
         ]
       },

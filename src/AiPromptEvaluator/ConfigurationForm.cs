@@ -26,6 +26,21 @@ public partial class ConfigurationForm : Form
         chunkTokensUpDown.Value = Clamp(chunkTokensUpDown, _settings.MaxTokensPerChunk);
         chunkOverlapUpDown.Value = Clamp(chunkOverlapUpDown, _settings.ChunkOverlapTokens);
         searchResultsUpDown.Value = Clamp(searchResultsUpDown, _settings.MaxSearchResults);
+        embeddingCharsUpDown.Value = Clamp(embeddingCharsUpDown, _settings.MaxEmbeddingInputCharacters);
+
+        embeddingBaseUrlTextBox.Text = _settings.EmbeddingBaseUrl;
+        embeddingApiKeyTextBox.Text = _settings.EmbeddingApiKey;
+        promptLogTextBox.Text = _settings.PromptLogFolder;
+
+        passagesPerGroupUpDown.Value = Clamp(passagesPerGroupUpDown, _settings.MaxPassagesPerGroup);
+        reserveCategoryUpDown.Value = Clamp(reserveCategoryUpDown, _settings.ReservedSlotsPerTargetedCategory);
+        reserveSectionUpDown.Value = Clamp(reserveSectionUpDown, _settings.ReservedSlotsPerDeclaredSection);
+        decisionTokensUpDown.Value = Clamp(decisionTokensUpDown, _settings.DecisionMaxTokens);
+        extractionReportUpDown.Value = Clamp(extractionReportUpDown, _settings.ExtractionReportMaxChars);
+        documentsListedUpDown.Value = Clamp(documentsListedUpDown, _settings.MaxDocumentsInContext);
+        parallelRequestsUpDown.Value = Clamp(parallelRequestsUpDown, _settings.MaxParallelRequests);
+        parallelChecksUpDown.Value = Clamp(parallelChecksUpDown, _settings.MaxParallelChecks);
+        coreQueriesOnlyCheckBox.Checked = _settings.CoreQueriesOnly;
 
         canonicalSchemaTextBox.Text = _settings.CanonicalSchemaPath;
         checkPlanTextBox.Text = _settings.CheckPlanFolder;
@@ -296,6 +311,25 @@ public partial class ConfigurationForm : Form
         }
     }
 
+    private void PromptLogBrowseButton_Click(object? sender, EventArgs e)
+    {
+        using var dialog = new FolderBrowserDialog
+        {
+            Description = "Select a folder to write prompt and response logs to",
+            UseDescriptionForTitle = true
+        };
+
+        if (Directory.Exists(promptLogTextBox.Text))
+        {
+            dialog.SelectedPath = promptLogTextBox.Text;
+        }
+
+        if (dialog.ShowDialog(this) == DialogResult.OK)
+        {
+            promptLogTextBox.Text = dialog.SelectedPath;
+        }
+    }
+
     private void SaveButton_Click(object? sender, EventArgs e)
     {
         var selectedModel = selectedModelComboBox.Text.Trim();
@@ -332,6 +366,21 @@ public partial class ConfigurationForm : Form
         _settings.MaxTokensPerChunk = (int)chunkTokensUpDown.Value;
         _settings.ChunkOverlapTokens = (int)chunkOverlapUpDown.Value;
         _settings.MaxSearchResults = (int)searchResultsUpDown.Value;
+        _settings.MaxEmbeddingInputCharacters = (int)embeddingCharsUpDown.Value;
+
+        _settings.EmbeddingBaseUrl = embeddingBaseUrlTextBox.Text.Trim();
+        _settings.EmbeddingApiKey = embeddingApiKeyTextBox.Text.Trim();
+        _settings.PromptLogFolder = promptLogTextBox.Text.Trim();
+
+        _settings.MaxPassagesPerGroup = (int)passagesPerGroupUpDown.Value;
+        _settings.ReservedSlotsPerTargetedCategory = (int)reserveCategoryUpDown.Value;
+        _settings.ReservedSlotsPerDeclaredSection = (int)reserveSectionUpDown.Value;
+        _settings.DecisionMaxTokens = (int)decisionTokensUpDown.Value;
+        _settings.ExtractionReportMaxChars = (int)extractionReportUpDown.Value;
+        _settings.MaxDocumentsInContext = (int)documentsListedUpDown.Value;
+        _settings.MaxParallelRequests = (int)parallelRequestsUpDown.Value;
+        _settings.MaxParallelChecks = (int)parallelChecksUpDown.Value;
+        _settings.CoreQueriesOnly = coreQueriesOnlyCheckBox.Checked;
 
         _settings.CanonicalSchemaPath = canonicalSchemaTextBox.Text.Trim();
         _settings.CheckPlanFolder = checkPlanTextBox.Text.Trim();

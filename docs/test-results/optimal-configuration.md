@@ -37,6 +37,7 @@ actually found).
 | `pinSeed` / `samplingSeed` | **true / 1** | reproducibility; varying the seed is also the only cheap way to defeat the gateway cache |
 | `structuredFindings` | **true** | schema-constrained findings; ordering is load-bearing |
 | `maxTokens` | **4096** | check findings only; unrelated to extraction |
+| `selectedModel` | **Haiku 4.5** by default, **Sonnet 4.6** when the run must be right first time | see [§1c](#1c-choosing-the-model--and-why-the-settings-do-not-change-with-it) |
 
 As JSON, for `%LOCALAPPDATA%\AiPromptEvaluator\settings.json`:
 
@@ -223,6 +224,85 @@ too much room below them for a cap effect to be separable from noise.
 ±2 findings, no comparison in this repository means what it appears to mean — including the
 eight-finding gap between Haiku and Sonnet, which is large enough to survive almost any plausible
 variance but has never actually been tested against one.
+
+---
+
+## 1c. Choosing the model — and why the settings do not change with it
+
+**Nothing in the settings differs between Haiku and Sonnet, and that is a finding rather than an
+omission.** Retrieval is plan-driven and model-free: three models on the same configuration
+produced byte-identical retrieval — 223 searches, 3,520 hits, 224 canonical paths resolved, 31
+absent. Every cap that matters was measured against both and neither is near it. So the model
+choice is a model choice, not a configuration.
+
+### What was measured
+
+| | Haiku 4.5 | Sonnet 4.6 | Nova 2 Lite |
+| --- | --- | --- | --- |
+| Best recall | **27 / 36 (75%)** — Run 12, current plans | 28 / 36 (78%) — Run 8, **old plans** | 7 / 36 (19%) |
+| Cost | £2.14 | £6.44 | £3.90 |
+| **Cost per finding caught** | **£0.079** | £0.230 | £0.557 |
+| Wall clock | 325s | 620s | 149s |
+| Output rate | 466–532 tok/s | 260 tok/s | 567 tok/s |
+| Longest single answer | 4,799 tok | 4,142 tok | 9,873 tok — **over the cap** |
+| Indeterminate groups | 0–2 | **0** | 1 |
+| Unverifiable quotes | 116–136 | **59** | 37 |
+
+### The recommendation
+
+**Use Haiku 4.5 by default.** On the current plans it catches 27 of 36 at **£0.079 per finding** —
+a third of Sonnet's cost per finding and a third of its wall clock. The eight-finding advantage
+Sonnet held on the old plans was mostly retrieval and prompt work, not model capability: fixing the
+plans moved Haiku from 20 to 27 and closed all but one of the gap.
+
+**Use Sonnet 4.6 when the run has to be right first time** — a real file review, a regulatory
+sample, anything where a missed concern is expensive and £4 is not. Two properties beyond recall
+argue for it: it produced **no Indeterminate groups at all**, and **half the unverifiable quotes**,
+so a reviewer spends less time checking citations that turn out to be formatting artefacts.
+
+**Do not use Nova 2 Lite.** Worst recall and second-highest cost — it catches a quarter of what
+Haiku does for nearly twice the price. It also produced the only false negative on record, reading
+the fact find's £230 as weekly and telling the reader the report was *"close but not exact"* on a
+Highest-severity contradiction. A wrong answer is worse than a missing one, because the reader
+acts on it.
+
+**A tiered arrangement was considered and the evidence refuses it.** The union of all three models
+on the same run was 28 — exactly what Sonnet caught alone. Haiku found nothing Sonnet missed and
+Nova found nothing either of them missed, so running two models and merging buys nothing but the
+bill.
+
+### Settings, per model
+
+```json
+{ "selectedModel": "intelliflo-claude-haiku-4-5" }
+```
+
+and nothing else changes. Every value in [The short answer](#the-short-answer) applies to both:
+
+- **`decisionMaxTokens: 8000`** suits both. Haiku's longest answer used 60% of it, Sonnet's 52%,
+  and neither came within 90% of the cap on any of 85 calls. *(Nova exceeded it once, which is
+  part of why it is not recommended.)*
+- **`maxPassagesPerGroup: 24`** suits both. Utilisation is 26% for Haiku and 29% for Sonnet — a
+  median of six cited passages out of twenty-four — so neither is starved and neither would use
+  more.
+- **`maxSearchResults: 8`**, and the reserved slots, are retrieval settings and identical by
+  construction.
+
+**The one place a difference might exist is concurrency, and it has not been measured.** Sonnet
+generates at roughly half Haiku's rate and takes twice as long for the same work, so
+`maxParallelRequests` above 6 may recover some of that. No run has tried it, and inventing a number
+here would be the kind of untested recommendation this document exists to avoid.
+
+### The measurement this table is missing
+
+**Sonnet has never run on the current plans.** Its 28 is from the old ones. If the +7 that plan and
+prompt work gave Haiku carries across, Sonnet lands near 33–35 and the default recommendation above
+may be wrong. If it does not carry, these fixes substitute for model quality rather than adding to
+it — which the Haiku result already hints at, since most of the gap closed without touching the
+model.
+
+That single run is the most informative one available and should be taken before this section is
+relied on for anything expensive.
 
 ---
 

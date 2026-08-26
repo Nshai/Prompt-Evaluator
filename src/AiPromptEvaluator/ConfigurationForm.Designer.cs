@@ -98,8 +98,6 @@ partial class ConfigurationForm
     private NumericUpDown decisionTokensUpDown;
     private Label extractionReportLabel;
     private NumericUpDown extractionReportUpDown;
-    private Label documentsListedLabel;
-    private NumericUpDown documentsListedUpDown;
     private FlowLayoutPanel concurrencyNumericRow;
     private Label parallelRequestsLabel;
     private NumericUpDown parallelRequestsUpDown;
@@ -115,7 +113,6 @@ partial class ConfigurationForm
     private Label promptLogLabel;
     private TextBox promptLogTextBox;
     private Button promptLogBrowseButton;
-    private CheckBox clarificationCheckBox;
 
     /// <summary>
     /// The shipped defaults, read rather than repeated.
@@ -236,8 +233,6 @@ partial class ConfigurationForm
         decisionTokensUpDown = new NumericUpDown();
         extractionReportLabel = new Label();
         extractionReportUpDown = new NumericUpDown();
-        documentsListedLabel = new Label();
-        documentsListedUpDown = new NumericUpDown();
         concurrencyNumericRow = new FlowLayoutPanel();
         parallelRequestsLabel = new Label();
         parallelRequestsUpDown = new NumericUpDown();
@@ -253,7 +248,6 @@ partial class ConfigurationForm
         promptLogLabel = new Label();
         promptLogTextBox = new TextBox();
         promptLogBrowseButton = new Button();
-        clarificationCheckBox = new CheckBox();
         buttonPanel = new FlowLayoutPanel();
         saveButton = new Button();
         cancelButton = new Button();
@@ -285,7 +279,6 @@ partial class ConfigurationForm
         ((System.ComponentModel.ISupportInitialize)reserveSectionUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)decisionTokensUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)extractionReportUpDown).BeginInit();
-        ((System.ComponentModel.ISupportInitialize)documentsListedUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)parallelRequestsUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)parallelChecksUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)embeddingCharsUpDown).BeginInit();
@@ -308,7 +301,7 @@ partial class ConfigurationForm
         rootLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         rootLayout.Dock = DockStyle.Top;
         rootLayout.Padding = new Padding(10);
-        rootLayout.RowCount = 8;
+        rootLayout.RowCount = 7;
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
@@ -323,7 +316,6 @@ partial class ConfigurationForm
         rootLayout.Controls.Add(reproducibilityGroup, 0, 4);
         rootLayout.Controls.Add(contextGroup, 0, 5);
         rootLayout.Controls.Add(limitsGroup, 0, 6);
-        rootLayout.Controls.Add(clarificationCheckBox, 0, 7);
         rootLayout.Name = "rootLayout";
 
         // connectionGroup
@@ -1042,8 +1034,6 @@ partial class ConfigurationForm
         budgetNumericRow.Controls.Add(decisionTokensUpDown);
         budgetNumericRow.Controls.Add(extractionReportLabel);
         budgetNumericRow.Controls.Add(extractionReportUpDown);
-        budgetNumericRow.Controls.Add(documentsListedLabel);
-        budgetNumericRow.Controls.Add(documentsListedUpDown);
         budgetNumericRow.Margin = new Padding(0, 0, 0, 0);
         budgetNumericRow.Name = "budgetNumericRow";
         budgetNumericRow.WrapContents = true;
@@ -1077,20 +1067,6 @@ partial class ConfigurationForm
         extractionReportUpDown.Minimum = 0;
         extractionReportUpDown.Name = "extractionReportUpDown";
         extractionReportUpDown.Width = 100;
-
-        // documentsListedLabel
-        documentsListedLabel.Anchor = AnchorStyles.Left;
-        documentsListedLabel.AutoSize = true;
-        documentsListedLabel.Margin = new Padding(0, 7, 6, 0);
-        documentsListedLabel.Name = "documentsListedLabel";
-        documentsListedLabel.Text = $"Documents listed (0 = all, default {Defaults.MaxDocumentsInContext})";
-
-        // documentsListedUpDown
-        documentsListedUpDown.Margin = new Padding(0, 3, 0, 3);
-        documentsListedUpDown.Maximum = 1000;
-        documentsListedUpDown.Minimum = 0;
-        documentsListedUpDown.Name = "documentsListedUpDown";
-        documentsListedUpDown.Width = 90;
 
         // concurrencyNumericRow
         concurrencyNumericRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
@@ -1248,13 +1224,6 @@ partial class ConfigurationForm
         browseButton.UseVisualStyleBackColor = true;
         browseButton.Click += BrowseButton_Click;
 
-        // clarificationCheckBox
-        clarificationCheckBox.AutoSize = true;
-        clarificationCheckBox.Margin = new Padding(0, 0, 0, 8);
-        clarificationCheckBox.Name = "clarificationCheckBox";
-        clarificationCheckBox.Text = "Ask for clarification when the prompt is ambiguous";
-        clarificationCheckBox.UseVisualStyleBackColor = true;
-
         // buttonPanel — docked to the form itself, not the scrolling area, so Save/Cancel are
         // always reachable regardless of scroll position.
         buttonPanel.AutoSize = true;
@@ -1314,7 +1283,6 @@ partial class ConfigurationForm
         ((System.ComponentModel.ISupportInitialize)embeddingCharsUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)parallelChecksUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)parallelRequestsUpDown).EndInit();
-        ((System.ComponentModel.ISupportInitialize)documentsListedUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)extractionReportUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)decisionTokensUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)reserveSectionUpDown).EndInit();

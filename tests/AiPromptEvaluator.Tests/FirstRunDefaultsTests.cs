@@ -77,7 +77,6 @@ public class FirstRunDefaultsTests
         Assert.Equal(1, loaded.ReservedSlotsPerDeclaredSection);
         Assert.Equal(8000, loaded.DecisionMaxTokens);
         Assert.Equal(24_000, loaded.ExtractionReportMaxChars);
-        Assert.Equal(50, loaded.MaxDocumentsInContext);
 
         // And sampling, which is pinned by default and is the one a run reports on its face.
         Assert.True(loaded.PinTemperature);

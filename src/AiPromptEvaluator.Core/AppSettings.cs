@@ -60,15 +60,8 @@ public class AppSettings
     [JsonPropertyName("documentFolder")]
     public string DocumentFolder { get; set; } = string.Empty;
 
-    [JsonPropertyName("askClarification")]
-    public bool AskClarification { get; set; } = true;
-
     [JsonPropertyName("maxTokens")]
     public int MaxTokens { get; set; } = 4096;
-
-    /// <summary>Maps file name (not full path) to category label.</summary>
-    [JsonPropertyName("documentCategories")]
-    public Dictionary<string, string> DocumentCategories { get; set; } = new();
 
     [JsonPropertyName("lastChecksCsvPath")]
     public string LastChecksCsvPath { get; set; } = string.Empty;
@@ -199,14 +192,6 @@ public class AppSettings
     /// </summary>
     [JsonPropertyName("decisionMaxTokens")]
     public int DecisionMaxTokens { get; set; } = 8000;
-
-    /// <summary>
-    /// How many case files are listed in the document-context block a prompt is given.
-    /// <b>0 means unbounded.</b> A listing, not retrieval — but a document missing from it is
-    /// one the model has no reason to believe exists.
-    /// </summary>
-    [JsonPropertyName("maxDocumentsInContext")]
-    public int MaxDocumentsInContext { get; set; } = 50;
 
     /// <summary>
     /// Run only the queries the plans mark <c>Core</c>, skipping <c>Supplementary</c> ones.

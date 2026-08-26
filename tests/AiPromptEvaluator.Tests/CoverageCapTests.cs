@@ -59,7 +59,6 @@ public class CoverageCapTests
         Assert.Equal(1, settings.ReservedSlotsPerDeclaredSection);
         Assert.Equal(24_000, settings.ExtractionReportMaxChars);
         Assert.Equal(8000, settings.DecisionMaxTokens);
-        Assert.Equal(50, settings.MaxDocumentsInContext);
     }
 
     /// <summary>
@@ -77,7 +76,6 @@ public class CoverageCapTests
             ReservedSlotsPerDeclaredSection = 0,
             ExtractionReportMaxChars = 0,
             DecisionMaxTokens = 0,
-            MaxDocumentsInContext = 0,
         };
 
         var json = System.Text.Json.JsonSerializer.Serialize(written);
@@ -89,7 +87,6 @@ public class CoverageCapTests
         Assert.Equal(0, read.ReservedSlotsPerDeclaredSection);
         Assert.Equal(0, read.ExtractionReportMaxChars);
         Assert.Equal(0, read.DecisionMaxTokens);
-        Assert.Equal(0, read.MaxDocumentsInContext);
 
         Assert.Contains("\"maxPassagesPerGroup\"", json);
         Assert.Contains("\"reservedSlotsPerDeclaredSection\"", json);

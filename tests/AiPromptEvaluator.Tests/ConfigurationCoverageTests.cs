@@ -40,10 +40,9 @@ public class ConfigurationCoverageTests
     };
 
     /// <summary>
-    /// Scoped to the whole UI rather than to one dialog, because a setting can legitimately have
-    /// its own editor: the document-category map is edited in DocumentCategorizerForm, launched
-    /// from the main window, and demanding it appear on the configuration form as well would be
-    /// demanding the wrong thing.
+    /// Scoped to the whole UI rather than to one dialog, because a setting may legitimately have
+    /// an editor of its own rather than a row on the configuration form. There is only one screen
+    /// now, so in practice this reads the check evaluator and the configuration dialog together.
     /// </summary>
     [Fact]
     public void EverySettingIsEditableSomewhereInTheUi()
@@ -94,7 +93,6 @@ public class ConfigurationCoverageTests
     [InlineData("passagesPerGroupUpDown")]
     [InlineData("decisionTokensUpDown")]
     [InlineData("extractionReportUpDown")]
-    [InlineData("documentsListedUpDown")]
     [InlineData("reserveCategoryUpDown")]
     [InlineData("reserveSectionUpDown")]
     public void AControlForAnUnboundableCapAllowsZero(string control)
@@ -124,7 +122,6 @@ public class ConfigurationCoverageTests
     [InlineData("passagesPerGroupLabel", "0 = all", nameof(AppSettings.MaxPassagesPerGroup))]
     [InlineData("decisionTokensLabel", "0 = unbounded", nameof(AppSettings.DecisionMaxTokens))]
     [InlineData("extractionReportLabel", "0 = whole", nameof(AppSettings.ExtractionReportMaxChars))]
-    [InlineData("documentsListedLabel", "0 = all", nameof(AppSettings.MaxDocumentsInContext))]
     [InlineData("reserveCategoryLabel", "0 = none", nameof(AppSettings.ReservedSlotsPerTargetedCategory))]
     [InlineData("reserveSectionLabel", "0 = none", nameof(AppSettings.ReservedSlotsPerDeclaredSection))]
     public void AFieldWhoseZeroMeansSomethingSaysSoAndQuotesItsDefault(
@@ -215,7 +212,6 @@ public class ConfigurationCoverageTests
                      nameof(AppSettings.MaxPassagesPerGroup),
                      nameof(AppSettings.DecisionMaxTokens),
                      nameof(AppSettings.ExtractionReportMaxChars),
-                     nameof(AppSettings.MaxDocumentsInContext),
                  })
         {
             Assert.True(

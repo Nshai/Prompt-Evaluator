@@ -1,38 +1,43 @@
 # AI Prompt Evaluator
 
-AI Prompt Evaluator is a Windows Forms desktop utility for sending prompts to an
-OpenAI-compatible model, optionally enriching the prompt with local document
-context, and showing the response alongside a **per-component cost breakdown** on
-the main screen.
+AI Prompt Evaluator is a Windows Forms desktop utility that assesses a client
+case file against a catalogue of QA checks. The suitability report is parsed once
+into a canonical data model; the supporting documents are indexed into a Qdrant
+vector store. Each check then compares what the report *asserts* against what the
+case file *evidences*, retrieving only what a pre-computed query plan asks for.
 
-Its second screen, the **Check Evaluator**, assesses a client case file against a
-catalogue of QA checks. The suitability report is parsed once into a canonical
-data model; the supporting documents are indexed into a Qdrant vector store. Each
-check then compares what the report *asserts* against what the case file
-*evidences*, retrieving only what a pre-computed query plan asks for.
+Every run is archived and can be rendered as a self-contained compliance report,
+and every response is priced as it arrives — a **per-component cost breakdown**
+sits on the same screen as the findings.
+
+The name is the one it was born with: it began as a bench for evaluating prompts
+against a folder of documents, and that screen was removed once the check
+pipeline replaced it.
 
 ## Features
 
-- Prompt input and response display in a Windows Forms interface
-- **Cost breakdown on the main screen** — input, cached input, and output tokens
+- **Check evaluation** — canonical extraction of the suitability report, semantic
+  indexing of the case folder, and plan-driven, retrieval-grounded assessment of
+  each check into a consolidated findings report
+- **Cost breakdown beside the findings** — input, cached input, and output tokens
   each shown with their token count, per-million rate, and dollar cost, plus a
   running total
 - Re-prices the last response instantly when you switch models
-- Optional local document folder ingestion for prompt context
-- **Check Evaluator** — canonical extraction of the suitability report, semantic
-  indexing of the case folder, and plan-driven, retrieval-grounded assessment of
-  each check into a consolidated findings report
+- **Run archive and compliance report** — every run is shredded into SQLite and
+  can be rendered as a self-contained HTML report carrying each check's narrative
+  and regulatory basis, the canonical facts, the evidence searched with its
+  citations, and both coverage scores per finding
 - Any OpenAI-compatible endpoint: configurable base URL, API key, chat model and
   embedding model
 - Configuration dialog with persistent app settings
 - **Reproducible assessment** — pinned sampling, schema-constrained findings, deterministic
   retrieval ranking, and a run fingerprint on every report
-- xUnit tests for the pricing/cost logic, chunk metadata, document context builder,
-  canonical model store and accessor, schema slicing, retrieval determinism, and the
-  shipped query plans
+- xUnit tests for the pricing/cost logic, chunk metadata, canonical model store and
+  accessor, schema slicing, retrieval determinism, the shipped query plans, and the
+  reconciliation of the published fact library against the model and those plans
 - MSI installer that opens in Visual Studio 2022 and 2026
 
-## How the Check Evaluator works
+## How it works
 
 ### The shape of the problem
 
@@ -300,6 +305,7 @@ Settings are stored in the user profile under
 | Embedding model / dimensions | Model used for chunking and search, and its vector width — the width defines the Qdrant collection |
 | Qdrant endpoint | gRPC endpoint of the vector store. Empty means `http://localhost:6334` |
 | Collection | Qdrant collection holding case chunks |
+| Case folder | The case being assessed. Its category subfolders hold the suitability report (I) and the supporting evidence (A–H) |
 | Case reference | Stamped on every chunk and used to scope every search. Empty means the case folder's name |
 | Tenant id | Stamped on every chunk and applied as a filter on every search (default 99) |
 | Max tokens per chunk / overlap | Upper bound on a chunk and how much of the previous one is repeated |
@@ -315,8 +321,6 @@ Settings are stored in the user profile under
 | Sampling seed | Held constant so runs agree. Change it deliberately to sample a second opinion on a check that keeps flipping |
 | Constrain findings | Requests the finding against a JSON schema. Clear it for an endpoint with no JSON-schema response format |
 | Docling endpoint | Sidecar used to convert spreadsheets to Markdown |
-| Document context folder | Folder ingested for prompt context on the main screen |
-| Clarification prompt behavior | Whether ambiguous prompts get a clarifying question |
 
 Changing the embedding model or its dimensions changes the shape of the
 collection — clear the index (**Unload Docs**) and load the case again.

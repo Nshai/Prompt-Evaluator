@@ -66,9 +66,7 @@ partial class CheckEvaluatorForm
     private Button extractModelButton;
     private Button deleteModelButton;
     private Label statusLabel;
-    private Button openPromptEvaluatorButton;
     private Button openConfigButton;
-    private Button saveSettingsButton;
 
     protected override void Dispose(bool disposing)
     {
@@ -128,9 +126,7 @@ partial class CheckEvaluatorForm
         extractModelButton = new Button();
         deleteModelButton = new Button();
         statusLabel = new Label();
-        openPromptEvaluatorButton = new Button();
         openConfigButton = new Button();
-        saveSettingsButton = new Button();
 
         rootLayout.SuspendLayout();
         topBar.SuspendLayout();
@@ -436,7 +432,7 @@ partial class CheckEvaluatorForm
         // actionPanel — left: Run + Run All + Cancel + model/index buttons + status;
         // right: Prompt Evaluator + Configuration + Save
         actionPanel.AutoSize = true;
-        actionPanel.ColumnCount = 12;
+        actionPanel.ColumnCount = 9;
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 0 Run
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 1 Run All
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 2 Cancel
@@ -445,9 +441,7 @@ partial class CheckEvaluatorForm
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 5 Unload Docs
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 6 Bypass cache
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 7 status (stretches)
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 7 Prompt Evaluator
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 8 Configuration
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 9 Save Settings
         actionPanel.Dock = DockStyle.Fill;
         actionPanel.Margin = new Padding(0);
         actionPanel.RowCount = 1;
@@ -459,9 +453,7 @@ partial class CheckEvaluatorForm
         actionPanel.Controls.Add(unloadDocsButton, 5, 0);
         actionPanel.Controls.Add(bypassCacheCheckBox, 6, 0);
         actionPanel.Controls.Add(statusLabel, 7, 0);
-        actionPanel.Controls.Add(openPromptEvaluatorButton, 8, 0);
-        actionPanel.Controls.Add(openConfigButton, 9, 0);
-        actionPanel.Controls.Add(saveSettingsButton, 10, 0);
+        actionPanel.Controls.Add(openConfigButton, 8, 0);
 
         // bypassCacheCheckBox — applies to Extract Model and to Run, because both are answered
         // by the same gateway and either can be served from cache.
@@ -538,15 +530,6 @@ partial class CheckEvaluatorForm
         statusLabel.Name = "statusLabel";
         statusLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-        // openPromptEvaluatorButton
-        openPromptEvaluatorButton.AutoSize = true;
-        openPromptEvaluatorButton.Margin = new Padding(8, 0, 8, 0);
-        openPromptEvaluatorButton.Name = "openPromptEvaluatorButton";
-        openPromptEvaluatorButton.Padding = new Padding(8, 2, 8, 2);
-        openPromptEvaluatorButton.Text = "Prompt Evaluator...";
-        openPromptEvaluatorButton.UseVisualStyleBackColor = true;
-        openPromptEvaluatorButton.Click += OpenPromptEvaluatorButton_Click;
-
         // openConfigButton
         openConfigButton.AutoSize = true;
         openConfigButton.Margin = new Padding(0, 0, 8, 0);
@@ -555,15 +538,6 @@ partial class CheckEvaluatorForm
         openConfigButton.Text = "Configuration...";
         openConfigButton.UseVisualStyleBackColor = true;
         openConfigButton.Click += OpenConfigButton_Click;
-
-        // saveSettingsButton
-        saveSettingsButton.AutoSize = true;
-        saveSettingsButton.Margin = new Padding(0);
-        saveSettingsButton.Name = "saveSettingsButton";
-        saveSettingsButton.Padding = new Padding(8, 2, 8, 2);
-        saveSettingsButton.Text = "Save Settings";
-        saveSettingsButton.UseVisualStyleBackColor = true;
-        saveSettingsButton.Click += SaveSettingsButton_Click;
 
         // CheckEvaluatorForm
         AutoScaleDimensions = new SizeF(7F, 15F);

@@ -19,7 +19,6 @@ public partial class CheckEvaluatorForm : Form
     private readonly IPromptLogWriterFactory _promptLogs;
 
     /// <summary>Navigation. The two screens open each other, so neither may construct the other.</summary>
-    private readonly Func<MainForm> _mainForm;
     private readonly ICanonicalModelExtractor _extractor;
     private List<AssessmentCheck> _checks = new();
     private CancellationTokenSource? _cts;
@@ -59,8 +58,7 @@ public partial class CheckEvaluatorForm : Form
         ICaseDocumentStoreFactory stores,
         ICaseDocumentSearchServiceFactory searches,
         ICheckPlanRunnerFactory runners,
-        IPromptLogWriterFactory promptLogs,
-        Func<MainForm> mainForm)
+        IPromptLogWriterFactory promptLogs)
     {
         InitializeComponent();
         _settings = settings;
@@ -72,7 +70,6 @@ public partial class CheckEvaluatorForm : Form
         _searches = searches;
         _runners = runners;
         _promptLogs = promptLogs;
-        _mainForm = mainForm;
 
         caseFolderTextBox.Text = _settings.DocumentFolder;
         bypassCacheCheckBox.Checked = _settings.BypassResponseCache;
@@ -1399,8 +1396,28 @@ public partial class CheckEvaluatorForm : Form
     /// The toggle writes straight through to settings, so it survives to the next screen and
     /// the next launch. It is a run option that happens to be persisted, not a dialog field.
     /// </summary>
-    private void BypassCacheCheckBox_CheckedChanged(object? sender, EventArgs e) =>
+    /// <summary>
+    /// Written straight through rather than held for a save.
+    ///
+    /// This used to set the value in memory and wait for the Save Settings button, which is no
+    /// longer there — leaving a checkbox that remembers its state for exactly as long as the
+    /// window is open while looking like a setting.
+    /// </summary>
+    private void BypassCacheCheckBox_CheckedChanged(object? sender, EventArgs e)
+    {
         _settings.BypassResponseCache = bypassCacheCheckBox.Checked;
+
+        try
+        {
+            SettingsStore.Save(_settings);
+        }
+        catch (Exception ex)
+        {
+            // A toggle is not worth a dialog. The run still honours the value either way; only
+            // the next session would forget it.
+            statusLabel.Text = $"Cache preference not saved: {ex.Message}";
+        }
+    }
 
     /// <summary>Re-indents stored JSON for reading, or returns it unchanged if it will not parse.</summary>
     private static string Indent(string json)
@@ -1569,17 +1586,6 @@ public partial class CheckEvaluatorForm : Form
              + $"{breakdown.Embeddings.ModelId} rates. Embeddings cover indexing, chunking and search.";
     }
 
-    private void OpenPromptEvaluatorButton_Click(object? sender, EventArgs e)
-    {
-        var form = _mainForm();
-        form.Location = Location;
-        form.Size = Size;
-        form.WindowState = WindowState;
-        form.FormClosed += (_, _) => Show();
-        Hide();
-        form.Show();
-    }
-
     private void OpenConfigButton_Click(object? sender, EventArgs e)
     {
         using var form = new ConfigurationForm(_settings);
@@ -1592,20 +1598,6 @@ public partial class CheckEvaluatorForm : Form
             _indexedCase = null;
             UpdateRunAvailability();
             _ = DetectExistingIndexAsync();
-        }
-    }
-
-    private void SaveSettingsButton_Click(object? sender, EventArgs e)
-    {
-        try
-        {
-            SettingsStore.Save(_settings);
-            statusLabel.Text = "Settings saved.";
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(this, ex.Message, "Could not save settings",
-                MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 

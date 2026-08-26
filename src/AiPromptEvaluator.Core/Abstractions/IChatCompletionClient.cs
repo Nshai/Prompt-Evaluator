@@ -30,6 +30,4 @@ public interface IChatCompletionClient
         int maxOutputTokens,
         ChatResponseFormat? responseFormat,
         CancellationToken cancellationToken = default);
-
-    Task<ChatCompletionResult> RunAsync(string prompt, CancellationToken cancellationToken = default);
 }

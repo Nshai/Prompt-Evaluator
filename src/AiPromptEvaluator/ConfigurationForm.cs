@@ -14,7 +14,6 @@ public partial class ConfigurationForm : Form
         doclingTextBox.Text = _settings.DoclingEndpoint;
         availableModelsTextBox.Text = _settings.AvailableModels;
         documentFolderTextBox.Text = _settings.DocumentFolder;
-        clarificationCheckBox.Checked = _settings.AskClarification;
         maxTokensUpDown.Value = Clamp(maxTokensUpDown, _settings.MaxTokens);
 
         embeddingModelTextBox.Text = _settings.EmbeddingModel;
@@ -37,7 +36,6 @@ public partial class ConfigurationForm : Form
         reserveSectionUpDown.Value = Clamp(reserveSectionUpDown, _settings.ReservedSlotsPerDeclaredSection);
         decisionTokensUpDown.Value = Clamp(decisionTokensUpDown, _settings.DecisionMaxTokens);
         extractionReportUpDown.Value = Clamp(extractionReportUpDown, _settings.ExtractionReportMaxChars);
-        documentsListedUpDown.Value = Clamp(documentsListedUpDown, _settings.MaxDocumentsInContext);
         parallelRequestsUpDown.Value = Clamp(parallelRequestsUpDown, _settings.MaxParallelRequests);
         parallelChecksUpDown.Value = Clamp(parallelChecksUpDown, _settings.MaxParallelChecks);
         coreQueriesOnlyCheckBox.Checked = _settings.CoreQueriesOnly;
@@ -355,7 +353,6 @@ public partial class ConfigurationForm : Form
         _settings.AvailableModels = availableModelsTextBox.Text.Trim();
         _settings.SelectedModel = selectedModel;
         _settings.DocumentFolder = documentFolderTextBox.Text.Trim();
-        _settings.AskClarification = clarificationCheckBox.Checked;
         _settings.MaxTokens = (int)maxTokensUpDown.Value;
 
         _settings.EmbeddingModel = embeddingModel;
@@ -378,7 +375,6 @@ public partial class ConfigurationForm : Form
         _settings.ReservedSlotsPerDeclaredSection = (int)reserveSectionUpDown.Value;
         _settings.DecisionMaxTokens = (int)decisionTokensUpDown.Value;
         _settings.ExtractionReportMaxChars = (int)extractionReportUpDown.Value;
-        _settings.MaxDocumentsInContext = (int)documentsListedUpDown.Value;
         _settings.MaxParallelRequests = (int)parallelRequestsUpDown.Value;
         _settings.MaxParallelChecks = (int)parallelChecksUpDown.Value;
         _settings.CoreQueriesOnly = coreQueriesOnlyCheckBox.Checked;

@@ -76,25 +76,6 @@ public class ChatCompletionClient : IChatCompletionClient
         return ToResult(response);
     }
 
-    public virtual async Task<ChatCompletionResult> RunAsync(string prompt, CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrWhiteSpace(prompt))
-        {
-            throw new InvalidOperationException("Please enter a prompt.");
-        }
-
-        var folderContext = DocumentContextBuilder.BuildContext(
-            _settings.DocumentFolder, _settings.DocumentCategories, _settings.MaxDocumentsInContext);
-
-        using var client = AiClientFactory.CreateChatClient(_settings);
-
-        var response = await client
-            .GetResponseAsync(BuildPrompt(prompt, folderContext), ChatOptions(), cancellationToken)
-            .ConfigureAwait(false);
-
-        return ToResult(response);
-    }
-
     /// <summary>
     /// Options for every call. Temperature, top-p and seed are pinned independently: a QA
     /// finding is a judgement that should not change because the sampler rolled differently,
@@ -159,22 +140,5 @@ public class ChatCompletionClient : IChatCompletionClient
             ? value
             : null;
 
-    internal string BuildPrompt(string userPrompt, string folderContext)
-    {
-        var builder = new StringBuilder();
-        builder.AppendLine("You are a helpful assistant. Answer the user's request clearly and concisely.");
-        if (_settings.AskClarification)
-        {
-            builder.AppendLine("If the request is ambiguous, ask a clarifying question before making a decision.");
-        }
 
-        if (!string.IsNullOrWhiteSpace(folderContext))
-        {
-            builder.AppendLine(folderContext);
-        }
-
-        builder.AppendLine();
-        builder.AppendLine($"User request: {userPrompt}");
-        return builder.ToString();
-    }
 }

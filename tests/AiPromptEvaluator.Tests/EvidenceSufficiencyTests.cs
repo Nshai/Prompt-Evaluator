@@ -39,7 +39,7 @@ public class EvidenceSufficiencyTests
     private static CheckPlanRunner.GroupEvidence Pack(
         PlanQueryGroup group, params string[] categoriesFound) =>
         new(group, [], [], Searches: 1, TotalPassages: categoriesFound.Length,
-            CategoriesFound: categoriesFound, MissedSignals: [], UnmatchedSections: []);
+            CategoriesFound: categoriesFound, MissedSignals: [], SectionsReached: CheckPlanRunner.SectionReach.None);
 
     // ── 2. the shortfall is established in code ───────────────────────────────
 

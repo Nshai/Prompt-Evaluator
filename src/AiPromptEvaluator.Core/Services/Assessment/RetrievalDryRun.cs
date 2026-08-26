@@ -50,6 +50,7 @@ public sealed class RetrievalDryRun
         int PackSize,
         IReadOnlyList<string> CategoriesReached,
         IReadOnlyList<string> DeadSections,
+        IReadOnlyList<string> EvictedSections,
         IReadOnlyList<string> MissedSignals,
         IReadOnlyList<string> UnresolvedPaths)
     {
@@ -60,7 +61,8 @@ public sealed class RetrievalDryRun
 
         /// <summary>A group with nothing wrong to report.</summary>
         public bool IsClean =>
-            DeadSections.Count == 0 && MissedSignals.Count == 0 && PackSize > 0;
+            DeadSections.Count == 0 && EvictedSections.Count == 0
+            && MissedSignals.Count == 0 && PackSize > 0;
     }
 
     /// <summary>The whole run, and the summary a reader acts on.</summary>
@@ -77,6 +79,14 @@ public sealed class RetrievalDryRun
         /// </summary>
         public IReadOnlyList<string> DeadSections =>
             [.. Groups.SelectMany(g => g.DeadSections.Select(s => $"{g.CheckId} {g.GroupId}: {s}"))];
+
+        /// <summary>
+        /// Sections whose passage was retrieved and then did not survive into the pack. A
+        /// different defect from a hint that matches nothing, and it needs a different answer:
+        /// the wording is right and the reservation did not hold it.
+        /// </summary>
+        public IReadOnlyList<string> EvictedSections =>
+            [.. Groups.SelectMany(g => g.EvictedSections.Select(s => $"{g.CheckId} {g.GroupId}: {s}"))];
 
         /// <summary>Queries whose expected signals never arrived, by query id.</summary>
         public IReadOnlyList<string> MissedSignals =>
@@ -104,9 +114,11 @@ public sealed class RetrievalDryRun
 
             Append(lines, "Groups that retrieved nothing", EmptyGroups);
             Append(lines, "Declared sections matching no retrieved passage", DeadSections);
+            Append(lines, "Declared sections retrieved but evicted before the pack", EvictedSections);
             Append(lines, "Queries whose expected signals never arrived", MissedSignals);
 
-            if (EmptyGroups.Count == 0 && DeadSections.Count == 0 && MissedSignals.Count == 0)
+            if (EmptyGroups.Count == 0 && DeadSections.Count == 0 && EvictedSections.Count == 0
+                && MissedSignals.Count == 0)
             {
                 lines.Add("Every group retrieved something, every declared section matched, and "
                           + "every expected signal arrived.");
@@ -207,6 +219,12 @@ public sealed class RetrievalDryRun
         // Resolved against the stored model where one was supplied. A path that resolves to
         // nothing is not always a defect — for many checks it is the finding — so it is reported
         // and never gated on.
+        // Against the pack, not the candidates: a hint whose passage was retrieved and then
+        // evicted has not done its job, and reporting it as matched is how a retrieval defect
+        // came to be diagnosed as a reasoning one.
+        var reach = CheckPlanRunner.UnmatchedSections(
+            passages, ranked, group.DeclaredEvidenceSections);
+
         var unresolved = _accessor is null
             ? []
             : _accessor.Resolve(group.AllCanonicalPaths)
@@ -224,7 +242,8 @@ public sealed class RetrievalDryRun
                       .Where(c => !string.IsNullOrWhiteSpace(c))
                       .Distinct(StringComparer.OrdinalIgnoreCase)
                       .OrderBy(c => c, StringComparer.Ordinal)],
-            CheckPlanRunner.UnmatchedSections(passages, group.DeclaredEvidenceSections),
+            reach.MatchedNothing,
+            reach.Evicted,
             missedSignals,
             unresolved);
     }

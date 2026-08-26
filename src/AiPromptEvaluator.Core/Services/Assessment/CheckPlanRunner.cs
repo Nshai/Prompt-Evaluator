@@ -226,7 +226,12 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 CanonicalPathsResolved = packs.Sum(p => p.Fragments.Count(f => f.Found)),
                 CanonicalPathsMissing = packs.Sum(p => p.Fragments.Count(f => !f.Found)),
                 UnmatchedSections = packs
-                    .SelectMany(p => p.UnmatchedSections.Select(s => $"{p.Group.GroupId}: {s}"))
+                    .SelectMany(p => p.SectionsReached.MatchedNothing
+                        .Select(s => $"{p.Group.GroupId}: {s}"))
+                    .ToList(),
+                EvictedSections = packs
+                    .SelectMany(p => p.SectionsReached.Evicted
+                        .Select(s => $"{p.Group.GroupId}: {s}"))
                     .ToList(),
                 Usage = usage,
                 Elapsed = startedAt.Elapsed,
@@ -469,7 +474,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         int TotalPassages,
         IReadOnlyList<string> CategoriesFound,
         IReadOnlyList<string> MissedSignals,
-        IReadOnlyList<string> UnmatchedSections)
+        SectionReach SectionsReached)
     {
         /// <summary>
         /// How many corroborating categories the plan asked for, where it said.
@@ -558,7 +563,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
 
         return new GroupEvidence(
             group, fragments, ranked, searches, total, categories, missedSignals,
-            UnmatchedSections(passages, group.DeclaredEvidenceSections));
+            UnmatchedSections(passages, ranked, group.DeclaredEvidenceSections));
     }
 
     /// <summary>
@@ -758,22 +763,68 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     /// matched nothing at all — not one that matched and then lost its slot, which is a
     /// different problem and needs a different answer.
     /// </summary>
-    internal static IReadOnlyList<string> UnmatchedSections(
-        IEnumerable<CaseDocumentSearchMatch> passages,
+    /// <summary>
+    /// Declared sections that did not reach the assessor, and which of the two reasons applies.
+    ///
+    /// <b>This was measured against the wrong list, and the wrong answer was believed twice.</b>
+    /// It compared hints to <c>passages</c> — the de-duplicated candidates, before ranking and
+    /// before the cap — so a hint whose passage was retrieved and then evicted was reported as
+    /// having matched. On the run that prompted this, the report said the fact find's
+    /// "Residency Status" hint now matched; the row reached no assessor at all, and two analyses
+    /// concluded from that signal that a retrieval defect had been fixed and the remaining
+    /// failure was one of reasoning. It was not.
+    ///
+    /// The two cases need different answers and used to look identical:
+    ///
+    /// <list type="bullet">
+    /// <item><b>Matched nothing</b> — no retrieved passage contains the string at all. The hint
+    /// is wrong, or the wording does not appear in the converted document. Fix the hint.</item>
+    /// <item><b>Evicted</b> — a passage carrying it was retrieved and did not survive into the
+    /// pack. The hint is right and the reservation did not hold it, which is a ranking or cap
+    /// problem and no amount of rewording will help.</item>
+    /// </list>
+    /// </summary>
+    internal sealed record SectionReach(
+        IReadOnlyList<string> MatchedNothing,
+        IReadOnlyList<string> Evicted)
+    {
+        /// <summary>Every hint that failed, however it failed — for callers that only count.</summary>
+        public IReadOnlyList<string> All => [.. MatchedNothing, .. Evicted];
+
+        public static readonly SectionReach None = new([], []);
+    }
+
+    internal static SectionReach UnmatchedSections(
+        IEnumerable<CaseDocumentSearchMatch> candidates,
+        IEnumerable<CaseDocumentSearchMatch> pack,
         IReadOnlyList<string> sections)
     {
         var hints = sections.Where(h => !string.IsNullOrWhiteSpace(h)).ToList();
 
         if (hints.Count == 0)
         {
-            return [];
+            return SectionReach.None;
         }
 
-        var candidates = passages.Select(p => p.SearchedText).ToList();
+        var retrieved = candidates.Select(p => p.SearchedText).ToList();
+        var delivered = pack.Select(p => p.SearchedText).ToList();
 
-        return hints
-            .Where(h => !candidates.Any(t => t.Contains(h, StringComparison.OrdinalIgnoreCase)))
-            .ToList();
+        var nothing = new List<string>();
+        var evicted = new List<string>();
+
+        foreach (var hint in hints)
+        {
+            if (delivered.Any(t => t.Contains(hint, StringComparison.OrdinalIgnoreCase)))
+            {
+                continue;
+            }
+
+            (retrieved.Any(t => t.Contains(hint, StringComparison.OrdinalIgnoreCase))
+                ? evicted
+                : nothing).Add(hint);
+        }
+
+        return new SectionReach(nothing, evicted);
     }
 
     /// <summary>

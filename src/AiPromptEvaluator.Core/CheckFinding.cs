@@ -319,6 +319,14 @@ public sealed record CheckFinding
     /// </summary>
     [JsonIgnore] public IReadOnlyList<string> UnmatchedSections { get; init; } = [];
 
+    /// <summary>
+    /// Declared sections whose passage <em>was</em> retrieved and then did not survive into the
+    /// pack. A different defect from a hint matching nothing, needing a different answer — the
+    /// wording is right and the reservation failed to hold it — and the two were indistinguishable
+    /// until a run reported a hint as matching while the row it named reached no assessor at all.
+    /// </summary>
+    [JsonIgnore] public IReadOnlyList<string> EvictedSections { get; init; } = [];
+
     public CheckOutcome ParsedOutcome => ParseOutcome(Outcome);
 
     /// <summary>
@@ -767,6 +775,20 @@ public sealed record FindingsReport(
                 + string.Join("; ", unmatched)
                 + ". These asked for part of a document and reached no passage, so they had no "
                 + "effect. Check the wording against the converted document.");
+        }
+
+        var evicted = Findings.SelectMany(f => f.EvictedSections).ToList();
+
+        if (evicted.Count > 0)
+        {
+            // Louder than a missing hint, because the wording is right and rewording it is the
+            // one thing that cannot help. The passage was found and then displaced.
+            sb.AppendLine(
+                $"Section hints retrieved but evicted: {evicted.Count} — "
+                + string.Join("; ", evicted)
+                + ". A passage carrying each was retrieved and did not survive into the pack, so "
+                + "the assessor never saw it. This is a ranking or cap problem, not a wording "
+                + "one — raise maxPassagesPerGroup or the reserved slots.");
         }
 
         var (discarding, discarded) = DiscardedDiscrepancies;

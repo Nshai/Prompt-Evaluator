@@ -105,7 +105,8 @@ should be read.
 ### Two of the six dead section hints now fire
 
 The run's own diagnostics: **"Section hints matching nothing: 4"**, down from six —
-`Residency Status` and `LIQUIDATED` both reach a passage for the first time. The four
+`Residency Status` and `LIQUIDATED` both reported as reaching a passage for the first time.
+**Only `LIQUIDATED` actually did**; see §5 for the diagnostic defect behind the other. The four
 `ranked by Maturity Value` hints are still dead, unchanged, because nothing was done to them.
 
 The change was writing query text to resemble the **chunk** rather than the question. The
@@ -186,19 +187,37 @@ mismatch to be excused. But **Zurich is being switched away, not retained**, and
 finding is the People's Pension at risk 9, which *is* retained. Right reasoning, wrong arrangement.
 Still Partial, and the remaining gap is that nothing connects "retained" to "rated above profile".
 
-### F1.6 and F5.4 — the diagnosis was wrong
+### F1.6 and F5.4 — still retrieval, and the diagnostic said otherwise
 
-**The `Residency Status` hint now matches a passage, and the word "tenant" still appears nowhere in
-the output** except the case's own tenant id.
+**Corrected after publication.** This section first read that the residency passage now reaches the
+pack, making F1.6 a verification failure. That was wrong, and the error came from trusting this
+run's own diagnostic.
 
-That reclassifies the finding. It was diagnosed as retrieval — the evidence half never arriving —
-and the retrieval is now fixed with no effect at all. The passage reaches the pack and no group
-relates it to the report's *"the forecast incorporates the assets of your main residence"*, which
-has been reaching the assessor since the hint for it started matching two runs ago.
+The run reported *"Section hints matching nothing: 4"*, down from six, with `Residency Status` no
+longer among them. Reading the prompts directly:
 
-**Both halves are now in front of the model and nothing joins them.** That is the exact failure the
-new `reportSays`/`fileSays` reconciliation rule was written for, and on this finding it did not
-fire. Worth knowing before more retrieval is aimed at it.
+- the only `Tenant` in G1.5, G1.11 or G5.2 is `Tenant: 99`, the case id in the prompt header;
+- `Residency Status` appears in G1.11's prompt **only inside the guard text written for it**;
+- G1.5's pack holds five category-B fact find passages and none carries the row.
+
+**The fact find's `Residency Status | Tenant - private` reached no assessor.** F1.6 and F5.4 remain
+a retrieval failure — the same one, now misdiagnosed twice.
+
+The cause was in the diagnostic. `UnmatchedSections` compared hints against the de-duplicated
+*candidates*, before ranking and before the cap, so a hint whose passage was retrieved and then
+evicted was reported as having matched. It has been changed to measure against the pack and to
+separate the two cases, which need opposite answers — reword the hint, or widen the pack.
+
+A test had encoded the old behaviour deliberately, arguing that reporting an eviction would send a
+reader to check wording that was already correct. True, and it left the reader with no report at
+all. That test is now inverted.
+
+**The other five hints were verified the same way and are genuinely in their packs**, including
+`LIQUIDATED`: F5.3's catch below is real. Only this one was mis-reported.
+
+Three guards for this finding already existed during the run — G1.11's *"a cashflow that models
+property for a client the fact find records as renting is using an asset the client does not
+have"*, and its counterparts in G1.5 and G5.2. They ran against evidence that was never there.
 
 ---
 
@@ -218,8 +237,10 @@ the fact find.
 
 ## 7. What to do next
 
-1. **Fix F1.6/F5.4 in verification, not retrieval.** Both halves are in the pack. G1.11 and G1.5
-   need a guard saying a modelled residence must be reconciled against the fact find's tenure.
+1. **Fix F1.6/F5.4 in retrieval, and verify it with the dry run rather than the run's own hint
+   report.** The guards it needs already exist and ran; what is missing is the passage. `Q1.5.5`
+   retrieves something from the fact find and not the address table — the next attempt should be
+   checked against the pack before another assessment run is spent on it.
 2. **Watch F7.3.** One regression against five gains is a good trade, but the mechanism —
    derived arithmetic crowding out a same-page contradiction — will recur wherever both exist.
 3. **Give F3.4 the missing link:** the concern is a plan *retained* while rated above the agreed

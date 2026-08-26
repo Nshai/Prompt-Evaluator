@@ -199,10 +199,13 @@ public class DuplicateKeyTests
 
     private static string? SectionResponse(string name)
     {
+        // Pinned to the log that carries the defect, not to "the newest one that matches".
+        // The loose glob was a latent bug in this test: a later, clean extraction landing in the
+        // repository silently retargeted it at a reply with no duplicate in it, and the test
+        // failed for a reason that had nothing to do with the code under test.
         var log = Directory
-            .GetFiles(RepoRoot(), "extract_ABC-99_20260826_*.log", SearchOption.AllDirectories)
-            .OrderBy(f => f, StringComparer.Ordinal)
-            .LastOrDefault();
+            .GetFiles(RepoRoot(), "extract_ABC-99_20260826_084243.log", SearchOption.AllDirectories)
+            .FirstOrDefault();
 
         if (log is null)
         {

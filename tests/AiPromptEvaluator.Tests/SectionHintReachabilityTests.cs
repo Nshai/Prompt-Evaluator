@@ -22,6 +22,17 @@ namespace AiPromptEvaluator.Tests;
 /// because <see cref="CheckPlanRunner.Rank"/> matches hints within targeted categories only, and
 /// an Assertion query resolves the stored model rather than searching. A hint added beside an
 /// assertion-only query is dead on arrival.
+///
+/// <b>This test is necessary and it is not sufficient, and the difference cost a run.</b> It
+/// proves a hint <i>could</i> match. It cannot prove any query <i>retrieves</i> the chunk that
+/// carries the string, because that depends on embeddings and an index rather than on the corpus.
+/// Six hints passed this test and then fired on nothing in three consecutive runs — the string was
+/// there, in a searched category, and no search returned the passage holding it.
+///
+/// <see cref="RetrievalDryRun"/> is what answers the remaining question. It executes the searches
+/// with no model call, so a dead hint is found in seconds rather than in the findings of a run
+/// that cost pounds. Keep both: this one runs anywhere and catches typos and mis-scoped hints,
+/// and the dry run needs an index and catches everything else.
 /// </summary>
 public class SectionHintReachabilityTests
 {

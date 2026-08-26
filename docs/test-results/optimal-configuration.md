@@ -32,9 +32,9 @@ actually found).
 | `maxEmbeddingInputCharacters` | **20000** | clears Titan's 50,000-char cap and OpenAI's 8,192-token one |
 | `maxParallelRequests` | **6** | measured ~618 tok/s aggregate; see [§4](#4-concurrency) |
 | `maxParallelChecks` | **4** | readability bound, not a throughput one |
-| `pinTemperature` / `temperature` | **true / 0** | reproducibility |
+| `pinTemperature` / `temperature` | **true / 0** | reproducibility — and every run on record has this off, see [§1b](#1b-sampling--pin-it-and-vary-the-seed-to-get-a-second-sample) |
 | `pinTopP` / `topP` | **true / 1** | reproducibility |
-| `pinSeed` / `samplingSeed` | **true / 1** | reproducibility, where the provider honours it |
+| `pinSeed` / `samplingSeed` | **true / 1** | reproducibility; varying the seed is also the only cheap way to defeat the gateway cache |
 | `structuredFindings` | **true** | schema-constrained findings; ordering is load-bearing |
 | `maxTokens` | **4096** | check findings only; unrelated to extraction |
 
@@ -167,6 +167,62 @@ group drawing up to 112 candidates still discards 79% of them.
 24 as an experiment with its own measurement and compare it against 12 before attributing any
 recall change to anything else. The cost is prompt tokens, and it is linear: twice the passages
 in every one of the 85 group calls.
+
+---
+
+## 1b. Sampling — pin it, and vary the seed to get a second sample
+
+**The code defaults to pinning temperature, top-p and seed. Every run on record pinned none of
+them.** Runs 7 to 11 all report `temperature default, top-p default, seed not pinned`, which means
+the local settings file is overriding three defaults that
+[AppSettings](../../src/AiPromptEvaluator.Core/AppSettings.cs) sets to `true`. Nothing in the
+application did this; a configuration did, and it has quietly cost the project its ability to
+measure anything twice.
+
+```json
+{ "pinTemperature": true, "temperature": 0,
+  "pinTopP": true,        "topP": 1,
+  "pinSeed": true,        "samplingSeed": 1 }
+```
+
+### Why this is not just tidiness
+
+**The gateway cache makes re-running the same configuration useless as a second sample.** Runs 10
+and 11 proved it: an unchanged configuration re-run **5h 23m** later returned the earlier run's
+output, byte for byte, at 33,858 tok/s. See
+[run-analysis-latest.md](run-analysis-latest.md).
+
+The seed is part of the request — `ChatCompletionClient` sets `options.Seed` when `pinSeed` is on —
+so **changing `samplingSeed` changes the cache key**. That makes it the only cheap way to obtain a
+genuine second sample, and it is also the measurement worth having: variance cannot be assessed at
+all while temperature is at the provider's default.
+
+The run fingerprint prints the seed, so two runs at different seeds are distinguishable in their
+own output:
+
+```
+Chat … · temperature 0, top-p 1, seed 1 · findings schema-constrained
+```
+
+### The protocol
+
+Four runs, one model, nothing else changed:
+
+| Run | `samplingSeed` | `maxPassagesPerGroup` | Answers |
+| --- | --- | --- | --- |
+| A | 1 | 12 | baseline at the old cap |
+| B | 2 | 12 | **variance** — A vs B is the noise floor, measured rather than assumed |
+| C | 1 | 24 | **the cap question** — A vs C, the only thing that changed |
+| D | 2 | 24 | variance at the new cap; C vs D confirms B's figure holds |
+
+Run them on **Sonnet**, because it is the only model whose recall is high enough for a
+one-or-two-finding difference to be visible above the floor. Haiku at 20/36 and Nova at 7/36 have
+too much room below them for a cap effect to be separable from noise.
+
+**A and B are the important pair.** Until the noise floor is measured rather than estimated at
+±2 findings, no comparison in this repository means what it appears to mean — including the
+eight-finding gap between Haiku and Sonnet, which is large enough to survive almost any plausible
+variance but has never actually been tested against one.
 
 ---
 

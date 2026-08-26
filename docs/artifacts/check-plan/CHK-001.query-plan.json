@@ -64,8 +64,7 @@
           "/parties/dependants[]"
         ],
         "evidenceSections": [
-          "Residency",
-          "Contact Address"
+          "Residency Status"
         ],
         "queries": [
           {
@@ -516,7 +515,26 @@
               "/financialPosition/assets[]"
             ],
             "priority": "Supplementary"
+          },
+          {
+            "id": "Q1.5.4",
+            "text": "inheritance tax nil rate band residence nil rate band property passed to direct descendants",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "Residence Nil Rate Band",
+              "RNRB",
+              "Nil Rate Band",
+              "direct descendants",
+              "property"
+            ],
+            "priority": "Core"
           }
+        ],
+        "evidenceSections": [
+          "Residency Status"
         ]
       },
       "verification": {
@@ -525,7 +543,8 @@
           "method": "ValueMatch",
           "falsePositiveGuards": [
             "An assets table that excludes pensions is normal — check whether pensions are listed separately before flagging an omission.",
-            "Valuation dates differ between fact find and report; compare as-at dates before flagging a value difference."
+            "Valuation dates differ between fact find and report; compare as-at dates before flagging a value difference.",
+            "The Residence Nil Rate Band applies to a residence the client owns. A report discussing it for a tenant is asserting a property interest the fact find does not record, which is a mismatch on the asset itself rather than on its value."
           ]
         },
         "sufficiency": {
@@ -1082,7 +1101,30 @@
               "value"
             ],
             "priority": "Supplementary"
+          },
+          {
+            "id": "Q1.11.4",
+            "text": "the forecast incorporates the assets of your main residence and cash holdings",
+            "side": "Either",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "main residence",
+              "incorporates",
+              "assets of your",
+              "property",
+              "cash holdings"
+            ],
+            "canonicalPaths": [
+              "/financialPosition/assets[]",
+              "/needsAnalysis/assumptions[]"
+            ],
+            "priority": "Core"
           }
+        ],
+        "evidenceSections": [
+          "incorporates the assets of your main residence"
         ]
       },
       "verification": {
@@ -1092,7 +1134,8 @@
           "falsePositiveGuards": [
             "Illustration growth rates are prescribed by the provider and will differ from the cashflow's assumptions; that difference is not an inconsistency.",
             "A cashflow that was never run is a gap, not a contradiction — check wasCashflowModelled before reporting a mismatch.",
-            "A model run before a later fact change will legitimately use the older figure; compare the as-at dates before calling it wrong."
+            "A model run before a later fact change will legitimately use the older figure; compare the as-at dates before calling it wrong.",
+            "A cashflow that models property for a client the fact find records as renting is using an asset the client does not have. Check residency and tenure before accepting a modelled residence, and treat the fact find's own Residency Status field as decisive."
           ]
         },
         "sufficiency": {

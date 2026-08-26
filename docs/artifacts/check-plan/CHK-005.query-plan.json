@@ -184,7 +184,8 @@
         ],
         "evidenceSections": [
           "Total Monthly Disposable Income",
-          "Total Net Monthly Income"
+          "Total Net Monthly Income",
+          "incorporates the assets of your main residence"
         ],
         "queries": [
           {
@@ -272,6 +273,23 @@
               "expenditure"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q5.2.6",
+            "text": "the forecast incorporates the assets of your main residence and cash holdings",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "F"
+            ],
+            "expectSignals": [
+              "main residence",
+              "incorporates",
+              "property",
+              "cash holdings",
+              "assets"
+            ],
+            "priority": "Core"
           }
         ]
       },
@@ -282,7 +300,8 @@
           "tolerance": "Every figure the report says was modelled must match the fact find within 5%.",
           "falsePositiveGuards": [
             "Growth assumptions differ legitimately between a cashflow model and a provider illustration — flag only where the report relies on both without explanation.",
-            "Charts are not reliably parsable; do not conclude from a chart caption alone."
+            "Charts are not reliably parsable; do not conclude from a chart caption alone.",
+            "An input the client does not have is a defect in the model, not a rounding difference. A modelled main residence for a renting client overstates the resources the plan rests on."
           ]
         },
         "sufficiency": {
@@ -530,7 +549,27 @@
               "into your"
             ],
             "priority": "Supplementary"
+          },
+          {
+            "id": "Q5.5.3",
+            "text": "order in which savings and investments are liquidated in the cashflow scenario",
+            "side": "Evidence",
+            "targetCategories": [
+              "F"
+            ],
+            "expectSignals": [
+              "LIQUIDATED",
+              "liquidation",
+              "1ST",
+              "2ND",
+              "Surplus Account",
+              "Savings"
+            ],
+            "priority": "Core"
           }
+        ],
+        "evidenceSections": [
+          "LIQUIDATED"
         ]
       },
       "verification": {
@@ -538,7 +577,8 @@
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
-            "A transfer between pension wrappers does not deplete an emergency fund — only new money from cash does."
+            "A transfer between pension wrappers does not deplete an emergency fund — only new money from cash does.",
+            "A cashflow that schedules the emergency fund to be spent has not retained it, whatever the report says about retaining liquid capital. Read the liquidation order in the scenario before accepting an assertion of sufficiency."
           ]
         },
         "sufficiency": {

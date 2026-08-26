@@ -451,7 +451,26 @@
               "status quo"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q6.4.7",
+            "text": "solutions ranked by maturity value top ten results existing solution compared with new solution",
+            "side": "Evidence",
+            "targetCategories": [
+              "G"
+            ],
+            "expectSignals": [
+              "ranked by Maturity Value",
+              "Existing Solution",
+              "New Solution",
+              "top 10 results",
+              "Maturity value"
+            ],
+            "priority": "Core"
           }
+        ],
+        "evidenceSections": [
+          "ranked by Maturity Value"
         ]
       },
       "verification": {
@@ -460,7 +479,8 @@
           "method": "SetCoverage",
           "falsePositiveGuards": [
             "Options listed without individual rejection reasons are a partial answer — the check asks for reasons, not just the list.",
-            "An alternative rejected in the research file but never mentioned in the report is a report gap, not a research gap."
+            "An alternative rejected in the research file but never mentioned in the report is a report gap, not a research gap.",
+            "A ranked comparison placing the recommendation below the existing arrangement is the finding, whether or not the report mentions the ranking. Report the ranks and the values, not merely that alternatives were considered."
           ]
         },
         "sufficiency": {

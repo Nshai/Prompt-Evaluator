@@ -65,7 +65,8 @@
         ],
         "evidenceSections": [
           "Residency",
-          "Contact Address"
+          "Contact Address",
+          "Effect of switching"
         ],
         "queries": [
           {
@@ -173,7 +174,8 @@
           "tolerance": "Every material disadvantage identified in research or product literature should appear in the report.",
           "falsePositiveGuards": [
             "Disadvantages may be spread across several sections rather than collected under one heading — retrieve broadly before concluding they are absent.",
-            "A risk disclosed in the illustration but omitted from the report is a report gap only where it is material to this client."
+            "A risk disclosed in the illustration but omitted from the report is a report gap only where it is material to this client.",
+            "A reduction in the projected value at retirement is the most material disadvantage a switch can carry. Where the file quantifies one, it belongs in this list whether or not the report collected it under a disadvantages heading."
           ]
         },
         "sufficiency": {
@@ -539,7 +541,26 @@
               "positive"
             ],
             "priority": "Supplementary"
+          },
+          {
+            "id": "Q8.5.4",
+            "text": "appendix critical yield effect of switching decrease in projected value at age 75",
+            "side": "Either",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "Effect of switching",
+              "critical yield",
+              "decrease",
+              "Projected value at age",
+              "Appendix"
+            ],
+            "priority": "Core"
           }
+        ],
+        "evidenceSections": [
+          "Effect of switching"
         ]
       },
       "verification": {
@@ -548,7 +569,8 @@
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
             "Chunk ordering does not reliably reflect page position — rely on explicit section headings and page markers, not retrieval order.",
-            "A dedicated risk section is not mandatory; disadvantages distributed but clearly stated can still be prominent."
+            "A dedicated risk section is not mandatory; disadvantages distributed but clearly stated can still be prominent.",
+            "A material disadvantage quantified only in an appendix, while the body leads with a benefit, is a prominence finding. Compare where the figure appears against where the benefit claim appears, using section headings and page markers — never retrieval order."
           ]
         },
         "sufficiency": {
@@ -802,7 +824,26 @@
               "not available"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q8.8.4",
+            "text": "solutions ranked by maturity value top ten results existing solution compared with new solution",
+            "side": "Evidence",
+            "targetCategories": [
+              "G"
+            ],
+            "expectSignals": [
+              "ranked by Maturity Value",
+              "Existing Solution",
+              "New Solution",
+              "top 10 results",
+              "Maturity value"
+            ],
+            "priority": "Core"
           }
+        ],
+        "evidenceSections": [
+          "ranked by Maturity Value"
         ]
       },
       "verification": {
@@ -812,7 +853,8 @@
           "falsePositiveGuards": [
             "Generic market-risk wording in product literature does not need repeating. The finding is a risk specific to this client or this plan left out.",
             "Retrieval order does not indicate page position; judge disclosure on presence and headings, never on where a chunk was returned.",
-            "A risk disclosed in a separate document given to the client is disclosed, but the report should still reference it."
+            "A risk disclosed in a separate document given to the client is disclosed, but the report should still reference it.",
+            "A research finding that undercuts the recommendation is material information the report withheld, even though it is not a risk warning. A ranking placing the existing arrangement above the recommendation belongs here."
           ]
         },
         "sufficiency": {

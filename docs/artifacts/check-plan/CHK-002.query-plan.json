@@ -5,6 +5,7 @@
   "primaryCategories": [
     "B",
     "C",
+    "G",
     "I"
   ],
   "triggerProbe": {
@@ -170,7 +171,8 @@
         "evidenceCategories": [
           "B",
           "C",
-          "F"
+          "F",
+          "G"
         ]
       },
       "retrieval": {
@@ -249,7 +251,26 @@
               "withdrawal"
             ],
             "priority": "Supplementary"
+          },
+          {
+            "id": "Q2.2.5",
+            "text": "retirement age used in the switch analysis term of years and months to maturity",
+            "side": "Evidence",
+            "targetCategories": [
+              "G"
+            ],
+            "expectSignals": [
+              "retirement age of 75",
+              "term of",
+              "years and",
+              "months",
+              "growth rate projection"
+            ],
+            "priority": "Core"
           }
+        ],
+        "evidenceSections": [
+          "ranked by Maturity Value"
         ]
       },
       "verification": {
@@ -259,7 +280,8 @@
           "tolerance": "Report term and evidenced term must be reconcilable; a difference greater than 2 years is a mismatch.",
           "falsePositiveGuards": [
             "A pension may have a long investment horizon while the income objective is short — distinguish the horizon of the money from the date of the goal.",
-            "Selected retirement age on a plan is a contractual default, not necessarily the client's intended date."
+            "Selected retirement age on a plan is a contractual default, not necessarily the client's intended date.",
+            "The switch analysis states its own retirement age and term, and it is routinely a different figure from the one in the report and the fact find. Collect every horizon in the file before judging: the finding is the spread, not any single value."
           ]
         },
         "sufficiency": {

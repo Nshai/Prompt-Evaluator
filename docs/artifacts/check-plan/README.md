@@ -259,14 +259,14 @@ Group `G4.1`, in full:
 | Element | Purpose | How it is used |
 |---|---|---|
 | `assertionCategories` | Categories the report's own claim comes from | Almost always `["I"]`. Lint **L2** counts these as used |
-| `evidenceCategories` | Categories the corroboration should come from | Lint **L1** fails the build where a category declared here is targeted by no query. **Also holds the first reserved slots** in the 12-passage cap, ahead of the merely-targeted ones — the group's statement of where its answer lives decides who keeps a slot when the cap bites |
+| `evidenceCategories` | Categories the corroboration should come from | Lint **L1** fails the build where a category declared here is targeted by no query. **Also holds the first reserved slots** in the passage cap (`maxPassagesPerGroup`, 24 by default), ahead of the merely-targeted ones — the group's statement of where its answer lives decides who keeps a slot when the cap bites |
 
 **`retrieval` — what the assessor gets to see**
 
 | Element | Purpose | How it is used |
 |---|---|---|
 | `canonicalPaths` | Where the answer lives in the canonical model | Merged with the queries' own paths and resolved against the stored extract. This *is* the assertion side — retrieval from the model rather than the vector store |
-| `evidenceSections` | Named headings the evidence sits under | Substring-matched against passage text: a rank key, and each named section **reserves a slot** in the 12-passage cap — but only among targeted categories, so a hint promotes within the request rather than widening it. Routing *within* a category, which is where a large multi-section document otherwise defeats a correct category |
+| `evidenceSections` | Named headings the evidence sits under | Substring-matched against passage text: a rank key, and each named section **reserves a slot** in the passage cap — but only among targeted categories, so a hint promotes within the request rather than widening it. Routing *within* a category, which is where a large multi-section document otherwise defeats a correct category |
 | `queries[]` | The searches themselves | See below |
 
 **`retrieval.queries[]`**
@@ -346,7 +346,7 @@ The split is worth holding onto because the two failure modes need different fix
 1. **`queries[].text`** — the only field that becomes a vector. Everything else narrows, ranks or filters what that vector returns. A query written in check vocabulary rather than document vocabulary fails silently and completely.
 2. **`triggerProbe.triggerField` + `onAbsent`** — the largest single lever, because `ReturnNA` deletes the entire retrieval pass. Four checks can end before a single group is gathered.
 3. **`side`** — gates whether a query runs at all. An `Assertion` query is never embedded, so mislabelling an evidence query as `Assertion` removes it from retrieval without removing it from the plan.
-4. **`targetCategories`** — the only field that reaches the Qdrant filter, and the only one that reserves capacity in the 12-passage cap.
+4. **`targetCategories`** — the only field that reaches the Qdrant filter, and the only one that reserves capacity in the passage cap.
 5. **`evidenceSections`** — routing *within* a category, which is where a large multi-section document otherwise defeats a correct category.
 6. **`canonicalPaths`** — retrieval too, just from SQLite rather than Qdrant. This is the whole assertion side.
 
@@ -445,7 +445,7 @@ The union is de-duplicated on **the passage text itself** — not its hash code,
 4. score
 5. document name, then passage text — the reproducibility keys; scores collide often enough to matter, and an approximate index is under no obligation to return a tie band in a stable order
 
-Then slots are reserved before the cap of `MaxPassagesPerGroup` (12): one per declared section, then one per category — **`declares.evidenceCategories` first**, then the merely-targeted ones. Lint holds declared to a subset of targeted, so that tier cannot widen a request; it settles who keeps a slot once the cap bites.
+Then slots are reserved before the cap of `maxPassagesPerGroup` (24 by default, and 0 for unbounded): `reservedSlotsPerDeclaredSection` per declared section, then one per category — **`declares.evidenceCategories` first**, then the merely-targeted ones. Lint holds declared to a subset of targeted, so that tier cannot widen a request; it settles who keeps a slot once the cap bites.
 
 That floor exists because the obvious ordering silently lost whole documents. Sorting by "is this category targeted" and then by score looks like it favours targeted categories, and it does — until every candidate is targeted, which is normal once a group names four or five. The first key then returns the same value for everything, the order collapses to pure score, and `Take` keeps whichever documents happen to embed closest.
 
@@ -505,7 +505,7 @@ A plan may set `retrieval.resultsPerCall` to widen its candidate pool:
 "retrieval": { "resultsPerCall": 16 }
 ```
 
-The mechanism has a property worth knowing: **raising it costs vector lookups, not prompt tokens.** `MaxPassagesPerGroup` still caps what reaches the assessor at 12, so a wider pool changes what ranking gets to choose from and not how much the model reads. A value *below* the global setting is ignored rather than honoured, so a plan cannot quietly retrieve less than the rest of the run.
+The mechanism has a property worth knowing: **raising it costs vector lookups, not prompt tokens.** `maxPassagesPerGroup` still caps what reaches the assessor, so a wider pool changes what ranking gets to choose from and not how much the model reads. A value *below* the global setting is ignored rather than honoured, so a plan cannot quietly retrieve less than the rest of the run.
 
 **No shipped plan sets it**, and the reason is worth recording, because the rationale that motivated the field did not survive being measured.
 
@@ -551,13 +551,17 @@ The suitability report itself is read **once**, at extraction, not per check.
 - **`CHK-004`'s revised `Applies To` reads "Client Circumstances & Suitability"** — a theme, not a case population, where every other check names one. Carried through as given; it looks like a data-entry slip in the source.
 - **`CHK-010` keeps primary categories A and D**, which the revised check drops. Category D holds the risk and capability answers that identify an FG21/1 low-capability driver, and A holds the third-party authority the revised check asks about by name. Both are pinned by a regression test recording a real miss; the narrower revised list would undo it.
 - **`CHK-009`'s revised Decision Logic omits Potential Concern**, giving only No Issue and N/A. The plan keeps its existing `potentialConcern` text, since a switch check that cannot raise a concern would be inert.
-- **An assertion path cannot tell "the report does not say it" from "we never read it."** A
-  `side: "Assertion"` query resolves against the stored canonical model, and where the section
-  it reads failed to extract, the path resolves to nothing — which is exactly what a genuinely
+- **An assertion path inside a group cannot tell "the report does not say it" from "we never
+  read it."** A `side: "Assertion"` query resolves against the stored canonical model, and where
+  the section it reads failed to extract, the path resolves to nothing — exactly what a genuinely
   absent value looks like. The group then reports the data as absent from the file, which is a
-  finding about the advice rather than about the run. Extraction now retries a malformed reply
-  once and names any section that still failed, so the run output says which ones to distrust,
-  but the plans themselves have no way to see it.
+  finding about the advice rather than about the run.
+
+  **The applicability rules no longer have this problem**, which is where it did real damage: a
+  rule whose canonical paths all lie under a section the extraction report marks
+  `PresentButUnparseable` is undetermined rather than failed, so the check runs and says why it
+  could not be sure. See [Applicability](#applicability). Group-level retrieval still has no way
+  to see it.
 - **Query text is tuned to UK retail pension and investment reports.** Protection, mortgage and equity release cases will need their own vocabulary; the group structure holds, the phrasings do not.
 - **`expectSignals` are heuristics.** They tell you a search probably landed; they do not confirm the passage is relevant. The model still has to read.
 - **Chunk boundaries can split tables.** With `MaxTokensPerChunk` at 600, a wide existing-arrangements table may be cut mid-row, so a per-plan value can retrieve without its column header. Several plans query the same table from different angles for this reason.

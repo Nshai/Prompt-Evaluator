@@ -99,20 +99,24 @@
           },
           {
             "id": "Q4.1.3",
-            "text": "how would you describe your understanding of financial products and markets",
+            "text": "how would you describe your understanding of investing no understanding knowledge questionnaire response",
             "side": "Evidence",
             "targetCategories": [
               "D",
               "C"
             ],
             "expectSignals": [
+              "No understanding / knowledge",
+              "I have no understanding of investments",
+              "how would you describe yourself",
               "understanding",
-              "describe",
-              "familiar",
-              "aware"
+              "experience"
             ],
-            "priority": "Supplementary"
+            "priority": "Core"
           }
+        ],
+        "evidenceSections": [
+          "No understanding / knowledge"
         ]
       },
       "verification": {
@@ -121,7 +125,8 @@
           "method": "ValueMatch",
           "falsePositiveGuards": [
             "A report describing the client as comfortable while the fact find records 'limited' knowledge is a real mismatch — but check whether the fact find predates an explanation given at the meeting.",
-            "Self-assessed comfort is not the same as assessed knowledge; treat them as distinct data points."
+            "Self-assessed comfort is not the same as assessed knowledge; treat them as distinct data points.",
+            "The questionnaire's own wording is the evidence. \"No understanding / knowledge\" recorded against a direct question is an assessed answer, not a self-deprecating aside, and a report describing the same client as comfortable contradicts it outright."
           ]
         },
         "sufficiency": {
@@ -196,6 +201,23 @@
               "scheme"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q4.2.4",
+            "text": "do you understand how stocks and shares unit trusts and pension planning and income in retirement work",
+            "side": "Evidence",
+            "targetCategories": [
+              "D"
+            ],
+            "expectSignals": [
+              "stocks and shares",
+              "Unit Trusts",
+              "pension planning",
+              "income in retirement",
+              "Enterprise Investment",
+              "Venture Capital"
+            ],
+            "priority": "Core"
           }
         ]
       },
@@ -205,7 +227,8 @@
           "method": "SetCoverage",
           "falsePositiveGuards": [
             "Holding a workplace pension is passive experience; a report distinguishing it from self-directed investing is being accurate, not inconsistent.",
-            "Plans held do not prove understanding — do not treat plan ownership as evidence of knowledge."
+            "Plans held do not prove understanding — do not treat plan ownership as evidence of knowledge.",
+            "The investor-experience questionnaire asks separately about shares, unit trusts, tax-advantaged schemes and pensions. A client recorded as having no understanding of pension planning is the material answer where the recommendation is a pension, whatever the other rows say."
           ]
         },
         "sufficiency": {
@@ -367,6 +390,23 @@
               "discussed"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q4.4.3",
+            "text": "investor type description you have some experience in investments and a degree of understanding of financial matters",
+            "side": "Either",
+            "targetCategories": [
+              "D",
+              "I"
+            ],
+            "expectSignals": [
+              "some experience in investments",
+              "degree of understanding",
+              "Balanced",
+              "as a",
+              "investor"
+            ],
+            "priority": "Core"
           }
         ]
       },
@@ -375,7 +415,8 @@
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
-            "'You confirmed you understand' is an assertion by the adviser, not evidence of understanding; require a category C record for corroboration."
+            "'You confirmed you understand' is an assertion by the adviser, not evidence of understanding; require a category C record for corroboration.",
+            "A risk-profile description carries preconditions about the client's experience. Where the report reproduces one whose preconditions the file contradicts, the description is being used as evidence of knowledge it does not establish — which is in scope here even though risk profiling itself belongs to CHK-003."
           ]
         },
         "sufficiency": {

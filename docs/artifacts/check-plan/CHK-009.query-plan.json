@@ -777,7 +777,27 @@
               "available within"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q9.7.3",
+            "text": "solutions ranked by maturity value top ten results existing solution compared with new solution",
+            "side": "Evidence",
+            "targetCategories": [
+              "G",
+              "I"
+            ],
+            "expectSignals": [
+              "ranked by Maturity Value",
+              "Existing Solution",
+              "New Solution",
+              "top 10 results",
+              "Maturity value"
+            ],
+            "priority": "Core"
           }
+        ],
+        "evidenceSections": [
+          "ranked by Maturity Value"
         ]
       },
       "verification": {
@@ -785,7 +805,8 @@
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
-            "Consolidation for its own sake is a valid client objective where the client asked for it — check CHK-002 objectives before treating simplification as an insufficient reason."
+            "Consolidation for its own sake is a valid client objective where the client asked for it — check CHK-002 objectives before treating simplification as an insufficient reason.",
+            "Where the research ranks an option above the recommendation, name both and give the two maturity values. A switch to a lower-ranked solution needs the report to say why, and silence about the ranking is itself the finding."
           ]
         },
         "sufficiency": {

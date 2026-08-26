@@ -493,7 +493,26 @@
               "alternative"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q7.4.5",
+            "text": "your existing arrangements table provider plan value annual charge percentage",
+            "side": "Either",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "Existing Arrangements",
+              "Provider",
+              "Value",
+              "Charge",
+              "Annual recurring"
+            ],
+            "priority": "Core"
           }
+        ],
+        "evidenceSections": [
+          "Existing Arrangements"
         ]
       },
       "verification": {
@@ -503,7 +522,8 @@
           "tolerance": "Each existing-plan charge in the comparison table must match the provider documentation and be arithmetically consistent with the plan's value.",
           "falsePositiveGuards": [
             "Recompute: a monetary charge that is not the stated percentage of the stated plan value indicates transposed or erroneous rows.",
-            "Comparisons on different bases (with and without adviser fees) are both legitimate; check which basis each conclusion uses before calling it a contradiction."
+            "Comparisons on different bases (with and without adviser fees) are both legitimate; check which basis each conclusion uses before calling it a contradiction.",
+            "Where the report states the same plan's charge in two tables, the two figures must agree. Compare them against each other per provider before comparing either against the provider documentation — an internal contradiction makes the whole cost comparison unreliable, which is a different and larger finding than a single wrong figure."
           ]
         },
         "sufficiency": {

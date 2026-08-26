@@ -72,9 +72,15 @@ untested**, and every apparently-identical pair on record is one generation and 
 | **E4** | Extraction under-reports its own gaps | high | partly fixed |
 | **E5** | Model answering fields the process owns | moderate | **fixed & verified** |
 | **E6** | Free text in enum fields | moderate | **caught**, not prevented |
+| **E7** | A duplicate property name parses, then destroys the section | critical | **fixed** — see [§3a](#3a-the-runs-of-2026-08-26) |
+| **E8** | The retry re-requests the cached failure | high | **fixed** |
+| **E9** | Cross-references dangle when the section defining them is lost | high | **fixed** at source — a consequence of E7 |
+| **E10** | A cancelled run's log is indistinguishable from a complete one | moderate | **fixed** |
 | **R1** | No relevance floor | high | **open** — unchanged in all four runs |
 | **R2** | Category B unreachable for three checks | high | **open** — invariant across 16× of search limit |
-| **R3** | Passage cap binds before the search limit does | high | **open** — newly measured |
+| **R3** | Passage cap binds before the search limit does | high | **lever now configurable**, default 12 → 24, unmeasured |
+| **R4** | Retrieval never asked for the research ranking table | high | **fixed** — 5 findings, one query |
+| **A5** | An applicability rule reading a failed section skips the check | critical | **fixed** — CHK-009 was silently N/A |
 | **A1** | Assessor manufactured reconciliations | critical | **fixed & verified** |
 | **A2** | Citation verification flags formatting as fabrication | high | **open** — 38% of quotes |
 | **A3** | Indeterminate fires when one input is absent | high | **open** |
@@ -174,6 +180,78 @@ adding more validation.
 **A reporting defect of my own:** stripped enum values are added to the same list as real failures,
 so the run summary reads *"Failed sections (6)"* for six sections that all succeeded. Misleading in
 exactly the way the old *"did not return a JSON object"* message was.
+
+---
+
+### 3a. The runs of 2026-08-26
+
+Three extraction logs, and the first evidence in this document that is not from August.
+
+| Log | Sections | Kind | Failed |
+| --- | --- | --- | --- |
+| `081430` | 8 of 12 | genuine, **cancelled** after Recommendations | — |
+| `082128` | 12 + 1 retry | first 8 replayed, genuine from 08:22:20 | 2 |
+| `084243` | 12 | first 8 replayed, genuine from 08:43:25 | 1 |
+
+**E7 — a duplicate property name.** `existingArrangements` failed in **all three**, deterministically,
+with a reply that parses:
+
+```json
+"numberOfFundsAvailable": "7",
+"allowsAdviserServicing": false,
+"numberOfFundsAvailable": "7",     ← the model repeated a run of two properties
+"allowsAdviserServicing": false,
+```
+
+Identical values on both sides — semantically harmless, structurally fatal. `JsonNode.Parse`
+accepts duplicates and builds its dictionary lazily, so `ParseObject` returned non-null, the
+reader called the reply well formed, **nothing retried**, and it detonated at the first line to
+ask the object for its `Count`:
+
+```
+System.ArgumentException : An item with the same key has already been added.
+                           Key: numberOfFundsAvailable
+  at System.Text.Json.Nodes.JsonObject.InitializeDictionary()
+  at CanonicalVocabulary.Fix(...) CanonicalVocabulary.cs:156
+```
+
+The vocabulary pass is not the cause; it is merely the first enumerator. Fixed in the reader,
+where every consumer benefits: the **first** occurrence of each name is kept — the model writes in
+document order, so a repeat is a stutter rather than a correction — and each is reported with
+whether the two values agreed. Replaying the real reply now recovers all five plans and the
+People's Pension risk rating of 9 that **F3.4** turns on.
+
+Worth noting: there were **two** duplicates, not one. The exception could only ever name the
+first, because it threw on it.
+
+**E8 — the retry was defeated by the cache.** `082128`'s replacement-analysis retry returned a
+byte-identical reply — 41,580 characters, the same stray closing brace at the same offset, in the
+same second. The retry now varies the prompt by the digest of the reply that failed, which the
+cache key sees and a pinned-sampling run can still reproduce, and a byte-identical retry is
+reported as a cached failure rather than as a second independent one.
+
+**E9 — the cascade.** With `existingArrangements` lost, the identity registry adopted no
+arrangement ids, so every later pass coined its own — `Aviva-SP50163762`, `Aviva - SP50163762`,
+`Aviva SP50163762`, three spellings across three passes — and 8–9 references dangled per run.
+This is E2 reappearing as a *consequence*, not a regression of the E2 fix.
+
+**A5 — and the reason it cost findings rather than just data.** CHK-009's applicability ANDs two
+rules; the second reads `/existingArrangements[]/adviceAction`. With the section missing the path
+resolved to nothing, the rule failed, and `onAbsent: "Skip"` settled the check. **CHK-009 reported
+N/A and dropped F9.1–F9.5, three of them Highest, at no cost and with no trace in the output.** A
+rule whose paths all lie under a section the extraction report marks `PresentButUnparseable` is
+now *undetermined* rather than failed: the check runs, and the detail line says why it could not
+be sure.
+
+**What was working.** The failed-section reporting added earlier did its job unprompted: the
+self-report pass was told `Sections whose extraction pass failed (2): existingArrangements,
+replacementAnalysis` and wrote both under `expectedButAbsent` with reason `PresentButUnparseable`
+— which is exactly the record A5's fix now reads.
+
+**E10 — `081430` was cancelled.** Eight passes completed and merged, then the file stops: no
+summary block, no failure list, no canonical model. The only evidence was that `082128` started
+fifteen seconds after its last response. A run that does not finish now writes a
+`Run ended without completing` banner naming how far it got.
 
 ---
 

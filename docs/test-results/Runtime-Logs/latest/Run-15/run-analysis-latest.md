@@ -1,16 +1,16 @@
 # Run analysis — Run 15
 
 Case ABC-99, 2026-08-26 21:47, scored against
-[expected-results-benchmark.md](expected-results-benchmark.md) under
-[scoring-rubric.md](scoring-rubric.md), and compared with
-[Run 14](Runtime-Logs/latest/Run-14/run-analysis.md),
-[Run 13](Runtime-Logs/latest/Run-13/run-analysis.md),
-[Run 12](Runtime-Logs/latest/Run-12/run-analysis.md),
-[run-analysis.md](run-analysis.md) (Runs 7–9) and
-[run-analysis-replays.md](run-analysis-replays.md) (Runs 10–11).
+[expected-results-benchmark.md](../../expected-results-benchmark.md) under
+[scoring-rubric.md](../../scoring-rubric.md), and compared with
+[Run 14](../Run-14/run-analysis.md),
+[Run 13](../Run-13/run-analysis.md),
+[Run 12](../Run-12/run-analysis.md),
+[run-analysis.md](../../run-analysis.md) (Runs 7–9) and
+[run-analysis-replays.md](../../run-analysis-replays.md) (Runs 10–11).
 
 *This file previously held the Runs 10–11 replay analysis. That analysis is unchanged and now
-lives at [run-analysis-replays.md](run-analysis-replays.md); every document that cited it has been
+lives at [run-analysis-replays.md](../../run-analysis-replays.md); every document that cited it has been
 relinked. Nothing was discarded.*
 
 ---
@@ -80,6 +80,13 @@ That partial-cache boundary also explains the second number in the table: **197 
 resolved against 224 in every previous run, and 38 absent against 31**. The fresh canonical model
 is not merely different from `a2bbc38bdf38` — it is **poorer**. Twenty-seven paths the checks asked
 for are no longer there.
+
+> **Superseded in part by [Run 16](../Run-16/run-analysis.md) §2.** Run 16 issued byte-identical
+> extraction requests and got a **byte-identical section 12** back, so the false trigger is one bad
+> extraction served twice, not a reproduced defect. Four *other* sections came back different from
+> these — same prompts, different answers, sub-second latency — so the partial-cache reading below
+> is not the whole story, and the trigger cannot be confirmed as a real extraction defect until the
+> cache is bypassed.
 
 **No previous run has had a check silently skipped**, and nothing in the pipeline treats a trigger
 flip as an event worth flagging. `RunAuthenticity` catches a replayed *run*; nothing catches a

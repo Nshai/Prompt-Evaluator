@@ -111,6 +111,113 @@ public class ConfigurationCoverageTests
     }
 
     /// <summary>
+    /// Every field whose zero means something says so on its own caption.
+    ///
+    /// A group hint would not have covered it: Results/search sits in the vector-store group,
+    /// two groups above the sentence explaining what its zero does, and a reader looking at one
+    /// field should not have to find a sentence elsewhere to learn that its value has a special
+    /// case. The captions distinguish the two meanings, which are opposites — a cap at zero is
+    /// unbounded, a floor at zero reserves nothing.
+    /// </summary>
+    [Theory]
+    [InlineData("searchResultsLabel", "(0 = all)")]
+    [InlineData("passagesPerGroupLabel", "(0 = all)")]
+    [InlineData("decisionTokensLabel", "(0 = unbounded)")]
+    [InlineData("extractionReportLabel", "(0 = whole report)")]
+    [InlineData("documentsListedLabel", "(0 = all)")]
+    [InlineData("reserveCategoryLabel", "(0 = none)")]
+    [InlineData("reserveSectionLabel", "(0 = none)")]
+    public void AFieldWhoseZeroMeansSomethingSaysSoOnItsCaption(string label, string marker)
+    {
+        var designer = DesignerSource();
+
+        if (designer is null)
+        {
+            _output.WriteLine("Skipped: the designer file is not in this working copy.");
+            return;
+        }
+
+        var text = System.Text.RegularExpressions.Regex.Match(
+            designer, System.Text.RegularExpressions.Regex.Escape(label) + @"\.Text = ""([^""]+)"";");
+
+        Assert.True(text.Success, label + " has no caption.");
+        Assert.Contains(marker, text.Groups[1].Value);
+    }
+
+    /// <summary>
+    /// And the ones whose zero means nothing good must not claim otherwise.
+    /// <c>extractionMaxTokens</c> goes straight to the request, where zero becomes one token and
+    /// truncates every extraction pass — it looks like the caps and is not one.
+    /// </summary>
+    [Theory]
+    [InlineData("extractionTokensLabel")]
+    [InlineData("parallelRequestsLabel")]
+    [InlineData("parallelChecksLabel")]
+    [InlineData("embeddingCharsLabel")]
+    [InlineData("maxTokensLabel")]
+    public void AFieldThatCannotBeUnboundedDoesNotAdvertiseAZero(string label)
+    {
+        var designer = DesignerSource();
+
+        if (designer is null)
+        {
+            return;
+        }
+
+        var text = System.Text.RegularExpressions.Regex.Match(
+            designer, System.Text.RegularExpressions.Regex.Escape(label) + @"\.Text = ""([^""]+)"";");
+
+        Assert.True(text.Success, label + " has no caption.");
+        Assert.DoesNotContain("0 = ", text.Groups[1].Value);
+    }
+
+    /// <summary>
+    /// The captions describe <see cref="AppSettings.Unbounded"/>, so they are only true while the
+    /// code still routes those settings through it. This is the join: five call sites, and a
+    /// caption promising a sixth would be a lie the compiler cannot catch.
+    /// </summary>
+    [Fact]
+    public void ExactlyTheSettingsRoutedThroughUnboundedAreTheOnesAdvertised()
+    {
+        var root = RepoRoot();
+
+        if (root is null)
+        {
+            return;
+        }
+
+        var core = string.Join(
+            Environment.NewLine,
+            Directory
+                .GetFiles(Path.Combine(root, "src", "AiPromptEvaluator.Core"), "*.cs",
+                          SearchOption.AllDirectories)
+                .Where(f => !f.EndsWith("AppSettings.cs", StringComparison.Ordinal))
+                .Where(f => !f.EndsWith("RunFingerprint.cs", StringComparison.Ordinal))
+                .Select(File.ReadAllText));
+
+        foreach (var setting in new[]
+                 {
+                     nameof(AppSettings.MaxSearchResults),
+                     nameof(AppSettings.MaxPassagesPerGroup),
+                     nameof(AppSettings.DecisionMaxTokens),
+                     nameof(AppSettings.ExtractionReportMaxChars),
+                     nameof(AppSettings.MaxDocumentsInContext),
+                 })
+        {
+            Assert.True(
+                core.Contains("Unbounded(_settings." + setting, StringComparison.Ordinal)
+                || core.Contains("Unbounded(settings." + setting, StringComparison.Ordinal)
+                || core.Contains("IsUnbounded(_settings." + setting, StringComparison.Ordinal)
+                || core.Contains("Unbounded(maxDocuments", StringComparison.Ordinal),
+                setting + " is advertised as unbounded on the form but no longer routes through "
+                + "AppSettings.Unbounded.");
+        }
+
+        // The trap, stated as a test: extraction tokens reach the request unfiltered.
+        Assert.DoesNotContain("Unbounded(_settings.ExtractionMaxTokens", core);
+    }
+
+    /// <summary>
     /// A control that loads a value and never saves it is worse than no control: it shows the
     /// user a setting, accepts an edit, and discards it silently.
     /// </summary>

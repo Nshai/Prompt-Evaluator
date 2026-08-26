@@ -685,7 +685,7 @@ partial class ConfigurationForm
         extractionTokensLabel.Anchor = AnchorStyles.Left;
         extractionTokensLabel.AutoSize = true;
         extractionTokensLabel.Name = "extractionTokensLabel";
-        extractionTokensLabel.Text = "Extraction max tokens";
+        extractionTokensLabel.Text = "Extraction max tokens (min 1,000)";
 
         // extractionTokensUpDown
         extractionTokensUpDown.Anchor = AnchorStyles.Left;
@@ -905,7 +905,7 @@ partial class ConfigurationForm
         searchResultsLabel.AutoSize = true;
         searchResultsLabel.Margin = new Padding(0, 6, 6, 0);
         searchResultsLabel.Name = "searchResultsLabel";
-        searchResultsLabel.Text = "Results/search";
+        searchResultsLabel.Text = "Results/search (0 = all)";
 
         // searchResultsUpDown
         searchResultsUpDown.Margin = new Padding(0, 3, 0, 3);
@@ -949,8 +949,9 @@ partial class ConfigurationForm
         limitsHintLabel.Margin = new Padding(0, 0, 0, 4);
         limitsHintLabel.Name = "limitsHintLabel";
         limitsHintLabel.Text =
-            "0 means unbounded on the caps. The two reserved-slot values are floors, "
-            + "so 0 there means no reservation.";
+            "Fields marked (0 = ...) accept zero for that meaning; the others do not. "
+            + "Results/search at 0 asks the store for every match of every query, which is "
+            + "rarely what you want — the passage cap is the useful one to open up.";
 
         // packNumericRow — what reaches one assessor call
         packNumericRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
@@ -970,7 +971,7 @@ partial class ConfigurationForm
         passagesPerGroupLabel.AutoSize = true;
         passagesPerGroupLabel.Margin = new Padding(0, 7, 6, 0);
         passagesPerGroupLabel.Name = "passagesPerGroupLabel";
-        passagesPerGroupLabel.Text = "Passages / group";
+        passagesPerGroupLabel.Text = "Passages / group (0 = all)";
 
         // passagesPerGroupUpDown
         passagesPerGroupUpDown.Margin = new Padding(0, 3, 16, 3);
@@ -984,7 +985,7 @@ partial class ConfigurationForm
         reserveCategoryLabel.AutoSize = true;
         reserveCategoryLabel.Margin = new Padding(0, 7, 6, 0);
         reserveCategoryLabel.Name = "reserveCategoryLabel";
-        reserveCategoryLabel.Text = "Reserve / category";
+        reserveCategoryLabel.Text = "Reserve / category (0 = none)";
 
         // reserveCategoryUpDown
         reserveCategoryUpDown.Margin = new Padding(0, 3, 16, 3);
@@ -998,7 +999,7 @@ partial class ConfigurationForm
         reserveSectionLabel.AutoSize = true;
         reserveSectionLabel.Margin = new Padding(0, 7, 6, 0);
         reserveSectionLabel.Name = "reserveSectionLabel";
-        reserveSectionLabel.Text = "Reserve / section";
+        reserveSectionLabel.Text = "Reserve / section (0 = none)";
 
         // reserveSectionUpDown
         reserveSectionUpDown.Margin = new Padding(0, 3, 0, 3);
@@ -1025,7 +1026,7 @@ partial class ConfigurationForm
         decisionTokensLabel.AutoSize = true;
         decisionTokensLabel.Margin = new Padding(0, 7, 6, 0);
         decisionTokensLabel.Name = "decisionTokensLabel";
-        decisionTokensLabel.Text = "Decision tokens";
+        decisionTokensLabel.Text = "Decision tokens (0 = unbounded)";
 
         // decisionTokensUpDown
         decisionTokensUpDown.Increment = 500;
@@ -1040,7 +1041,7 @@ partial class ConfigurationForm
         extractionReportLabel.AutoSize = true;
         extractionReportLabel.Margin = new Padding(0, 7, 6, 0);
         extractionReportLabel.Name = "extractionReportLabel";
-        extractionReportLabel.Text = "Extraction report chars";
+        extractionReportLabel.Text = "Extraction report chars (0 = whole report)";
 
         // extractionReportUpDown
         extractionReportUpDown.Increment = 1000;
@@ -1055,7 +1056,7 @@ partial class ConfigurationForm
         documentsListedLabel.AutoSize = true;
         documentsListedLabel.Margin = new Padding(0, 7, 6, 0);
         documentsListedLabel.Name = "documentsListedLabel";
-        documentsListedLabel.Text = "Documents listed";
+        documentsListedLabel.Text = "Documents listed (0 = all)";
 
         // documentsListedUpDown
         documentsListedUpDown.Margin = new Padding(0, 3, 0, 3);

@@ -120,28 +120,50 @@ public class ConfigurationCoverageTests
     /// unbounded, a floor at zero reserves nothing.
     /// </summary>
     [Theory]
-    [InlineData("searchResultsLabel", "(0 = all)")]
-    [InlineData("passagesPerGroupLabel", "(0 = all)")]
-    [InlineData("decisionTokensLabel", "(0 = unbounded)")]
-    [InlineData("extractionReportLabel", "(0 = whole report)")]
-    [InlineData("documentsListedLabel", "(0 = all)")]
-    [InlineData("reserveCategoryLabel", "(0 = none)")]
-    [InlineData("reserveSectionLabel", "(0 = none)")]
-    public void AFieldWhoseZeroMeansSomethingSaysSoOnItsCaption(string label, string marker)
+    [InlineData("searchResultsLabel", "0 = all", nameof(AppSettings.MaxSearchResults))]
+    [InlineData("passagesPerGroupLabel", "0 = all", nameof(AppSettings.MaxPassagesPerGroup))]
+    [InlineData("decisionTokensLabel", "0 = unbounded", nameof(AppSettings.DecisionMaxTokens))]
+    [InlineData("extractionReportLabel", "0 = whole", nameof(AppSettings.ExtractionReportMaxChars))]
+    [InlineData("documentsListedLabel", "0 = all", nameof(AppSettings.MaxDocumentsInContext))]
+    [InlineData("reserveCategoryLabel", "0 = none", nameof(AppSettings.ReservedSlotsPerTargetedCategory))]
+    [InlineData("reserveSectionLabel", "0 = none", nameof(AppSettings.ReservedSlotsPerDeclaredSection))]
+    public void AFieldWhoseZeroMeansSomethingSaysSoAndQuotesItsDefault(
+        string label, string marker, string setting)
     {
-        var designer = DesignerSource();
+        var caption = Caption(label);
 
-        if (designer is null)
+        if (caption is null)
         {
             _output.WriteLine("Skipped: the designer file is not in this working copy.");
             return;
         }
 
-        var text = System.Text.RegularExpressions.Regex.Match(
-            designer, System.Text.RegularExpressions.Regex.Escape(label) + @"\.Text = ""([^""]+)"";");
+        Assert.Contains(marker, caption);
 
-        Assert.True(text.Success, label + " has no caption.");
-        Assert.Contains(marker, text.Groups[1].Value);
+        // Read from AppSettings rather than typed, so the number cannot outlive the default it
+        // claims to quote — a caption sitting next to its own control is believed.
+        Assert.Contains("default {Defaults." + setting, caption);
+    }
+
+    /// <summary>
+    /// The fields that cannot be unbounded still tell the reader what the shipped value is. A
+    /// spin control showing 6 says nothing about whether 6 was chosen or inherited.
+    /// </summary>
+    [Theory]
+    [InlineData("extractionTokensLabel", nameof(AppSettings.ExtractionMaxTokens))]
+    [InlineData("parallelRequestsLabel", nameof(AppSettings.MaxParallelRequests))]
+    [InlineData("parallelChecksLabel", nameof(AppSettings.MaxParallelChecks))]
+    [InlineData("embeddingCharsLabel", nameof(AppSettings.MaxEmbeddingInputCharacters))]
+    public void AFieldWithoutAnUnboundedZeroStillQuotesItsDefault(string label, string setting)
+    {
+        var caption = Caption(label);
+
+        if (caption is null)
+        {
+            return;
+        }
+
+        Assert.Contains("default {Defaults." + setting, caption);
     }
 
     /// <summary>
@@ -157,18 +179,10 @@ public class ConfigurationCoverageTests
     [InlineData("maxTokensLabel")]
     public void AFieldThatCannotBeUnboundedDoesNotAdvertiseAZero(string label)
     {
-        var designer = DesignerSource();
+        var caption = Caption(label);
 
-        if (designer is null)
-        {
-            return;
-        }
-
-        var text = System.Text.RegularExpressions.Regex.Match(
-            designer, System.Text.RegularExpressions.Regex.Escape(label) + @"\.Text = ""([^""]+)"";");
-
-        Assert.True(text.Success, label + " has no caption.");
-        Assert.DoesNotContain("0 = ", text.Groups[1].Value);
+        Assert.NotNull(caption);
+        Assert.DoesNotContain("0 = ", caption);
     }
 
     /// <summary>
@@ -281,6 +295,27 @@ public class ConfigurationCoverageTests
             Directory
                 .GetFiles(Path.Combine(dir, "src", "AiPromptEvaluator"), "*.cs")
                 .Select(File.ReadAllText));
+    }
+
+    /// <summary>
+    /// One label's caption as written in the designer, whether a literal or an interpolated
+    /// string. Matched in source rather than at runtime because these are private fields of a
+    /// form that cannot be constructed without a message loop.
+    /// </summary>
+    private static string? Caption(string label)
+    {
+        var designer = DesignerSource();
+
+        if (designer is null)
+        {
+            return null;
+        }
+
+        var m = System.Text.RegularExpressions.Regex.Match(
+            designer,
+            System.Text.RegularExpressions.Regex.Escape(label) + @"\.Text = \$?""([^""]+)"";");
+
+        return m.Success ? m.Groups[1].Value : null;
     }
 
     private static string? FormSource() => Source("ConfigurationForm.cs");

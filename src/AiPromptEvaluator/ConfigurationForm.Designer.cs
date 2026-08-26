@@ -114,6 +114,15 @@ partial class ConfigurationForm
     private TextBox promptLogTextBox;
     private Button promptLogBrowseButton;
     private CheckBox clarificationCheckBox;
+
+    /// <summary>
+    /// The shipped defaults, read rather than repeated.
+    ///
+    /// A caption quoting "default 24" is documentation, and documentation typed twice drifts:
+    /// the number here would keep saying 24 long after AppSettings said something else, and it
+    /// would be believed, because it sits next to the control it describes.
+    /// </summary>
+    private static readonly AppSettings Defaults = new();
     private FlowLayoutPanel buttonPanel;
     private Button saveButton;
     private Button cancelButton;
@@ -685,7 +694,7 @@ partial class ConfigurationForm
         extractionTokensLabel.Anchor = AnchorStyles.Left;
         extractionTokensLabel.AutoSize = true;
         extractionTokensLabel.Name = "extractionTokensLabel";
-        extractionTokensLabel.Text = "Extraction max tokens (min 1,000)";
+        extractionTokensLabel.Text = $"Extraction max tokens (default {Defaults.ExtractionMaxTokens:N0})";
 
         // extractionTokensUpDown
         extractionTokensUpDown.Anchor = AnchorStyles.Left;
@@ -905,7 +914,7 @@ partial class ConfigurationForm
         searchResultsLabel.AutoSize = true;
         searchResultsLabel.Margin = new Padding(0, 6, 6, 0);
         searchResultsLabel.Name = "searchResultsLabel";
-        searchResultsLabel.Text = "Results/search (0 = all)";
+        searchResultsLabel.Text = $"Results/search (0 = all, default {Defaults.MaxSearchResults})";
 
         // searchResultsUpDown
         searchResultsUpDown.Margin = new Padding(0, 3, 0, 3);
@@ -971,7 +980,7 @@ partial class ConfigurationForm
         passagesPerGroupLabel.AutoSize = true;
         passagesPerGroupLabel.Margin = new Padding(0, 7, 6, 0);
         passagesPerGroupLabel.Name = "passagesPerGroupLabel";
-        passagesPerGroupLabel.Text = "Passages / group (0 = all)";
+        passagesPerGroupLabel.Text = $"Passages / group (0 = all, default {Defaults.MaxPassagesPerGroup})";
 
         // passagesPerGroupUpDown
         passagesPerGroupUpDown.Margin = new Padding(0, 3, 16, 3);
@@ -985,7 +994,7 @@ partial class ConfigurationForm
         reserveCategoryLabel.AutoSize = true;
         reserveCategoryLabel.Margin = new Padding(0, 7, 6, 0);
         reserveCategoryLabel.Name = "reserveCategoryLabel";
-        reserveCategoryLabel.Text = "Reserve / category (0 = none)";
+        reserveCategoryLabel.Text = $"Reserve / category (0 = none, default {Defaults.ReservedSlotsPerTargetedCategory})";
 
         // reserveCategoryUpDown
         reserveCategoryUpDown.Margin = new Padding(0, 3, 16, 3);
@@ -999,7 +1008,7 @@ partial class ConfigurationForm
         reserveSectionLabel.AutoSize = true;
         reserveSectionLabel.Margin = new Padding(0, 7, 6, 0);
         reserveSectionLabel.Name = "reserveSectionLabel";
-        reserveSectionLabel.Text = "Reserve / section (0 = none)";
+        reserveSectionLabel.Text = $"Reserve / section (0 = none, default {Defaults.ReservedSlotsPerDeclaredSection})";
 
         // reserveSectionUpDown
         reserveSectionUpDown.Margin = new Padding(0, 3, 0, 3);
@@ -1026,7 +1035,7 @@ partial class ConfigurationForm
         decisionTokensLabel.AutoSize = true;
         decisionTokensLabel.Margin = new Padding(0, 7, 6, 0);
         decisionTokensLabel.Name = "decisionTokensLabel";
-        decisionTokensLabel.Text = "Decision tokens (0 = unbounded)";
+        decisionTokensLabel.Text = $"Decision tokens (0 = unbounded, default {Defaults.DecisionMaxTokens:N0})";
 
         // decisionTokensUpDown
         decisionTokensUpDown.Increment = 500;
@@ -1041,7 +1050,7 @@ partial class ConfigurationForm
         extractionReportLabel.AutoSize = true;
         extractionReportLabel.Margin = new Padding(0, 7, 6, 0);
         extractionReportLabel.Name = "extractionReportLabel";
-        extractionReportLabel.Text = "Extraction report chars (0 = whole report)";
+        extractionReportLabel.Text = $"Extraction report chars (0 = whole, default {Defaults.ExtractionReportMaxChars:N0})";
 
         // extractionReportUpDown
         extractionReportUpDown.Increment = 1000;
@@ -1056,7 +1065,7 @@ partial class ConfigurationForm
         documentsListedLabel.AutoSize = true;
         documentsListedLabel.Margin = new Padding(0, 7, 6, 0);
         documentsListedLabel.Name = "documentsListedLabel";
-        documentsListedLabel.Text = "Documents listed (0 = all)";
+        documentsListedLabel.Text = $"Documents listed (0 = all, default {Defaults.MaxDocumentsInContext})";
 
         // documentsListedUpDown
         documentsListedUpDown.Margin = new Padding(0, 3, 0, 3);
@@ -1083,7 +1092,7 @@ partial class ConfigurationForm
         parallelRequestsLabel.AutoSize = true;
         parallelRequestsLabel.Margin = new Padding(0, 7, 6, 0);
         parallelRequestsLabel.Name = "parallelRequestsLabel";
-        parallelRequestsLabel.Text = "Parallel requests";
+        parallelRequestsLabel.Text = $"Parallel requests (default {Defaults.MaxParallelRequests})";
 
         // parallelRequestsUpDown
         parallelRequestsUpDown.Margin = new Padding(0, 3, 16, 3);
@@ -1097,7 +1106,7 @@ partial class ConfigurationForm
         parallelChecksLabel.AutoSize = true;
         parallelChecksLabel.Margin = new Padding(0, 7, 6, 0);
         parallelChecksLabel.Name = "parallelChecksLabel";
-        parallelChecksLabel.Text = "Parallel checks";
+        parallelChecksLabel.Text = $"Parallel checks (default {Defaults.MaxParallelChecks})";
 
         // parallelChecksUpDown
         parallelChecksUpDown.Margin = new Padding(0, 3, 16, 3);
@@ -1111,7 +1120,7 @@ partial class ConfigurationForm
         embeddingCharsLabel.AutoSize = true;
         embeddingCharsLabel.Margin = new Padding(0, 7, 6, 0);
         embeddingCharsLabel.Name = "embeddingCharsLabel";
-        embeddingCharsLabel.Text = "Embedding input chars";
+        embeddingCharsLabel.Text = $"Embedding input chars (default {Defaults.MaxEmbeddingInputCharacters:N0})";
 
         // embeddingCharsUpDown
         embeddingCharsUpDown.Increment = 1000;

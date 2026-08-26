@@ -6,17 +6,17 @@ These files are deployed beside the executable on build, so editing one changes 
 
 | File | Groups | Queries |
 |---|---:|---:|
-| [CHK-001](CHK-001.query-plan.json) Suitability completeness against client information | 11 | 36 |
-| [CHK-002](CHK-002.query-plan.json) Objectives, needs and time-horizon alignment | 7 | 22 |
-| [CHK-003](CHK-003.query-plan.json) Risk, capacity for loss and investment strategy match | 10 | 34 |
-| [CHK-004](CHK-004.query-plan.json) Knowledge, experience and product complexity | 7 | 21 |
-| [CHK-005](CHK-005.query-plan.json) Financial resilience, affordability and liquidity | 8 | 28 |
-| [CHK-006](CHK-006.query-plan.json) Recommendation rationale and suitable alternatives | 8 | 30 |
-| [CHK-007](CHK-007.query-plan.json) Costs, charges and value of the recommendation | 11 | 39 |
-| [CHK-008](CHK-008.query-plan.json) Disadvantages, risks and customer understanding | 8 | 30 |
-| [CHK-009](CHK-009.query-plan.json) Replacement or switch justification | 10 | 37 |
+| [CHK-001](CHK-001.query-plan.json) Suitability completeness against client information | 11 | 41 |
+| [CHK-002](CHK-002.query-plan.json) Objectives, needs and time-horizon alignment | 8 | 26 |
+| [CHK-003](CHK-003.query-plan.json) Risk, capacity for loss and investment strategy match | 10 | 35 |
+| [CHK-004](CHK-004.query-plan.json) Knowledge, experience and product complexity | 7 | 24 |
+| [CHK-005](CHK-005.query-plan.json) Financial resilience, affordability and liquidity | 8 | 32 |
+| [CHK-006](CHK-006.query-plan.json) Recommendation rationale and suitable alternatives | 9 | 34 |
+| [CHK-007](CHK-007.query-plan.json) Costs, charges and value of the recommendation | 11 | 41 |
+| [CHK-008](CHK-008.query-plan.json) Disadvantages, risks and customer understanding | 8 | 32 |
+| [CHK-009](CHK-009.query-plan.json) Replacement or switch justification | 10 | 39 |
 | [CHK-010](CHK-010.query-plan.json) Vulnerability, support needs and foreseeable harm overlay | 5 | 20 |
-| **Total** | **85** | **297** |
+| **Total** | **87** | **324** |
 
 Schema: [query-plan.schema.json](query-plan.schema.json). All ten validate against it, and every field's description names its role — `retrieval`, `verification`, `build-time` or `load`.
 
@@ -298,7 +298,7 @@ Most fields here are strings interpolated into the group's prompt, and nothing b
 
 #### The categorisation steer
 
-`verification.issueCategories` names the kinds of problem the requirement usually raises, from the nine-category vocabulary the findings and the compliance report share. Every one of the 85 shipped groups carries one, and every value is checked by lint rule **L4**: a category outside the vocabulary is refused rather than passed through, because the entire value of a closed list is that filtering to "every disclosure shortfall in this case" returns all of them, and one plan spelling it *Disclosure shortfalls* produces findings that quietly answer no filter at all.
+`verification.issueCategories` names the kinds of problem the requirement usually raises, from the nine-category vocabulary the findings and the compliance report share. Every one of the 87 shipped groups carries one, and every value is checked by lint rule **L4**: a category outside the vocabulary is refused rather than passed through, because the entire value of a closed list is that filtering to "every disclosure shortfall in this case" returns all of them, and one plan spelling it *Disclosure shortfalls* produces findings that quietly answer no filter at all.
 
 **It is a steer and not a menu.** The same prompt that prints it tells the assessor to name the kind of problem it actually found — including one not listed — and to leave the list empty where the requirement is met. That is why the field says what a requirement *tends* to raise rather than what it *may* return: a plan able to close the vocabulary down to one answer per group would be the plan deciding the finding, which is precisely what the `retrieval` / `verification` split exists to prevent. A test pins the lower bound at two categories per group for the same reason.
 

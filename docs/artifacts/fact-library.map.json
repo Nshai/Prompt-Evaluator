@@ -1,0 +1,377 @@
+{
+  "$comment": "The published fact library, mapped onto the canonical model paths that carry each fact. This file exists so that the reconciliation can be a build-time check rather than an occasional audit: FactLibraryCoverageTests asserts that every fact here has a home in the canonical model schema and is read by at least one query-plan group. A fact the extractor publishes and no requirement reads is a value the pipeline produces and never checks, which is worse than not extracting it at all — the report shows it as an established fact.",
+  "libraryDate": "2026-08-25",
+  "source": "docs/Fact Library - 2026-08-25.html",
+  "facts": [
+    {
+      "id": "client.dependents",
+      "title": "Dependents and financial dependency",
+      "section": "Client circumstances",
+      "canonicalPaths": [
+        "/parties/dependants"
+      ]
+    },
+    {
+      "id": "client.employment",
+      "title": "Employment status and occupation",
+      "section": "Client circumstances",
+      "canonicalPaths": [
+        "/parties/clients[]/employments"
+      ]
+    },
+    {
+      "id": "client.health-status",
+      "title": "Stated health status",
+      "section": "Client circumstances",
+      "canonicalPaths": [
+        "/parties/clients[]/health"
+      ]
+    },
+    {
+      "id": "client.identity",
+      "title": "Client identity",
+      "section": "Client circumstances",
+      "canonicalPaths": [
+        "/parties/clients[]/firstName",
+        "/parties/clients[]/lastName",
+        "/parties/clients[]/dateOfBirth"
+      ]
+    },
+    {
+      "id": "client.marital-status",
+      "title": "Marital status",
+      "section": "Client circumstances",
+      "canonicalPaths": [
+        "/parties/clients[]/maritalStatus"
+      ]
+    },
+    {
+      "id": "client.pension-allowance-status",
+      "title": "Pension allowance status",
+      "section": "Client circumstances",
+      "canonicalPaths": [
+        "/parties/clients[]/taxStatus/annualAllowance",
+        "/parties/clients[]/taxStatus/mpaaTriggered"
+      ]
+    },
+    {
+      "id": "client.pension-sharing-order",
+      "title": "Pension sharing order award",
+      "section": "Client circumstances",
+      "canonicalPaths": [
+        "/parties/clients[]/pensionSharingOrders"
+      ]
+    },
+    {
+      "id": "client.property",
+      "title": "Property or significant asset held",
+      "section": "Client circumstances",
+      "canonicalPaths": [
+        "/financialPosition/assets"
+      ]
+    },
+    {
+      "id": "person.age",
+      "title": "Stated age",
+      "section": "Client circumstances",
+      "canonicalPaths": [
+        "/parties/clients[]/age"
+      ]
+    },
+    {
+      "id": "client.objective",
+      "title": "Stated client objective",
+      "section": "Objectives",
+      "canonicalPaths": [
+        "/objectives[]/summary",
+        "/objectives[]/details"
+      ]
+    },
+    {
+      "id": "retirement.target-age",
+      "title": "Intended retirement age",
+      "section": "Objectives",
+      "canonicalPaths": [
+        "/objectives[]/targetAge",
+        "/parties/clients[]/employments[]/intendedRetirementAge"
+      ]
+    },
+    {
+      "id": "retirement.target-income",
+      "title": "Target retirement income",
+      "section": "Objectives",
+      "canonicalPaths": [
+        "/objectives[]/targetIncome"
+      ]
+    },
+    {
+      "id": "client.liabilities-present",
+      "title": "Outstanding liabilities",
+      "section": "Income & expenditure",
+      "canonicalPaths": [
+        "/financialPosition/liabilities"
+      ]
+    },
+    {
+      "id": "client.liquid-savings",
+      "title": "Liquid savings held",
+      "section": "Income & expenditure",
+      "canonicalPaths": [
+        "/financialPosition/assets",
+        "/financialPosition/emergencyFund"
+      ]
+    },
+    {
+      "id": "household.expenditure",
+      "title": "Household expenditure",
+      "section": "Income & expenditure",
+      "canonicalPaths": [
+        "/financialPosition/expenditures"
+      ]
+    },
+    {
+      "id": "income.source",
+      "title": "Income source and amount",
+      "section": "Income & expenditure",
+      "canonicalPaths": [
+        "/financialPosition/incomes"
+      ]
+    },
+    {
+      "id": "client.investment-experience",
+      "title": "Investment knowledge and experience",
+      "section": "Risk profile",
+      "canonicalPaths": [
+        "/knowledgeAndExperience/perClient[]/productExperience",
+        "/knowledgeAndExperience/perClient[]/statedLevel"
+      ]
+    },
+    {
+      "id": "risk.attitude-rating",
+      "title": "Attitude to risk rating",
+      "section": "Risk profile",
+      "canonicalPaths": [
+        "/riskAssessment/perClient[]/attitudeToRisk"
+      ]
+    },
+    {
+      "id": "risk.capacity-for-loss",
+      "title": "Capacity for loss",
+      "section": "Risk profile",
+      "canonicalPaths": [
+        "/riskAssessment/perClient[]/capacityForLoss"
+      ]
+    },
+    {
+      "id": "arrangement.charges",
+      "title": "Arrangement charges",
+      "section": "Existing arrangements",
+      "canonicalPaths": [
+        "/existingArrangements[]/charges",
+        "/costsAndCharges/existing"
+      ]
+    },
+    {
+      "id": "arrangement.contributions",
+      "title": "Contribution status of an arrangement",
+      "section": "Existing arrangements",
+      "canonicalPaths": [
+        "/existingArrangements[]/contributions"
+      ]
+    },
+    {
+      "id": "arrangement.exit-penalty-present",
+      "title": "Exit or transfer penalty present",
+      "section": "Existing arrangements",
+      "canonicalPaths": [
+        "/existingArrangements[]/exitPenalties"
+      ]
+    },
+    {
+      "id": "arrangement.fund-holdings",
+      "title": "Current fund holdings of an arrangement",
+      "section": "Existing arrangements",
+      "canonicalPaths": [
+        "/existingArrangements[]/holdings"
+      ]
+    },
+    {
+      "id": "arrangement.fund-value",
+      "title": "Arrangement fund/transfer value",
+      "section": "Existing arrangements",
+      "canonicalPaths": [
+        "/existingArrangements[]/currentValue",
+        "/existingArrangements[]/transferValue"
+      ]
+    },
+    {
+      "id": "arrangement.product-features",
+      "title": "Product features of an arrangement",
+      "section": "Existing arrangements",
+      "canonicalPaths": [
+        "/existingArrangements[]/otherFeatures",
+        "/existingArrangements[]/retirementOptionsAvailable"
+      ]
+    },
+    {
+      "id": "pension.safeguarded-benefits-present",
+      "title": "Safeguarded benefits present",
+      "section": "Pension benefits",
+      "canonicalPaths": [
+        "/existingArrangements[]/safeguardedBenefits"
+      ]
+    },
+    {
+      "id": "adviser.fee",
+      "title": "Adviser fee",
+      "section": "Costs & charges",
+      "canonicalPaths": [
+        "/costsAndCharges/adviserFees"
+      ]
+    },
+    {
+      "id": "arrangement.projected-value",
+      "title": "Projected plan value",
+      "section": "Costs & charges",
+      "canonicalPaths": [
+        "/solution/recommendedPlans[]/projections"
+      ]
+    },
+    {
+      "id": "switch.charge-impact",
+      "title": "Charge impact of switching",
+      "section": "Costs & charges",
+      "canonicalPaths": [
+        "/replacementAnalysis[]/costsOfSwitching",
+        "/costsAndCharges/comparison"
+      ]
+    },
+    {
+      "id": "switch.critical-yield",
+      "title": "Critical yield",
+      "section": "Costs & charges",
+      "canonicalPaths": [
+        "/costsAndCharges/reductionInYield"
+      ]
+    },
+    {
+      "id": "alternative.annuity-quote",
+      "title": "Annuity quote obtained",
+      "section": "Recommendations",
+      "canonicalPaths": [
+        "/recommendations[]/alternativesConsidered",
+        "/research/optionsConsidered"
+      ]
+    },
+    {
+      "id": "provider.financial-strength",
+      "title": "Provider financial strength",
+      "section": "Recommendations",
+      "canonicalPaths": [
+        "/solution/providerSelection/financialStrengthRating"
+      ]
+    },
+    {
+      "id": "recommendation.action",
+      "title": "Recommended action",
+      "section": "Recommendations",
+      "canonicalPaths": [
+        "/recommendations[]/action",
+        "/existingArrangements[]/adviceAction"
+      ]
+    },
+    {
+      "id": "recommendation.alternative-considered",
+      "title": "Alternative considered and outcome",
+      "section": "Recommendations",
+      "canonicalPaths": [
+        "/recommendations[]/alternativesConsidered"
+      ]
+    },
+    {
+      "id": "recommendation.ancillary-action",
+      "title": "Ancillary recommendation",
+      "section": "Recommendations",
+      "canonicalPaths": [
+        "/solution/implementation/nextSteps",
+        "/recommendations[]/action"
+      ]
+    },
+    {
+      "id": "recommendation.fund-allocation",
+      "title": "Recommended fund and allocation",
+      "section": "Recommendations",
+      "canonicalPaths": [
+        "/solution/investmentStrategy/holdings",
+        "/solution/investmentStrategy/assetAllocation"
+      ]
+    },
+    {
+      "id": "recommendation.withdrawal",
+      "title": "Recommended withdrawal strategy",
+      "section": "Recommendations",
+      "canonicalPaths": [
+        "/solution/recommendedPlans[]/plannedWithdrawals",
+        "/existingArrangements[]/withdrawals"
+      ]
+    },
+    {
+      "id": "transfer.consideration",
+      "title": "Transfer considered or recommended",
+      "section": "Recommendations",
+      "canonicalPaths": [
+        "/replacementAnalysis",
+        "/existingArrangements[]/transferValue"
+      ]
+    },
+    {
+      "id": "cashflow.assumption",
+      "title": "Cashflow modelling assumption",
+      "section": "Cashflow modelling",
+      "canonicalPaths": [
+        "/needsAnalysis/assumptions"
+      ]
+    },
+    {
+      "id": "cashflow.projection-outcome",
+      "title": "Cashflow projection outcome",
+      "section": "Cashflow modelling",
+      "canonicalPaths": [
+        "/needsAnalysis/scenarios"
+      ]
+    },
+    {
+      "id": "fund.past-performance",
+      "title": "Stated past performance or rate",
+      "section": "Performance",
+      "canonicalPaths": [
+        "/existingArrangements[]/performance"
+      ]
+    },
+    {
+      "id": "client.poa-status",
+      "title": "Power of Attorney in place",
+      "section": "Estate planning",
+      "canonicalPaths": [
+        "/parties/clients[]/estatePlanning/isPowerOfAttorneyGranted"
+      ]
+    },
+    {
+      "id": "client.will-status",
+      "title": "Valid will in place",
+      "section": "Estate planning",
+      "canonicalPaths": [
+        "/parties/clients[]/estatePlanning/hasWill",
+        "/parties/clients[]/estatePlanning/isWillUpToDate"
+      ]
+    },
+    {
+      "id": "estate.iht-liability",
+      "title": "Stated IHT liability",
+      "section": "Estate planning",
+      "canonicalPaths": [
+        "/parties/clients[]/estatePlanning/estimatedIhtLiability"
+      ]
+    }
+  ]
+}

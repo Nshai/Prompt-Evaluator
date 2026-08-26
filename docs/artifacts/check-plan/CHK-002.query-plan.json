@@ -730,6 +730,108 @@
           "minEvidenceCategories": 1
         }
       }
+    },
+    {
+      "groupId": "G2.8",
+      "requirement": "Target retirement income stated in the report is consistent with the evidence and with the figures the plan is modelled on",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C",
+          "G"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/objectives[]/targetIncome",
+          "/objectives[]/targetIncomeFrequency",
+          "/needsAnalysis/assumptions[]",
+          "/financialPosition/totals/totalMonthlyIncomeNet"
+        ],
+        "queries": [
+          {
+            "id": "Q2.8.1",
+            "text": "you would like a retirement income of approximately net per month in today's terms",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "target income",
+              "desired retirement income",
+              "net per month",
+              "income of approximately",
+              "income of between",
+              "per annum in retirement"
+            ],
+            "canonicalPaths": [
+              "/objectives[]/targetIncome"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.8.2",
+            "text": "income required in retirement recorded on the fact find target monthly figure",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "C"
+            ],
+            "expectSignals": [
+              "income required",
+              "retirement income",
+              "per month",
+              "per annum",
+              "target",
+              "in today's terms"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.8.3",
+            "text": "cashflow model income requirement assumption used in the projection",
+            "side": "Evidence",
+            "targetCategories": [
+              "G"
+            ],
+            "expectSignals": [
+              "assumed",
+              "income requirement",
+              "escalation",
+              "inflation",
+              "in real terms",
+              "modelled"
+            ],
+            "canonicalPaths": [
+              "/needsAnalysis/assumptions[]"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
+        "comparison": {
+          "method": "ValueMatch",
+          "tolerance": "A figure stated as approximate, or as a range, agrees with any evidence figure inside it. Gross and net are not interchangeable: compare like for like or say the bases differ.",
+          "falsePositiveGuards": [
+            "A target expressed in today's terms and a modelled figure escalated for inflation are the same target at two dates — reconcile using the stated escalation rather than reporting the difference.",
+            "A target income that includes an existing defined benefit pension is not comparable with one that excludes it; the report usually says which, and where it does not, that is the finding."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Not a finding on its own where the case has no retirement income objective; where the report models a retirement income it has to say what income it is modelling.",
+          "ifEvidenceAbsent": "Potential Concern: the report quantifies a retirement income the file does not record the client asking for.",
+          "ifBothAbsent": "No finding."
+        }
+      }
     }
   ],
   "decision": {

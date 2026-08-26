@@ -323,7 +323,9 @@
       "retrieval": {
         "canonicalPaths": [
           "/taxTreatment/consequencesStated[]",
-          "/recommendations[]/taxImplications[]"
+          "/recommendations[]/taxImplications[]",
+          "/parties/clients[]/estatePlanning/estimatedIhtLiability",
+          "/solution/recommendedPlans[]/plannedWithdrawals[]"
         ],
         "queries": [
           {

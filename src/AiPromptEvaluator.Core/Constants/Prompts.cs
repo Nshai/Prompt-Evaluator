@@ -118,6 +118,16 @@ public static class Prompts
         - assertionStatus: "Stated" when it is explicit in the text; "Inferred" when you read
           it out of narrative prose; "Derived" when you calculated it from other values;
           "Absent" when the model expects it and the report does not provide it.
+        - modality is a different question and is answered separately: assertionStatus says how
+          you came to know the value, modality says what the report is claiming about it. A
+          salary the client earns today and a retirement income projected thirty years out are
+          both "Stated"; only modality separates them, and a check comparing the second against
+          a fact find as though it were the first reports a discrepancy that does not exist.
+          "Actual" true at the report date · "Reported" the client said so · "Intended" the
+          client plans it · "Assumed" an adviser or modelling assumption · "Projected" a future
+          value from an illustration or cashflow · "Recommended" part of the advice rather than
+          the current position · "Conditional" holds only if a stated condition does, including
+          a charge phrased as "if you were to retain the plan" · "Unknown" not determinable.
         - Use the identifiers given under "Identifiers" exactly as written. Every id field and
           every *Ids array must hold an id from that table. If something you would reference is
           not in the table, omit the reference — never coin a new id, and never put a name, a

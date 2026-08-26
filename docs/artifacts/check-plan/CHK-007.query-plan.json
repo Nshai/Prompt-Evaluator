@@ -434,7 +434,8 @@
       },
       "retrieval": {
         "canonicalPaths": [
-          "/costsAndCharges/comparison"
+          "/costsAndCharges/comparison",
+          "/existingArrangements[]/charges"
         ],
         "queries": [
           {
@@ -562,7 +563,8 @@
       },
       "retrieval": {
         "canonicalPaths": [
-          "/costsAndCharges/valueAssessment"
+          "/costsAndCharges/valueAssessment",
+          "/existingArrangements[]/performance[]"
         ],
         "queries": [
           {
@@ -626,6 +628,27 @@
               "savings",
               "rate of income tax",
               "expenditure"
+            ],
+            "priority": "Supplementary"
+          },
+          {
+            "id": "Q7.5.5",
+            "text": "cumulative performance of the existing funds over five years annualised return volatility",
+            "side": "Evidence",
+            "targetCategories": [
+              "E",
+              "G"
+            ],
+            "expectSignals": [
+              "cumulative performance",
+              "past performance",
+              "annualised",
+              "volatility",
+              "5 year",
+              "data source"
+            ],
+            "canonicalPaths": [
+              "/existingArrangements[]/performance[]"
             ],
             "priority": "Supplementary"
           }

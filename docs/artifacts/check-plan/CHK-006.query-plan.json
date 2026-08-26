@@ -167,7 +167,8 @@
         "canonicalPaths": [
           "/solution/providerSelection/rationale[]",
           "/solution/investmentStrategy/rationale[]",
-          "/solution/recommendedPlans[]"
+          "/solution/recommendedPlans[]",
+          "/solution/providerSelection/financialStrengthRating"
         ],
         "queries": [
           {
@@ -367,7 +368,8 @@
       "retrieval": {
         "canonicalPaths": [
           "/recommendations[]/alternativesConsidered[]",
-          "/research/optionsConsidered[]"
+          "/research/optionsConsidered[]",
+          "/recommendations[]/alternativesConsidered[]/quote"
         ],
         "queries": [
           {
@@ -881,6 +883,106 @@
           "ifAssertionAbsent": "Note as a gap; raise it as a concern only where timing or responsibility bears on suitability.",
           "ifEvidenceAbsent": "Assess on the report alone.",
           "minEvidenceCategories": 0
+        }
+      }
+    },
+    {
+      "groupId": "G6.9",
+      "requirement": "Ancillary recommendations — beneficiary nomination, Power of Attorney, will review — are stated with an owner and are consistent with what the file records",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/solution/implementation/nextSteps[]",
+          "/recommendations[]/action",
+          "/recommendations[]/implementation/responsibleParty",
+          "/parties/clients[]/estatePlanning/hasWill",
+          "/parties/clients[]/estatePlanning/isWillUpToDate",
+          "/parties/clients[]/estatePlanning/isPowerOfAttorneyGranted"
+        ],
+        "queries": [
+          {
+            "id": "Q6.9.1",
+            "text": "I recommend you complete an expression of wish nomination of beneficiaries form",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "nomination of beneficiaries",
+              "Expression of Wish",
+              "beneficiary",
+              "death benefit nomination"
+            ],
+            "canonicalPaths": [
+              "/solution/implementation/nextSteps[]"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q6.9.2",
+            "text": "you should review your will and consider setting up a power of attorney",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "review your Will",
+              "valid will",
+              "Power of Attorney",
+              "LPA",
+              "needs to be updated"
+            ],
+            "canonicalPaths": [
+              "/parties/clients[]/estatePlanning/hasWill"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q6.9.3",
+            "text": "will in place power of attorney registered recorded on the fact find",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "C"
+            ],
+            "expectSignals": [
+              "will",
+              "in place",
+              "power of attorney",
+              "registered",
+              "attorney",
+              "estate planning"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Process risk"
+        ],
+        "comparison": {
+          "method": "PresenceOnly",
+          "falsePositiveGuards": [
+            "\"Will\" is far more often the modal verb than a testament — read the sentence before treating a match as an estate-planning statement.",
+            "An adviser recommending the client set up a Power of Attorney is a different claim from the client already having one; a report may correctly do the first while the file records neither.",
+            "An ancillary recommendation the adviser will not implement is not a defect, provided the report says who will."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Not a finding on its own — a case need not raise estate planning.",
+          "ifEvidenceAbsent": "Note as a gap: the report asserts a will or attorney status the file does not record.",
+          "ifBothAbsent": "No finding."
         }
       }
     }

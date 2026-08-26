@@ -681,7 +681,8 @@
           "/existingArrangements[]/currentValue",
           "/existingArrangements[]/transferValue",
           "/existingArrangements[]/contributions[]",
-          "/existingArrangements[]/planType"
+          "/existingArrangements[]/planType",
+          "/parties/clients[]/pensionSharingOrders[]"
         ],
         "evidenceSections": [
           "Money Purchase Pension Schemes",
@@ -829,6 +830,27 @@
               "Employer"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q1.7.9",
+            "text": "pension sharing order divorce settlement awarded a share of your ex-spouse's pension credit",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "C"
+            ],
+            "expectSignals": [
+              "Pension Sharing Order",
+              "divorce settlement",
+              "awarded a share",
+              "pension credit",
+              "ex-husband",
+              "ex-wife"
+            ],
+            "canonicalPaths": [
+              "/parties/clients[]/pensionSharingOrders[]"
+            ],
+            "priority": "Supplementary"
           }
         ]
       },

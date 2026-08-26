@@ -653,7 +653,8 @@
         "canonicalPaths": [
           "/financialPosition/liquidityAndAccessNeeds[]/requiredFrom",
           "/solution/recommendedPlans[]/wrapper",
-          "/solution/recommendedPlans[]/selectedRetirementAge"
+          "/solution/recommendedPlans[]/selectedRetirementAge",
+          "/solution/recommendedPlans[]/plannedWithdrawals[]"
         ],
         "queries": [
           {

@@ -176,7 +176,9 @@ public class CheckPlanLintTests
     /// The plan set's shape, pinned. A dropped query group is otherwise silent: the check runs,
     /// reports success, and assesses one requirement fewer than the catalogue says it has.
     /// The stale build output that prompted this had CHK-001 at eight groups against nine.
-    /// Re-pinned when the plans were rebuilt against "Revised checks.csv": 60 groups to 85.
+    /// Re-pinned when the plans were rebuilt against "Revised checks.csv": 60 groups to 85, and
+    /// again at 87 when the fact library was reconciled against the plans and two published facts
+    /// turned out to have no requirement reading them at all.
     /// </summary>
     [Fact]
     public void TheShippedPlanSetHasTheGroupsTheCatalogueExpects()
@@ -189,17 +191,17 @@ public class CheckPlanLintTests
             StringComparer.OrdinalIgnoreCase);
 
         Assert.Equal(11, counts["CHK-001"]);
-        Assert.Equal(7, counts["CHK-002"]);
+        Assert.Equal(8, counts["CHK-002"]);
         Assert.Equal(10, counts["CHK-003"]);
         Assert.Equal(7, counts["CHK-004"]);
         Assert.Equal(8, counts["CHK-005"]);
-        Assert.Equal(8, counts["CHK-006"]);
+        Assert.Equal(9, counts["CHK-006"]);
         Assert.Equal(11, counts["CHK-007"]);
         Assert.Equal(8, counts["CHK-008"]);
         Assert.Equal(10, counts["CHK-009"]);
         Assert.Equal(5, counts["CHK-010"]);
 
-        Assert.Equal(85, counts.Values.Sum());
+        Assert.Equal(87, counts.Values.Sum());
     }
 
     /// <summary>

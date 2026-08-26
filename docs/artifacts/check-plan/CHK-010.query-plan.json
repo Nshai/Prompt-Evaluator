@@ -82,7 +82,8 @@
           "/vulnerability/perClient[]/supportNeeds[]",
           "/vulnerability/perClient[]/thirdPartySupport",
           "/vulnerability/perClient[]/thirdPartySupport/authorityType",
-          "/vulnerability/perClient[]/thirdPartySupport/relationship"
+          "/vulnerability/perClient[]/thirdPartySupport/relationship",
+          "/parties/clients[]/estatePlanning/isPowerOfAttorneyGranted"
         ],
         "queries": [
           {

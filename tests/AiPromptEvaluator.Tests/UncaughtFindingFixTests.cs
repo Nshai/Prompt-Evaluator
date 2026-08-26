@@ -161,12 +161,17 @@ public class UncaughtFindingFixTests
     /// Everything above was added inside an existing group. The catalogue's group count is pinned
     /// elsewhere; this says the same thing from the other direction, because a fix that quietly
     /// added a group would change what every check reports.
+    ///
+    /// The number moved from 85 to 87 once, and not for a fix: reconciling the published fact
+    /// library against the plans found two facts — the target retirement income and the ancillary
+    /// estate-planning recommendations — that no requirement read at all, and each needed a
+    /// requirement of its own rather than a path bolted onto a neighbour.
     /// </summary>
     [Fact]
     public void NoFixAddedAGroup()
     {
         var (plans, _) = CheckQueryPlanLoader.Load(PlanFolder);
 
-        Assert.Equal(85, plans.Values.Sum(p => p.QueryGroups.Count));
+        Assert.Equal(87, plans.Values.Sum(p => p.QueryGroups.Count));
     }
 }

@@ -102,7 +102,8 @@
       },
       "retrieval": {
         "canonicalPaths": [
-          "/replacementAnalysis[]/comparison[]"
+          "/replacementAnalysis[]/comparison[]",
+          "/existingArrangements[]/performance[]"
         ],
         "queries": [
           {
@@ -260,7 +261,8 @@
       "retrieval": {
         "canonicalPaths": [
           "/replacementAnalysis[]/benefitsOfSwitching[]",
-          "/replacementAnalysis[]/costsOfSwitching"
+          "/replacementAnalysis[]/costsOfSwitching",
+          "/existingArrangements[]/charges"
         ],
         "queries": [
           {
@@ -524,7 +526,8 @@
       },
       "retrieval": {
         "canonicalPaths": [
-          "/replacementAnalysis[]/alternativesConsidered[]"
+          "/replacementAnalysis[]/alternativesConsidered[]",
+          "/recommendations[]/alternativesConsidered[]/quote"
         ],
         "queries": [
           {
@@ -574,6 +577,27 @@
               "discounted"
             ],
             "priority": "Core"
+          },
+          {
+            "id": "Q9.4.4",
+            "text": "annuity quotation gross income per annum guaranteed maturity value comparable annuity",
+            "side": "Evidence",
+            "targetCategories": [
+              "E",
+              "G"
+            ],
+            "expectSignals": [
+              "annuity quote",
+              "comparable annuity income",
+              "gross income",
+              "P.A.",
+              "guaranteed maturity value",
+              "annuity rates"
+            ],
+            "canonicalPaths": [
+              "/recommendations[]/alternativesConsidered[]/quote"
+            ],
+            "priority": "Supplementary"
           }
         ]
       },

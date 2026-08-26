@@ -8,10 +8,12 @@ Derived from the QA assessment checks (CHK-001 … CHK-010), the A–I document 
 |---|---|
 | [canonical-suitability-model.md](canonical-suitability-model.md) | The design document: why the model is shaped this way, structure, provenance approach, extraction guidance, limitations. **Start here.** |
 | [canonical-suitability-model.schema.json](canonical-suitability-model.schema.json) | JSON Schema (draft 2020-12) — the machine-readable contract for LLM extraction output. **Deployed with the app.** |
-| [check-coverage-matrix.csv](check-coverage-matrix.csv) | Every check requirement → canonical path → evidence categories → trigger. 85 rows, one per query-plan group, covering all 10 checks and both limbs. Generated from the plans, so the two cannot drift |
+| [check-coverage-matrix.csv](check-coverage-matrix.csv) | Every check requirement → canonical path → evidence categories → trigger. 87 rows, one per query-plan group, covering all 10 checks and both limbs. Generated from the plans, so the two cannot drift |
 | [io-resource-mapping.md](io-resource-mapping.md) | Canonical field → Intelliflo Office schema mapping, including which enumerations are copied verbatim and which constructs deliberately have no Office equivalent |
 | [examples/suitability-report-test-1.extract.json](examples/suitability-report-test-1.extract.json) | Worked instance from a five-plan pension consolidation report; validates against the schema |
-| [check-plan/](check-plan/) | Semantic-search query plans, one per check — 85 query groups, 297 queries. **Deployed with the app.** |
+| [check-plan/](check-plan/) | Semantic-search query plans, one per check — 87 query groups, 324 queries. **Deployed with the app.** |
+| [fact-library-coverage.md](fact-library-coverage.md) | Reconciles the 44 published fact definitions against the model and the plans. Records the seven facts no requirement read, and the two the model had nowhere to put |
+| [fact-library.map.json](fact-library.map.json) | Each published fact → the canonical paths that carry it. **Copied to the build output**, so `FactLibraryCoverageTests` can hold the reconciliation on every build rather than leaving it to an audit |
 
 ## How the app uses this
 

@@ -36,6 +36,13 @@
     <Content Include="..\..\docs\artifacts\check-plan\*.query-plan.json"
              Link="check-plan\%(Filename)%(Extension)"
              CopyToOutputDirectory="PreserveNewest" />
+    <!--
+      Not read at run time. It is the published fact library mapped onto the model, and it is
+      copied so the test suite can reconcile the three against each other on every build.
+    -->
+    <Content Include="..\..\docs\artifacts\fact-library.map.json"
+             Link="fact-library.map.json"
+             CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!--

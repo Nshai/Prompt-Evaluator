@@ -34,7 +34,8 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/Dependant"
-          }
+          },
+          "description": "Every stated child or dependant, including grandchildren where named separately. A statement that children are financially independent is a claim with isFinanciallyDependant false, not an absence — it is checkable and must be recorded as such. Material to death benefits, IHT and affordability."
         },
         "professionalContacts": {
           "type": "array",
@@ -129,6 +130,10 @@
       "properties": {
         "assertionStatus": {
           "description": "Stated = explicit in the document. Inferred = the LLM concluded it from narrative prose. Derived = calculated from other extracted values. Absent = the model expected it and could not find it. One of: Stated, Inferred, Derived, Absent.",
+          "type": "string"
+        },
+        "modality": {
+          "description": "What KIND of claim this is, which is a different question from assertionStatus and is answered independently of it. assertionStatus says how we came to know the value; modality says what the document is asserting about it. Both a current salary and a retirement income projected thirty years out can be Stated, and comparing them as though they were the same claim is how a projection comes to be reported as a discrepancy against a fact find. Actual = true at the date of the report. Reported = the client said so. Intended = the client plans it. Assumed = an adviser or modelling assumption. Projected = a future value from an illustration or cashflow. Recommended = part of the advice rather than the current position. Conditional = only holds if a stated condition applies, including a charge phrased as \"if you were to retain the plan\". Unknown = the document does not make it determinable. Where the report gives no signal, Reported is the usual reading for a client circumstance and Actual for a figure the report states as current fact. One of: Actual, Reported, Intended, Assumed, Projected, Recommended, Conditional, Unknown.",
           "type": "string"
         },
         "documentId": {
@@ -447,7 +452,8 @@
           "type": [
             "string",
             "null"
-          ]
+          ],
+          "description": "Exactly as spelled in the report. Do not normalise a spelling and do not merge two differently-named people into one identity even where the context implies they are the same person: identities disagreeing across documents is a review signal, and normalising it here is what makes it invisible later."
         },
         "lastName": {
           "type": [
@@ -472,7 +478,8 @@
           "type": [
             "integer",
             "null"
-          ]
+          ],
+          "description": "The age the report states, per person. Never derive it from a date of birth or back out of a retirement horizon: a derived age agreeing with the fact find proves nothing, and a stated age disagreeing with one is the finding."
         },
         "gender": {
           "type": [
@@ -485,7 +492,8 @@
           "type": [
             "string",
             "null"
-          ]
+          ],
+          "description": "The stated legal status. Do not infer it from joint finances alone. Where the report states a legal status and a living arrangement together — recently divorced, living with a partner — the legal status is this value and the cohabitation belongs in the surrounding fields, not folded into it."
         },
         "nationalInsuranceNumber": {
           "type": [
@@ -611,7 +619,8 @@
               "type": [
                 "boolean",
                 "null"
-              ]
+              ],
+              "description": "Whether a valid will is stated to be in place. 'You have confirmed you have a valid Will' is a true value with provenance modality Reported. An accompanying acknowledgement that it needs updating qualifies the assertion and must survive — set isWillUpToDate rather than losing it."
             },
             "isWillUpToDate": {
               "type": [
@@ -623,7 +632,8 @@
               "type": [
                 "boolean",
                 "null"
-              ]
+              ],
+              "description": "Whether a Power of Attorney is stated to be registered, with its coverage preserved in the surrounding fields. A stated intention to appoint one is provenance modality Intended. An adviser recommending the client set one up is a recommendation, not this field — and where both appear, both must be recorded, because together they say the attorney is not yet in place."
             },
             "estimatedIhtLiability": {
               "$ref": "#/$defs/Money"
@@ -639,14 +649,63 @@
             }
           }
         },
+        "pensionSharingOrders": {
+          "type": "array",
+          "description": "Awards of a share of an ex-spouse's pension under a divorce settlement. Held separately from taxStatus.protections, which is Lifetime Allowance protection and a different thing: a pension credit is an asset the client has been awarded, evidenced by the court order, while a protection is a tax status. The awarded value is usually approximate until the receiving scheme confirms it, so the report's figure and the order's figure differ legitimately and the check is that both were stated, not that they match to the penny.",
+          "items": {
+            "$ref": "#/$defs/PensionSharingOrder"
+          }
+        },
         "employments": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/Employment"
-          }
+          },
+          "description": "One entry per employment claim, and deliberately 'many': current status, a recently ceased role and a planned change coexist here without being reconciled. A planned change to working patterns — reducing hours, stopping from a future date — is its own entry with provenance modality Intended, never an edit to the current one."
         },
         "statePension": {
           "$ref": "#/$defs/StatePensionEntitlement"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      }
+    },
+    "PensionSharingOrder": {
+      "type": "object",
+      "description": "A share of an ex-spouse's pension awarded under a divorce settlement (a pension credit). The receiving-plan recommendation is a Recommendation; this is the award itself, and it is evidenced by the court order or the ceding provider's correspondence rather than by the suitability report restating it.",
+      "additionalProperties": false,
+      "properties": {
+        "cedingProvider": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The scheme the credit comes from."
+        },
+        "awardedValue": {
+          "$ref": "#/$defs/Money"
+        },
+        "isValueEstimated": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "True where the report states the figure as approximate or subject to confirmation. Set this rather than rounding the figure: an estimate presented as settled is the misstatement worth catching."
+        },
+        "implementationStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "One of: Awarded, Pending, Implemented, Unknown."
+        },
+        "orderDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
         },
         "provenance": {
           "$ref": "#/$defs/Provenance"
@@ -880,25 +939,29 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/IncomeItem"
-          }
+          },
+          "description": "One entry per stated income: earner, source, amount, frequency, and whether net. Preserve the period exactly — 'every four weeks' is not 'per month'. A State Pension payable from a future age, or expected future self-employment earnings, is provenance modality Projected; an income stated as in payment now is Actual or Reported. This is the one fact the SR-internal consistency check reconciles, so a projection recorded as a current figure produces a contradiction that does not exist. An income that has ceased or will cease is still an entry, with the cessation recorded."
         },
         "expenditures": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/ExpenditureItem"
-          }
+          },
+          "description": "Deliberately 'many': the same report states expenditure for now, for retirement and as a modelling input, and each is separately checkable. Extract each with its stated period and keep essential, discretionary and one-off components apart. A cashflow input is an entry with provenance modality Assumed even where it differs from the stated current figure. Do not reconcile differing statements — the difference is the point."
         },
         "assets": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/AssetItem"
-          }
+          },
+          "description": "Each stated property or significant physical asset with its value and, for property, its mortgage status. 'Mortgage-free' is a claim about the absence of secured debt and needs evidence like any negative assertion. Do not copy full addresses in — the property is identified by its role. Nil-rate-band and allowance explanations are background, not assets."
         },
         "liabilities": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/LiabilityItem"
-          }
+          },
+          "description": "Each stated debt with its outstanding amount, repayment and remaining term — repayment detail often appears only as a cashflow input, and counts. A statement of 'no outstanding liabilities' is a false-valued claim to be recorded, not an empty array."
         },
         "totals": {
           "type": "object",
@@ -1289,7 +1352,8 @@
           "description": "One of: Pension, Investment, Protection, Mortgage, EstatePlanning, Budget, EquityRelease, Other. Guidance, not a constraint: an enum here would be enforced by CanonicalModelValidator.StripEnumViolations, which deletes values it does not recognise. Extraction has been observed writing RetirementObjective for this field, and stripping that would leave the objective untyped and silently take CHK-002 and CHK-003 out of the run. The vocabulary is enforced where a mismatch is harmless instead — in each plan's triggerProbe.applicability, where an unrecognised value means the check does not apply rather than the data disappearing."
         },
         "summary": {
-          "type": "string"
+          "type": "string",
+          "description": "One objective per entry, in wording close to the report's own. Negative preferences — an explicit wish NOT to move or invest particular funds — are objectives too, and the negation must survive."
         },
         "details": {
           "type": [
@@ -1331,7 +1395,8 @@
           "type": [
             "integer",
             "null"
-          ]
+          ],
+          "description": "The age the client states an intention to retire at. Do not put a modelling assumption here as though it were an intention: where the report frames the age as a planning input, provenance modality is Assumed, and where the client asked for it, Intended or Reported."
         },
         "termYears": {
           "type": [
@@ -1535,6 +1600,7 @@
     },
     "CapacityForLoss": {
       "type": "object",
+      "description": "The concluded capacity to absorb loss, kept separate from attitude to risk. A composite label such as 'Medium-High' is its own level and is never rounded to an adjacent one — put it verbatim in ratingRaw and map only where the mapping is exact ('Moderate' is medium). A statement that underperformance would not affect day-to-day living is the basis for the level, recorded in assessmentBasis; it is not the level itself.",
       "additionalProperties": false,
       "properties": {
         "rating": {
@@ -1922,7 +1988,8 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/ContributionItem"
-          }
+          },
+          "description": "Each statement about contributions to this arrangement, including the negative ones: 'none ongoing', 'Nil', 'paid up', 'dormant', or no contributions in a stated tax year. Those are claims requiring evidence, not absences. A plan that WILL become paid up is a claim about future status. Advice to start or change a contribution is a recommendation, not this."
         },
         "withdrawals": {
           "type": "array",
@@ -1937,7 +2004,8 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/Holding"
-          }
+          },
+          "description": "Each currently held fund with its allocation, as a percentage or an amount — whichever the report states. Record a stated combined portfolio risk level and any stated per-fund levels separately and never reconcile them: a combined level disagreeing with its constituents is exactly what verification exists to surface. Distinct from the recommended funds under solution.investmentStrategy."
         },
         "assetAllocation": {
           "type": "array",
@@ -2001,7 +2069,8 @@
             "provenance": {
               "$ref": "#/$defs/Provenance"
             }
-          }
+          },
+          "description": "Per-arrangement penalties for transferring or switching out. 'No charges for transfer' is a false-valued claim requiring evidence, not an omission."
         },
         "retirementOptionsAvailable": {
           "type": "array",
@@ -2038,13 +2107,15 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/PerformanceLine"
-          }
+          },
+          "description": "Each stated historical figure with its instrument, period, as-at date and data source, preserving whether it is cumulative or annualised — never convert between them, because the same strategy is quoted both ways and each must stay independently checkable. Stated volatility, with-profits guaranteed growth and bonus rates, and a cash account's current interest rate all belong here. A comparative judgement — 'has not performed as well as' — is not a figure; extract the figures it rests on. Past-performance risk warnings are not claims."
         },
         "otherFeatures": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/Statement"
-          }
+          },
+          "description": "Per-arrangement capability assertions checkable against provider literature: which retirement options exist, how many funds are available, whether a servicing adviser may be added. A stated UNAVAILABLE capability — 'flexi-access drawdown is not available', 'allows servicing adviser: No' — is a false-valued claim like any other negative assertion. Generic education about what drawdown is creates no claim."
         },
         "adviceAction": {
           "description": "The recommended treatment of this arrangement. Triggers CHK-009 when Switch/Transfer/Encash/Surrender. One of: Retain, RetainAndSwitchFunds, PartialTransfer, FullTransfer, Switch, Encash, Surrender, Stop, Amend, NoAdviceGiven.",
@@ -2428,7 +2499,8 @@
                 "$ref": "#/$defs/Provenance"
               }
             }
-          }
+          },
+          "description": "Each modelling or stress-test outcome with its scenario and whether a shortfall is projected. Survivor scenarios and life-expectancy adequacy statements are scenarios too. The numeric inputs behind them are incomes, expenditures and assumptions, not this."
         },
         "assumptions": {
           "type": "array",
@@ -2456,7 +2528,8 @@
                 "$ref": "#/$defs/Provenance"
               }
             }
-          }
+          },
+          "description": "Each stated modelling assumption as its own entry: the parameter and its rate or treatment. Prefer provenance modality Assumed where the report frames it as a modelling input, even when it is phrased in projection language. Where an assumption conflicts with a fact stated elsewhere — modelled expenditure against stated expenditure, a modelled retirement age against a stated intention — both must exist, or the difference cannot be found."
         },
         "identifiedShortfalls": {
           "type": "array",
@@ -2630,7 +2703,6 @@
         }
       }
     },
-
     "PresentedOption": {
       "type": "object",
       "description": "One outcome the report puts to the client. Where several are presented and none is recommended, CHK-006 treats the recommendation as unresolved.",
@@ -2666,7 +2738,6 @@
         }
       }
     },
-
     "Recommendation": {
       "type": "object",
       "description": "Aligned to Intelliflo Office Recommendation2Document + BaseRecommendation2Proposal. proposalType reuses the IO proposal discriminator so a recommendation can be pushed into Office as a proposal.",
@@ -2845,6 +2916,52 @@
         "comparativeCost": {
           "$ref": "#/$defs/Money"
         },
+        "quote": {
+          "$ref": "#/$defs/AlternativeQuote"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      }
+    },
+    "AlternativeQuote": {
+      "type": "object",
+      "description": "The figures behind an alternative that was actually quoted rather than merely named — in practice an annuity quotation, or a comparable-annuity income in a sustainability table. Separate from comparativeCost because that is one amount and this is a claim about a product: an income per annum, on a term basis, from a named provider. Without it a report stating that an annuity would pay a given income asserts a checkable number that no check can reach.",
+      "additionalProperties": false,
+      "properties": {
+        "quotingProvider": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "termBasis": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "One of: Lifetime, FixedTerm, UntilStatePensionAge, Other."
+        },
+        "grossAnnualIncome": {
+          "$ref": "#/$defs/Money"
+        },
+        "guaranteedMaturityValue": {
+          "$ref": "#/$defs/Money"
+        },
+        "paymentFrequency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "One of: Monthly, Quarterly, HalfYearly, Annually, Other."
+        },
+        "quotedOn": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
         "provenance": {
           "$ref": "#/$defs/Provenance"
         }
@@ -2884,7 +3001,8 @@
               "type": [
                 "string",
                 "null"
-              ]
+              ],
+              "description": "Only specific, checkable assertions: a credit rating with its agency, assets under management with an as-at date, or a status such as 'closed to new business' — which is often what a transfer is justified by. Generic marketing (award-winning, innovative, strong governance) is not a claim and does not belong here."
             },
             "provenance": {
               "$ref": "#/$defs/Provenance"
@@ -2991,7 +3109,8 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/WithdrawalItem"
-          }
+          },
+          "description": "Each recommended withdrawal per person: method, amount and frequency, the stated tax-free and taxable split, when it starts and the event that ends it. The split, and any assertion that the taxable element falls within the Personal Allowance, are arithmetic a check will redo — extract the figures verbatim. A statement that NO withdrawal is required is a negative claim under this field. A stated consequence, such as triggering the MPAA, is part of the claim."
         },
         "selectedRetirementAge": {
           "type": [
@@ -3044,7 +3163,8 @@
                 "$ref": "#/$defs/Provenance"
               }
             }
-          }
+          },
+          "description": "Each projected value at a stated age under a stated growth scenario, noting real terms where stated, for both the existing and the recommended plan. Extract every figure verbatim: identical projected values for the old and new plans alongside a stated charge difference is precisely the inconsistency verification has to see, and it disappears the moment a figure is tidied."
         },
         "deathBenefits": {
           "type": "array",
@@ -3116,7 +3236,8 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/Holding"
-          }
+          },
+          "description": "Each recommended fund with its allocation, stated risk rating and charge — all three checkable, against fund documentation and against the client's agreed risk rating. Distinct from the arrangement's current holdings."
         },
         "assetAllocation": {
           "type": "array",
@@ -3159,7 +3280,8 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/AdviserFee"
-          }
+          },
+          "description": "Each fee as its own entry: initial or ongoing, percentage, monetary estimate, and whether it is paid from the plan or directly. Where the report states the basis — a percentage of a listed set of values, payment from a particular wrapper — preserve it; the basis is what the client agreement is checked against."
         },
         "comparison": {
           "type": "object",
@@ -3262,7 +3384,8 @@
                 "$ref": "#/$defs/Provenance"
               }
             }
-          }
+          },
+          "description": "Each stated critical yield with its growth-rate basis and horizon age, also phrased as the 'rate of return required'. Appendix tables state one per growth scenario per person: each scenario is its own entry, with its reduction in yield, headroom and effect of switching. A sustainability critical yield — the growth a drawdown fund needs to match a comparable annuity — belongs here too. An assertion that the yield is achievable is context, not the yield."
         },
         "valueAssessment": {
           "type": "object",
@@ -3594,7 +3717,8 @@
             "provenance": {
               "$ref": "#/$defs/Provenance"
             }
-          }
+          },
+          "description": "The stated cost comparison, with its basis: like-for-like, including adviser fees, or per scheme. Component comparisons (platform only, funds only) are separate from total-cost ones — record which the basis covers. Preserve sign and direction exactly: a new plan dearer once fees are included is a materially different claim from a like-for-like saving, and they routinely appear in the same report."
         },
         "featuresOrGuaranteesLost": {
           "type": "array",

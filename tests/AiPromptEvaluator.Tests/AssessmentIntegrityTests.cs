@@ -37,7 +37,7 @@ public class AssessmentIntegrityTests
             [
                 "groupId", "requirement", "reportSays", "fileSays", "discrepancies",
                 "comparisonPerformed", "missingInputs", "analysis", "citations",
-                "severity", "outcome",
+                "issueCategories", "severity", "outcome",
             ],
             order);
 

@@ -130,6 +130,49 @@ public class CheckPlanLintTests
     }
 
     /// <summary>
+    /// Every shipped requirement steers the assessor towards the kinds of problem it tends to
+    /// raise, and every value is one of the nine.
+    ///
+    /// <b>A misspelt category is worse than none.</b> The whole value of a closed vocabulary is
+    /// that a reviewer filtering to "every disclosure shortfall in this case" gets all of them;
+    /// one plan spelling it "Disclosure shortfalls" produces findings that quietly answer no
+    /// filter at all. Lint rule L4 refuses the value rather than passing it through, and this is
+    /// the regression that keeps the shipped set clean.
+    /// </summary>
+    [Fact]
+    public void EveryShippedRequirementCarriesASteerFromTheVocabulary()
+    {
+        var (plans, _) = CheckQueryPlanLoader.Load(PlanFolder);
+
+        var unsteered = plans.Values
+            .SelectMany(p => p.QueryGroups.Select(g => (p.CheckId, g)))
+            .Where(x => x.g.SteeredIssueCategories.Count == 0)
+            .Select(x => x.CheckId.Trim() + " " + x.g.GroupId)
+            .ToList();
+
+        Assert.True(
+            unsteered.Count == 0,
+            "These requirements name no issue category, so their findings reach the report "
+            + "uncategorised:" + Environment.NewLine + string.Join(Environment.NewLine, unsteered));
+    }
+
+    /// <summary>
+    /// The steer is a steer and not a menu, so it may not close the vocabulary down to one
+    /// answer either. A requirement told to expect exactly one kind of problem is a requirement
+    /// whose finding was decided in the plan.
+    /// </summary>
+    [Fact]
+    public void NoShippedRequirementIsSteeredToASingleAnswer()
+    {
+        var (plans, _) = CheckQueryPlanLoader.Load(PlanFolder);
+
+        foreach (var group in plans.Values.SelectMany(p => p.QueryGroups))
+        {
+            Assert.InRange(group.SteeredIssueCategories.Count, 2, IssueCategory.All.Count);
+        }
+    }
+
+    /// <summary>
     /// The plan set's shape, pinned. A dropped query group is otherwise silent: the check runs,
     /// reports success, and assesses one requirement fewer than the catalogue says it has.
     /// The stale build output that prompted this had CHK-001 at eight groups against nine.

@@ -125,6 +125,21 @@ public sealed record GroupFinding
 
     [JsonPropertyName("analysis")] public string Analysis { get; init; } = string.Empty;
     [JsonPropertyName("citations")] public List<FindingCitation> Citations { get; init; } = [];
+
+    /// <summary>
+    /// What kind of problem this is, from <see cref="IssueCategory"/>'s closed vocabulary.
+    ///
+    /// <b>Placed after the citations and before the severity on purpose.</b> The property order
+    /// is the generation order, so this is answered once both sides have been stated, the
+    /// differences listed and the evidence cited — and before the verdict. Asking for it first
+    /// would have the model name a kind of problem and then look for one.
+    ///
+    /// Empty is the correct answer for a requirement that found nothing wrong, and the schema
+    /// says so rather than forcing a choice: a mandatory category on a passing requirement is an
+    /// invitation to invent a concern to justify the field.
+    /// </summary>
+    [JsonPropertyName("issueCategories")] public List<string> IssueCategories { get; init; } = [];
+
     [JsonPropertyName("severity")] public string? Severity { get; init; }
     [JsonPropertyName("outcome")] public string Outcome { get; init; } = nameof(CheckOutcome.NoIssue);
 
@@ -303,6 +318,17 @@ public sealed record CheckFinding
     [JsonPropertyName("outcome")] public string Outcome { get; init; } = nameof(CheckOutcome.NoIssue);
     [JsonPropertyName("summary")] public string Summary { get; init; } = string.Empty;
     [JsonPropertyName("groups")] public List<GroupFinding> Groups { get; init; } = [];
+
+    /// <summary>
+    /// Every kind of problem this check's requirements raised, in vocabulary order.
+    ///
+    /// Aggregated rather than asked for. The check's outcome is already computed from its
+    /// groups so that it cannot disagree with them, and a category asked of the check would be
+    /// a second, independent opinion about the same requirements — free to name a kind of
+    /// problem none of them found.
+    /// </summary>
+    [JsonIgnore] public IReadOnlyList<string> IssueCategories =>
+        IssueCategory.Clean(Groups.SelectMany(g => g.IssueCategories));
 
     [JsonIgnore] public int SearchesRun { get; init; }
     [JsonIgnore] public int PassagesRetrieved { get; init; }
@@ -495,7 +521,7 @@ public static class FindingSchema
           "additionalProperties": false,
           "required": ["groupId", "requirement", "reportSays", "fileSays", "discrepancies",
                        "comparisonPerformed", "missingInputs", "analysis", "citations",
-                       "severity", "outcome"],
+                       "issueCategories", "severity", "outcome"],
           "properties": {
             "groupId": { "type": "string" },
             "requirement": { "type": "string" },
@@ -524,6 +550,11 @@ public static class FindingSchema
                 }
               }
             },
+            "issueCategories": {
+              "type": "array",
+              "items": { "type": "string", "enum": ISSUE_CATEGORY_ENUM },
+              "description": "What kind of problem this is. Empty when the requirement is met \u2014 do not choose a category to fill the field."
+            },
             "severity": {
               "anyOf": [
                 { "type": "string", "enum": ["High", "Moderate", "Low"] },
@@ -535,8 +566,16 @@ public static class FindingSchema
         }
         """;
 
-    /// <summary>The schema as a <see cref="JsonElement"/>, parsed once.</summary>
-    public static JsonElement Element { get; } = JsonDocument.Parse(Json).RootElement.Clone();
+    /// <summary>
+    /// The schema as a <see cref="JsonElement"/>, parsed once.
+    ///
+    /// The category enum is substituted from <see cref="IssueCategory.All"/> rather than written
+    /// out here, so the vocabulary the model is constrained to and the vocabulary the app
+    /// recognises are the same list rather than two copies of it.
+    /// </summary>
+    public static JsonElement Element { get; } = JsonDocument
+        .Parse(Json.Replace("ISSUE_CATEGORY_ENUM", IssueCategory.SchemaEnum(), StringComparison.Ordinal))
+        .RootElement.Clone();
 
     /// <summary>
     /// The order the model will generate in — which is the order it reasons in, since each

@@ -62,6 +62,8 @@ partial class ConfigurationForm
     private Button checkPlanBrowseButton;
     private Label canonicalDbLabel;
     private TextBox canonicalDbTextBox;
+    private Label runDbLabel;
+    private TextBox runDbTextBox;
     private Label canonicalHintLabel;
     private Label extractionTokensLabel;
     private NumericUpDown extractionTokensUpDown;
@@ -198,6 +200,8 @@ partial class ConfigurationForm
         checkPlanBrowseButton = new Button();
         canonicalDbLabel = new Label();
         canonicalDbTextBox = new TextBox();
+        runDbLabel = new Label();
+        runDbTextBox = new TextBox();
         canonicalHintLabel = new Label();
         extractionTokensLabel = new Label();
         extractionTokensUpDown = new NumericUpDown();
@@ -613,7 +617,7 @@ partial class ConfigurationForm
         canonicalLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         canonicalLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         canonicalLayout.Dock = DockStyle.Fill;
-        canonicalLayout.RowCount = 5;
+        canonicalLayout.RowCount = 6;
         canonicalLayout.Controls.Add(canonicalSchemaLabel, 0, 0);
         canonicalLayout.Controls.Add(canonicalSchemaTextBox, 1, 0);
         canonicalLayout.Controls.Add(canonicalSchemaBrowseButton, 2, 0);
@@ -623,8 +627,10 @@ partial class ConfigurationForm
         canonicalLayout.Controls.Add(canonicalHintLabel, 1, 2);
         canonicalLayout.Controls.Add(canonicalDbLabel, 0, 3);
         canonicalLayout.Controls.Add(canonicalDbTextBox, 1, 3);
-        canonicalLayout.Controls.Add(extractionTokensLabel, 0, 4);
-        canonicalLayout.Controls.Add(extractionTokensUpDown, 1, 4);
+        canonicalLayout.Controls.Add(runDbLabel, 0, 4);
+        canonicalLayout.Controls.Add(runDbTextBox, 1, 4);
+        canonicalLayout.Controls.Add(extractionTokensLabel, 0, 5);
+        canonicalLayout.Controls.Add(extractionTokensUpDown, 1, 5);
         canonicalLayout.Name = "canonicalLayout";
 
         // canonicalSchemaLabel
@@ -689,6 +695,18 @@ partial class ConfigurationForm
         canonicalDbTextBox.Margin = new Padding(0, 3, 8, 3);
         canonicalDbTextBox.Name = "canonicalDbTextBox";
         canonicalDbTextBox.PlaceholderText = "canonical-models.db (in the app's local data folder)";
+
+        // runDbLabel
+        runDbLabel.Anchor = AnchorStyles.Left;
+        runDbLabel.AutoSize = true;
+        runDbLabel.Name = "runDbLabel";
+        runDbLabel.Text = "Run archive";
+
+        // runDbTextBox
+        runDbTextBox.Dock = DockStyle.Fill;
+        runDbTextBox.Margin = new Padding(0, 3, 8, 3);
+        runDbTextBox.Name = "runDbTextBox";
+        runDbTextBox.PlaceholderText = "check-runs.db (beside the model database)";
 
         // extractionTokensLabel
         extractionTokensLabel.Anchor = AnchorStyles.Left;

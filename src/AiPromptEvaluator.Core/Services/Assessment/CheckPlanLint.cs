@@ -193,6 +193,20 @@ public static class CheckPlanLint
                 yield return v;
             }
 
+            // The categorisation steer is checked against the finding vocabulary rather than
+            // against the document categories, and it fails loudly rather than quietly. An
+            // unrecognised value is dropped at parse time — it cannot reach a finding, and a
+            // reader filtering on it would see nothing and conclude the case is clean. A plan
+            // that steers towards a category that does not exist is steering towards silence.
+            foreach (var category in IssueCategory.Unknown(group.Verification?.IssueCategories))
+            {
+                yield return new Violation(
+                    plan.CheckId, group.GroupId, "L4",
+                    $"verification.issueCategories has \"{category}\", which is not one of "
+                    + $"{string.Join(", ", IssueCategory.All)}. It would be dropped rather than "
+                    + "steer anything.");
+            }
+
             foreach (var code in group.DeclaredEvidenceCategories
                          .Concat(group.DeclaredAssertionCategories))
             {

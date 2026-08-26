@@ -225,6 +225,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "tolerance": "Each dimension the report compares must be supported by provider or research documentation.",
@@ -347,6 +351,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "tolerance": "Benefit claims must reconcile with the charge comparison for the same plan.",
@@ -485,6 +493,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -567,6 +579,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Weak justification"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -652,6 +668,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Compliance concern"
+        ],
         "comparison": {
           "method": "RangeMatch",
           "falsePositiveGuards": [
@@ -719,6 +739,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -802,6 +826,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Missing component"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -888,6 +916,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Weak justification",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -975,6 +1007,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Weak justification"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -1062,6 +1098,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [

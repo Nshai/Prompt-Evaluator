@@ -141,6 +141,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "tolerance": "The agreed code in the report must equal the code adopted in the ATR evidence, on the same scale.",
@@ -246,6 +250,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [
@@ -330,6 +338,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "RangeMatch",
           "falsePositiveGuards": [
@@ -396,6 +408,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "RangeMatch",
           "tolerance": "The term used in the risk section must be reconcilable with the objective horizon from CHK-002.",
@@ -518,6 +534,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "tolerance": "The strategy's risk rating must equal the client's agreed rating on the same scale; fund allocations must total 100%.",
@@ -603,6 +623,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Weak justification"
+        ],
         "comparison": {
           "method": "PresenceOnly",
           "falsePositiveGuards": [
@@ -710,6 +734,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Compliance concern"
+        ],
         "comparison": {
           "method": "RangeMatch",
           "falsePositiveGuards": [
@@ -802,6 +830,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [
@@ -893,6 +925,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Data inconsistency"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -1001,6 +1037,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Weak justification",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [

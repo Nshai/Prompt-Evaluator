@@ -45,6 +45,7 @@ public partial class ConfigurationForm : Form
         canonicalSchemaTextBox.Text = _settings.CanonicalSchemaPath;
         checkPlanTextBox.Text = _settings.CheckPlanFolder;
         canonicalDbTextBox.Text = _settings.CanonicalModelDbPath;
+        runDbTextBox.Text = _settings.CheckRunDbPath;
         extractionTokensUpDown.Value = Clamp(extractionTokensUpDown, _settings.ExtractionMaxTokens);
 
         structuredFindingsCheckBox.Checked = _settings.StructuredFindings;
@@ -385,6 +386,7 @@ public partial class ConfigurationForm : Form
         _settings.CanonicalSchemaPath = canonicalSchemaTextBox.Text.Trim();
         _settings.CheckPlanFolder = checkPlanTextBox.Text.Trim();
         _settings.CanonicalModelDbPath = canonicalDbTextBox.Text.Trim();
+        _settings.CheckRunDbPath = runDbTextBox.Text.Trim();
         _settings.ExtractionMaxTokens = (int)extractionTokensUpDown.Value;
 
         _settings.StructuredFindings = structuredFindingsCheckBox.Checked;

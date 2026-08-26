@@ -347,6 +347,41 @@ public class AppSettings
     [JsonPropertyName("structuredFindings")]
     public bool StructuredFindings { get; set; } = true;
 
+    /// <summary>
+    /// Varies every prompt this run sends, so the gateway cannot answer it from cache.
+    ///
+    /// <b>Off by default, because the cache is usually doing something useful.</b> The prefix
+    /// cache over the check header is what makes one call per requirement affordable, and
+    /// paying the full input rate on every group to prove a point is a real cost.
+    ///
+    /// It exists because a cached reply is indistinguishable from a generated one, and that has
+    /// twice cost a measurement. A run of the same case came back in 4.4 seconds carrying
+    /// 149,582 output tokens — 33,858 tok/s, which no model produces — and two whole analyses
+    /// were written before <see cref="RunAuthenticity"/> existed to say so. An extraction
+    /// re-issued with byte-identical requests returned four sections differing by up to 8,684
+    /// characters, so a replay is not even a stable replay. Neither the model digest nor the
+    /// fingerprint can see any of this: the inputs were identical, so they report identical.
+    ///
+    /// Turn it on when the answer has to be freshly generated — measuring determinism, scoring
+    /// a configuration change, or re-running an extraction whose trigger flags look wrong.
+    /// <see cref="PromptCacheBypass"/> is what actually varies the prompt.
+    /// </summary>
+    [JsonPropertyName("bypassResponseCache")]
+    public bool BypassResponseCache { get; set; }
+
+    /// <summary>
+    /// Where each run's evidence, prompts and findings are kept, so a finished run can be
+    /// reopened as a report rather than only read back as a log.
+    ///
+    /// Its own file rather than a table in the canonical-model database, for the same reason
+    /// that one is separate from the vector store: they have different lifetimes. A run archive
+    /// grows with every assessment and is expected to be pruned; a canonical model is one row
+    /// per case that cost real tokens to produce and must not go with a clear-out of run
+    /// history. Leave empty for a file beside the canonical models.
+    /// </summary>
+    [JsonPropertyName("checkRunDbPath")]
+    public string CheckRunDbPath { get; set; } = string.Empty;
+
     /// <summary>The file name looked for beside the executable when no schema path is set.</summary>
     public const string DefaultCanonicalSchemaFileName = "canonical-suitability-model.schema.json";
 
@@ -396,6 +431,17 @@ public class AppSettings
                 "AiPromptEvaluator",
                 "canonical-models.db")
             : CanonicalModelDbPath.Trim();
+
+    /// <summary>
+    /// Where the run archive lives. Defaults to a file beside the canonical models, so the two
+    /// halves of a case's history sit together without either being configured.
+    /// </summary>
+    public string ResolveCheckRunDbPath() =>
+        string.IsNullOrWhiteSpace(CheckRunDbPath)
+            ? Path.Combine(
+                Path.GetDirectoryName(ResolveCanonicalModelDbPath()) ?? AppContext.BaseDirectory,
+                "check-runs.db")
+            : CheckRunDbPath.Trim();
 
     /// <summary>The configured Docling endpoint, or the default, with any trailing slash removed.</summary>
     public string ResolveDoclingEndpoint() =>

@@ -102,6 +102,11 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
 
         var schemaJson = await File.ReadAllTextAsync(schemaPath, cancellationToken).ConfigureAwait(false);
 
+        // One nonce for the whole extraction, minted here rather than per pass: the twelve
+        // sections re-read the same report, and the provider's prefix cache over that document
+        // is what keeps the later passes affordable. Varying per pass would discard it.
+        var bypass = PromptCacheBypass.For(_settings.BypassResponseCache);
+
         // Read out of the schema itself, so there is never a second copy of the vocabulary to
         // fall out of step with the one the model is shown.
         var vocabularies = CanonicalVocabulary.Parse(schemaJson);
@@ -145,7 +150,7 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
                 {
                     var (fragment, sectionUsage, shortfall) = await ExtractSectionAsync(
                         section, schemaJson, documentText, caseReference, identity, root,
-                        failedProperties, promptLog, cancellationToken).ConfigureAwait(false);
+                        failedProperties, promptLog, bypass, cancellationToken).ConfigureAwait(false);
 
                     usage = Add(usage, sectionUsage);
 
@@ -242,12 +247,13 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         JsonObject modelSoFar,
         IReadOnlyCollection<string> failedProperties,
         PromptLogWriter? promptLog,
+        PromptCacheBypass bypass,
         CancellationToken cancellationToken)
     {
         var slice = StripCodeOwnedFields(JsonSchemaSlicer.Slice(schemaJson, section.Properties));
         var systemPrompt = BuildSystemPrompt();
-        var userPrompt = BuildSectionPrompt(
-            section, slice, documentText, caseReference, identity, modelSoFar, failedProperties);
+        var userPrompt = bypass.Apply(BuildSectionPrompt(
+            section, slice, documentText, caseReference, identity, modelSoFar, failedProperties));
 
         var result = await _chat
             .RunRawAsync(
@@ -299,6 +305,8 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
                 + "the same object — check both before finishing."
                 + Environment.NewLine
                 + $"(Attempt 2 of 2; previous reply {RunFingerprint.Digest(firstReply)}.)";
+
+            retryPrompt = bypass.Apply(retryPrompt);
 
             result = await _chat
                 .RunRawAsync(

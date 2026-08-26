@@ -96,6 +96,22 @@ public sealed record PlanVerification
     [JsonPropertyName("limb")] public string Limb { get; init; } = "Consistency";
     [JsonPropertyName("comparison")] public PlanComparison? Comparison { get; init; }
     [JsonPropertyName("sufficiency")] public PlanSufficiency? Sufficiency { get; init; }
+
+    /// <summary>
+    /// The kinds of problem this requirement can raise, from <see cref="IssueCategory"/>.
+    ///
+    /// <b>A steer, not a constraint.</b> The plan already decides what is searched for and what
+    /// is compared, because deciding those in advance is what makes a finding reproducible. It
+    /// does not decide what is found — so this narrows the vocabulary the assessor is shown for
+    /// a requirement whose failure mode is known in advance, and says nothing at all where it is
+    /// not. A requirement about a frequency mismatch is a data-quality problem or it is nothing;
+    /// listing all nine there invites a category chosen for variety.
+    ///
+    /// The assessor may still answer outside the steer. A plan that could forbid a category
+    /// could forbid a finding, and the whole point of the retrieval/verification split is that
+    /// the plan governs the first and not the second.
+    /// </summary>
+    [JsonPropertyName("issueCategories")] public List<string> IssueCategories { get; init; } = [];
 }
 
 /// <summary>
@@ -150,6 +166,14 @@ public sealed record PlanQueryGroup
     public List<PlannedQuery> Queries => Retrieval.Queries;
     public List<string> CanonicalPaths => Retrieval.CanonicalPaths;
     public string Limb => Verification?.Limb ?? "Consistency";
+
+    /// <summary>
+    /// The categories the plan says this requirement is likely to raise, cleaned against the
+    /// vocabulary. Empty means the plan is not steering, which is a legitimate answer and the
+    /// default for every plan written before the field existed.
+    /// </summary>
+    public IReadOnlyList<string> SteeredIssueCategories =>
+        IssueCategory.Clean(Verification?.IssueCategories);
     public PlanComparison? Comparison => Verification?.Comparison;
     public PlanSufficiency? Sufficiency => Verification?.Sufficiency;
 

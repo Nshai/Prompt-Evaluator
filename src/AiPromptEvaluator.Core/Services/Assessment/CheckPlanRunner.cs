@@ -60,6 +60,8 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     private readonly CanonicalModelAccessor _accessor;
     private readonly IReadOnlyList<DerivedFigures.Figure> _derived;
     private readonly PromptLogWriter? _promptLog;
+    private readonly CheckRunRecorder? _recorder;
+    private readonly PromptCacheBypass _bypass;
     private readonly ConcurrencyGate _modelCalls;
     private readonly ConcurrencyGate _searches;
     private readonly bool _ownsGates;
@@ -70,6 +72,10 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     /// this runner alone when none is given.
     /// </param>
     /// <param name="searches">The same, for retrieval.</param>
+    /// <param name="recorder">
+    /// Collects the run for the archive. Optional, and null in every test that only cares what
+    /// a check concluded — recording is a side effect of running, never a condition of it.
+    /// </param>
     public CheckPlanRunner(
         AppSettings settings,
         IChatCompletionClient chat,
@@ -77,7 +83,8 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         CanonicalModelDocument model,
         PromptLogWriter? promptLog = null,
         ConcurrencyGate? modelCalls = null,
-        ConcurrencyGate? searches = null)
+        ConcurrencyGate? searches = null,
+        CheckRunRecorder? recorder = null)
     {
         _settings = settings;
         _chat = chat;
@@ -90,6 +97,13 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         // differently in different groups.
         _derived = DerivedFigures.From(model.Json);
         _promptLog = promptLog;
+        _recorder = recorder;
+
+        // One nonce for the whole run, not one per group. The check header is identical at the
+        // front of every group's prompt precisely so the provider's prefix cache covers it, and
+        // varying per call would throw that away to buy nothing: a run that is a cache miss as a
+        // whole is already a freshly generated run.
+        _bypass = PromptCacheBypass.For(settings.BypassResponseCache);
 
         _ownsGates = modelCalls is null && searches is null;
         _modelCalls = modelCalls ?? new ConcurrencyGate(settings.MaxParallelRequests);
@@ -140,7 +154,9 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             await ForEachAsync(plan.QueryGroups.Count, async (i, token) =>
             {
                 packs[i] = await _searches
-                    .RunAsync(t => GatherAsync(plan.QueryGroups[i], plan.Retrieval?.ResultsPerCall, t), token)
+                    .RunAsync(
+                        t => GatherAsync(plan.QueryGroups[i], plan.CheckId, plan.Retrieval?.ResultsPerCall, t),
+                        token)
                     .ConfigureAwait(false);
 
                 progress?.Report(
@@ -169,7 +185,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             await ForEachAsync(packs.Length, async (i, token) =>
             {
                 var pack = packs[i];
-                var userPrompt = header + BuildGroupPrompt(pack);
+                var userPrompt = _bypass.Apply(header + BuildGroupPrompt(pack));
 
                 var result = await _modelCalls
                     .RunAsync(t => _chat.RunRawAsync(
@@ -199,6 +215,12 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                     // to whether it chose to mention it.
                     EvidenceShortfall = pack.EvidenceShortfall,
                 };
+
+                // After verification, so the archive holds the finding as the app understood it —
+                // unverified quotes and all — beside the raw text the model actually returned.
+                _recorder?.RecordResponse(
+                    plan.CheckId, pack.Group.GroupId,
+                    systemPrompt, userPrompt, result.Response, findings[i]);
 
                 progress?.Report(
                     $"{plan.CheckId}: assessed {Interlocked.Increment(ref assessed)}/{packs.Length}");
@@ -508,7 +530,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     /// side from the vector store, de-duplicated and trimmed to what is worth reading.
     /// </summary>
     private async Task<GroupEvidence> GatherAsync(
-        PlanQueryGroup group, int? resultsPerCall, CancellationToken cancellationToken)
+        PlanQueryGroup group, string checkId, int? resultsPerCall, CancellationToken cancellationToken)
     {
         var fragments = _accessor.Resolve(group.AllCanonicalPaths);
 
@@ -518,6 +540,16 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         var total = 0;
         var missedSignals = new List<string>();
 
+        // Which query found which passage, kept only for the archive. The pack itself is a flat
+        // ranked list by design — several wordings converge on the same chunk and the assessor
+        // has no use for knowing which one got there first — but a reader of the finding asks
+        // exactly that, and once the lists are merged there is no way back to it.
+        var attributed = new List<(PlannedQuery Query, CaseDocumentSearchMatch Hit)>();
+
+        // Every query that ran, with its hit count — including the ones that returned nothing,
+        // which is the only place that fact is kept.
+        var executed = new List<(PlannedQuery Query, int Hits)>();
+
         foreach (var query in group.QueriesToRun(_settings.CoreQueriesOnly).Where(q => q.IsEvidenceSearch))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -525,6 +557,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             var hits = await SearchAsync(query, cancellationToken, resultsPerCall).ConfigureAwait(false);
             searches++;
             total += hits.Count;
+            executed.Add((query, hits.Count));
 
             // The same chunk comes back for several wordings of the same question; keep the
             // first and drop the rest so the pack is evidence rather than repetition.
@@ -533,6 +566,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 if (seen.Add(DeduplicationKey(hit)))
                 {
                     passages.Add(hit);
+                    attributed.Add((query, hit));
                 }
             }
 
@@ -560,6 +594,9 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
             .ToList();
+
+        _recorder?.RecordEvidence(
+            checkId, group.GroupId, group.Requirement, fragments, executed, attributed, ranked);
 
         return new GroupEvidence(
             group, fragments, ranked, searches, total, categories, missedSignals,
@@ -1111,12 +1148,27 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 + "and a requirement the file genuinely cannot answer may be one.");
         }
 
+        // The steer is printed with the requirement's own verification rules rather than with
+        // the schema, because that is what it is: a statement about this requirement's known
+        // failure mode, not a change to the vocabulary. The assessor is told plainly that it may
+        // answer outside it — a plan that could forbid a category could forbid a finding.
+        if (group.SteeredIssueCategories.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine("#### Kinds of problem this requirement usually raises");
+            sb.AppendLine(string.Join(", ", group.SteeredIssueCategories));
+            sb.AppendLine(
+                "This is where past findings on this requirement have landed, not a list to "
+                + "choose from. If what you found is a different kind of problem, categorise it "
+                + "as what it is. If the requirement is met, leave issueCategories empty.");
+        }
+
         sb.AppendLine();
         sb.AppendLine("#### Return");
         sb.AppendLine(
             $"One JSON object for [{group.GroupId}] only. Fill the fields in the order given: "
             + "reportSays, fileSays, discrepancies, comparisonPerformed, missingInputs, analysis, "
-            + "citations, severity, outcome. Decide last.");
+            + "citations, issueCategories, severity, outcome. Decide last.");
 
         return sb.ToString();
     }
@@ -1292,6 +1344,15 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 Requirement = group.Requirement,
                 EchoedGroupId = finding.GroupId,
                 EchoedRequirement = finding.Requirement,
+
+                // Cleaned against the vocabulary here rather than trusted as returned. The
+                // schema constrains the enum on endpoints that honour response formats, and
+                // StructuredFindings can be turned off for one that does not — at which point
+                // the field is whatever the model felt like writing. A near-miss is dropped
+                // rather than mapped: a filter for a category has to find every finding in it,
+                // and filing "Data inconsistencies" under "Data quality" breaks that more
+                // quietly than dropping it would.
+                IssueCategories = [.. IssueCategory.Clean(finding.IssueCategories)],
             };
         }
         catch (JsonException ex)

@@ -151,6 +151,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [
@@ -310,6 +314,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Weak justification"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "tolerance": "Every figure the report says was modelled must match the fact find within 5%.",
@@ -414,6 +422,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [
@@ -502,6 +514,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Data inconsistency"
+        ],
         "comparison": {
           "method": "RangeMatch",
           "tolerance": "Flag where an ongoing income commitment exceeds evidenced monthly surplus.",
@@ -605,6 +621,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -690,6 +710,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Data inconsistency"
+        ],
         "comparison": {
           "method": "RangeMatch",
           "falsePositiveGuards": [
@@ -777,6 +801,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [
@@ -865,6 +893,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing evidence",
+          "Data inconsistency"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [

@@ -44,6 +44,7 @@ public static class CasePipelineServiceCollectionExtensions
         // Stateless over their dependencies, so one instance serves the whole process.
         services.AddSingleton<IChatCompletionClient, ChatCompletionClient>();
         services.AddSingleton<ICanonicalModelStore, CanonicalModelStore>();
+        services.AddSingleton<ICheckRunStore, CheckRunStore>();
         services.AddSingleton<ICanonicalModelExtractor, CanonicalModelExtractor>();
 
 
@@ -101,8 +102,9 @@ internal sealed class CheckPlanRunnerFactory(
         ICaseDocumentSearchService search,
         PromptLogWriter? promptLog = null,
         ConcurrencyGate? modelCalls = null,
-        ConcurrencyGate? searches = null) =>
-        new CheckPlanRunner(settings, chat, search, model, promptLog, modelCalls, searches);
+        ConcurrencyGate? searches = null,
+        CheckRunRecorder? recorder = null) =>
+        new CheckPlanRunner(settings, chat, search, model, promptLog, modelCalls, searches, recorder);
 }
 
 internal sealed class PromptLogWriterFactory : IPromptLogWriterFactory

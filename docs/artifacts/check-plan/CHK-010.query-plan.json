@@ -177,6 +177,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing evidence",
+          "Process risk"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -264,6 +268,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Process risk"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [
@@ -361,6 +369,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing evidence",
+          "Process risk"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -479,6 +491,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Compliance concern"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -565,6 +581,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing evidence",
+          "Data inconsistency"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [

@@ -231,6 +231,7 @@ Group `G4.1`, in full:
   },
   "verification": {
     "limb": "Consistency",
+    "issueCategories": ["Data inconsistency", "Missing evidence"],
     "comparison": {
       "method": "ValueMatch",
       "falsePositiveGuards": [
@@ -288,11 +289,20 @@ Most fields here are strings interpolated into the group's prompt, and nothing b
 | Element | Purpose | How it is used |
 |---|---|---|
 | `limb` | `Consistency` \| `Appropriateness` \| `Both` | One line of the group prompt. Consistency groups diff report against file; appropriateness groups apply rules to the merged model |
+| `issueCategories` | The kinds of problem this requirement *tends* to raise, from the nine-category vocabulary | Printed as a steer. **A steer and not a menu** — see [below](#the-categorisation-steer) |
 | `comparison.method` | What kind of agreement counts | Printed, so a narrative match is not scored like a numeric one. For `ValueMatch` and `RangeMatch` it also **selects a code-side comparator** — see [Figures checked in code](#figures-checked-in-code) |
 | `comparison.tolerance` | Where near-enough is enough | Printed |
 | `comparison.falsePositiveGuards` | The known ways *this* comparison goes wrong | One prompt line each. **The field that earns its keep** — see [below](#falsepositiveguards) |
 | `sufficiency.ifAssertionAbsent` / `ifEvidenceAbsent` / `ifBothAbsent` | What to conclude when one side or both come back empty | Makes "nothing found" a *decidable* outcome rather than a stalled group |
 | `sufficiency.minEvidenceCategories` | How many distinct categories must corroborate | **Compared in code.** The runner counts the categories the pack reached and, where it falls short, states the shortfall in the prompt as established fact and records it on the finding — so a thinly evidenced requirement says so whether or not the model mentioned it. Model-only groups are exempt: they have no evidence side by design |
+
+#### The categorisation steer
+
+`verification.issueCategories` names the kinds of problem the requirement usually raises, from the nine-category vocabulary the findings and the compliance report share. Every one of the 85 shipped groups carries one, and every value is checked by lint rule **L4**: a category outside the vocabulary is refused rather than passed through, because the entire value of a closed list is that filtering to "every disclosure shortfall in this case" returns all of them, and one plan spelling it *Disclosure shortfalls* produces findings that quietly answer no filter at all.
+
+**It is a steer and not a menu.** The same prompt that prints it tells the assessor to name the kind of problem it actually found — including one not listed — and to leave the list empty where the requirement is met. That is why the field says what a requirement *tends* to raise rather than what it *may* return: a plan able to close the vocabulary down to one answer per group would be the plan deciding the finding, which is precisely what the `retrieval` / `verification` split exists to prevent. A test pins the lower bound at two categories per group for the same reason.
+
+The steer is read off what the group actually compares, not derived from `limb` and `comparison.method`. Those say what shape the comparison is, not what a failure of it looks like: a `SetCoverage` group over charges fails as a disclosure shortfall, while the same shape over stated goals fails as a missing component.
 
 A group whose queries are *all* assertion-side is **model-only** (`IsModelOnly`): CHK-001 G1.8 internal contradictions, CHK-007 G7.6 cost arithmetic, CHK-008 G8.5 prominence. All three compare the report against itself, so the runner tells the assessor no evidence was sought. An empty evidence section means "nothing to retrieve here" for these groups and "we looked and found nothing" everywhere else, and confusing the two turns a sound finding into a spurious evidence gap.
 

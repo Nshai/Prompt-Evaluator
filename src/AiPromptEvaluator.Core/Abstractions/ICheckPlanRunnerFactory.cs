@@ -17,5 +17,6 @@ public interface ICheckPlanRunnerFactory
         ICaseDocumentSearchService search,
         PromptLogWriter? promptLog = null,
         ConcurrencyGate? modelCalls = null,
-        ConcurrencyGate? searches = null);
+        ConcurrencyGate? searches = null,
+        CheckRunRecorder? recorder = null);
 }

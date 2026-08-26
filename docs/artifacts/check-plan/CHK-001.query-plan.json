@@ -148,6 +148,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "tolerance": "Age may differ by 1 year where the fact find predates the report; date of birth must match exactly.",
@@ -242,6 +246,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [
@@ -314,6 +322,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [
@@ -427,6 +439,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "tolerance": "Normalise to a monthly equivalent before comparing. Treat a difference of more than 5% as a mismatch; below that, rounding.",
@@ -555,6 +571,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [
@@ -626,6 +646,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "tolerance": "Weekly and annual statements of the same entitlement must reconcile at x52.",
@@ -810,6 +834,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "tolerance": "Plan values must match the provider statement to the penny where the same as-at date is used; otherwise flag the date gap, not the value.",
@@ -889,6 +917,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "tolerance": "Arithmetic must reconcile within rounding to the nearest pound or 0.01%.",
@@ -955,6 +987,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [
@@ -1048,6 +1084,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data quality",
+          "Data inconsistency"
+        ],
         "comparison": {
           "method": "RangeMatch",
           "tolerance": "Convert to a common frequency and basis before comparing. Agreement within £1 per month, or 1% of an annual figure, is not a mismatch.",
@@ -1162,6 +1202,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [

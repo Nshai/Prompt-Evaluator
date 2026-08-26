@@ -42,6 +42,9 @@ partial class CheckEvaluatorForm
     private GroupBox responseGroup;
     private FlowLayoutPanel responseToolbar;
     private Button copyResponseButton;
+    private Button saveReportButton;
+    private Button saveModelButton;
+    private CheckBox bypassCacheCheckBox;
     private TextBox responseTextBox;
 
     // Cost breakdown
@@ -105,6 +108,9 @@ partial class CheckEvaluatorForm
         responseGroup = new GroupBox();
         responseToolbar = new FlowLayoutPanel();
         copyResponseButton = new Button();
+        saveReportButton = new Button();
+        saveModelButton = new Button();
+        bypassCacheCheckBox = new CheckBox();
         responseTextBox = new TextBox();
         actionPanel = new TableLayoutPanel();
         costGroup = new GroupBox();
@@ -334,6 +340,8 @@ partial class CheckEvaluatorForm
         // responseToolbar
         responseToolbar.AutoSize = true;
         responseToolbar.Controls.Add(copyResponseButton);
+        responseToolbar.Controls.Add(saveReportButton);
+        responseToolbar.Controls.Add(saveModelButton);
         responseToolbar.Dock = DockStyle.Top;
         responseToolbar.FlowDirection = FlowDirection.RightToLeft;
         responseToolbar.Name = "responseToolbar";
@@ -346,6 +354,25 @@ partial class CheckEvaluatorForm
         copyResponseButton.Text = "Copy response + cost";
         copyResponseButton.UseVisualStyleBackColor = true;
         copyResponseButton.Click += CopyResponseButton_Click;
+
+        // saveReportButton
+        saveReportButton.AutoSize = true;
+        saveReportButton.Margin = new Padding(0, 0, 8, 4);
+        saveReportButton.Name = "saveReportButton";
+        saveReportButton.Padding = new Padding(8, 2, 8, 2);
+        saveReportButton.Text = "Compliance report...";
+        saveReportButton.UseVisualStyleBackColor = true;
+        saveReportButton.Click += SaveReportButton_Click;
+
+        // saveModelButton
+        saveModelButton.AutoSize = true;
+        saveModelButton.Enabled = false;
+        saveModelButton.Margin = new Padding(0, 0, 8, 4);
+        saveModelButton.Name = "saveModelButton";
+        saveModelButton.Padding = new Padding(8, 2, 8, 2);
+        saveModelButton.Text = "Save model JSON...";
+        saveModelButton.UseVisualStyleBackColor = true;
+        saveModelButton.Click += SaveModelButton_Click;
 
         // responseTextBox
         responseTextBox.Dock = DockStyle.Fill;
@@ -409,14 +436,15 @@ partial class CheckEvaluatorForm
         // actionPanel — left: Run + Run All + Cancel + model/index buttons + status;
         // right: Prompt Evaluator + Configuration + Save
         actionPanel.AutoSize = true;
-        actionPanel.ColumnCount = 11;
+        actionPanel.ColumnCount = 12;
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 0 Run
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 1 Run All
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 2 Cancel
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 3 Extract Model
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 4 Delete Model
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 5 Unload Docs
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 6 status (stretches)
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 6 Bypass cache
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 7 status (stretches)
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 7 Prompt Evaluator
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 8 Configuration
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 9 Save Settings
@@ -429,10 +457,21 @@ partial class CheckEvaluatorForm
         actionPanel.Controls.Add(extractModelButton, 3, 0);
         actionPanel.Controls.Add(deleteModelButton, 4, 0);
         actionPanel.Controls.Add(unloadDocsButton, 5, 0);
-        actionPanel.Controls.Add(statusLabel, 6, 0);
-        actionPanel.Controls.Add(openPromptEvaluatorButton, 7, 0);
-        actionPanel.Controls.Add(openConfigButton, 8, 0);
-        actionPanel.Controls.Add(saveSettingsButton, 9, 0);
+        actionPanel.Controls.Add(bypassCacheCheckBox, 6, 0);
+        actionPanel.Controls.Add(statusLabel, 7, 0);
+        actionPanel.Controls.Add(openPromptEvaluatorButton, 8, 0);
+        actionPanel.Controls.Add(openConfigButton, 9, 0);
+        actionPanel.Controls.Add(saveSettingsButton, 10, 0);
+
+        // bypassCacheCheckBox — applies to Extract Model and to Run, because both are answered
+        // by the same gateway and either can be served from cache.
+        bypassCacheCheckBox.Anchor = AnchorStyles.Left;
+        bypassCacheCheckBox.AutoSize = true;
+        bypassCacheCheckBox.Margin = new Padding(0, 0, 16, 0);
+        bypassCacheCheckBox.Name = "bypassCacheCheckBox";
+        bypassCacheCheckBox.Text = "Bypass cache";
+        bypassCacheCheckBox.UseVisualStyleBackColor = true;
+        bypassCacheCheckBox.CheckedChanged += BypassCacheCheckBox_CheckedChanged;
         actionPanel.Name = "actionPanel";
 
         // runButton

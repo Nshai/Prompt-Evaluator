@@ -146,6 +146,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "tolerance": "Every objective in the report must be traceable to an evidenced objective; wording need not match.",
@@ -275,6 +279,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
         "comparison": {
           "method": "RangeMatch",
           "tolerance": "Report term and evidenced term must be reconcilable; a difference greater than 2 years is a mismatch.",
@@ -365,6 +373,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -451,6 +463,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -519,6 +535,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Data inconsistency"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -602,6 +622,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Missing component"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -688,6 +712,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing evidence",
+          "Weak justification"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [

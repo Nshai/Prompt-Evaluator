@@ -169,6 +169,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "tolerance": "Every material disadvantage identified in research or product literature should appear in the report.",
@@ -288,6 +292,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -387,6 +395,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -470,6 +482,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "PresenceOnly",
           "falsePositiveGuards": [
@@ -565,6 +581,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Disclosure shortfall",
+          "Weak justification"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -651,6 +671,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -741,6 +765,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Weak justification",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -848,6 +876,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [

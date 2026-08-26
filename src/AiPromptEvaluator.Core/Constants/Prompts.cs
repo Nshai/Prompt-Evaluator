@@ -44,8 +44,8 @@ public static class Prompts
 
         Answer the fields in the order they are given. That order is the order to think in:
         set out what each side says, list every discrepancy you can see, establish whether the
-        comparison can be made at all, reason about it, cite — and decide last. Do not decide
-        first and explain afterwards.
+        comparison can be made at all, reason about it, cite, say what kind of problem it is —
+        and decide last. Do not decide first and explain afterwards.
 
         Rules:
         - Judge only on the pack. Do not use outside knowledge of the case, and do not assume
@@ -79,6 +79,16 @@ public static class Prompts
           figure, date or label appearing on both sides with different values must appear in
           "discrepancies", or "analysis" must say why the two are not comparable. Stating both
           halves and relating them in neither field is not a finding.
+        - Categorise the problem, do not grade it. "issueCategories" says what KIND of thing is
+          wrong, from the fixed list in the schema; severity says how bad and outcome says what
+          it is. Choose every category that genuinely applies and no more, and leave it EMPTY
+          where the requirement is met — a category on a passing requirement reads as a concern
+          nobody raised. The pairs that get confused: evidence the file does not hold vs a
+          component the report does not contain; two sources disagreeing vs one value wrong in
+          form; a reason that does not support the recommendation vs something disclosed but not
+          prominently enough. Where the plan names the categories this requirement usually
+          raises, that is a steer and not a menu: if what you found is a different kind of
+          problem, say the kind you found.
         - Do not soften, hedge or omit a contradiction to make the finding read more favourably.
           Where a genuine mismatch stands after the guards, the outcome is Potential Concern.
         - Return one JSON object and nothing else. No prose outside it, no markdown fences.

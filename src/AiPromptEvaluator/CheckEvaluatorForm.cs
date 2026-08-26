@@ -37,6 +37,12 @@ public partial class CheckEvaluatorForm : Form
 
     private readonly ICanonicalModelStore _modelStore;
 
+    /// <summary>
+    /// Where a finished run is filed. Read back by the report button, which is the only reason
+    /// the archive is written at all: a run nobody keeps cannot be reopened.
+    /// </summary>
+    private readonly ICheckRunStore _runStore;
+
     private CostBreakdown _lastBreakdown;
 
     /// <summary>
@@ -48,6 +54,7 @@ public partial class CheckEvaluatorForm : Form
         AppSettings settings,
         IChatCompletionClient chat,
         ICanonicalModelStore modelStore,
+        ICheckRunStore runStore,
         ICanonicalModelExtractor extractor,
         ICaseDocumentStoreFactory stores,
         ICaseDocumentSearchServiceFactory searches,
@@ -59,6 +66,7 @@ public partial class CheckEvaluatorForm : Form
         _settings = settings;
         _chat = chat;
         _modelStore = modelStore;
+        _runStore = runStore;
         _extractor = extractor;
         _stores = stores;
         _searches = searches;
@@ -67,6 +75,7 @@ public partial class CheckEvaluatorForm : Form
         _mainForm = mainForm;
 
         caseFolderTextBox.Text = _settings.DocumentFolder;
+        bypassCacheCheckBox.Checked = _settings.BypassResponseCache;
 
         _lastBreakdown = CostBreakdown.Empty(_settings.SelectedModel);
         ShowBreakdown(_lastBreakdown);
@@ -594,6 +603,17 @@ public partial class CheckEvaluatorForm : Form
 
         AppendResponseLine($"Logging extraction to {extractionLog.FilePath}");
 
+        if (_settings.BypassResponseCache)
+        {
+            // Worth saying before the passes start rather than after the bill arrives: this
+            // is the setting that turns twelve cheap replayed sections into twelve generated
+            // ones, and an extraction that suddenly costs full price with no explanation on
+            // screen is how the last one came to be misread.
+            AppendResponseLine(
+                "Response cache bypassed — every section carries a run marker, so nothing can "
+                + "be replayed from an earlier extraction. Expect the full input cost.");
+        }
+
         try
         {
             var extractor = _extractor;
@@ -978,6 +998,11 @@ public partial class CheckEvaluatorForm : Form
         // still in flight — with several running at once, there is no single "current" one.
         CheckRunBoard? board = null;
 
+        // The archive is written from the same findings the report is built from, so a report
+        // opened tomorrow says what the screen said today.
+        var recorder = CheckRunRecorder.ForRun(runStartedAt, caseReference);
+        var bypass = PromptCacheBypass.For(_settings.BypassResponseCache);
+
         using var store = _stores.Create();
         try
         {
@@ -990,6 +1015,14 @@ public partial class CheckEvaluatorForm : Form
                 _settings, _model, planFolder, plans.Count, _settings.MaxPassagesPerGroup));
 
             AppendResponseLine($"Logging prompts to {promptLog.FilePath}");
+            AppendResponseLine($"Archiving run {recorder.RunId} to {_runStore.DatabasePath}");
+
+            if (bypass.IsEnabled)
+            {
+                AppendResponseLine(
+                    "Response cache bypassed — every prompt carries a run marker, so nothing can "
+                    + "be answered from an earlier run. Input tokens will be higher than usual.");
+            }
 
             // Each planned search embeds its text, so a run over ten checks is a few hundred
             // small embedding calls alongside the chat spend.
@@ -1004,7 +1037,7 @@ public partial class CheckEvaluatorForm : Form
             using var modelCalls = new ConcurrencyGate(_settings.MaxParallelRequests);
             using var searches = new ConcurrencyGate(_settings.MaxParallelRequests);
             using var runner = _runners.Create(
-                _model, searchTool, promptLog, modelCalls, searches);
+                _model, searchTool, promptLog, modelCalls, searches, recorder);
 
             var skipped = new List<string>();
 
@@ -1122,6 +1155,12 @@ public partial class CheckEvaluatorForm : Form
                     _settings, _model, planFolder, plans.Count, _settings.MaxPassagesPerGroup),
                 runClock.Elapsed);
 
+            // Written before the report is rendered, so a failure to save is reported beside the
+            // findings rather than after the user has already read them and moved on.
+            await SaveRunAsync(
+                    recorder, caseReference, runStartedAt, report, bypass, planFolder, plans.Count, checks)
+                .ConfigureAwait(true);
+
             responseTextBox.Text = report.Format();
 
             if (skipped.Count > 0)
@@ -1194,6 +1233,198 @@ public partial class CheckEvaluatorForm : Form
         a.OutputTokens + b.OutputTokens,
         a.CacheWriteTokens + b.CacheWriteTokens,
         a.CacheReadTokens + b.CacheReadTokens);
+
+    /// <summary>
+    /// Files the run, and says so on the report rather than silently.
+    ///
+    /// A failure to archive does not fail the run: the findings on screen are the run's output
+    /// and are unaffected by whether a copy was kept. It is reported plainly, because the report
+    /// button will not find this run afterwards and the reason should not have to be guessed.
+    /// </summary>
+    private async Task SaveRunAsync(
+        CheckRunRecorder recorder,
+        string caseReference,
+        DateTimeOffset startedAt,
+        FindingsReport report,
+        PromptCacheBypass bypass,
+        string planFolder,
+        int planCount,
+        IReadOnlyList<AssessmentCheck> checks)
+    {
+        try
+        {
+            var record = recorder.Build(
+                caseReference,
+                _settings.TenantId,
+                _settings.SelectedModel,
+                startedAt,
+                DateTimeOffset.Now,
+                RunFingerprint.For(_settings, _model, planFolder, planCount, _settings.MaxPassagesPerGroup),
+                bypass,
+                _model,
+                report.Findings,
+                checks);
+
+            await _runStore.SaveAsync(record).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            AppendResponseLine(string.Empty);
+            AppendResponseLine(
+                $"The run finished but could not be archived: {ex.Message}. The findings above "
+                + "are unaffected; the compliance report will not be able to reopen this run.");
+        }
+    }
+
+    /// <summary>
+    /// Writes the extracted canonical model to a file the user chooses.
+    ///
+    /// The model is the assertion side of every check — the whole reason the suitability report
+    /// is never sent to an assessor a second time — and until now the only way to read it was to
+    /// open a SQLite file. A check that says the report asserts something is unanswerable without
+    /// it.
+    /// </summary>
+    private async void SaveModelButton_Click(object? sender, EventArgs e)
+    {
+        if (_model is null)
+        {
+            MessageBox.Show(this,
+                "No canonical model has been extracted for this case yet.",
+                "Nothing to save", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        using var dialog = new SaveFileDialog
+        {
+            Title = "Save the canonical model",
+            Filter = "JSON (*.json)|*.json|All files (*.*)|*.*",
+            FileName = $"canonical-model_{Sanitise(_model.CaseReference)}_"
+                       + $"{_model.ExtractedAt:yyyyMMdd-HHmmss}.json",
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+        {
+            return;
+        }
+
+        try
+        {
+            // Re-indented on the way out. It is stored compactly because it is machine input;
+            // it is saved to be read, and a 440,000-character single line is not readable.
+            await File.WriteAllTextAsync(dialog.FileName, Indent(_model.Json)).ConfigureAwait(true);
+
+            statusLabel.Text = $"Canonical model written to {dialog.FileName}";
+            AppendResponseLine(
+                $"Canonical model for {_model.CaseReference} written to {dialog.FileName} "
+                + $"({_model.JsonLength:N0} characters, extracted {_model.ExtractedAt:yyyy-MM-dd HH:mm}).");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Could not save the model",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    /// <summary>
+    /// Builds the compliance report for the most recent archived run of this case and opens it.
+    ///
+    /// Read back from the archive rather than held from the run that produced it, deliberately:
+    /// that is what makes the button work in a session that did not do the run, and it is the
+    /// only way the report can be trusted to show what was stored rather than what is still in
+    /// memory.
+    /// </summary>
+    private async void SaveReportButton_Click(object? sender, EventArgs e)
+    {
+        var caseReference = CurrentCaseReference()
+                            ?? (Directory.Exists(caseFolderTextBox.Text.Trim())
+                                ? _settings.ResolveCaseReference(caseFolderTextBox.Text.Trim())
+                                : null);
+
+        if (caseReference is null)
+        {
+            MessageBox.Show(this,
+                "Select a case folder first — the report is built from that case's archived runs.",
+                "No case", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        try
+        {
+            var run = await _runStore
+                .LoadLatestAsync(caseReference, _settings.TenantId)
+                .ConfigureAwait(true);
+
+            if (run is null)
+            {
+                MessageBox.Show(this,
+                    $"No archived run was found for case {caseReference}.\n\nRun the checks first; "
+                    + "every run is archived as it finishes, and the report is built from the "
+                    + "archive rather than from the screen.",
+                    "Nothing to report on", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using var dialog = new SaveFileDialog
+            {
+                Title = "Save the compliance report",
+                Filter = "HTML (*.html)|*.html|All files (*.*)|*.*",
+                FileName = $"compliance-report_{Sanitise(run.CaseReference)}_"
+                           + $"{run.StartedAt:yyyyMMdd-HHmmss}.html",
+            };
+
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+            {
+                return;
+            }
+
+            var html = ComplianceReportHtml.Render(run);
+            await File.WriteAllTextAsync(dialog.FileName, html, Encoding.UTF8).ConfigureAwait(true);
+
+            statusLabel.Text = $"Compliance report written to {dialog.FileName}";
+            AppendResponseLine(
+                $"Compliance report for run {run.RunId} written to {dialog.FileName} "
+                + $"({run.Checks.Count} check(s), {run.AllGroups.Count()} requirement(s), "
+                + $"{run.AllGroups.Sum(g => g.Passages.Count):N0} archived passage(s)).");
+
+            Process.Start(new ProcessStartInfo(dialog.FileName) { UseShellExecute = true });
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Could not build the report",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    /// <summary>
+    /// The toggle writes straight through to settings, so it survives to the next screen and
+    /// the next launch. It is a run option that happens to be persisted, not a dialog field.
+    /// </summary>
+    private void BypassCacheCheckBox_CheckedChanged(object? sender, EventArgs e) =>
+        _settings.BypassResponseCache = bypassCacheCheckBox.Checked;
+
+    /// <summary>Re-indents stored JSON for reading, or returns it unchanged if it will not parse.</summary>
+    private static string Indent(string json)
+    {
+        try
+        {
+            using var document = System.Text.Json.JsonDocument.Parse(json);
+            return System.Text.Json.JsonSerializer.Serialize(
+                document.RootElement,
+                new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return json;
+        }
+    }
+
+    /// <summary>A case reference safe to put in a file name.</summary>
+    private static string Sanitise(string value)
+    {
+        var invalid = Path.GetInvalidFileNameChars();
+        var cleaned = new string(value.Select(c => invalid.Contains(c) ? '-' : c).ToArray());
+        return string.IsNullOrWhiteSpace(cleaned) ? "case" : cleaned;
+    }
 
     private void CancelButton_Click(object? sender, EventArgs e)
     {
@@ -1431,6 +1662,7 @@ public partial class CheckEvaluatorForm : Form
         extractModelButton.Text = _model is null ? "Extract Model" : "Re-extract Model";
 
         deleteModelButton.Enabled = !_busy && _model is not null;
+        saveModelButton.Enabled = !_busy && _model is not null;
 
         // Unloading stays available as soon as the case is identifiable — by a configured
         // reference, or by the selected folder. The chunks may have been indexed in an

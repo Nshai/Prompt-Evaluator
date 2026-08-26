@@ -137,6 +137,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
         "comparison": {
           "method": "ValueMatch",
           "falsePositiveGuards": [
@@ -239,6 +243,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing evidence",
+          "Data inconsistency"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -344,6 +352,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Disclosure shortfall"
+        ],
         "comparison": {
           "method": "PresenceOnly",
           "falsePositiveGuards": [
@@ -428,6 +440,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Compliance concern"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -506,6 +522,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Missing evidence",
+          "Weak justification"
+        ],
         "comparison": {
           "method": "PresenceOnly",
           "falsePositiveGuards": [
@@ -590,6 +610,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing evidence",
+          "Data inconsistency"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -678,6 +702,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Missing component"
+        ],
         "comparison": {
           "method": "PresenceOnly",
           "falsePositiveGuards": [

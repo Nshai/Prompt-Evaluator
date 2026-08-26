@@ -232,6 +232,23 @@
               "enum": ["Consistency", "Appropriateness", "Both"],
               "description": "One line of the group prompt. Consistency groups diff the report against the file; appropriateness groups apply rules to the merged model. No code branches on it."
             },
+            "issueCategories": {
+              "type": "array",
+              "description": "ROLE: verification. The kinds of problem this requirement usually raises, from IssueCategory's fixed vocabulary, printed into the group prompt as a steer. A STEER AND NOT A MENU: the same prompt tells the assessor to name the kind of problem it actually found, including one not listed here, and to leave the list empty where the requirement is met. That is why this field says what the requirement TENDS to raise rather than what it MAY return — a plan that could close the vocabulary per group would be the plan deciding the finding, which is the one thing the retrieval/verification split exists to prevent. Values outside the vocabulary are rejected by CheckPlanLint rule L4 rather than passed through, because a misspelt category is a filter that silently finds nothing.",
+              "items": {
+                "enum": [
+                  "Missing evidence",
+                  "Weak justification",
+                  "Data inconsistency",
+                  "Data quality",
+                  "Missing component",
+                  "Disclosure shortfall",
+                  "Process risk",
+                  "Control gap",
+                  "Compliance concern"
+                ]
+              }
+            },
             "comparison": {
               "type": "object",
               "description": "How the assertion side and evidence side are compared once both have been retrieved.",

@@ -133,6 +133,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Weak justification",
+          "Missing component"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -250,6 +254,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Weak justification",
+          "Missing component"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -330,6 +338,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Weak justification",
+          "Missing component"
+        ],
         "comparison": {
           "method": "NarrativeAlignment",
           "falsePositiveGuards": [
@@ -475,6 +487,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Weak justification"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -564,6 +580,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Weak justification"
+        ],
         "comparison": {
           "method": "SetCoverage",
           "falsePositiveGuards": [
@@ -656,6 +676,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Process risk"
+        ],
         "comparison": {
           "method": "PresenceOnly",
           "falsePositiveGuards": [
@@ -746,6 +770,10 @@
       },
       "verification": {
         "limb": "Appropriateness",
+        "issueCategories": [
+          "Missing component",
+          "Weak justification"
+        ],
         "comparison": {
           "method": "PresenceOnly",
           "falsePositiveGuards": [
@@ -837,6 +865,10 @@
       },
       "verification": {
         "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Process risk"
+        ],
         "comparison": {
           "method": "PresenceOnly",
           "falsePositiveGuards": [

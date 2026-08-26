@@ -124,7 +124,7 @@ public class EvidenceSufficiencyTests
         var passages = new List<CaseDocumentSearchMatch>();
 
         // Enough high-scoring A and C passages to fill the cap on their own.
-        for (var i = 0; i < CheckPlanRunner.MaxPassagesPerGroup; i++)
+        for (var i = 0; i < CheckPlanRunner.Defaults.MaxPassagesPerGroup; i++)
         {
             passages.Add(Passage("A", 0.99 - (i * 0.001), $"a{i}"));
             passages.Add(Passage("C", 0.98 - (i * 0.001), $"c{i}"));
@@ -138,7 +138,7 @@ public class EvidenceSufficiencyTests
             sections: null,
             declared: new HashSet<string> { "F" });
 
-        Assert.Equal(CheckPlanRunner.MaxPassagesPerGroup, ranked.Count);
+        Assert.Equal(CheckPlanRunner.Defaults.MaxPassagesPerGroup, ranked.Count);
         Assert.Contains(ranked, p => p.CategoryCode == "F");
     }
 
@@ -151,7 +151,7 @@ public class EvidenceSufficiencyTests
     {
         var passages = new List<CaseDocumentSearchMatch>();
 
-        for (var i = 0; i < CheckPlanRunner.MaxPassagesPerGroup + 4; i++)
+        for (var i = 0; i < CheckPlanRunner.Defaults.MaxPassagesPerGroup + 4; i++)
         {
             passages.Add(Passage("B", 0.9 - (i * 0.01), $"b{i}"));
         }

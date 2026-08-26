@@ -118,9 +118,95 @@ public class AppSettings
     [JsonPropertyName("chunkOverlapTokens")]
     public int ChunkOverlapTokens { get; set; } = 100;
 
-    /// <summary>How many chunks one search-tool call may return to the model.</summary>
+    /// <summary>
+    /// How many chunks one search-tool call may return to the model.
+    ///
+    /// <b>0 means unbounded</b> — every match the store holds for the query. See
+    /// <see cref="IsUnbounded"/> for what that costs and why it is rarely the right answer:
+    /// once groups sit at <see cref="MaxPassagesPerGroup"/>, extra candidates are retrieved and
+    /// then discarded. Measured at 16, twice the retrieval bought two extra passages and
+    /// category diversity fell.
+    /// </summary>
     [JsonPropertyName("maxSearchResults")]
     public int MaxSearchResults { get; set; } = 8;
+
+    /// <summary>
+    /// How many passages of one group's retrieval are shown to the assessor. <b>0 means
+    /// unbounded</b> — every passage the group's searches returned, after de-duplication.
+    ///
+    /// <b>This is the binding constraint on coverage, and it was a compile-time constant of 12
+    /// until it became a setting.</b> Raising the search limit from 8 to 16 was measured and
+    /// bought two extra passages across the whole run, because every group was already at the
+    /// cap: 86% of hits were discarded and category diversity *fell*, since a bigger candidate
+    /// set means the top twelve come from whichever documents score best. The cap, not the
+    /// candidate set, is what decides what an assessor sees.
+    ///
+    /// The default is 24 rather than 12 because reserved slots ration the pack before ranking
+    /// begins. The widest group declares four evidence categories and two evidence sections, so
+    /// six of its twelve slots are spoken for, and the retrieval work that needs this headroom
+    /// adds a seventh. At 24 a seven-query group drawing up to 112 candidates still discards
+    /// 79% of them.
+    ///
+    /// <b>24 is reasoned, not measured.</b> No run on record has varied it. Treat the first run
+    /// at this value as an experiment with its own measurement, and compare it against 12 before
+    /// treating any recall change as attributable to anything else.
+    /// </summary>
+    [JsonPropertyName("maxPassagesPerGroup")]
+    public int MaxPassagesPerGroup { get; set; } = 24;
+
+    /// <summary>
+    /// How many slots the pack holds for each category a group declared its evidence lives in,
+    /// before the rest of the pack is filled by score.
+    ///
+    /// A floor, not a cap, so 0 means no reservation rather than unbounded. It exists because
+    /// ranking by score alone silently lost whole documents: the Fact Find's prose scores below
+    /// research and report prose for almost any query, and three checks reached it in zero
+    /// groups out of nineteen while every pack sat exactly at the cap.
+    /// </summary>
+    [JsonPropertyName("reservedSlotsPerTargetedCategory")]
+    public int ReservedSlotsPerTargetedCategory { get; set; } = 1;
+
+    /// <summary>
+    /// How many slots the pack holds for each evidence section a group named, within the
+    /// categories it targeted. A floor, like
+    /// <see cref="ReservedSlotsPerTargetedCategory"/>, so 0 means no reservation.
+    ///
+    /// A plan naming "Current Monthly Cash Flow" has asked for something more specific than one
+    /// naming category B, and the section slot usually satisfies the category slot as a side
+    /// effect. Three such hints moved four benchmark findings from missed to caught.
+    /// </summary>
+    [JsonPropertyName("reservedSlotsPerDeclaredSection")]
+    public int ReservedSlotsPerDeclaredSection { get; set; } = 1;
+
+    /// <summary>
+    /// How much of the extraction's self-report reaches an assessor. <b>0 means unbounded.</b>
+    ///
+    /// The report is what lets a group tell a suitability report that is genuinely silent from
+    /// one the extraction failed to read, and it carries the contradictions extraction found in
+    /// the report itself — the only route CHK-001's internal-consistency requirement has to
+    /// them. Sized to hold a whole report: the observed model is around 9,000 characters and a
+    /// previous 4,000-character cap dropped 55% of it.
+    /// </summary>
+    [JsonPropertyName("extractionReportMaxChars")]
+    public int ExtractionReportMaxChars { get; set; } = 24_000;
+
+    /// <summary>
+    /// Output cap for one group's decision. <b>0 means unbounded</b> — the provider's own
+    /// maximum for the model.
+    ///
+    /// This caps how much the assessor can write, so it caps how many findings one group may
+    /// report. Distinct from <see cref="MaxTokens"/>, which bounds ordinary chat replies.
+    /// </summary>
+    [JsonPropertyName("decisionMaxTokens")]
+    public int DecisionMaxTokens { get; set; } = 8000;
+
+    /// <summary>
+    /// How many case files are listed in the document-context block a prompt is given.
+    /// <b>0 means unbounded.</b> A listing, not retrieval — but a document missing from it is
+    /// one the model has no reason to believe exists.
+    /// </summary>
+    [JsonPropertyName("maxDocumentsInContext")]
+    public int MaxDocumentsInContext { get; set; } = 50;
 
     /// <summary>
     /// Run only the queries the plans mark <c>Core</c>, skipping <c>Supplementary</c> ones.
@@ -322,6 +408,24 @@ public class AppSettings
     /// <summary>The configured OpenAI-compatible base URL, or the default.</summary>
     public string ResolveBaseUrl() =>
         Resolve(OpenAiBaseUrl, DefaultBaseUrl);
+
+    /// <summary>
+    /// Resolves a coverage cap that uses <c>0</c> to mean unbounded.
+    ///
+    /// <b>Zero, not -1.</b> Every cap this applies to is a count of things shown to a model, and
+    /// zero of them is never a configuration anyone wants — a run with no passages, no findings
+    /// or no extraction report is not a cheaper run, it is a broken one. So the value that would
+    /// otherwise be a footgun is spent on the meaning that has no other spelling, and a negative
+    /// value from a hand-edited settings file reads as unbounded too rather than throwing at the
+    /// far end of a long run.
+    ///
+    /// Floors are the exception and do not go through here: a reserved-slot count of 0 means no
+    /// reservation, which is a real and useful setting.
+    /// </summary>
+    public static int Unbounded(int cap) => cap <= 0 ? int.MaxValue : cap;
+
+    /// <summary>Whether a cap has been set to unbounded, for the run fingerprint and the logs.</summary>
+    public static bool IsUnbounded(int cap) => cap <= 0;
 
     /// <summary>Where embeddings are generated — its own endpoint when set, else the chat one.</summary>
     public string ResolveEmbeddingBaseUrl() =>

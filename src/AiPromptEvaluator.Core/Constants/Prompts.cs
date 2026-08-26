@@ -122,5 +122,12 @@ public static class Prompts
         - Where the report describes something the vocabulary has no value for, use "Other" if
           the list offers it and omit the field otherwise. Say what the report actually said in
           the neighbouring free-text or provenance field, where nothing is constrained.
+        - Write each property name at most once per object. A name repeated in the same object
+          is invalid JSON that most parsers accept and then fail on later, and it has cost whole
+          sections: one pass wrote "numberOfFundsAvailable" twice inside the same arrangement,
+          with the same value both times, and five pension plans were lost with it.
+        - A provenance block closes exactly one object. Count the closing braces after a long
+          quote before moving to the next property: one closer too many ends the parent as well,
+          and everything after it is written at the wrong depth.
         """;
 }

@@ -5,7 +5,14 @@ namespace AiPromptEvaluator;
 
 public static class DocumentContextBuilder
 {
-    public static string BuildContext(string folderPath, IReadOnlyDictionary<string, string>? categories = null)
+    /// <summary>
+    /// Lists the case files a prompt is told exist. <paramref name="maxDocuments"/> takes 0 for
+    /// unbounded; a document past the cap is one the model has no reason to believe is there.
+    /// </summary>
+    public static string BuildContext(
+        string folderPath,
+        IReadOnlyDictionary<string, string>? categories = null,
+        int maxDocuments = 50)
     {
         if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
         {
@@ -15,7 +22,7 @@ public static class DocumentContextBuilder
         var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories)
             .Where(path => !path.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
                         && !path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
-            .Take(50)
+            .Take(AppSettings.Unbounded(maxDocuments))
             .ToList();
 
         if (files.Count == 0)

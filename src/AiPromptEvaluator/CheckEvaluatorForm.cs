@@ -590,7 +590,7 @@ public partial class CheckEvaluatorForm : Form
         // back short, so it is recorded before the first pass rather than reconstructed after.
         extractionLog.LogRunConfiguration(RunFingerprint.For(
             _settings, model: null, _settings.ResolveCheckPlanFolder(), planCount: 0,
-            CheckPlanRunner.MaxPassagesPerGroup));
+            _settings.MaxPassagesPerGroup));
 
         AppendResponseLine($"Logging extraction to {extractionLog.FilePath}");
 
@@ -987,7 +987,7 @@ public partial class CheckEvaluatorForm : Form
             // Written before the first prompt rather than with the report at the end, so a run
             // that is cancelled or fails still says what it was configured to do.
             promptLog.LogRunConfiguration(RunFingerprint.For(
-                _settings, _model, planFolder, plans.Count, CheckPlanRunner.MaxPassagesPerGroup));
+                _settings, _model, planFolder, plans.Count, _settings.MaxPassagesPerGroup));
 
             AppendResponseLine($"Logging prompts to {promptLog.FilePath}");
 
@@ -1119,7 +1119,7 @@ public partial class CheckEvaluatorForm : Form
                 caseReference, _settings.TenantId, _settings.SelectedModel,
                 DateTimeOffset.Now, findings, _model,
                 RunFingerprint.For(
-                    _settings, _model, planFolder, plans.Count, CheckPlanRunner.MaxPassagesPerGroup),
+                    _settings, _model, planFolder, plans.Count, _settings.MaxPassagesPerGroup),
                 runClock.Elapsed);
 
             responseTextBox.Text = report.Format();

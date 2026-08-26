@@ -79,7 +79,12 @@ public sealed class CaseDocumentSearchService : ICaseDocumentSearchService
         // narrower one: the floor is what every other check is held to, and a plan quietly
         // retrieving less than the rest of the run is the kind of difference nothing in the
         // output would show.
-        var limit = Math.Max(_settings.MaxSearchResults, resultsPerCall ?? 0);
+        //
+        // An unbounded setting outranks any per-plan figure for the same reason, in the other
+        // direction: a plan asking for 40 where the run asks for everything is asking for less.
+        var limit = AppSettings.IsUnbounded(_settings.MaxSearchResults)
+            ? int.MaxValue
+            : Math.Max(_settings.MaxSearchResults, resultsPerCall ?? 0);
 
         var vector = await _embeddings
             .GenerateVectorAsync(searchText, cancellationToken: cancellationToken)

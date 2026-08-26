@@ -82,6 +82,52 @@ public sealed class CanonicalModelAccessor
     public IReadOnlyList<CanonicalFragment> Resolve(IEnumerable<string> paths) =>
         paths.Select(Resolve).ToList();
 
+    /// <summary>
+    /// The paths whose extraction pass failed, as the extraction report recorded them.
+    ///
+    /// <b>A path under one of these is not absent; it was never read.</b> The distinction has no
+    /// other home in the model — a failed pass writes no key, which is byte-for-byte what a value
+    /// the report genuinely does not contain looks like — so the extraction report is the only
+    /// record that they are different answers, and this is how a caller gets at it.
+    ///
+    /// Read from <c>/extractionReport/expectedButAbsent</c> where the reason is
+    /// <c>PresentButUnparseable</c>, which the self-report pass is told to write for exactly this
+    /// and does. Empty when the report is missing or the self-report pass itself failed, which
+    /// leaves a caller no worse off than before it existed.
+    /// </summary>
+    public IReadOnlyList<string> UnreadPaths =>
+        _root["extractionReport"]?["expectedButAbsent"] is not JsonArray absent
+            ? []
+            : absent
+                .OfType<JsonObject>()
+                .Where(entry => string.Equals(
+                    entry["reason"]?.GetValue<string>(),
+                    "PresentButUnparseable",
+                    StringComparison.OrdinalIgnoreCase))
+                .Select(entry => entry["path"]?.GetValue<string>())
+                .Where(path => !string.IsNullOrWhiteSpace(path))
+                .Select(path => path!.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+    /// <summary>
+    /// Whether a canonical path lies under a section whose extraction pass failed — so a miss on
+    /// it says nothing about the advice, only about the run.
+    ///
+    /// Prefix-matched on a segment boundary, so <c>/existingArrangements</c> covers
+    /// <c>/existingArrangements[]/adviceAction</c> without <c>/objectives</c> also matching
+    /// <c>/objectivesReview</c>.
+    /// </summary>
+    public bool WasNeverRead(string path)
+    {
+        var probe = path.Trim();
+
+        return UnreadPaths.Any(unread =>
+            probe.StartsWith(unread, StringComparison.OrdinalIgnoreCase)
+            && (probe.Length == unread.Length
+                || probe[unread.Length] is '/' or '['));
+    }
+
     private IEnumerable<JsonNode> ResolveNodes(string path)
     {
         IEnumerable<JsonNode> current = [_root];

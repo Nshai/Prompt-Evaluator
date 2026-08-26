@@ -126,36 +126,42 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         // CanonicalModelIdentityRegistry for why the passes cannot be trusted to agree without it.
         var identity = new CanonicalModelIdentityRegistry();
 
-        foreach (var section in ExtractionSection.All)
+        // The loop is wrapped so that a run which does not reach the end still terminates its own
+        // log. Cancellation is the expected way out — the per-section catch rethrows it rather
+        // than recording twelve identical failures — and it is precisely the case that used to
+        // leave a log indistinguishable from a completed one.
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var startedAt = Stopwatch.GetTimestamp();
-            var length = 0;
-            string? error = null;
-            string? shortfallNote = null;
-
-            try
+            foreach (var section in ExtractionSection.All)
             {
-                var (fragment, sectionUsage, shortfall) = await ExtractSectionAsync(
-                    section, schemaJson, documentText, caseReference, identity, root,
-                    failedProperties, promptLog, cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
 
-                usage = Add(usage, sectionUsage);
+                var startedAt = Stopwatch.GetTimestamp();
+                var length = 0;
+                string? error = null;
+                string? shortfallNote = null;
 
-                // Before the merge, so the stored model carries the documented spelling and a
-                // check reading it by value is not defeated by capitalisation.
-                corrections.AddRange(CanonicalVocabulary.Normalise(fragment, vocabularies));
+                try
+                {
+                    var (fragment, sectionUsage, shortfall) = await ExtractSectionAsync(
+                        section, schemaJson, documentText, caseReference, identity, root,
+                        failedProperties, promptLog, cancellationToken).ConfigureAwait(false);
 
-                length = Merge(root, fragment, section);
+                    usage = Add(usage, sectionUsage);
 
-                // Ids are adopted the moment the pass that defines them lands, so the next
-                // pass is choosing from a table rather than inventing its own naming.
-                identity.Adopt(root);
+                    // Before the merge, so the stored model carries the documented spelling and a
+                    // check reading it by value is not defeated by capitalisation.
+                    corrections.AddRange(CanonicalVocabulary.Normalise(fragment, vocabularies));
 
-                // A section that lost a value still succeeded. Recording it as a failure is
-                // what made a run announce eight broken sections when none was broken.
-                shortfallNote = shortfall;
+                    length = Merge(root, fragment, section);
+
+                    // Ids are adopted the moment the pass that defines them lands, so the next
+                    // pass is choosing from a table rather than inventing its own naming.
+                    identity.Adopt(root);
+
+                    // A section that lost a value still succeeded. Recording it as a failure is
+                    // what made a run announce eight broken sections when none was broken.
+                    shortfallNote = shortfall;
             }
             catch (OperationCanceledException)
             {
@@ -168,10 +174,24 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
                 failedProperties.AddRange(section.Properties);
             }
 
-            done++;
-            progress?.Report(new ExtractionProgress(
-                done, ExtractionSection.All.Count, section.Name, length,
-                Stopwatch.GetElapsedTime(startedAt), error, shortfallNote));
+                done++;
+                progress?.Report(new ExtractionProgress(
+                    done, ExtractionSection.All.Count, section.Name, length,
+                    Stopwatch.GetElapsedTime(startedAt), error, shortfallNote));
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            promptLog?.LogRunEnded(
+                $"Cancelled after {done} of {ExtractionSection.All.Count} extraction passes.");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            promptLog?.LogRunEnded(
+                $"Failed after {done} of {ExtractionSection.All.Count} extraction passes: "
+                + ex.Message.Trim());
+            throw;
         }
 
         if (failures.Count == ExtractionSection.All.Count)
@@ -243,7 +263,7 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
 
         var shortfalls = new List<string>();
         var usage = result.Breakdown.Usage;
-        var fragment = ExtractionResponseReader.ParseObject(result.Response);
+        var fragment = ExtractionResponseReader.ParseObject(result.Response, out var duplicates);
 
         // A malformed reply — as distinct from a truncated one — is usually one stray bracket
         // in an otherwise complete answer, and the same prompt run again normally lands. An
@@ -256,27 +276,61 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         // because it would be merged and believed.
         if (fragment is null && !ExtractionResponseReader.LooksTruncated(result.Response))
         {
+            var firstReply = result.Response;
+
+            // The retry must not ask the identical question. An observed run sent the same
+            // prompt again and the gateway served the identical failed reply from cache —
+            // 41,580 characters, the same stray brace at the same offset, in the same second.
+            // Both attempts were billed and the section was lost anyway.
+            //
+            // Varied by the digest of the reply that failed rather than by a random nonce: the
+            // prompt differs from attempt one, which is all the cache key needs, while staying
+            // reproducible for a run that pins its sampling. A random value would defeat the
+            // cache and determinism together.
+            var retryPrompt = userPrompt
+                + Environment.NewLine
+                + Environment.NewLine
+                + "## Second attempt"
+                + Environment.NewLine
+                + Environment.NewLine
+                + "The previous reply for this section was not valid JSON. Return the same "
+                + "content, correctly nested. The two faults seen in practice are a closing "
+                + "brace too many just after a long quote, and a property name written twice in "
+                + "the same object — check both before finishing."
+                + Environment.NewLine
+                + $"(Attempt 2 of 2; previous reply {RunFingerprint.Digest(firstReply)}.)";
+
             result = await _chat
                 .RunRawAsync(
                     systemPrompt,
-                    userPrompt,
+                    retryPrompt,
                     _settings.ExtractionMaxTokens,
                     cancellationToken)
                 .ConfigureAwait(false);
 
             promptLog?.LogExchange(
-                "extract", section.Name + " (retry)", systemPrompt, userPrompt, result.Response);
+                "extract", section.Name + " (retry)", systemPrompt, retryPrompt, result.Response);
 
             // Both attempts were paid for, so both are counted. A retry that vanished from the
             // cost would make the run cheaper on paper than it was.
             usage = Add(usage, result.Breakdown.Usage);
-            fragment = ExtractionResponseReader.ParseObject(result.Response);
+            fragment = ExtractionResponseReader.ParseObject(result.Response, out duplicates);
 
             if (fragment is not null)
             {
                 shortfalls.Add(
                     "The first reply was not valid JSON; the pass was retried once and the "
                     + "retry parsed. Both attempts are counted in the cost.");
+            }
+            else if (string.Equals(result.Response, firstReply, StringComparison.Ordinal))
+            {
+                // Worth saying plainly rather than reporting two independent failures: a
+                // byte-identical reply to a prompt that differed is a cache serving the
+                // failure, not the model reproducing it.
+                shortfalls.Add(
+                    "The retry returned a byte-identical reply to a prompt that differed, which "
+                    + "means the failure was served from cache rather than regenerated. The "
+                    + "second attempt was billed and could not have succeeded.");
             }
         }
 
@@ -304,6 +358,24 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
                 $"The response was cut off at the {_settings.ExtractionMaxTokens:N0}-token output limit; "
                 + $"{kept} complete entr{(kept == 1 ? "y was" : "ies were")} salvaged and the rest lost. "
                 + "Raise ExtractionMaxTokens or split this section.");
+        }
+
+        // Reported, never silent. A repeated property name is a stutter the model made while
+        // writing, so the value is usually identical and nothing is lost — but where the two
+        // differ, the extraction report has to carry it, because the section is merged and
+        // believed either way.
+        if (duplicates.Count > 0)
+        {
+            var conflicting = duplicates.Where(d => d.ValuesDiffer).ToList();
+
+            shortfalls.Add(
+                $"The reply wrote {duplicates.Count} property name(s) twice in the same object; "
+                + "the first of each was kept: "
+                + string.Join("; ", duplicates.Take(5))
+                + (duplicates.Count > 5 ? "; …" : string.Empty)
+                + (conflicting.Count > 0
+                    ? $" {conflicting.Count} of them disagreed, so a value may be wrong."
+                    : " All agreed, so nothing was lost."));
         }
 
         var dropped = CanonicalModelValidator.StripEnumViolations(fragment, slice);

@@ -38,25 +38,20 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     };
 
     /// <summary>
-    /// How many passages of one group's retrieval are shown to the assessor. The searches in
-    /// a group overlap heavily by design, and past a dozen passages the pack is mostly the
-    /// same text scored slightly differently.
-    /// </summary>
-    public const int MaxPassagesPerGroup = 12;
-
-    /// <summary>
-    /// How much of the extraction's self-report reaches an assessor.
+    /// The caps that decide what reaches an assessor all live on <see cref="AppSettings"/> now,
+    /// and every one of them takes <c>0</c> for unbounded via <see cref="AppSettings.Unbounded"/>:
+    /// <see cref="AppSettings.MaxPassagesPerGroup"/>,
+    /// <see cref="AppSettings.ReservedSlotsPerTargetedCategory"/>,
+    /// <see cref="AppSettings.ReservedSlotsPerDeclaredSection"/>,
+    /// <see cref="AppSettings.ExtractionReportMaxChars"/> and
+    /// <see cref="AppSettings.DecisionMaxTokens"/>.
     ///
-    /// The extraction report is what lets a group tell a report that is genuinely silent from
-    /// one the extraction failed to read, and it carries the contradictions extraction found in
-    /// the report itself — which is the only route CHK-001's internal-consistency requirement
-    /// has to them. Sized to hold a whole report; the observed model is around 9,000 characters
-    /// and the previous 4,000 dropped 55% of it.
+    /// <b>They were compile-time constants, and that is why one of them was never measured.</b>
+    /// The passage cap is the binding constraint on coverage — raising the search limit from 8
+    /// to 16 bought two extra passages across a whole run because every group already sat at it —
+    /// and no run on record has varied it, because varying it meant a rebuild.
     /// </summary>
-    public const int ExtractionReportMaxChars = 24_000;
-
-    /// <summary>Output cap for a decision. Enough for a structured finding across every group.</summary>
-    private const int DecisionMaxTokens = 8000;
+    internal static readonly AppSettings Defaults = new();
 
     private readonly AppSettings _settings;
     private readonly IChatCompletionClient _chat;
@@ -180,7 +175,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                     .RunAsync(t => _chat.RunRawAsync(
                         systemPrompt,
                         userPrompt,
-                        DecisionMaxTokens,
+                        AppSettings.Unbounded(_settings.DecisionMaxTokens),
                         FindingSchema.ResponseFormat(_settings.StructuredFindings),
                         t), token)
                     .ConfigureAwait(false);
@@ -284,47 +279,12 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             }
         }
 
-        // Applicability rules, ANDed. Every rule must find one of its accepted values at one of
-        // its canonical paths, or the check does not apply to this case.
-        //
-        // This runs before any group is gathered, so a check that does not apply costs nothing
-        // — not one embedding, not one vector query. It is also read from the stored model
-        // rather than searched for: whether a case has pension objectives is a fact the
-        // extraction settled when it read the report in full, and re-deriving it from passage
-        // similarity would be guessing at something already known.
-        bool? fromApplicability = null;
+        // Applicability rules, ANDed — and see EvaluateApplicability for the one case where a
+        // rule neither passes nor fails.
+        var applicability = EvaluateApplicability(probe, _accessor);
+        var fromApplicability = applicability.Verdict;
 
-        if (probe.Applicability.Count > 0)
-        {
-            var failed = new List<string>();
-            var passed = new List<string>();
-
-            foreach (var rule in probe.Applicability)
-            {
-                var found = rule.CanonicalPaths
-                    .Select(_accessor.Resolve)
-                    .Where(f => f.Found)
-                    .SelectMany(f => ScalarsOf(f.Json))
-                    .ToList();
-
-                if (rule.IsSatisfiedBy(found))
-                {
-                    passed.Add(rule.Name);
-                }
-                else
-                {
-                    failed.Add(found.Count == 0
-                        ? $"{rule.Name} (nothing at {string.Join(", ", rule.CanonicalPaths)})"
-                        : $"{rule.Name} (found {string.Join(", ", found.Distinct().Take(6))})");
-                }
-            }
-
-            fromApplicability = failed.Count == 0;
-
-            detail.Append(failed.Count == 0
-                ? $"Applicability satisfied: {string.Join(", ", passed)}. "
-                : $"Applicability not satisfied: {string.Join("; ", failed)}. ");
-        }
+        detail.Append(applicability.Detail);
 
         var searches = 0;
         var passages = 0;
@@ -362,6 +322,96 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     /// per-element values, a plain path to a single scalar, and an applicability rule should not
     /// have to care which it got.
     /// </summary>
+    /// <summary>
+    /// The verdict of a probe's applicability rules, and the sentence explaining it.
+    ///
+    /// <see cref="ApplicabilityOutcome.Verdict"/> is null where the probe declares no rules, so
+    /// the caller can tell "the rules said the check applies" from "there were no rules" — the
+    /// AND with the trigger field depends on the difference.
+    /// </summary>
+    internal sealed record ApplicabilityOutcome(
+        bool? Verdict,
+        string Detail,
+        IReadOnlyList<string> Passed,
+        IReadOnlyList<string> Failed,
+        IReadOnlyList<string> Undetermined);
+
+    /// <summary>
+    /// Evaluates a probe's applicability rules against the stored model. Every rule must find one
+    /// of its accepted values at one of its canonical paths, or the check does not apply.
+    ///
+    /// <b>A rule that could not be evaluated is not a rule that failed.</b> Where a path resolves
+    /// to nothing *and* the extraction report says nobody read the section it lives in, those are
+    /// opposite conclusions and the model carries nothing that distinguishes them — a failed pass
+    /// writes no key, exactly like a value the report does not contain. Treating that as a failure
+    /// turns an extraction defect into a clean-looking N/A, which is the most expensive error
+    /// available: a missed concern leaves no trace in the output, while a spurious one is visible
+    /// and can be discarded by a reviewer.
+    ///
+    /// Observed, and not marginally. CHK-009's second rule reads
+    /// <c>/existingArrangements[]/adviceAction</c>, three runs lost that section to a duplicate
+    /// property name, and the check would have settled as not applicable — dropping five material
+    /// findings, three of them the most severe in the case, while reporting no problem at all.
+    ///
+    /// Runs before any group is gathered, so a check that genuinely does not apply costs nothing:
+    /// not one embedding, not one vector query. It reads the stored model rather than searching,
+    /// because whether a case has a switch is a fact the extraction settled when it read the
+    /// report in full, and re-deriving it from passage similarity would be guessing at something
+    /// already known.
+    /// </summary>
+    internal static ApplicabilityOutcome EvaluateApplicability(
+        PlanTriggerProbe probe, CanonicalModelAccessor accessor)
+    {
+        if (probe.Applicability.Count == 0)
+        {
+            return new ApplicabilityOutcome(null, string.Empty, [], [], []);
+        }
+
+        var failed = new List<string>();
+        var passed = new List<string>();
+        var undetermined = new List<string>();
+
+        foreach (var rule in probe.Applicability)
+        {
+            var found = rule.CanonicalPaths
+                .Select(accessor.Resolve)
+                .Where(f => f.Found)
+                .SelectMany(f => ScalarsOf(f.Json))
+                .ToList();
+
+            if (rule.IsSatisfiedBy(found))
+            {
+                passed.Add(rule.Name);
+            }
+            else if (found.Count == 0 && rule.CanonicalPaths.All(accessor.WasNeverRead))
+            {
+                undetermined.Add(
+                    $"{rule.Name} (extraction never read {string.Join(", ", rule.CanonicalPaths)})");
+            }
+            else
+            {
+                failed.Add(found.Count == 0
+                    ? $"{rule.Name} (nothing at {string.Join(", ", rule.CanonicalPaths)})"
+                    : $"{rule.Name} (found {string.Join(", ", found.Distinct().Take(6))})");
+            }
+        }
+
+        var detail = new StringBuilder(failed.Count == 0
+            ? $"Applicability satisfied: {string.Join(", ", passed.DefaultIfEmpty("none"))}. "
+            : $"Applicability not satisfied: {string.Join("; ", failed)}. ");
+
+        if (undetermined.Count > 0)
+        {
+            detail.Append(
+                $"Applicability undetermined for {undetermined.Count} rule(s), so the check runs "
+                + $"rather than skipping: {string.Join("; ", undetermined)}. "
+                + "Its findings rest on a canonical model that is missing a section. ");
+        }
+
+        return new ApplicabilityOutcome(
+            failed.Count == 0, detail.ToString(), passed, failed, undetermined);
+    }
+
     internal static IReadOnlyList<string> ScalarsOf(string json)
     {
         try
@@ -496,7 +546,8 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var ranked = Rank(
-            passages, targeted, group.DeclaredEvidenceSections, group.DeclaredEvidenceCategories);
+            passages, targeted, group.DeclaredEvidenceSections, group.DeclaredEvidenceCategories,
+            _settings);
 
         var categories = ranked
             .Select(p => p.CategoryCode)
@@ -525,37 +576,6 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     /// </remarks>
     internal static string DeduplicationKey(CaseDocumentSearchMatch hit) =>
         $"{hit.DocumentName.Length}:{hit.DocumentName}{hit.SearchedText}";
-
-    /// <summary>
-    /// Slots held for each category a group says its evidence lives in, before the rest of the
-    /// pack is filled by score.
-    ///
-    /// One, not two. A group targeting five categories would spend ten of its twelve slots on a
-    /// floor of two, which stops being a floor and becomes the whole pack. One slot per category
-    /// guarantees a hearing without displacing the ranking, and whether two is better is a
-    /// question for a measured run rather than for this comment.
-    /// </summary>
-    public const int ReservedSlotsPerTargetedCategory = 1;
-
-    /// <summary>
-    /// Slots held for each *section* a group names, taken before the category floor.
-    ///
-    /// **Ranking a section match above a non-match is not the same as keeping it, and one run
-    /// measured the difference.** Stage 7 added section hints and ordered matches higher; four
-    /// findings landed. Two did not, and the instrumentation added afterwards said why: the
-    /// declarations naming the client's residency matched a candidate passage and were then
-    /// evicted before the pack was built, because the floor guarantees a slot per *category* and
-    /// a named section competes on score against every other passage of the same category.
-    ///
-    /// This is the same defect as <see cref="ReservedSlotsPerTargetedCategory"/>, one level down,
-    /// and it was left in place for a run because Stage 7 fixed the ordering and assumed that was
-    /// enough. It was not enough for categories either.
-    ///
-    /// Taken *before* the category floor because a section is the more specific request: a plan
-    /// naming "Current Monthly Cash Flow" has said something a plan naming "B" has not, and the
-    /// section slot will usually satisfy the category slot as a side effect.
-    /// </summary>
-    public const int ReservedSlotsPerDeclaredSection = 1;
 
     /// <summary>
     /// Orders a group's passages and keeps the best <see cref="MaxPassagesPerGroup"/>, holding a
@@ -591,8 +611,15 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         IEnumerable<CaseDocumentSearchMatch> passages,
         IReadOnlySet<string> targeted,
         IReadOnlyList<string>? sections = null,
-        IReadOnlySet<string>? declared = null)
+        IReadOnlySet<string>? declared = null,
+        AppSettings? settings = null)
     {
+        settings ??= Defaults;
+
+        var cap = AppSettings.Unbounded(settings.MaxPassagesPerGroup);
+        var perSection = settings.ReservedSlotsPerDeclaredSection;
+        var perCategory = settings.ReservedSlotsPerTargetedCategory;
+
         var hints = (sections ?? [])
             .Where(h => !string.IsNullOrWhiteSpace(h))
             .ToList();
@@ -619,9 +646,9 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             .ThenBy(p => p.SearchedText, StringComparer.Ordinal)
             .ToList();
 
-        if ((targeted.Count == 0 && hints.Count == 0) || ordered.Count <= MaxPassagesPerGroup)
+        if ((targeted.Count == 0 && hints.Count == 0) || ordered.Count <= cap)
         {
-            return ordered.Take(MaxPassagesPerGroup).ToList();
+            return cap == int.MaxValue ? ordered : ordered.Take(cap).ToList();
         }
 
         var keep = new HashSet<int>();
@@ -634,9 +661,9 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         {
             var held = 0;
 
-            for (var i = 0; i < ordered.Count && held < ReservedSlotsPerDeclaredSection; i++)
+            for (var i = 0; i < ordered.Count && held < perSection; i++)
             {
-                if (keep.Count >= MaxPassagesPerGroup)
+                if (keep.Count >= cap)
                 {
                     break;
                 }
@@ -680,9 +707,9 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         {
             var held = 0;
 
-            for (var i = 0; i < ordered.Count && held < ReservedSlotsPerTargetedCategory; i++)
+            for (var i = 0; i < ordered.Count && held < perCategory; i++)
             {
-                if (keep.Count >= MaxPassagesPerGroup)
+                if (keep.Count >= cap)
                 {
                     break;
                 }
@@ -697,7 +724,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         }
 
         // Then the best of the rest, which is the whole pack whenever nothing was displaced.
-        for (var i = 0; i < ordered.Count && keep.Count < MaxPassagesPerGroup; i++)
+        for (var i = 0; i < ordered.Count && keep.Count < cap; i++)
         {
             keep.Add(i);
         }
@@ -865,7 +892,8 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             // the cut landed 45% of the way through an observed model, mid-key inside the
             // fourth recorded inconsistency — so every assessor read half a sentence and none
             // of them saw the ambiguities section at all.
-            sb.AppendLine(Truncate(extraction.Json, ExtractionReportMaxChars));
+            sb.AppendLine(Truncate(
+                extraction.Json, AppSettings.Unbounded(_settings.ExtractionReportMaxChars)));
             sb.AppendLine("```");
             sb.AppendLine();
         }

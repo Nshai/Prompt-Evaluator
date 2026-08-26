@@ -143,9 +143,16 @@ reported the data as absent from the file: a finding about the adviser, caused b
 
 Two things now stand between that failure and a false finding:
 
-- **A malformed reply is retried once.** A reply that is *complete but mis-nested* is a
-  different animal from one cut off at the token cap: nothing was lost, one bracket is in the
-  wrong place, and the same prompt run again normally lands. Repairing the brackets was the
+- **A malformed reply is retried once, with a different prompt.** A reply that is *complete but
+  mis-nested* is a different animal from one cut off at the token cap: nothing was lost, one
+  bracket is in the wrong place, and the same prompt run again normally lands — provided it is
+  not the same prompt. An observed retry re-sent the identical question and the gateway served
+  the identical failed reply from cache: 41,580 characters, the same stray brace at the same
+  offset, in the same second, billed twice and lost anyway. The retry now carries a second-attempt
+  note naming the two faults seen in practice, varied by the digest of the reply that failed —
+  which differs from attempt one, as the cache key needs, while staying reproducible for a run
+  that pins its sampling. A retry that still comes back byte-identical is reported as a cached
+  failure rather than as a second independent one. Repairing the brackets was the
   alternative and was rejected — where an unmatched closer belongs is a guess, and a wrongly
   re-nested fragment is worse than a second call, because it would be merged and believed.
   Both attempts are counted in the cost.
@@ -156,6 +163,18 @@ Two things now stand between that failure and a false finding:
   missing outright, and the resulting `extractionReport` mentioned neither at 0.78 confidence.
   Failed sections now appear on their own line, and the pass is told to record them as
   `expectedButAbsent` with reason `PresentButUnparseable` and to lower its confidence.
+
+- **A repeated property name keeps the section instead of losing it.** The third failure mode,
+  and the one that hid best: a duplicate key *parses*. `JsonNode.Parse` accepts it and builds its
+  dictionary lazily, so the reply came back non-null, the reader called it well formed, nothing
+  retried, and it detonated at whatever line first asked the object for its count. Three
+  consecutive runs lost `existingArrangements` to it — five pension plans, their values, charges,
+  risk ratings and advice actions, and with them the identifier table every later pass needed, so
+  eight or nine cross-references dangled too. The reply was read twice and the model repeated a
+  run of *two* properties verbatim, with identical values on both sides; the exception could only
+  ever name the first, because it threw on it. The reader now keeps the **first** occurrence of
+  each name — the model writes in document order, so a repeat is a stutter rather than a
+  correction — and reports every one, saying whether the two values agreed.
 
 What still does not exist is a way for a **check** to tell the two apart. The extraction report
 records it; the canonical model does not. See [Known limitations](#8-known-limitations).
@@ -273,12 +292,24 @@ That reporting is the actual repair. A value outside the vocabulary is not neces
 
 ## 8. Known limitations
 
-- **A check cannot tell an absent value from an unread section.** Where an extraction pass
-  fails, its properties are simply missing, and a canonical path under them resolves to nothing
-  — the same answer a check gets for a value the report genuinely does not contain. The
-  extraction report names the failed sections and the run output lists them, but nothing in the
-  stored model marks the difference, so a finding drawn from that run needs the run's own log
-  beside it. Carrying a per-section extraction status in the model would fix it.
+- **A check cannot tell an absent value from an unread section — except where it decides
+  whether the check runs at all.** Where an extraction pass fails, its properties are simply
+  missing, and a canonical path under them resolves to nothing: the same answer a check gets for
+  a value the report genuinely does not contain.
+
+  The case that mattered most is now closed. An **applicability rule** reading such a path used
+  to fail, and with `onAbsent: "Skip"` that settled the whole check — CHK-009 reported N/A and
+  dropped five material findings, three of them the most severe in the case, while reporting no
+  problem at all. `CanonicalModelAccessor.WasNeverRead` reads
+  `/extractionReport/expectedButAbsent` for entries reasoned `PresentButUnparseable`, and a rule
+  whose paths all lie under one is **undetermined rather than failed**: the check runs, and the
+  run says why it could not be sure. A rule that fails on a section the extraction *did* read
+  still narrows the run, which is what the rules are for.
+
+  Inside a group, the ambiguity remains. A `side: "Assertion"` query against a failed section
+  still reports the data as absent from the file, which reads as a finding about the adviser.
+  Carrying a per-section extraction status in the model, rather than only in the report, would
+  close that too.
 - **`isClientSpecific` is a judgement, not a fact.** It will be the least reliable field in the model. Treat it as a ranking signal for reviewer attention, not as a pass/fail gate.
 - **Provider risk-scale normalisation is out of scope.** The model records scales faithfully and flags comparability; mapping between Dynamic Planner, FE, Defaqto and provider-internal scales needs a reference dataset the model does not carry.
 - **Charts are not parsed.** Cashflow and performance charts in the example arrive as OCR noise. Numeric performance data is only reliably captured where the report also tabulates it; `PerformanceLine.provenance.confidence` should reflect that.

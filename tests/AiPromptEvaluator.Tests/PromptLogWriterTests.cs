@@ -25,6 +25,8 @@ public class PromptLogWriterTests
             StructuredFindings: true,
             MaxSearchResults: maxSearchResults,
             MaxPassagesPerGroup: 12,
+            ReservedSlotsPerTargetedCategory: 1,
+            ReservedSlotsPerDeclaredSection: 1,
             ExtractionMaxTokens: extractionMaxTokens,
             PlanCount: 10,
             PlanDigest: "abc123def456",

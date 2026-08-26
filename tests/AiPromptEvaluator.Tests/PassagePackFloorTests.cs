@@ -19,6 +19,20 @@ namespace AiPromptEvaluator.Tests;
 /// </summary>
 public class PassagePackFloorTests
 {
+
+    /// <summary>
+    /// These tests are about what happens when the pack is full, so they pin the cap rather
+    /// than inherit it. <see cref="AppSettings.MaxPassagesPerGroup"/> is a setting now, and a
+    /// test that reshapes its fixtures every time the default moves is testing the default.
+    /// </summary>
+    private static readonly AppSettings Packed = new() { MaxPassagesPerGroup = 12 };
+
+    private static List<CaseDocumentSearchMatch> Rank(
+        IEnumerable<CaseDocumentSearchMatch> passages,
+        IReadOnlySet<string> targeted,
+        IReadOnlyList<string>? sections = null,
+        IReadOnlySet<string>? declared = null) =>
+        CheckPlanRunner.Rank(passages, targeted, sections, declared, Packed);
     /// <summary>
     /// CHK-009 G9.1 in miniature: five targeted categories, the declared one scoring worst, and
     /// more candidates than the pack holds. Before the floor this returned no B at all.
@@ -40,9 +54,9 @@ public class PassagePackFloorTests
         // pessimistic one.
         passages.Add(Passage("Fact Find.md", "B", 0.51, "Total Monthly Disposable Income £-288.00"));
 
-        var ranked = CheckPlanRunner.Rank(passages, Targets("B", "E", "G", "H", "I"));
+        var ranked = Rank(passages, Targets("B", "E", "G", "H", "I"));
 
-        Assert.Equal(CheckPlanRunner.MaxPassagesPerGroup, ranked.Count);
+        Assert.Equal(Packed.MaxPassagesPerGroup, ranked.Count);
         Assert.Contains(ranked, p => p.CategoryCode == "B");
         Assert.Contains(ranked, p => p.SearchedText.Contains("-288.00"));
     }
@@ -66,7 +80,7 @@ public class PassagePackFloorTests
             passages.Add(Passage($"quiet-{category}.md", category, 0.51));
         }
 
-        var ranked = CheckPlanRunner.Rank(passages, Targets("A", "B", "C", "D", "I"));
+        var ranked = Rank(passages, Targets("A", "B", "C", "D", "I"));
 
         foreach (var category in new[] { "A", "B", "C", "D", "I" })
         {
@@ -93,9 +107,9 @@ public class PassagePackFloorTests
             passages.Add(Passage($"weak-{category}.md", category, 0.51));
         }
 
-        var ranked = CheckPlanRunner.Rank(passages, Targets("A", "B", "C", "I"));
+        var ranked = Rank(passages, Targets("A", "B", "C", "I"));
 
-        Assert.Equal(CheckPlanRunner.MaxPassagesPerGroup, ranked.Count);
+        Assert.Equal(Packed.MaxPassagesPerGroup, ranked.Count);
         Assert.Equal(9, ranked.Count(p => p.CategoryCode == "I"));
         Assert.Equal(3, ranked.Count(p => p.CategoryCode != "I"));
     }
@@ -116,7 +130,7 @@ public class PassagePackFloorTests
 
         passages.Add(Passage("unwanted.md", "H", 0.99));
 
-        var ranked = CheckPlanRunner.Rank(passages, Targets("B"));
+        var ranked = Rank(passages, Targets("B"));
 
         Assert.DoesNotContain(ranked, p => p.CategoryCode == "H");
     }
@@ -135,7 +149,7 @@ public class PassagePackFloorTests
             Passage("c.md", "G", 0.7),
         };
 
-        var ranked = CheckPlanRunner.Rank(passages, Targets("B", "G", "I"));
+        var ranked = Rank(passages, Targets("B", "G", "I"));
 
         Assert.Equal(3, ranked.Count);
         Assert.Equal(["a.md", "c.md", "b.md"], ranked.Select(p => p.DocumentName));
@@ -157,7 +171,7 @@ public class PassagePackFloorTests
 
         passages.Add(Passage("weak.md", "B", 0.51));
 
-        var ranked = CheckPlanRunner.Rank(passages, Targets("B", "I"));
+        var ranked = Rank(passages, Targets("B", "I"));
 
         Assert.Equal("weak.md", ranked[^1].DocumentName);
         Assert.True(
@@ -183,9 +197,9 @@ public class PassagePackFloorTests
             }
         }
 
-        var forwards = CheckPlanRunner.Rank(passages, Targets("B", "E", "G", "I"));
-        var backwards = CheckPlanRunner.Rank(Enumerable.Reverse(passages), Targets("B", "E", "G", "I"));
-        var reordered = CheckPlanRunner.Rank(passages, Targets("I", "G", "E", "B"));
+        var forwards = Rank(passages, Targets("B", "E", "G", "I"));
+        var backwards = Rank(Enumerable.Reverse(passages), Targets("B", "E", "G", "I"));
+        var reordered = Rank(passages, Targets("I", "G", "E", "B"));
 
         Assert.Equal(forwards, backwards);
         Assert.Equal(forwards, reordered);
@@ -232,7 +246,7 @@ public class PassagePackFloorTests
             passages.Add(Passage($"planning{i:00}.md", "F", 0.70 - (i * 0.01), $"cashflow row {i}"));
         }
 
-        var ranked = CheckPlanRunner.Rank(
+        var ranked = Rank(
             passages,
             Targets("B", "F"),
             ["Total Monthly Disposable Income", "Total Net Monthly Income"]);
@@ -259,7 +273,7 @@ public class PassagePackFloorTests
 
         passages.Add(Passage("elsewhere.md", "H", 0.99, "Total Monthly Disposable Income appears here too"));
 
-        var ranked = CheckPlanRunner.Rank(passages, Targets("B"), ["Total Monthly Disposable Income"]);
+        var ranked = Rank(passages, Targets("B"), ["Total Monthly Disposable Income"]);
 
         Assert.DoesNotContain(ranked, p => p.CategoryCode == "H");
     }
@@ -275,8 +289,8 @@ public class PassagePackFloorTests
         };
 
         Assert.Equal(
-            CheckPlanRunner.Rank(passages, Targets("B")),
-            CheckPlanRunner.Rank(passages, Targets("B"), []));
+            Rank(passages, Targets("B")),
+            Rank(passages, Targets("B"), []));
     }
 
     /// <summary>
@@ -301,7 +315,7 @@ public class PassagePackFloorTests
             | Additional Notes |  |  |
             """);
 
-        var ranked = CheckPlanRunner.Rank(
+        var ranked = Rank(
             [skeleton, Passage("Fact Find.md", "B", 0.50, CashFlowSection)],
             Targets("B"),
             ["Total Monthly Disposable Income"]);

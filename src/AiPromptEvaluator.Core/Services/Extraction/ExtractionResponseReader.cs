@@ -17,11 +17,52 @@ namespace AiPromptEvaluator;
 public static class ExtractionResponseReader
 {
     /// <summary>
+    /// One property name a model wrote twice in the same object, and whether the two values
+    /// agreed. <paramref name="Path"/> is the object's JSON Pointer, so a report can say which
+    /// arrangement or recommendation it happened in rather than only which field.
+    /// </summary>
+    public sealed record DuplicateKey(string Path, string Key, bool ValuesDiffer)
+    {
+        /// <inheritdoc/>
+        public override string ToString() =>
+            $"{Path}/{Key}" + (ValuesDiffer ? " (values differ; kept the first)" : string.Empty);
+    }
+
+    /// <summary>
     /// The reply as a JSON object, tolerating the two things a chat model does even when told
     /// not to: wrapping the object in a markdown fence, and adding a sentence around it.
     /// </summary>
-    public static JsonObject? ParseObject(string response)
+    public static JsonObject? ParseObject(string response) => ParseObject(response, out _);
+
+    /// <summary>
+    /// The reply as a JSON object, reporting any property name written twice in one object.
+    ///
+    /// <b>A duplicate key is the worst kind of malformed reply, because it parses.</b>
+    /// <see cref="JsonNode.Parse(string, JsonNodeOptions?, JsonDocumentOptions)"/> accepts it and
+    /// builds its dictionary lazily, so the object comes back non-null, the reader calls it well
+    /// formed, and nothing retries. It detonates later — at whatever line first asks for
+    /// <c>Count</c> or enumerates it — with an <see cref="ArgumentException"/> that names a key
+    /// and nothing else.
+    ///
+    /// Observed three runs running, always the same shape: the model repeated a run of two
+    /// properties verbatim inside one existing arrangement —
+    /// <c>"numberOfFundsAvailable": "7", "allowsAdviserServicing": false,</c> written twice — with
+    /// identical values, which is semantically harmless and structurally fatal. It cost the whole
+    /// <c>existingArrangements</c> section every time: five pension plans, their values, charges,
+    /// risk ratings and advice actions, and with them the identifier table every later pass needed,
+    /// so every cross-reference dangled too.
+    ///
+    /// <b>The first occurrence wins.</b> Not the last, and not a merge: the model writes in
+    /// document order, so the first is the one it wrote while reading the source, and a repeat is
+    /// a stutter rather than a correction. Where the two values differ the first is still kept and
+    /// the difference is reported, because choosing between them would be guessing at which
+    /// reading of the document was meant — and a wrongly chosen value is worse than a flagged one,
+    /// since it would be merged and believed.
+    /// </summary>
+    public static JsonObject? ParseObject(string response, out IReadOnlyList<DuplicateKey> duplicates)
     {
+        duplicates = [];
+
         var text = Unfence(response);
 
         if (!text.StartsWith('{'))
@@ -38,11 +79,79 @@ public static class ExtractionResponseReader
 
         try
         {
-            return JsonNode.Parse(text) as JsonObject;
+            // JsonDocument, not JsonNode: it permits duplicate names and hands back both, which
+            // is what makes the choice between them ours rather than the dictionary's.
+            using var document = JsonDocument.Parse(text);
+
+            if (document.RootElement.ValueKind != JsonValueKind.Object)
+            {
+                return null;
+            }
+
+            var found = new List<DuplicateKey>();
+            var root = Rebuild(document.RootElement, string.Empty, found) as JsonObject;
+
+            duplicates = found;
+            return root;
         }
         catch (JsonException)
         {
             return null;
+        }
+    }
+
+    /// <summary>
+    /// Rebuilds an element as a node, keeping the first of any repeated property name.
+    ///
+    /// Everything is rebuilt rather than only the objects that repeat, because a duplicate
+    /// anywhere in the tree poisons the node that contains it, and finding out where means
+    /// walking the whole thing anyway.
+    /// </summary>
+    private static JsonNode? Rebuild(JsonElement element, string path, List<DuplicateKey> duplicates)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.Object:
+                var node = new JsonObject();
+                var seen = new Dictionary<string, string>(StringComparer.Ordinal);
+
+                foreach (var property in element.EnumerateObject())
+                {
+                    var raw = property.Value.GetRawText();
+
+                    if (seen.TryGetValue(property.Name, out var kept))
+                    {
+                        duplicates.Add(new DuplicateKey(
+                            path.Length == 0 ? "/" : path,
+                            property.Name,
+                            !string.Equals(kept, raw, StringComparison.Ordinal)));
+
+                        continue;
+                    }
+
+                    seen[property.Name] = raw;
+                    node[property.Name] = Rebuild(
+                        property.Value, $"{path}/{property.Name}", duplicates);
+                }
+
+                return node;
+
+            case JsonValueKind.Array:
+                var array = new JsonArray();
+                var index = 0;
+
+                foreach (var item in element.EnumerateArray())
+                {
+                    array.Add(Rebuild(item, $"{path}/{index++}", duplicates));
+                }
+
+                return array;
+
+            case JsonValueKind.Null:
+                return null;
+
+            default:
+                return JsonNode.Parse(element.GetRawText());
         }
     }
 

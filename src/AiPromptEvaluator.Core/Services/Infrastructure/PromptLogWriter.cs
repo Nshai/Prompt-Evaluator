@@ -89,6 +89,32 @@ public sealed class PromptLogWriter : IDisposable
         }
     }
 
+    /// <summary>
+    /// Records that a run ended without producing anything, so a partial log says it is partial.
+    ///
+    /// <b>Without this, a cancelled run and a completed one end the same way: with the last
+    /// section that happened to finish.</b> An observed log stopped after eight of twelve
+    /// extraction passes, every one of them parsed and merged, and carried no summary block, no
+    /// failure list and no marker of any kind — and a second run started fifteen seconds later,
+    /// which is how the cancellation was eventually inferred rather than read. A log that a
+    /// reader has to date-arithmetic their way into is not an audit trail.
+    /// </summary>
+    public void LogRunEnded(string reason)
+    {
+        lock (_gate)
+        {
+            _writer.WriteLine(new string('=', 100));
+            _writer.WriteLine($"Run ended without completing  ({DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss})");
+            _writer.WriteLine(new string('=', 100));
+            _writer.WriteLine(reason);
+            _writer.WriteLine();
+            _writer.WriteLine(
+                "Nothing was stored. The sections above completed but the model they would have "
+                + "formed was never assembled, so this log records work done and not a result.");
+            _writer.WriteLine();
+        }
+    }
+
     /// <summary>Records the canonical model an extraction run produced, for an audit trail outside the SQLite store.</summary>
     public void LogCanonicalModel(CanonicalModelDocument document, IReadOnlyList<(string Section, string Error)> failures)
     {

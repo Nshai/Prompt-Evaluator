@@ -17,6 +17,20 @@ namespace AiPromptEvaluator.Tests;
 /// </summary>
 public class DeterminismTests
 {
+
+    /// <summary>
+    /// These tests are about what happens when the pack is full, so they pin the cap rather
+    /// than inherit it. <see cref="AppSettings.MaxPassagesPerGroup"/> is a setting now, and a
+    /// test that reshapes its fixtures every time the default moves is testing the default.
+    /// </summary>
+    private static readonly AppSettings Packed = new() { MaxPassagesPerGroup = 12 };
+
+    private static List<CaseDocumentSearchMatch> Rank(
+        IEnumerable<CaseDocumentSearchMatch> passages,
+        IReadOnlySet<string> targeted,
+        IReadOnlyList<string>? sections = null,
+        IReadOnlySet<string>? declared = null) =>
+        CheckPlanRunner.Rank(passages, targeted, sections, declared, Packed);
     // ──────────────────────────────────────────────
     // Sampling
     // ──────────────────────────────────────────────
@@ -222,7 +236,7 @@ public class DeterminismTests
     [Fact]
     public void Rank_PutsTargetedCategoriesAboveBetterScoringOnes()
     {
-        var ranked = CheckPlanRunner.Rank(
+        var ranked = Rank(
             [Passage("Report.md", "I", 0.99), Passage("Fact Find.md", "B", 0.40)],
             new HashSet<string>(["B"], StringComparer.OrdinalIgnoreCase));
 
@@ -241,11 +255,11 @@ public class DeterminismTests
             .Select(i => Passage($"Doc{i:00}.md", "B", 0.5, $"passage {i:00}"))
             .ToList();
 
-        var forwards = CheckPlanRunner.Rank(passages, EmptyTargets);
-        var backwards = CheckPlanRunner.Rank(Enumerable.Reverse(passages), EmptyTargets);
-        var shuffled = CheckPlanRunner.Rank(passages.OrderBy(p => p.SearchedText.Length).ThenBy(p => p.DocumentName[3]), EmptyTargets);
+        var forwards = Rank(passages, EmptyTargets);
+        var backwards = Rank(Enumerable.Reverse(passages), EmptyTargets);
+        var shuffled = Rank(passages.OrderBy(p => p.SearchedText.Length).ThenBy(p => p.DocumentName[3]), EmptyTargets);
 
-        Assert.Equal(CheckPlanRunner.MaxPassagesPerGroup, forwards.Count);
+        Assert.Equal(Packed.MaxPassagesPerGroup, forwards.Count);
         Assert.Equal(forwards, backwards);
         Assert.Equal(forwards, shuffled);
     }
@@ -254,7 +268,7 @@ public class DeterminismTests
     [Fact]
     public void Rank_KeepsTheHighestScoresFirst()
     {
-        var ranked = CheckPlanRunner.Rank(
+        var ranked = Rank(
             [Passage("Zebra.md", "B", 0.9), Passage("Alpha.md", "B", 0.1)],
             EmptyTargets);
 
@@ -269,7 +283,7 @@ public class DeterminismTests
     [Fact]
     public void Rank_SeparatesScoresThatWouldTieIfRounded()
     {
-        var ranked = CheckPlanRunner.Rank(
+        var ranked = Rank(
             [Passage("Alpha.md", "B", 0.500001), Passage("Zebra.md", "B", 0.500002)],
             EmptyTargets);
 

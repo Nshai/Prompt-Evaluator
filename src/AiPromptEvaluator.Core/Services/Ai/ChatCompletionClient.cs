@@ -83,7 +83,8 @@ public class ChatCompletionClient : IChatCompletionClient
             throw new InvalidOperationException("Please enter a prompt.");
         }
 
-        var folderContext = DocumentContextBuilder.BuildContext(_settings.DocumentFolder, _settings.DocumentCategories);
+        var folderContext = DocumentContextBuilder.BuildContext(
+            _settings.DocumentFolder, _settings.DocumentCategories, _settings.MaxDocumentsInContext);
 
         using var client = AiClientFactory.CreateChatClient(_settings);
 

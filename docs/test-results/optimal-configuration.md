@@ -20,6 +20,12 @@ actually found).
 | Setting | Use | Why |
 | --- | --- | --- |
 | `maxSearchResults` | **8** | 1 costs 34 points of recall, 16 buys nothing; see [§1](#1-maxsearchresults--8) |
+| `maxPassagesPerGroup` | **24** | was a hard-coded 12; the binding constraint on coverage, see [§1a](#1a-maxpassagespergroup--24) |
+| `reservedSlotsPerTargetedCategory` | **1** | a floor per declared category; two would spend ten of twelve slots on the floor |
+| `reservedSlotsPerDeclaredSection` | **1** | a floor per named section, taken first — three such hints moved four findings |
+| `extractionReportMaxChars` | **24000** | holds a whole report; 4,000 dropped 55% of it |
+| `decisionMaxTokens` | **8000** | caps how many findings one group may write |
+| `maxDocumentsInContext` | **50** | the case-file listing a prompt is given |
 | `extractionMaxTokens` | **32000** | 16,000 truncated the recommendations section |
 | `maxTokensPerChunk` | **600** | untested — default, retained |
 | `chunkOverlapTokens` | **100** | untested — default, retained |
@@ -37,6 +43,12 @@ As JSON, for `%LOCALAPPDATA%\AiPromptEvaluator\settings.json`:
 ```json
 {
   "maxSearchResults": 8,
+  "maxPassagesPerGroup": 24,
+  "reservedSlotsPerTargetedCategory": 1,
+  "reservedSlotsPerDeclaredSection": 1,
+  "extractionReportMaxChars": 24000,
+  "decisionMaxTokens": 8000,
+  "maxDocumentsInContext": 50,
   "extractionMaxTokens": 32000,
   "maxTokensPerChunk": 600,
   "chunkOverlapTokens": 100,
@@ -116,6 +128,45 @@ matches to make room, not a larger candidate set.
 
 **Do not raise this above 8 without first raising `MaxPassagesPerGroup`**, and treat that as a
 separate experiment with its own measurement.
+
+### Every cap takes 0 for unbounded
+
+`maxSearchResults`, `maxPassagesPerGroup`, `extractionReportMaxChars`, `decisionMaxTokens` and
+`maxDocumentsInContext` all read **0 as unbounded** — no limit at all. Zero rather than -1
+because each of them counts things shown to a model, and zero of them is never a configuration
+anyone wants: a run with no passages or no findings is not a cheaper run, it is a broken one. So
+the value that would otherwise be a footgun carries the meaning that has no other spelling. A
+negative value reads as unbounded too, rather than failing at the far end of a long run.
+
+The two reserved-slot settings are **floors, not caps**, and are excluded: 0 there means no
+reservation, which is a real setting and the way to measure what the floor is worth.
+
+Unbounded is a diagnostic, not a configuration to run on. `maxPassagesPerGroup: 0` sends a
+group's whole de-duplicated pool to the assessor — at `maxSearchResults: 8` and seven queries
+that is up to 112 passages for one call, against 24 — and `maxSearchResults: 0` asks the vector
+store for every match it holds. Use them to find out what a cap has been costing, then set a
+number.
+
+The run fingerprint prints `unbounded` rather than a figure, so a diagnostic run cannot be
+mistaken for a tuned one later.
+
+---
+
+## 1a. `maxPassagesPerGroup` — 24
+
+**The binding constraint on coverage, and a compile-time constant of 12 until it became a
+setting.** That is why §1's experiment came out the way it did: every group already sat at the
+cap, so doubling the candidate set changed almost nothing about what an assessor read.
+
+The default moved from 12 to 24 because reserved slots ration the pack *before* ranking begins.
+The widest group, CHK-008 G8.1, declares four evidence categories and two evidence sections, so
+six of its twelve slots are spoken for and only six are decided by score. At 24, a seven-query
+group drawing up to 112 candidates still discards 79% of them.
+
+**24 is reasoned, not measured.** No run on record has varied this value. Treat the first run at
+24 as an experiment with its own measurement and compare it against 12 before attributing any
+recall change to anything else. The cost is prompt tokens, and it is linear: twice the passages
+in every one of the 85 group calls.
 
 ---
 
@@ -246,7 +297,7 @@ solved pipeline.
 | Question | How | Status |
 | --- | --- | --- |
 | Does `maxSearchResults: 16` help category B? | Compare category reach and recall at 8 and 16 | **answered — no**, see [§1](#16-was-tested-and-is-worse-than-8) |
-| Does raising `MaxPassagesPerGroup` above 12 help? | Vary the cap at fixed `maxSearchResults: 8` | not started — now the more promising lever |
+| Does raising `maxPassagesPerGroup` above 12 help? | Vary the cap at fixed `maxSearchResults: 8` | **now possible without a rebuild**; default moved to 24, unmeasured |
 | Is the model deterministic at temperature 0? | Two full-duration runs, cache disabled or expired | not started |
 | Do chunk size and search limit interact? | Vary `maxTokensPerChunk` at fixed `maxSearchResults: 8` | not started |
 | Does the extraction fix restore check recall? | Re-run checks at 8 against the 56% baseline | not started |

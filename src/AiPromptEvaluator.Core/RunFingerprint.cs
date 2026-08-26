@@ -24,6 +24,8 @@ public sealed record RunFingerprint(
     bool StructuredFindings,
     int MaxSearchResults,
     int MaxPassagesPerGroup,
+    int ReservedSlotsPerTargetedCategory,
+    int ReservedSlotsPerDeclaredSection,
     int ExtractionMaxTokens,
     int PlanCount,
     string PlanDigest,
@@ -48,6 +50,8 @@ public sealed record RunFingerprint(
             StructuredFindings: settings.StructuredFindings,
             MaxSearchResults: settings.MaxSearchResults,
             MaxPassagesPerGroup: maxPassagesPerGroup,
+            ReservedSlotsPerTargetedCategory: settings.ReservedSlotsPerTargetedCategory,
+            ReservedSlotsPerDeclaredSection: settings.ReservedSlotsPerDeclaredSection,
             ExtractionMaxTokens: settings.ExtractionMaxTokens,
             PlanCount: planCount,
             PlanDigest: DigestOfFolder(planFolder, CheckQueryPlanLoader.SearchPattern),
@@ -77,9 +81,20 @@ public sealed record RunFingerprint(
     public string Format() =>
         $"Chat {ChatModel} · {Sampling} · findings {(StructuredFindings ? "schema-constrained" : "free-form")}"
         + Environment.NewLine
-        + $"Embeddings {EmbeddingModel} · top {MaxSearchResults}/search, {MaxPassagesPerGroup}/group · "
+        + $"Embeddings {EmbeddingModel} · top {Cap(MaxSearchResults)}/search, "
+        + $"{Cap(MaxPassagesPerGroup)}/group "
+        + $"(reserving {ReservedSlotsPerDeclaredSection}/section, "
+        + $"{ReservedSlotsPerTargetedCategory}/category) · "
         + $"extraction cap {ExtractionMaxTokens:N0} tok · "
         + $"plans {PlanCount}@{PlanDigest} · model {CanonicalModelDigest} (schema v{SchemaVersion})";
+
+    /// <summary>
+    /// How a cap reads in the fingerprint. A run at an unbounded cap and a run at a large one
+    /// are different runs, and "unbounded" says which without the reader having to know what
+    /// the largest sensible value would have been.
+    /// </summary>
+    private static string Cap(int value) =>
+        AppSettings.IsUnbounded(value) ? "unbounded" : value.ToString("N0");
 
     /// <summary>
     /// A short, stable digest. Short because it is read by eye and only ever compared for

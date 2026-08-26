@@ -1033,7 +1033,9 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 sb.AppendLine();
                 sb.AppendLine(
                     $"[{PassageId(i)}] [{category}] {passage.DocumentName} (score {passage.Score:0.000})");
-                sb.AppendLine(Truncate(passage.SearchedText, 2400));
+                sb.AppendLine(Window(
+                    passage.SearchedText, PassageRenderCharacters,
+                    pack.Group.DeclaredEvidenceSections));
             }
         }
 
@@ -1176,6 +1178,80 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         {
             sb.AppendLine($"- {label}: {value}");
         }
+    }
+
+    /// <summary>
+    /// How much of one passage is written into the prompt.
+    ///
+    /// Not a coverage cap in the sense the settings use — it bounds one passage, not how many —
+    /// but it removes evidence exactly as effectively, and it did so 907 times in a single run
+    /// before anyone counted.
+    /// </summary>
+    public const int PassageRenderCharacters = 2400;
+
+    /// <summary>
+    /// Renders a passage, keeping the part the plan asked for when the whole will not fit.
+    ///
+    /// <b>Hint matching and passage rendering disagreed about what "the passage" was, and the
+    /// gap between them silently discarded the evidence a group had specifically reserved a slot
+    /// for.</b> <see cref="UnmatchedSections"/> and <c>Mentions</c> both test
+    /// <c>SearchedText</c> — the whole passage — while the prompt wrote its first 2,400
+    /// characters. So a hint could match, win its reserved slot, put its passage in the pack, and
+    /// have the row it named cut before any model saw it. Every diagnostic said the hint had
+    /// worked. The assessor had a truncated table.
+    ///
+    /// That is how the fact find's "Residency Status | Tenant - private" reached no assessor in
+    /// four consecutive runs while three separate fixes were aimed at it: a query rewrite, a
+    /// section hint, and three guards. All three worked. None of them could survive the render.
+    ///
+    /// So when a passage must be cut, the window is centred on the first declared section the
+    /// passage carries, rather than taken from the start. A plan naming "Current Monthly Cash
+    /// Flow" has said which part of a long document it needs, and that statement now survives all
+    /// the way to the prompt instead of stopping one step short of it. Where a passage carries no
+    /// declared section — or none was declared — the leading window is kept, which is the old
+    /// behaviour and the right default: the top of a chunk is its heading.
+    /// </summary>
+    internal static string Window(string text, int max, IReadOnlyList<string>? sections = null)
+    {
+        if (text.Length <= max)
+        {
+            return text;
+        }
+
+        var at = -1;
+
+        foreach (var hint in sections ?? [])
+        {
+            if (string.IsNullOrWhiteSpace(hint))
+            {
+                continue;
+            }
+
+            var found = text.IndexOf(hint, StringComparison.OrdinalIgnoreCase);
+
+            if (found >= 0 && (at < 0 || found < at))
+            {
+                at = found;
+            }
+        }
+
+        // Nothing named, or the named part is already inside the leading window.
+        if (at < 0 || at < max)
+        {
+            return Truncate(text, max);
+        }
+
+        // Centre on it, then pull back inside the text. A quarter of the window ahead of the
+        // hint keeps whatever heading or label introduces the row; the rest follows it.
+        var start = Math.Max(0, at - (max / 4));
+        var length = Math.Min(max, text.Length - start);
+
+        return $"... [{start:N0} earlier characters omitted]"
+             + Environment.NewLine
+             + text.Substring(start, length)
+             + (start + length < text.Length
+                 ? Environment.NewLine + $"... [truncated, {text.Length - start - length:N0} more characters]"
+                 : string.Empty);
     }
 
     private static string Truncate(string text, int max) =>

@@ -1,209 +1,302 @@
-# Run analysis — Runs 10 and 11
+# Run analysis — Run 15
 
-Runs of case ABC-99 on 2026-08-26 at 15:16 and 15:39, examined against
-[expected-results-benchmark.md](expected-results-benchmark.md),
-[scoring-rubric.md](scoring-rubric.md) and the previous analysis of Runs 7–9 in
-[run-analysis.md](run-analysis.md).
+Case ABC-99, 2026-08-26 21:47, scored against
+[expected-results-benchmark.md](expected-results-benchmark.md) under
+[scoring-rubric.md](scoring-rubric.md), and compared with
+[Run 14](Runtime-Logs/latest/Run-14/run-analysis.md),
+[Run 13](Runtime-Logs/latest/Run-13/run-analysis.md),
+[Run 12](Runtime-Logs/latest/Run-12/run-analysis.md),
+[run-analysis.md](run-analysis.md) (Runs 7–9) and
+[run-analysis-replays.md](run-analysis-replays.md) (Runs 10–11).
+
+*This file previously held the Runs 10–11 replay analysis. That analysis is unchanged and now
+lives at [run-analysis-replays.md](run-analysis-replays.md); every document that cited it has been
+relinked. Nothing was discarded.*
 
 ---
 
-## The finding
+## The result
 
-**Neither run is a run.** Run 10 is a recording of Run 9. Run 11 is a recording of Run 7. The
-pipeline detected both itself and said so at the head of each report:
+**Sonnet 4.6 has finally run on the current plans, and a single wrong boolean took a whole check
+off the board before it started.** Run 15 scores **25 / 7 / 4** — with CHK-005 never executed.
 
-> `*** REPLAY — NOT A GENERATED RUN. 149,582 output tokens in 4.4s is 33,858 tok/s, which no model`
-> `produces. The gateway served a cached response. ***`
+| | Run 12 | Run 13 | Run 14 | **Run 15** |
+| --- | --- | --- | --- | --- |
+| Chat model | Haiku 4.5 | Haiku 4.5 | Haiku 4.5 | **Sonnet 4.6** |
+| `maxSearchResults` / `maxPassagesPerGroup` | 8 / 24 | **0** / 24 | 8 / **0** | 8 / **0** |
+| Canonical model | `8a0120d90ea2` | `a2bbc38bdf38` | `a2bbc38bdf38` | **`cba52b288e54`** |
+| Groups run | 85 | 85 | 85 | **77** |
+| Retrieval | 229 / 3,612 | 229 / 130,993 | 229 / 3,612 | **203 / 3,196** |
+| Canonical paths resolved / absent | 224 / 31 | 224 / 31 | 224 / 31 | **197 / 38** |
+| **Caught / Partial / Missed** | **27 / 5 / 4** | 19 / 11 / 6 | 23 / 9 / 4 | **25 / 7 / 4** |
+| Recall | **75%** | 53% | 64% | **69%** |
+| Chat cost | £2.13 | £2.20 | £2.34 | **£7.12** |
+| Wall clock | 325s | 259s | 145s | **552s** |
 
-The rubric's first procedural step is to establish a run is genuine before scoring anything,
-because *"scoring a replay is scoring an older run under a newer name."* That is exactly what these
-are, so **no score in this document is a measurement.** The numbers are knowable precisely — the
-findings text is identical — but they are inherited from Runs 7 and 9 and carry no new information
-about anything.
+**Three of the four Missed findings — F5.2, F5.3, F5.4 — belong to the check that did not run.**
+On the 32 findings Run 15 was actually allowed to look for, it caught 25 and missed one.
 
-| | Run 10 | Run 11 |
+---
+
+## 1. The finding that matters most
+
+**`hasCapitalContributionsOrWithdrawals: false` disabled CHK-005.**
+
+```
+CHK-005 — Financial Resilience, Affordability and Liquidity
+Outcome: N/A
+
+  Trigger absent: The recommendation involves no capital, contributions, withdrawals or charges..
+  Canonical model checkTriggers.hasCapitalContributionsOrWithdrawals = false.
+```
+
+The recommendation involves a **£3,305.55 initial adviser charge deducted from the fund**, a
+**Scottish Widows encashment** yielding ~£170, and **flexi-access drawdown**. The same extraction
+set `hasDecumulation: true` and `hasCostsAndChargesSection: true` in the same JSON object. The
+trigger is not a borderline call; it is wrong on its face.
+
+**One boolean removed 8 groups, 26 searches and four benchmark findings**, and the report says so
+in a single line under *CHECKS CLEARED* — a heading that reads as reassurance. A reviewer skimming
+the output sees nine concerns and one cleared check, not a check that was never attempted.
+
+### Where the false trigger came from
+
+The extraction log tells the story in its timings:
+
+```
+[ 1/12] Case and parties                    (0.3s)     ← replayed from cache
+[ 2/12] … [ 8/12] Recommendations           (0.1–0.2s) ← replayed from cache
+[ 9/12] Costs and charges                   (200.8s)   ← freshly generated
+[10/12] Replacement analysis                (200.7s)   ← freshly generated
+[11/12] Disclosures                         (200.8s)   ← freshly generated
+[12/12] Triggers and extraction report       (47.4s)   ← freshly generated
+```
+
+**`checkTriggers` lives in section 12, and section 12 was generated fresh.** Sections 1–8 came back
+from the gateway cache in a tenth of a second each; sections 9–11 took an identical 200.7–200.8s,
+which is the shape of a timeout-and-retry, not of three coincidentally equal generations.
+
+That partial-cache boundary also explains the second number in the table: **197 canonical paths
+resolved against 224 in every previous run, and 38 absent against 31**. The fresh canonical model
+is not merely different from `a2bbc38bdf38` — it is **poorer**. Twenty-seven paths the checks asked
+for are no longer there.
+
+**No previous run has had a check silently skipped**, and nothing in the pipeline treats a trigger
+flip as an event worth flagging. `RunAuthenticity` catches a replayed *run*; nothing catches a
+partially replayed *extraction* producing a model that answers fewer questions than the last one.
+
+---
+
+## 2. The second finding: the report is a quarter of its own evidence
+
+**G3.2 corroborated the report against the report.**
+
+> The income and expenditure figures are corroborated by **[P11]**.
+>
+> · **Suitability Report Test 1.md [I] (P11)** — *"You are in receipt of a full State Pension of
+> approximately £230 per week, continue to work as an HGV driver earning around £300 per week net,
+> and receive an additional £20 per week from your role with the Sea Cadets. Kim contributes a
+> further £1,100 per month…"*
+
+Every figure in that "corroboration" is one of the two the benchmark says the Fact Find **does not
+record** (F1.3) and the one it records at a different frequency (F1.2). The passage cited as file
+evidence *is the assertion under test*.
+
+This is not a Run 15 defect. It is structural, and it has been there all along:
+
+| | Run 12 | Run 14 | **Run 15** |
+| --- | --- | --- | --- |
+| Cited passages, total | 592 | 548 | **620** |
+| …from the suitability report | 162 (27%) | 159 (29%) | **162 (26%)** |
+| …from the Fact Find | — | — | **42 (7%)** |
+
+**The suitability report is the single most-cited evidence document in the pack, quoted nearly four
+times as often as the Fact Find.** The canonical-model/evidence split exists precisely to keep the
+report on the assertion side of the comparison, and the retrieval corpus puts it back on the
+evidence side under category `[I]`.
+
+Run 13 was scored down for one self-corroboration and it was attributed to unbounded search
+(*"unbounded retrieval makes it easier for a report to corroborate itself"*). **That attribution
+was too narrow.** Run 15 does it at `maxSearchResults: 8`, on a different model, and the share of
+report-sourced passages is flat across all three runs. Unbounded search made an existing hazard
+more likely to fire; it did not create it.
+
+**This is the most actionable defect in the run**, and it is a retrieval-corpus question, not a
+prompt question: category `[I]` should not be reachable by a group's evidence searches.
+
+### A related smell in the same census
+
+Three filename forms for the same documents appear in the citations —
+`Risk profile report.md [D]` (34) and `D/Risk profile report.docx [D]` (35);
+`Suitability Report Test 1.md [I]` (137), `I/Suitability Report Test 1.md [I]` (17) and
+`I - Suitability Report Test 1 [I]` (8). **The index holds more than one ingest of the same
+document.** That inflates candidate sets, wastes reserved slots on duplicates, and is worth an hour
+with the store before any further retrieval tuning.
+
+---
+
+## 3. Scores
+
+Verdicts under the rubric, in benchmark order. **No verdict in this run rests on R8** — every
+Caught is stated inside a group that raised a concern.
+
+| Finding | R12 | R13 | R14 | **R15** | Where it landed |
+| --- | :-: | :-: | :-: | :-: | --- |
+| F1.1 £300/wk vs £1,200 | C | C | C | **C** | G1.3 — *"£1,200/month equates to approximately £276.92/week, not £300/week"* |
+| F1.2 State Pension weekly vs monthly | C | C | C | **C** | G1.2, G1.4 |
+| F1.3 Kim and Sea Cadets absent | C | M | C | **C** | G1.4 — FF holds two income lines only; £1,430 total *"does not reconcile"* |
+| F1.6 residence for a tenant | M | M | M | **M** | evidence reached CHK-008 again, §4 |
+| F1.8 pension totals | C | C | C | **C** | G1.8 — £110,000 / £106,000 / £116,998.47 |
+| F1.9 plans absent from the fact find | P | M | M | **P** | G1.7 — FF policy does *"not correspond"*, absence not named |
+| F2.1 five horizons | C | C | C | **C** | G2.2 — 71, 66, 2yr, 75, 65 |
+| F2.2 CFL "<3 years" | M | M | M | **P** | **↑** G2.4 names *Short Term*, never joined to the risk-5 case |
+| F3.1 file note says 6 | C | C | C | **C** | G3.6, verbatim the rubric's worked example |
+| F3.3 Investment Period 2 years | C | C | C | **C** | G3.4 — the strongest single group in the run |
+| F3.4 People's Pension risk 9 | P | M | P | **P** | G3.7 — risk 9 named, retention link still absent |
+| F3.5 cautious answers, natural 4 | C | P | P | **C** | **↑** G3.10 — *Cautious*, *More cautious*, £4,000 on £20,000 |
+| F4.1 "No understanding / knowledge" | C | C | C | **C** | G4.1 |
+| F4.2 ATR narrative sentence | P | P | P | **P** | |
+| F4.3 Balanced precondition | C | C | C | **C** | G4.1 discrepancy 2 |
+| F4.4 no comprehension tested | P | P | P | **C** | **↑** G4.5 — *"no record of client questions… no demonstration of comprehension"* |
+| F5.1 −£288 | C | C | C | **P** | **↓** G2.7 has −£288; *"comfortably meets"* sits unjoined in G3.2 |
+| F5.2 affordability | C | C | C | **M** | **↓↓ false negative — §2** |
+| F5.3 emergency fund spent | C | P | P | **M** | **↓** `LIQUIDATED` appears nowhere |
+| F5.4 rented residence | M | M | M | **M** | |
+| F6.1 ranking above the advice | C | C | C | **C** | CHK-009 — *"ranks the new solution 5th of 9… below the existing solution"* |
+| F6.2 boilerplate rationales | C | P | C | **C** | CHK-006 — *"verbatim identical across all three"* |
+| F6.3 "Lower Costs" raises them | C | P | P | **C** | **↑** *"on the Standard Life transfer the report's own table shows cost increases (+0.26%)"* |
+| F7.1 two charge tables | C | C | C | **P** | **↓** 0.18% / 0.52% listed side by side, never joined; §5 |
+| F7.2 row on Zurich's fund | M | C | C | **C** | G1.8, G7.4 |
+| F7.3 4.24% adds instead of subtracts | P | P | P | **P** | reached and waved through — *"they measure different things"* |
+| F7.5 critical yield | C | C | C | **C** | G7.6, CHK-009 |
+| F8.1 £12,000 in the appendix | C | P | C | **C** | G8.5 — *"appear only in the appendix (page 18)"* |
+| F8.2 ranking never disclosed | C | C | C | **C** | CHK-009 |
+| F9.1 switch reduces maturity | C | P | P | **C** | **↑** |
+| F9.2 ranking above recommendation | C | C | C | **C** | |
+| F9.3 Standard Life on cost | C | P | P | **C** | **↑** |
+| F9.4 Zurich £128,000 | C | C | C | **C** | *"ranked 1st, £128,000… no analysis explaining why"* |
+| F9.5 charges unreliable | C | C | C | **C** | p8-vs-p11, report-internal |
+| F10.1 FG21/1 capability | C | P | C | **C** | |
+| F10.2 no screening | C | C | C | **C** | |
+| **Caught** | **27** | 19 | 23 | **25** | |
+| **Partial** | 5 | 11 | 9 | **7** | |
+| **Missed** | 4 | 6 | 4 | **4** | |
+
+**Against Run 12: seven gains, five losses.** Four of the five losses (F5.1, F5.2, F5.3 and part of
+F7.1) are CHK-005 being switched off. **Every one of the seven gains is Sonnet.**
+
+---
+
+## 4. What is a model difference and what is not
+
+Retrieval is plan-driven and model-free, and Run 15 confirms it again: the pack is **median 23 /
+mean 26.1 / max 62** against Run 14's 24 / 27 / 62 on the identical configuration. Same searches,
+same ranking, different model. So the deltas below are the model.
+
+| | Haiku (R12 / R14) | **Sonnet (R15)** |
 | --- | --- | --- |
-| Model | `eu.amazon.nova-2-lite-v1:0` | `intelliflo-claude-haiku-4-5` |
-| **Is a replay of** | **Run 9** | **Run 7** |
-| Output tokens | 84,667 — identical to Run 9 | 149,582 — identical to Run 7 |
-| Wall clock | 5.3s | 4.4s |
-| Implied rate | 15,897 tok/s | 33,858 tok/s |
-| Reported cost | £3.8982 — identical to Run 9 | £2.0947 — identical to Run 7 |
-| **Inherited score** | 7 / 15 / 14 (19%) | 20 / 10 / 6 (56%) |
+| Responses echoing the **wrong requirement id** | **32 / 85** and **36 / 85** | **0 / 77** |
+| Quotes that could not be traced to the evidence | 136 / 132 | **85** |
+| Passages cited per group (median) | 7.0 | **8.0** |
+| Pack utilisation | ~26% | **~33%** |
+| Output rate | 466 / 1,040 tok/s | 288 tok/s |
+| Cost per finding caught | **£0.079** | £0.285 |
+
+**The requirement-id figure is the one worth stopping on.** Haiku echoed the wrong requirement id
+in roughly two responses in five, across three runs, consistently. Sonnet did it **zero times in
+77**. The pipeline substitutes the plan's own values so no output is corrupted — but a model that
+misidentifies which requirement it is answering two-fifths of the time is telling you something
+about how firmly it is holding the question, and that has never been isolated before.
+
+**Sonnet also reads more of the pack** (33% against 26%) and **produces a third fewer untraceable
+citations**, both matching the Runs 7–9 measurements. Nothing here is new about Sonnet; what is new
+is that it is now measured on the current plans.
+
+### The measurement optimal-configuration §1c asked for
+
+That section closed by saying **Sonnet had never run on the current plans**, that its 28 was from
+the old ones, and that *"if the +7 that plan and prompt work gave Haiku carries across, Sonnet lands
+near 33–35 and the default recommendation may be wrong."*
+
+**It does not carry across.** Sonnet scores 25 with CHK-005 disabled; scoring only the 32 findings
+it could reach, it caught 25 of 32 (78%) against Haiku's 24 of those same 32 in Run 12. That is
+**one finding**, inside the noise floor.
+
+**The Haiku default stands, and it now stands on a measurement rather than an inference.** Sonnet
+costs 3.3× more, runs 3.8× longer, and buys about one finding — but it buys **no wrong requirement
+ids and a third fewer unverifiable quotes**, which is exactly the *"has to be right first time"*
+case §1c already described. That recommendation was right for a reason it had not measured.
+
+### F1.6, a fourth time
+
+`'Tenant - private'` reached an assessor again — this time in **CHK-008's** vulnerability overlay:
+
+> The fact find (P35) records the client as **a private tenant**, aged approximately 69 …
+
+The word "tenant" appears **twice** in the whole output: there, and in the report header. Neither
+F1.6 nor F5.4 is made, and F5.4's own check never ran.
+
+**Run 14 established F1.6 as a verification failure on Haiku with an unbounded pack. Run 15
+establishes the same on Sonnet.** The evidence is present, the report's claim is present, three
+guards ask for the comparison, and the best model available does not make it either. It is not a
+capability problem and it is not a retrieval problem.
 
 ---
 
-## 1. How the replays were confirmed
+## 5. The one loss that is not CHK-005
 
-The banner is the pipeline's own claim. It was checked four independent ways, because a
-self-reported diagnostic is a hypothesis until something else agrees with it.
+**F7.1 fell from Caught to Partial, and it fell in an instructive way.** G7.4 wrote:
 
-**1. The token rate is impossible.** Genuine runs on this case sit at 260–567 tok/s. Run 11
-implies 33,858 and Run 10 implies 15,897 — one to two orders of magnitude beyond any model, and
-consistent with the 26,000–49,000 tok/s replays already catalogued in
-[gap-analysis.md §1](gap-analysis.md#1-what-the-runs-actually-are). The detector's threshold is
-2,000 tok/s, chosen to sit in the gap between generating text and replaying it rather than to
-model the fastest legitimate run, so both trip it by a wide margin: *"a run that trips this has not
-been slow; it has been impossible."*
+> [P1] confirms existing arrangement charges: Aviva 0.50%, **Standard Life 0.18% / 0.52%**.
 
-**2. The findings text is identical, line for line.** Normalising away the banner and the
-timestamps and diffing Run 11 against Run 7 leaves **2,199 identical lines and nothing else**. The
-same comparison of Run 10 against Run 9 leaves 2,031. Every finding, every discrepancy bullet,
-every severity, every quotation is the same text.
+Both halves of the benchmark finding, in one sentence, with nothing relating them — the rubric's
+own definition of Partial. The group then went on to compare the 0.18% against the *Standard Life
+illustration's* 0.5% instead, which is a different contradiction reached from a different document.
 
-The only substantive differences anywhere in either pair are the **per-check elapsed times**:
-
-```
-Run 7   (27 search(es), 432 passage(s), 38 model path(s) resolved, 7 absent,  91.3s)
-Run 11  (27 search(es), 432 passage(s), 38 model path(s) resolved, 7 absent,   1.7s)
-
-Run 9   (19 search(es), 290 passage(s), 13 model path(s) resolved, 0 absent,  63.9s)
-Run 10  (19 search(es), 290 passage(s), 13 model path(s) resolved, 0 absent,   2.7s)
-```
-
-Retrieval counts are preserved exactly — searches, passages, paths resolved, paths absent — while
-the time to produce them collapses by a factor of forty to fifty. That is a recording being read
-back, not work being done.
-
-**3. The checks logs are the same size to the byte.** Run 11's log is 5,797,555 bytes; Run 7's is
-5,797,555. Run 10's is 5,567,843; Run 9's is 5,567,843. Their hashes differ only because the logs
-embed wall-clock timestamps of equal width. Two independently generated 5.8 MB logs do not agree
-to the byte.
-
-**4. Cost agrees to the penny.** £2.0947 for 1,492,326 tokens, twice, five hours apart. Nothing
-that involves sampling from a model reproduces a token count exactly.
+Sonnet found a **better** route to the same conclusion (the wrong-fund arithmetic, F7.2, which it
+caught) and in doing so walked past the transposed-table finding sitting in its own `fileSays`.
+**This is R4 working as intended, and it is the failure mode a stronger model makes more likely,
+not less**: the more routes a model can see, the more freely it abandons the one the benchmark
+names.
 
 ---
 
-## 2. The scores, and why they are not results
+## 6. What to do next
 
-Because the findings text is identical, the rubric's verdicts carry over unchanged from
-[run-analysis.md §2](run-analysis.md#2-scores). Stated for completeness only:
-
-| | Caught | Partial | Missed | Recall |
-| --- | :-: | :-: | :-: | :-: |
-| **Run 11** (= Run 7, Haiku 4.5) | 20 | 10 | 6 | 56% |
-| **Run 10** (= Run 9, Nova 2 Lite) | 7 | 15 | 14 | 19% |
-
-Every observation in the previous analysis applies verbatim and none of it is confirmed by being
-seen again. In particular:
-
-- Run 11 reproduces Run 7's catch of the research ranking (F6.1, F9.2, F9.4) — the same sentences,
-  not a second instance of finding them.
-- Run 10 reproduces Run 9's **false negative on F1.2**, word for word: *"£230/week in [P10] which
-  annualises to £12,040/year or £1,003.33/month — close but not exact."* A replayed false negative
-  is not evidence the model reliably makes that error; it is the same error, served twice.
-- The six section hints that matched nothing match nothing again, identically, because the
-  retrieval was never re-executed.
-
-**This is emphatically not a determinism test.** [run-analysis.md §7](run-analysis.md#7-what-to-do-next)
-called for each model to be run twice with sampling pinned, precisely because every figure there
-is one sample from an unmeasured distribution. Runs 10 and 11 do not answer that question — a
-cached response is not a second draw. **Determinism remains untested**, as it has been for every
-pair of apparently-identical runs in this repository.
+1. **Fix `hasCapitalContributionsOrWithdrawals`, and make a trigger flip loud.** A check that did
+   not run should not print under *CHECKS CLEARED* in the same voice as a check that passed, and a
+   canonical model resolving 27 fewer paths than the previous one should be reported at the head of
+   the run, not inferred from a log.
+2. **Take category `[I]` out of the evidence corpus.** 26% of cited passages are the report
+   corroborating itself, in every run measured. This is the single change with the clearest
+   mechanism behind it, and §2 shows it is not a Run 13 artefact.
+3. **De-duplicate the index.** Three filename forms for the same document are inflating every
+   candidate set.
+4. **Re-run Run 15's configuration on a clean canonical model** before drawing any conclusion about
+   Sonnet from the 25. The model comparison in §4 is sound because retrieval is identical; the
+   *score* comparison carries a disabled check.
+5. **`maxPassagesPerGroup: 24` still stands.** Run 15 adds nothing for or against — it used the
+   unbounded pack, and the median pack was 23.
+6. **F3.4 still needs the retention link**, unchanged from the Run 12, 13 and 14 recommendations.
+   Sonnet names the People's Pension and its risk 9 and still stops at incomparable scales.
+7. **The four dead section hints** (`ranked by Maturity Value`, in G2.2 / G6.4 / G8.8 / G9.7) have
+   now been reported identically in four consecutive runs and never fixed. F6.1, F8.2 and F9.2 are
+   caught in spite of them, which is why nobody has.
 
 ---
 
-## 3. What these runs did establish
+## 7. Limits
 
-### The authenticity check works, and this is the first time it has fired
-
-[RunAuthenticity.cs](../../src/AiPromptEvaluator.Core/RunAuthenticity.cs) caught both, banner-ed
-both at the head of the report and again beside the wall-clock line, and marked the summary
-`SUMMARY: REPLAY (cached)`. Nothing about these two runs required a human to notice the wall clock
-and reason backwards.
-
-That is worth stating plainly against what it replaced. Twelve run logs existed before this check;
-seven were replays; and **two earlier analyses drew conclusions from replays without knowing it**,
-including a truncation diagnosis dated from a run that was itself a recording. The operational rule
-written at the time — *"read a run's wall-clock duration before treating it as evidence; two
-minutes is a run, two seconds is a recording of one"* — is now enforced by the pipeline rather than
-by the reader's discipline. Runs 10 and 11 are the first evidence it works on real output.
-
-### The gateway cache outlives a working day
-
-This is the practically useful discovery, and it explains a long-standing gap.
-
-| Original | Replay | Elapsed |
-| --- | --- | --- |
-| Run 7, 10:15:52 | Run 11, 15:39:03 | **5h 23m** |
-| Run 9, 13:24:02 | Run 10, 15:16:29 | 1h 52m |
-
-**The gateway's cache TTL is at least five and a half hours**, and re-running an unchanged
-configuration inside that window returns the recording rather than a new sample. That is why no
-pair of runs in this repository has ever produced a second measurement of the same configuration:
-the obvious way to get one — run it again — is the one method guaranteed not to.
-
-It also explains the extraction failure diagnosed earlier this month, where a retry re-sent an
-identical prompt and received the identical malformed reply in the same second. The same cache,
-the same mechanism. That case was fixed by varying the retry prompt with a digest of the reply
-that failed; the assessment path has no equivalent, because it has never needed one until someone
-wanted a second sample.
-
-**To get a genuine second sample, the request has to differ.** Options, in the order I would try
-them:
-
-1. **Pin sampling and vary the seed.** `pinSeed: true` with a different `samplingSeed` changes the
-   request, so it changes the cache key — and it is the measurement worth having anyway, since
-   determinism cannot be assessed while temperature is at the provider default.
-2. **Wait out the TTL.** Now bounded below at 5h23m and unbounded above; a poor basis for a
-   testing loop.
-3. **Change the run fingerprint deliberately** — a different `maxPassagesPerGroup`, for instance,
-   which is the comparison the previous analysis wanted next in any case.
-
-### One rough edge in the replay report
-
-The cost line is printed **above** the banner:
-
-```
-Model: intelliflo-claude-haiku-4-5
-Total: £2.0947 for 1,492,326 tokens — chat £2.0879 …
-==============================================================================
-*** REPLAY — NOT A GENERATED RUN. …
-```
-
-A reader skimming the head of the file meets a cost figure before being told the run did not
-happen, and £2.0947 is Run 7's cost, not this run's. The banner's wording does cover it — *"findings,
-timings and cost below are a recording"* — so this is purely an ordering problem, not an omission:
-the caveat arrives one line after the number it qualifies. Emitting the banner above the cost line,
-or suppressing the figure on a replay, would close it. Minor, and worth doing while the code is
-open.
-
----
-
-## 4. Recommendation
-
-**Discard Runs 10 and 11 as evidence.** They should stay in the repository as the first worked
-example of the authenticity check firing, and they should be labelled as replays wherever they are
-referenced — but no conclusion, comparison or recall figure should rest on them.
-
-**Nothing in the open work has moved.** The three items from
-[run-analysis.md §7](run-analysis.md#7-what-to-do-next) that mattered most are all exactly where
-they were:
-
-1. **G3.7's guard still costs F3.4** — the People's Pension risk rating of 9 reaches the assessor
-   and is discarded as "not comparable to the client scale" while the report claims that fund
-   aligns with the client's risk appetite. One guard sentence, one Highest-severity finding, and
-   the cheapest fix available.
-2. **Six of ten section hints still fire on nothing**, and the test written to prevent that still
-   checks existence rather than retrievability.
-3. **`maxPassagesPerGroup: 24` is still unmeasured** — and per §3 above, varying it is now also a
-   way to defeat the cache, so the two open questions can be answered by the same run.
-
-The next genuine measurement should be **one model, sampling pinned, at 12 and at 24 passages per
-group**. That answers the cap question, produces the first reproducible run in the project's
-history, and cannot be served from cache.
-
----
-
-## 5. Limits of this analysis
-
-- **No adjudication was performed.** Scoring identical text a second time would manufacture
-  agreement, and the rubric forbids scoring a replay at all. The figures in §2 are Runs 7 and 9's,
-  restated under new names.
-- **The cache TTL is bounded below, not measured.** 5h23m is the longest observed gap that still
-  returned a recording; the true expiry is unknown and may be much longer.
-- **Whether a replay is billed is unknown.** The report states the original's cost because it
-  replays the original's usage figures. What the gateway actually charged for a cache read is not
-  visible from these artefacts, and the £6.44 of apparent spend across these two runs may be
-  entirely notional — or may not.
+- **Two variables moved against Run 12**: the model and the canonical model — and the canonical
+  model change is not a neutral one, it disabled a check and lost 27 paths. **No single-variable
+  comparison exists in this run.** The §4 model comparison is exempt because retrieval is
+  demonstrably identical.
+- **The 25 is not comparable to Run 12's 27** without stating that four findings were unreachable.
+  On the 32 reachable findings the two runs differ by one, which is inside the floor.
+- **Adjudication is one pass**, ±2 findings. Every delta discussed here except the CHK-005 losses
+  is at or inside that.
+- **Sampling still unpinned** — `seed not pinned` on the run's own face, as on every run in this
+  series. One sample.
+- **F5.1's downgrade is a judgement call.** G2.7 states the −£288 deficit and says the report does
+  not address it; it does not quote *"comfortably meets"*, which sits in G3.2. Scored Partial on
+  the rubric's first bullet. A reader who applies R2 more loosely reaches 26 / 6 / 4.

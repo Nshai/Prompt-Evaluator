@@ -191,7 +191,7 @@ measure anything twice.
 **The gateway cache makes re-running the same configuration useless as a second sample.** Runs 10
 and 11 proved it: an unchanged configuration re-run **5h 23m** later returned the earlier run's
 output, byte for byte, at 33,858 tok/s. See
-[run-analysis-latest.md](run-analysis-latest.md).
+[run-analysis-replays.md](run-analysis-replays.md).
 
 The seed is part of the request — `ChatCompletionClient` sets `options.Seed` when `pinSeed` is on —
 so **changing `samplingSeed` changes the cache key**. That makes it the only cheap way to obtain a

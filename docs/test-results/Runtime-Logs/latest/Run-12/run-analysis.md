@@ -4,7 +4,7 @@ Case ABC-99, 2026-08-26 17:31, scored against
 [expected-results-benchmark.md](../../expected-results-benchmark.md) under
 [scoring-rubric.md](../../scoring-rubric.md), and compared with
 [run-analysis.md](../../run-analysis.md) (Runs 7–9) and
-[run-analysis-latest.md](../../run-analysis-latest.md) (Runs 10–11).
+[run-analysis-replays.md](../../run-analysis-replays.md) (Runs 10–11).
 
 ---
 

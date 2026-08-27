@@ -189,7 +189,8 @@
         "evidenceSections": [
           "Total Monthly Disposable Income",
           "Total Net Monthly Income",
-          "incorporates the assets of your main residence"
+          "incorporates the assets of your main residence",
+          "Residency Status"
         ],
         "queries": [
           {

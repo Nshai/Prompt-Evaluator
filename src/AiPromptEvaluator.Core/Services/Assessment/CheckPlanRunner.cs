@@ -255,6 +255,8 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                     .SelectMany(p => p.SectionsReached.Evicted
                         .Select(s => $"{p.Group.GroupId}: {s}"))
                     .ToList(),
+                PassagesRetrievedForGroups = packs.Sum(p => p.SectionsReached.Retrieved),
+                PassagesDeliveredToGroups = packs.Sum(p => p.SectionsReached.Delivered),
                 Usage = usage,
                 Elapsed = startedAt.Elapsed,
             };
@@ -840,12 +842,28 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     /// problem and no amount of rewording will help.</item>
     /// </list>
     /// </summary>
+    /// <param name="Retrieved">Candidates a search returned, before ranking.</param>
+    /// <param name="Delivered">Passages that survived into the pack the assessor read.</param>
     internal sealed record SectionReach(
         IReadOnlyList<string> MatchedNothing,
-        IReadOnlyList<string> Evicted)
+        IReadOnlyList<string> Evicted,
+        int Retrieved = 0,
+        int Delivered = 0)
     {
         /// <summary>Every hint that failed, however it failed — for callers that only count.</summary>
         public IReadOnlyList<string> All => [.. MatchedNothing, .. Evicted];
+
+        /// <summary>
+        /// Candidates the ranking dropped. Counted for every group, hints or none.
+        ///
+        /// <b>Both diagnostics above are unreachable for a group that declares no hints</b>, because
+        /// each iterates the hints it declared — and that is how F3.1's loss was silent. The file
+        /// note carrying "a Risk rating of 6" reached eight group prompts and no CHK-003 group,
+        /// CHK-003 declared no sections at all, and the run reported nothing while a finding held
+        /// for five runs disappeared. This is the floor under that: it cannot say which passage was
+        /// dropped, but it can say that most of what was found never arrived.
+        /// </summary>
+        public int Discarded => Math.Max(0, Retrieved - Delivered);
 
         public static readonly SectionReach None = new([], []);
     }
@@ -855,15 +873,15 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         IEnumerable<CaseDocumentSearchMatch> pack,
         IReadOnlyList<string> sections)
     {
+        var retrieved = candidates.Select(p => p.SearchedText).ToList();
+        var delivered = pack.Select(p => p.SearchedText).ToList();
+
         var hints = sections.Where(h => !string.IsNullOrWhiteSpace(h)).ToList();
 
         if (hints.Count == 0)
         {
-            return SectionReach.None;
+            return new SectionReach([], [], retrieved.Count, delivered.Count);
         }
-
-        var retrieved = candidates.Select(p => p.SearchedText).ToList();
-        var delivered = pack.Select(p => p.SearchedText).ToList();
 
         var nothing = new List<string>();
         var evicted = new List<string>();
@@ -880,7 +898,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 : nothing).Add(hint);
         }
 
-        return new SectionReach(nothing, evicted);
+        return new SectionReach(nothing, evicted, retrieved.Count, delivered.Count);
     }
 
     /// <summary>

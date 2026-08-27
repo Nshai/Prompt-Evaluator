@@ -65,12 +65,63 @@ public class SectionHintTests
     }
 
     [Fact]
-    public void APlanThatNamedNoSectionReportsNothing()
+    public void APlanThatNamedNoSectionReportsNoFailedHint()
     {
         var pack = new[] { Passage("anything") };
 
         Assert.Empty(CheckPlanRunner.UnmatchedSections(pack, pack, []).All);
         Assert.Empty(CheckPlanRunner.UnmatchedSections(pack, pack, ["  "]).All);
+    }
+
+    /// <summary>
+    /// <b>A group declaring no hint used to be invisible here, and that is how F3.1 was lost without
+    /// a word being printed.</b> Both diagnostics above iterate the hints a group declared, so a
+    /// check declaring none — CHK-003, until the plan change that accompanies this — can drop the
+    /// passage carrying a finding and report nothing. The file note holding "a Risk rating of 6"
+    /// reached eight group prompts and no CHK-003 group, G3.6's pack grew from 123 passages to 164,
+    /// and the run was silent while a finding held for five consecutive runs disappeared.
+    ///
+    /// The counts are the floor under that. They cannot name what went missing; they can say most of
+    /// what was found never arrived, for every group, hints or none.
+    /// </summary>
+    [Fact]
+    public void AGroupWithNoHintsStillReportsWhatItsRankingDropped()
+    {
+        var candidates = Enumerable.Range(0, 40).Select(i => Passage($"section {i}")).ToList();
+        var pack = candidates.Take(24).ToList();
+
+        var reach = CheckPlanRunner.UnmatchedSections(candidates, pack, []);
+
+        Assert.Empty(reach.All);
+        Assert.Equal(40, reach.Retrieved);
+        Assert.Equal(24, reach.Delivered);
+        Assert.Equal(16, reach.Discarded);
+    }
+
+    /// <summary>
+    /// The counts are kept for a group that does declare hints, so the two readings sit beside each
+    /// other rather than one replacing the other.
+    /// </summary>
+    [Fact]
+    public void TheCountsAreKeptWhenHintsAreDeclaredToo()
+    {
+        var candidates = new[] { Passage("Residency Status: Tenant - private"), Passage("other") };
+        var pack = candidates.Take(1).ToList();
+
+        var reach = CheckPlanRunner.UnmatchedSections(candidates, pack, ["Residency"]);
+
+        Assert.Empty(reach.All);
+        Assert.Equal(2, reach.Retrieved);
+        Assert.Equal(1, reach.Delivered);
+    }
+
+    /// <summary>A pack that lost nothing reports nothing dropped, rather than a negative.</summary>
+    [Fact]
+    public void APackThatKeptEverythingReportsNoDiscards()
+    {
+        var pack = new[] { Passage("one"), Passage("two") };
+
+        Assert.Equal(0, CheckPlanRunner.UnmatchedSections(pack, pack, []).Discarded);
     }
 
     /// <summary>

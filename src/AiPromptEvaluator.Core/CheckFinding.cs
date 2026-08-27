@@ -353,6 +353,22 @@ public sealed record CheckFinding
     /// </summary>
     [JsonIgnore] public IReadOnlyList<string> EvictedSections { get; init; } = [];
 
+    /// <summary>
+    /// Candidate passages this check's groups retrieved, and how many of them survived into the
+    /// packs an assessor actually read. Counted for every group, hints or none.
+    ///
+    /// <b>Both fields above are blind to a group that declares no hints</b>, because each iterates
+    /// the hints the group declared — which is how F3.1's loss came to be silent. The file note
+    /// carrying "a Risk rating of 6" reached eight group prompts and no CHK-003 group, CHK-003
+    /// declared no sections at all, and the run said nothing while a finding held for five runs
+    /// disappeared. This pair is the floor under them: it cannot name the passage that was dropped,
+    /// but it makes the drop rate visible.
+    /// </summary>
+    [JsonIgnore] public int PassagesRetrievedForGroups { get; init; }
+
+    /// <inheritdoc cref="PassagesRetrievedForGroups"/>
+    [JsonIgnore] public int PassagesDeliveredToGroups { get; init; }
+
     public CheckOutcome ParsedOutcome => ParseOutcome(Outcome);
 
     /// <summary>
@@ -828,6 +844,26 @@ public sealed record FindingsReport(
                 + ". A passage carrying each was retrieved and did not survive into the pack, so "
                 + "the assessor never saw it. This is a ranking or cap problem, not a wording "
                 + "one — raise maxPassagesPerGroup or the reserved slots.");
+        }
+
+        var retrievedForGroups = Findings.Sum(f => f.PassagesRetrievedForGroups);
+        var deliveredToGroups = Findings.Sum(f => f.PassagesDeliveredToGroups);
+
+        if (retrievedForGroups > 0)
+        {
+            // The floor under the two diagnostics above, which are both blind to a group that
+            // declared no hints — the way F3.1 was lost without a word being printed. This says
+            // nothing about which passage went missing and everything about how much did.
+            var dropped = retrievedForGroups - deliveredToGroups;
+            var share = 100.0 * dropped / retrievedForGroups;
+
+            sb.AppendLine(
+                $"Pack selection: {deliveredToGroups:N0} of {retrievedForGroups:N0} retrieved "
+                + $"passage(s) reached an assessor; {dropped:N0} ({share:N0}%) were dropped by "
+                + "ranking or the per-group cap. Most of a candidate set is meant to be dropped, so "
+                + "read this beside the two lines above rather than on its own: a finding whose "
+                + "evidence was retrieved and evicted leaves no other trace unless a section hint "
+                + "named it.");
         }
 
         var (discarding, discarded) = DiscardedDiscrepancies;

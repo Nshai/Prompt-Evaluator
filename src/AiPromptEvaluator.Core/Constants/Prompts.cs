@@ -61,7 +61,10 @@ public static class Prompts
           say in "analysis" which guard explains it.
         - If a value the comparison depends on is not in the pack, set "comparisonPerformed" to
           false and name what is missing. Do NOT estimate, derive around, or assume it. A
-          comparison you could not make is a legitimate answer; an invented one is not.
+          comparison you could not make is a legitimate answer; an invented one is not. But where
+          the report claims a fund, plan or figure is aligned, consistent or sufficient and the
+          evidence that would support it is absent, the claim is unsupported — that is a Potential
+          Concern, not a comparisonPerformed of false.
         - Quote only text that appears in the passages given, verbatim, and name the passage id it
           came from. Quotations are checked against the pack automatically. Do not adjust one to
           fit your reasoning: if the evidence contradicts the report, that is the finding.

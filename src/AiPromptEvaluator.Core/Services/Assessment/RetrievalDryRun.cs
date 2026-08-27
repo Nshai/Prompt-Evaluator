@@ -42,9 +42,12 @@ public sealed class RetrievalDryRun
     }
 
     /// <summary>One group's retrieval, as it would reach an assessor.</summary>
+    /// <param name="Requirement">The group's requirement text, so a downloaded extract reads without the plan open.</param>
+    /// <param name="Pack">The ranked passages, in pack order — the evidence the assessor would have seen.</param>
     public sealed record GroupResult(
         string CheckId,
         string GroupId,
+        string Requirement,
         int Searches,
         int Hits,
         int PackSize,
@@ -52,7 +55,8 @@ public sealed class RetrievalDryRun
         IReadOnlyList<string> DeadSections,
         IReadOnlyList<string> EvictedSections,
         IReadOnlyList<string> MissedSignals,
-        IReadOnlyList<string> UnresolvedPaths)
+        IReadOnlyList<string> UnresolvedPaths,
+        IReadOnlyList<CaseDocumentSearchMatch> Pack)
     {
         /// <summary>Whether the pack is at the cap, so ranking is discarding candidates.</summary>
         public bool AtCap(AppSettings settings) =>
@@ -137,6 +141,13 @@ public sealed class RetrievalDryRun
             lines.Add($"{heading} ({items.Count}):");
             lines.AddRange(items.Select(i => "  " + i));
         }
+
+        /// <summary>
+        /// The full retrieved extract: every group and the passages that reached its pack, in the
+        /// order the assessor would have seen them. What to read when a hint fired on nothing and
+        /// the question is what the group got instead. See <see cref="RetrievalExtract"/>.
+        /// </summary>
+        public string FormatExtract() => RetrievalExtract.FromDryRun(this);
     }
 
     /// <summary>
@@ -235,6 +246,7 @@ public sealed class RetrievalDryRun
         return new GroupResult(
             plan.CheckId.Trim(),
             group.GroupId,
+            group.Requirement,
             searches,
             hits,
             ranked.Count,
@@ -245,6 +257,7 @@ public sealed class RetrievalDryRun
             reach.MatchedNothing,
             reach.Evicted,
             missedSignals,
-            unresolved);
+            unresolved,
+            ranked);
     }
 }

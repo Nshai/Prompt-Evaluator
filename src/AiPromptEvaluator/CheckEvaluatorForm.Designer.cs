@@ -44,6 +44,7 @@ partial class CheckEvaluatorForm
     private Button copyResponseButton;
     private Button saveReportButton;
     private Button saveModelButton;
+    private Button saveExtractButton;
     private CheckBox bypassCacheCheckBox;
     private TextBox responseTextBox;
 
@@ -65,6 +66,7 @@ partial class CheckEvaluatorForm
     private Button unloadDocsButton;
     private Button extractModelButton;
     private Button deleteModelButton;
+    private Button dryRunButton;
     private Label statusLabel;
     private Button openConfigButton;
 
@@ -108,6 +110,7 @@ partial class CheckEvaluatorForm
         copyResponseButton = new Button();
         saveReportButton = new Button();
         saveModelButton = new Button();
+        saveExtractButton = new Button();
         bypassCacheCheckBox = new CheckBox();
         responseTextBox = new TextBox();
         actionPanel = new TableLayoutPanel();
@@ -125,6 +128,7 @@ partial class CheckEvaluatorForm
         unloadDocsButton = new Button();
         extractModelButton = new Button();
         deleteModelButton = new Button();
+        dryRunButton = new Button();
         statusLabel = new Label();
         openConfigButton = new Button();
 
@@ -338,6 +342,7 @@ partial class CheckEvaluatorForm
         responseToolbar.Controls.Add(copyResponseButton);
         responseToolbar.Controls.Add(saveReportButton);
         responseToolbar.Controls.Add(saveModelButton);
+        responseToolbar.Controls.Add(saveExtractButton);
         responseToolbar.Dock = DockStyle.Top;
         responseToolbar.FlowDirection = FlowDirection.RightToLeft;
         responseToolbar.Name = "responseToolbar";
@@ -369,6 +374,17 @@ partial class CheckEvaluatorForm
         saveModelButton.Text = "Save model JSON...";
         saveModelButton.UseVisualStyleBackColor = true;
         saveModelButton.Click += SaveModelButton_Click;
+
+        // saveExtractButton — downloads the passages the searches retrieved, from a dry run held in
+        // memory or the latest archived check run
+        saveExtractButton.AutoSize = true;
+        saveExtractButton.Enabled = false;
+        saveExtractButton.Margin = new Padding(0, 0, 8, 4);
+        saveExtractButton.Name = "saveExtractButton";
+        saveExtractButton.Padding = new Padding(8, 2, 8, 2);
+        saveExtractButton.Text = "Save extract...";
+        saveExtractButton.UseVisualStyleBackColor = true;
+        saveExtractButton.Click += SaveExtractButton_Click;
 
         // responseTextBox
         responseTextBox.Dock = DockStyle.Fill;
@@ -432,16 +448,17 @@ partial class CheckEvaluatorForm
         // actionPanel — left: Run + Run All + Cancel + model/index buttons + status;
         // right: Prompt Evaluator + Configuration + Save
         actionPanel.AutoSize = true;
-        actionPanel.ColumnCount = 9;
+        actionPanel.ColumnCount = 10;
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 0 Run
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 1 Run All
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 2 Cancel
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 3 Extract Model
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 4 Delete Model
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 5 Unload Docs
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 6 Bypass cache
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 7 status (stretches)
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 8 Configuration
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 5 Dry Run Retrieval
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 6 Unload Docs
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 7 Bypass cache
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 8 status (stretches)
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 9 Configuration
         actionPanel.Dock = DockStyle.Fill;
         actionPanel.Margin = new Padding(0);
         actionPanel.RowCount = 1;
@@ -450,10 +467,11 @@ partial class CheckEvaluatorForm
         actionPanel.Controls.Add(cancelRunButton, 2, 0);
         actionPanel.Controls.Add(extractModelButton, 3, 0);
         actionPanel.Controls.Add(deleteModelButton, 4, 0);
-        actionPanel.Controls.Add(unloadDocsButton, 5, 0);
-        actionPanel.Controls.Add(bypassCacheCheckBox, 6, 0);
-        actionPanel.Controls.Add(statusLabel, 7, 0);
-        actionPanel.Controls.Add(openConfigButton, 8, 0);
+        actionPanel.Controls.Add(dryRunButton, 5, 0);
+        actionPanel.Controls.Add(unloadDocsButton, 6, 0);
+        actionPanel.Controls.Add(bypassCacheCheckBox, 7, 0);
+        actionPanel.Controls.Add(statusLabel, 8, 0);
+        actionPanel.Controls.Add(openConfigButton, 9, 0);
 
         // bypassCacheCheckBox — applies to Extract Model and to Run, because both are answered
         // by the same gateway and either can be served from cache.
@@ -502,6 +520,16 @@ partial class CheckEvaluatorForm
         deleteModelButton.Text = "Delete Model";
         deleteModelButton.UseVisualStyleBackColor = true;
         deleteModelButton.Click += DeleteModelButton_Click;
+
+        // dryRunButton — executes every plan's retrieval against the live index and reports which
+        // section hints reached no passage, with no model call. Diagnoses a dead hint in seconds.
+        dryRunButton.AutoSize = true;
+        dryRunButton.Margin = new Padding(0, 0, 12, 0);
+        dryRunButton.Name = "dryRunButton";
+        dryRunButton.Padding = new Padding(12, 4, 12, 4);
+        dryRunButton.Text = "Dry Run Retrieval";
+        dryRunButton.UseVisualStyleBackColor = true;
+        dryRunButton.Click += DryRunButton_Click;
 
         // cancelRunButton
         cancelRunButton.AutoSize = true;

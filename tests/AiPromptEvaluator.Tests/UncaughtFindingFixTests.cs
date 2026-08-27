@@ -202,6 +202,26 @@ public class UncaughtFindingFixTests
         Assert.Contains("does not excuse an assertion the report makes for itself", guards);
     }
 
+    /// <summary>
+    /// G3.11 reached F3.4 in Run 18 at High severity and then closed NOT ASSESSED, on the grounds
+    /// that the report never defines the scale its risk-9 rating sits on, so the comparison "cannot
+    /// be made". The group's own guard already says an incomparable scale is <i>why</i> the report's
+    /// alignment claim is unsupported, not a reason to leave it unassessed — but the assessor took
+    /// the general "a value the comparison needs is missing → comparisonPerformed false" escape
+    /// hatch instead.
+    ///
+    /// So the standing rule is now bounded: a value the <i>report itself</i> needed and did not
+    /// supply is a finding, not a missing input. This lives in the assessor prompt because it is
+    /// true of every check, and it is kept generic — no case, plan or provider is named.
+    /// </summary>
+    [Fact]
+    public void AMissingValueTheReportItselfNeededIsAFindingNotAnUnmadeComparison()
+    {
+        Assert.Contains("comparisonPerformed", Prompts.AssessorSystem);
+        Assert.Contains("the claim is unsupported", Prompts.AssessorSystem);
+        Assert.Contains("not a comparisonPerformed of false", Prompts.AssessorSystem);
+    }
+
     // ── F7.1 — the two charge tables, and the reading that was reconciled ─────
 
     /// <summary>
@@ -269,6 +289,28 @@ public class UncaughtFindingFixTests
 
         Assert.Contains("/costsAndCharges/existing", paths);
         Assert.Contains("/costsAndCharges/comparison/perArrangement", paths);
+    }
+
+    /// <summary>
+    /// Both charge tables reach G7.4, and in Run 18 the assessor did the two-table comparison for
+    /// one plan (Standard Life, 0.52% vs 0.18%) and then, for another (Zurich, 0.18% vs 0.93%),
+    /// reached for a provider document instead of the report's own second table. The guard already
+    /// said to compare the two tables before any provider document; it did not say to do it for
+    /// <i>every</i> plan, so the assessor stopped after the first contradiction caught its eye.
+    ///
+    /// This pins the strengthened wording. It is prompt adherence on a plan guard rather than a new
+    /// mechanism — both figures were in the model already — and it is kept generic: no plan or
+    /// provider is named, because the next case has different ones.
+    /// </summary>
+    [Fact]
+    public void TheChargeTableGuardAppliesToEveryPlanNotJustTheFirst()
+    {
+        var guards = Guards(Group("CHK-007", "G7.4"));
+
+        Assert.Contains("every plan that appears in both tables", guards);
+        Assert.Contains("before reaching for any provider document", guards);
+        Assert.DoesNotContain("Zurich", guards);
+        Assert.DoesNotContain("Standard Life", guards);
     }
 
     // ── F1.9 — the question a value comparison cannot ask ─────────────────────

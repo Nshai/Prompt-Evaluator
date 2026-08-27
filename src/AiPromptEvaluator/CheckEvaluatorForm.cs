@@ -34,6 +34,12 @@ public partial class CheckEvaluatorForm : Form
     /// </summary>
     private CanonicalModelDocument? _model;
 
+    /// <summary>
+    /// The most recent dry run's report, held so its searched extract can be downloaded after the
+    /// run rather than only glanced at on screen. Null until a dry run completes.
+    /// </summary>
+    private RetrievalDryRun.Report? _lastDryRun;
+
     private readonly ICanonicalModelStore _modelStore;
 
     /// <summary>
@@ -781,6 +787,96 @@ public partial class CheckEvaluatorForm : Form
         }
     }
 
+    private async void DryRunButton_Click(object? sender, EventArgs e) => await DryRunRetrievalAsync();
+
+    /// <summary>
+    /// Executes every plan's retrieval against the live index and reports which section hints and
+    /// queries reached no passage — with no model call.
+    ///
+    /// A section hint promotes a passage a query already retrieved; it cannot conjure one. So a
+    /// hint verified present in the converted document can still fire on nothing at run time, if no
+    /// query for its group retrieves the chunk that carries it. That gap is invisible in a normal
+    /// run until the findings come back thin, and it costs a full run to discover. This shows it in
+    /// the time it takes to embed the queries once, so a dead hint can be diagnosed and reworded
+    /// before spending a run on it.
+    /// </summary>
+    private async Task DryRunRetrievalAsync()
+    {
+        var caseReference = CurrentCaseReference();
+        if (caseReference is null)
+        {
+            MessageBox.Show(this,
+                "Index the case documents first — click \"Load Docs\" to chunk them into the vector "
+                + "store. The dry run searches that index; it does not read the documents from disk.",
+                "Documents not indexed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        var planFolder = _settings.ResolveCheckPlanFolder();
+        var (plans, planFailures) = CheckQueryPlanLoader.Load(planFolder);
+
+        if (plans.Count == 0)
+        {
+            MessageBox.Show(this,
+                $"No query plans were found in \"{planFolder}\".",
+                "No query plans", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        SetBusy(true);
+        responseTextBox.Clear();
+        AppendResponseLine($"Retrieval dry run — case {caseReference} (tenant {_settings.TenantId})");
+        AppendResponseLine($"Query plans: {plans.Count} loaded from {planFolder}");
+        AppendResponseLine(
+            "No model is called. Each query is embedded once and searched against the index; the "
+            + "report below says which section hints and queries reached no passage.");
+        AppendResponseLine(new string('-', 72));
+
+        foreach (var (file, error) in planFailures)
+        {
+            AppendResponseLine($"  Plan skipped — {file}: {error}");
+        }
+
+        _cts = new CancellationTokenSource();
+        using var store = _stores.Create();
+
+        try
+        {
+            var embeddings = new UsageTrackingEmbeddingGenerator(
+                AiClientFactory.CreateEmbeddingGenerator(_settings));
+            var searchTool = _searches.Create(caseReference, store, embeddings);
+
+            // The accessor is optional and only used to note unresolved canonical paths; the run
+            // path's model, if one is loaded, lets the report say which paths dead-end.
+            var accessor = _model is null ? null : new CanonicalModelAccessor(_model.Json);
+            var dryRun = new RetrievalDryRun(searchTool, _settings, accessor);
+
+            var report = await dryRun.RunAsync(plans.Values, _cts.Token).ConfigureAwait(true);
+
+            _lastDryRun = report;
+            AppendResponseLine(report.Format());
+            AppendResponseLine(new string('-', 72));
+            AppendResponseLine(
+                $"Retrieved {report.Hits:N0} passage(s) across {report.Searches:N0} search(es). "
+                + "Click \"Save Extract\" to download the passages each group's queries returned.");
+            statusLabel.Text = "Dry run complete.";
+            UpdateRunAvailability();
+        }
+        catch (OperationCanceledException)
+        {
+            AppendResponseLine("Dry run cancelled.");
+        }
+        catch (Exception ex)
+        {
+            AppendResponseLine($"Dry run failed: {ex.Message}");
+            statusLabel.Text = "Dry run failed.";
+        }
+        finally
+        {
+            SetBusy(false);
+        }
+    }
+
     /// <summary>
     /// Looks for a model extracted in an earlier session, so the buttons and the run path
     /// reflect what is actually in the store rather than what this instance has done.
@@ -1414,6 +1510,97 @@ public partial class CheckEvaluatorForm : Form
     }
 
     /// <summary>
+    /// Downloads the passages a run's searches retrieved, per group.
+    ///
+    /// Two sources, and the fresher one wins: a dry run just executed on this screen is what a
+    /// reader is looking at when they want the extract, so it is offered first. Otherwise the latest
+    /// archived check run is used, which carries more — the query that found each passage and the
+    /// ones retrieved and then evicted. Both render through <see cref="RetrievalExtract"/>.
+    /// </summary>
+    private async void SaveExtractButton_Click(object? sender, EventArgs e)
+    {
+        string extract;
+        string suggestedName;
+        string what;
+
+        if (_lastDryRun is { } dryRun)
+        {
+            extract = dryRun.FormatExtract();
+            var caseReference = CurrentCaseReference() ?? "case";
+            suggestedName =
+                $"retrieval-extract_{Sanitise(caseReference)}_{DateTimeOffset.Now:yyyyMMdd-HHmmss}.txt";
+            what = $"dry run — {dryRun.Groups.Count} group(s), {dryRun.Hits:N0} passage(s)";
+        }
+        else
+        {
+            var caseReference = CurrentCaseReference()
+                                ?? (Directory.Exists(caseFolderTextBox.Text.Trim())
+                                    ? _settings.ResolveCaseReference(caseFolderTextBox.Text.Trim())
+                                    : null);
+
+            if (caseReference is null)
+            {
+                MessageBox.Show(this,
+                    "Run a dry run or a check run first — the extract is the passages a run's "
+                    + "searches retrieved, and there is no run to take them from yet.",
+                    "Nothing to extract", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            CheckRunRecord? run;
+            try
+            {
+                run = await _runStore.LoadLatestAsync(caseReference, _settings.TenantId).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "Could not read the run archive",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (run is null)
+            {
+                MessageBox.Show(this,
+                    $"No dry run is in memory and no archived run was found for case {caseReference}.\n\n"
+                    + "Click \"Dry Run Retrieval\", or run the checks, then save the extract.",
+                    "Nothing to extract", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            extract = RetrievalExtract.FromRun(run);
+            suggestedName =
+                $"retrieval-extract_{Sanitise(run.CaseReference)}_{run.StartedAt:yyyyMMdd-HHmmss}.txt";
+            what = $"run {run.RunId} — {run.AllGroups.Count()} requirement(s), "
+                   + $"{run.AllGroups.Sum(g => g.Passages.Count):N0} passage(s)";
+        }
+
+        using var dialog = new SaveFileDialog
+        {
+            Title = "Save the searched extract",
+            Filter = "Text (*.txt)|*.txt|All files (*.*)|*.*",
+            FileName = suggestedName,
+        };
+
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+        {
+            return;
+        }
+
+        try
+        {
+            await File.WriteAllTextAsync(dialog.FileName, extract, Encoding.UTF8).ConfigureAwait(true);
+            statusLabel.Text = $"Searched extract written to {dialog.FileName}";
+            AppendResponseLine($"Searched extract ({what}) written to {dialog.FileName}.");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Could not save the extract",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    /// <summary>
     /// The toggle writes straight through to settings, so it survives to the next screen and
     /// the next launch. It is a run option that happens to be persisted, not a dialog field.
     /// </summary>
@@ -1676,6 +1863,18 @@ public partial class CheckEvaluatorForm : Form
 
         deleteModelButton.Enabled = !_busy && _model is not null;
         saveModelButton.Enabled = !_busy && _model is not null;
+
+        // The dry run needs an index to search but no model — it diagnoses retrieval, which is
+        // upstream of extraction — so it follows the run's own availability rather than the model's.
+        dryRunButton.Enabled = !_busy && canRun;
+
+        // The extract comes from a dry run held in memory, or from an archived check run on disk.
+        // A dry run in memory is enough on its own; otherwise a case has to be identifiable for a
+        // stored run to be looked up.
+        saveExtractButton.Enabled = !_busy &&
+            (_lastDryRun is not null
+             || !string.IsNullOrWhiteSpace(_settings.CaseReference)
+             || Directory.Exists(caseFolderTextBox.Text.Trim()));
 
         // Unloading stays available as soon as the case is identifiable — by a configured
         // reference, or by the selected folder. The chunks may have been indexed in an

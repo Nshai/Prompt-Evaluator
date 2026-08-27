@@ -542,7 +542,7 @@
           "falsePositiveGuards": [
             "Recompute: a monetary charge that is not the stated percentage of the stated plan value indicates transposed or erroneous rows.",
             "Comparisons on different bases (with and without adviser fees) are both legitimate; check which basis each conclusion uses before calling it a contradiction.",
-            "Where the report states the same plan's charge in two tables, the two figures must agree. Compare them against each other per provider before comparing either against the provider documentation — an internal contradiction makes the whole cost comparison unreliable, which is a different and larger finding than a single wrong figure."
+            "Where the report states the same plan's charge in two of its own tables, the two figures must agree. Do this for every plan that appears in both tables, not only the first one where the figures happen to catch your eye: check each plan's early-table charge against its later-table charge before reaching for any provider document, and a plan whose two figures disagree is an internal contradiction even where another plan's already established one. An internal contradiction makes the whole cost comparison unreliable, which is a different and larger finding than a single wrong figure, and a provider document is the wrong place to look when the report already disagrees with itself."
           ]
         },
         "sufficiency": {

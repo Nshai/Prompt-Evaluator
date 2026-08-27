@@ -125,6 +125,51 @@ public class UncaughtFindingFixTests
         Assert.Contains("Short Term", sections);
     }
 
+    // ── F3.4 — the plan the advice keeps, which nothing asked about ───────────
+
+    /// <summary>
+    /// The People's Pension is retained while invested in a fund rated 9 against an agreed rating of
+    /// 5, and the report says that fund "aligns with your risk appetite" while stopping at "you
+    /// should consider" switching it.
+    ///
+    /// <b>Six runs missed it, four of them after a guard was written for exactly this.</b> Run 17
+    /// showed why: no requirement asked. The word "retained" appeared once in the whole of CHK-003,
+    /// inside a G3.7 guard, and G3.7's requirement is the <i>recommended</i> strategy. With nothing
+    /// asking, G4.6 picked the rating up incidentally and read it as a fund-naming problem, then
+    /// used the holding as evidence the client had self-directed equity investments — the opposite
+    /// of a risk mismatch, and a false negative rather than a miss.
+    ///
+    /// A guard can stop a group reaching the wrong conclusion. It cannot make a group ask.
+    /// </summary>
+    [Fact]
+    public void ARetainedPlansFundsAreAskedAboutByARequirementOfTheirOwn()
+    {
+        var group = Group("CHK-003", "G3.11");
+
+        Assert.Contains("retained", group.Requirement, StringComparison.OrdinalIgnoreCase);
+
+        var paths = group.Retrieval?.CanonicalPaths ?? [];
+
+        Assert.Contains("/existingArrangements[]/adviceAction", paths);
+        Assert.Contains("/existingArrangements[]/riskRating", paths);
+        Assert.Contains("/riskAssessment/perClient[]/attitudeToRisk/agreedCode", paths);
+    }
+
+    /// <summary>
+    /// The two ways the finding was given away before, closed as guards on the group that now owns
+    /// it: a rationale for keeping the plan is not an answer about the fund inside it, and a
+    /// suggestion the report never turns into a recommendation leaves the client where they were.
+    /// </summary>
+    [Fact]
+    public void TheRetentionGroupRefusesBothWaysOutTakenBefore()
+    {
+        var guards = Guards(Group("CHK-003", "G3.11"));
+
+        Assert.Contains("does not answer for the fund inside it", guards);
+        Assert.Contains("is not a fix for the mismatch", guards);
+        Assert.Contains("does not excuse an assertion the report makes for itself", guards);
+    }
+
     // ── F7.1 — the two charge tables, and the reading that was reconciled ─────
 
     /// <summary>
@@ -283,20 +328,25 @@ public class UncaughtFindingFixTests
     // ── the shape must survive ────────────────────────────────────────────────
 
     /// <summary>
-    /// Everything above was added inside an existing group. The catalogue's group count is pinned
-    /// elsewhere; this says the same thing from the other direction, because a fix that quietly
-    /// added a group would change what every check reports.
+    /// Almost every fix here was added inside an existing group, and the exceptions are worth
+    /// naming. The catalogue's group count is pinned elsewhere; this says the same thing from the
+    /// other direction, because a fix that quietly added a group changes what a check reports.
     ///
     /// The number moved from 85 to 87 once, and not for a fix: reconciling the published fact
     /// library against the plans found two facts — the target retirement income and the ancillary
     /// estate-planning recommendations — that no requirement read at all, and each needed a
     /// requirement of its own rather than a path bolted onto a neighbour.
+    ///
+    /// 88 is G3.11, and it is the same kind of gap rather than a new fix in an old place. A
+    /// retained plan's funds were read by no requirement in CHK-003, so F3.4 was unreachable by
+    /// wording: six runs missed it, four of them after a guard was written for it. A guard can only
+    /// stop a group drawing the wrong conclusion; it cannot make a group ask.
     /// </summary>
     [Fact]
-    public void NoFixAddedAGroup()
+    public void OnlyAGapWithNoRequirementAddedAGroup()
     {
         var (plans, _) = CheckQueryPlanLoader.Load(PlanFolder);
 
-        Assert.Equal(87, plans.Values.Sum(p => p.QueryGroups.Count));
+        Assert.Equal(88, plans.Values.Sum(p => p.QueryGroups.Count));
     }
 }

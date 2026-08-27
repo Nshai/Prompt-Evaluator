@@ -1073,6 +1073,89 @@
           "minEvidenceCategories": 1
         }
       }
+    },
+    {
+      "groupId": "G3.11",
+      "requirement": "Funds inside a retained arrangement align with the agreed risk rating",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "D",
+          "E",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/existingArrangements[]/adviceAction",
+          "/existingArrangements[]/riskRating",
+          "/existingArrangements[]/holdings",
+          "/existingArrangements[]/adviceActionRationale",
+          "/riskAssessment/perClient[]/attitudeToRisk/agreedCode"
+        ],
+        "evidenceSections": [
+          "The funds available to invest in are"
+        ],
+        "queries": [
+          {
+            "id": "Q3.11.1",
+            "text": "we recommend you retain this plan and the fund it is invested in remains suitable for your risk profile",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "retain",
+              "remain",
+              "aligns with your risk",
+              "you should consider",
+              "no change"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.11.2",
+            "text": "fund risk level rating of the fund the plan is currently invested in",
+            "side": "Evidence",
+            "targetCategories": [
+              "E",
+              "H",
+              "D"
+            ],
+            "expectSignals": [
+              "Risk Level",
+              "risk rated",
+              "shares",
+              "Defaqto"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Compliance concern"
+        ],
+        "comparison": {
+          "method": "RangeMatch",
+          "falsePositiveGuards": [
+            "This group is about a plan the advice keeps, not one it moves. G3.7 asks whether the recommended strategy exceeds the profile; this asks the same of money left where it is, which no other requirement reads.",
+            "A retained plan carries the same alignment duty as a recommended one. A rationale for retaining the plan — an employer contribution, a guarantee, a penalty avoided — explains the retention and does not answer for the fund inside it; where the report gives one and says nothing about the fund's risk level, that is the finding.",
+            "Where the report stops short of recommending — 'you should consider switching the funds' — treat it as no recommendation made. An unactioned suggestion leaves the client invested outside the agreed profile and is not a fix for the mismatch.",
+            "Compare on one scale only; where the plan's rating is on a provider or Defaqto scale and no mapping is given, report the incomparability rather than a breach. This does not excuse an assertion the report makes for itself: where the report says the retained fund aligns with the client's risk appetite, that claim is testable on its own terms, and incomparable scales are the reason it is unsupported rather than a reason to leave it unassessed.",
+            "A fund whose rating sits inside the agreed profile is no issue, and a plan retained with no alignment claim and no rating on file is a gap rather than a breach."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Note as a gap: a plan is retained and the report does not say whether what it holds still suits the agreed profile.",
+          "ifEvidenceAbsent": "Potential Concern: a plan is retained on advice with no fund-level risk evidence to support the alignment the report implies.",
+          "minEvidenceCategories": 1
+        }
+      }
     }
   ],
   "decision": {

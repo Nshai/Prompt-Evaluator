@@ -179,6 +179,12 @@ public class CheckPlanLintTests
     /// Re-pinned when the plans were rebuilt against "Revised checks.csv": 60 groups to 85, and
     /// again at 87 when the fact library was reconciled against the plans and two published facts
     /// turned out to have no requirement reading them at all.
+    ///
+    /// 88 adds CHK-003's G3.11, for the funds inside a plan the advice retains. F3.4 — the People's
+    /// Pension kept at risk 9 against an agreed 5 — was missed by six consecutive runs, and the
+    /// last of them showed why no guard could reach it: nothing asked. The word "retained" appeared
+    /// once in the whole of CHK-003, inside a guard on G3.7, whose requirement is the recommended
+    /// strategy rather than the money left where it was.
     /// </summary>
     [Fact]
     public void TheShippedPlanSetHasTheGroupsTheCatalogueExpects()
@@ -192,7 +198,7 @@ public class CheckPlanLintTests
 
         Assert.Equal(11, counts["CHK-001"]);
         Assert.Equal(8, counts["CHK-002"]);
-        Assert.Equal(10, counts["CHK-003"]);
+        Assert.Equal(11, counts["CHK-003"]);
         Assert.Equal(7, counts["CHK-004"]);
         Assert.Equal(8, counts["CHK-005"]);
         Assert.Equal(9, counts["CHK-006"]);
@@ -201,7 +207,7 @@ public class CheckPlanLintTests
         Assert.Equal(10, counts["CHK-009"]);
         Assert.Equal(5, counts["CHK-010"]);
 
-        Assert.Equal(87, counts.Values.Sum());
+        Assert.Equal(88, counts.Values.Sum());
     }
 
     /// <summary>

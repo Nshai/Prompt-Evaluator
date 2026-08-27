@@ -143,4 +143,46 @@ public class AssessorPromptTests
     {
         Assert.InRange(Raw.Length, 2_000, 5_500);
     }
+
+    /// <summary>
+    /// No prompt may name a provider, a client or a document from any particular case.
+    ///
+    /// <b>The pipeline validates whichever suitability report it is given, against whichever
+    /// evidence came with it.</b> Both change per case: a provider central to one file appears
+    /// nowhere in the next. A prompt naming one teaches the model to look for it, which is a bias
+    /// toward the case the rule was written from and away from the case in front of it — and it is
+    /// an easy mistake to make, because the rule is nearly always discovered by reading one case.
+    ///
+    /// It was made here. A rule about the same charge being tabulated twice was added to the
+    /// extractor prompt with the provider, the two percentages and the direction of the error all
+    /// named, on the reasoning that a concrete example teaches better than an abstract one. True in
+    /// a code comment, where <see cref="DerivedFigures"/> and half this test file name the case
+    /// freely; wrong in a prompt, which is input to a model rather than documentation for a reader.
+    ///
+    /// Illustrate the *shape* of the defect in the prompt and keep the instance in the comment.
+    ///
+    /// Note what is <i>not</i> banned. A document <b>type</b> — "a fact find", "the suitability
+    /// report", "a risk profile questionnaire" — is domain vocabulary that holds for every case, and
+    /// the prompt needs it to say which side of a comparison it is talking about. What must not
+    /// appear is a particular <b>instance</b>: a provider, a client, a filename.
+    /// </summary>
+    [Theory]
+    [InlineData("Standard Life")]
+    [InlineData("Scottish Widows")]
+    [InlineData("Zurich")]
+    [InlineData("Aviva")]
+    [InlineData("People's Pension")]
+    [InlineData("Peoples Pension")]
+    [InlineData("Sullivan")]
+    [InlineData("Sea Cadets")]
+    [InlineData("CDH Recruitment")]
+    [InlineData("Defaqto")]
+    [InlineData("Dynamic Planner")]
+    [InlineData("Suitability Report Test")]
+    [InlineData("Fact Find (Test")]
+    public void NoPromptNamesAnythingFromOneParticularCase(string fromOneCase)
+    {
+        Assert.DoesNotContain(fromOneCase, Prompts.AssessorSystem, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(fromOneCase, Prompts.ExtractorSystem, StringComparison.OrdinalIgnoreCase);
+    }
 }

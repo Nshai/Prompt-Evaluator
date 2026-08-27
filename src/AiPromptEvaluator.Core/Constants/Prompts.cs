@@ -156,10 +156,8 @@ public static class Prompts
           table, and the two disagree; the model has a separate home for each, so fill each from
           its own table, with its own page. Read every cell from the table in front of you: do
           not substitute a figure extracted earlier because it looks more likely, and do not skip
-          a row for disagreeing with one already recorded. Two readings quietly made to agree
-          look like clean data and have destroyed the finding — this happened to a Standard Life
-          charge printed as 0.18% in the switch table and 0.52% in the arrangements table, which
-          was extracted as 0.52% both times.
+          a row for disagreeing with one already recorded. Two readings quietly made to agree look
+          like clean data and have destroyed the finding a check was looking for.
         - Boilerplate is data. Capture generic paragraphs with isClientSpecific false rather
           than skipping them — their presence without personalisation is itself a finding.
         - A description reading "One of: A, B, C." is a closed vocabulary, not a suggestion.

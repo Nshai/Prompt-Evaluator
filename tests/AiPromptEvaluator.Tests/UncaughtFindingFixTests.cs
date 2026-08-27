@@ -238,7 +238,13 @@ public class UncaughtFindingFixTests
     {
         Assert.Contains("tabulated twice", Prompts.ExtractorSystem);
         Assert.Contains("Read every cell from the table in front of you", Prompts.ExtractorSystem);
-        Assert.Contains("look like clean data and have destroyed the finding", Prompts.ExtractorSystem);
+        Assert.Contains("Two readings quietly made to agree look", Prompts.ExtractorSystem);
+
+        // The rule has to be about the shape and not about the case it was found in. A prompt
+        // naming a provider teaches the extractor to look for that provider, and every case has
+        // different ones — the pipeline is generic and the prompt has to stay that way.
+        Assert.DoesNotContain("Standard Life", Prompts.ExtractorSystem);
+        Assert.DoesNotContain("0.18%", Prompts.ExtractorSystem);
     }
 
     /// <summary>

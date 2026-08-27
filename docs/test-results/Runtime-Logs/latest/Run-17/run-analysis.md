@@ -397,22 +397,37 @@ So there is nothing to split. The remedy is on the model's side of the boundary 
 says what to do and a quarter of citations do not do it — and the honest reading of the figure is
 that it is measuring prompt adherence on citation form, not a defect in the check.
 
-### CHK-009 contradicts itself on the most material cost finding
+### ~~CHK-009 contradicts itself on the most material cost finding~~ — withdrawn
 
-G9.8 states F9.3 correctly:
+**This claim was wrong, and the correction is more interesting than the claim.** It reported that
+G9.8 stated F9.3 correctly while G9.7 and G9.9 stated the reverse, on the strength of these two
+fragments:
 
-> Report claims switch provides 'Lower Costs' as a benefit for all plans, but for Standard Life the
-> cost actually **increases** by 0.26% annually
+> …for Standard Life the cost actually **increases** by 0.26% annually  — G9.8
 
-G9.7 and G9.9, in the same check, state the reverse:
+> …indicating new solution is actually 0.08% **CHEAPER**  — G9.7, G9.9
 
-> Report states Standard Life existing is '0.08% more expensive' but … indicating new solution is
-> actually 0.08% **CHEAPER**
+**The second is a fragment of a longer sentence, and its missing half reverses the meaning.** In
+full:
 
-**F9.3 still scores Caught under R2**, because one group joins it correctly. But a reviewer reading
-CHK-009 top to bottom meets both, and the wrong one twice. This is a new failure — no previous
-analysis records the pipeline asserting a cost direction and its opposite inside one check — and it
-is on the single most material charge finding in the case.
+> Report states Standard Life existing is '0.08% more expensive' but P16 shows Standard Life existing
+> charge 0.52% and new solution 0.44%, indicating new solution is actually 0.08% CHEAPER, not
+> expensive — **the direction is inverted**
+
+G9.7 and G9.9 are not contradicting G9.8. All three say the same thing: **the report's stated
+direction is contradicted by the report's own table.** That is F6.3 and F9.3 being caught, three
+times, by three groups that each spell out the inversion. I read the quoted clause without the one
+that followed it.
+
+Two things follow. The verdicts are unaffected — F9.3 and F6.3 were already scored Caught, and this
+strengthens rather than qualifies them. And **the pipeline was working here**; there is no defect to
+fix. A detector for this was written and reverted: every real sentence names both directions because
+each is *reporting* an inversion, so any rule keying on "one arrangement said to cost more and less"
+fires on the groups that got it right.
+
+Recorded rather than deleted, because a fragment quoted without its qualifying clause is how this
+analysis was wrong twice in one section — see also the citation-trust reading above — and the shape
+is worth recognising.
 
 ### Prompt adherence regressed to the Haiku baseline
 
@@ -470,9 +485,11 @@ affected. It tracks the model, not the plans: every Haiku run is at 38–52% and
    be loosened — the near-miss rule it already rejected would admit the `Risk rating of 6` → `5`
    alteration. This is a prompt-adherence problem on citation form, and the figure should be read as
    measuring that rather than as a defect in the check.
-6. **Reconcile cost direction within a check before rendering.** §7. CHK-009 asserts Standard Life's
-   charge change in both directions; the *figures described differently* pass already does this
-   across checks and would have caught it within one.
+6. ~~**Reconcile cost direction within a check before rendering.**~~ **Withdrawn — there is nothing
+   to reconcile.** §7. The three CHK-009 groups agree: each says the report's stated charge direction
+   is contradicted by the report's own table. A detector was written for this and reverted, because
+   every real sentence names both directions and so any such rule fires on the groups that are
+   right.
 7. **The retention link for F3.4, still.** Sixth consecutive analysis. Run 17 shows a new failure
    mode for its absence — no guard fired, the group asked a different question — so the guard bound
    recommended after Run 16 is necessary but not sufficient.
@@ -494,6 +511,11 @@ affected. It tracks the model, not the plans: every Haiku run is at 38–52% and
   wrong-route or unjoined-halves bullets. A reader who scores all three Caught reaches 26 / 4 / 6;
   one who scores F9.5 Caught as well reaches 27 / 3 / 6. The Missed count is the robust figure here,
   and at 6 it is the highest of any genuine run.
+- **§7 was wrong twice over, in both of its subsections, and both errors have the same shape: a
+  quotation read without the clause that qualified it.** The CHK-009 subsection is withdrawn in
+  full — the three groups agree with each other and the pipeline was working. The citation-trust
+  subsection took three readings to get right. Neither error changed a verdict, and that is luck
+  rather than method: both were used to justify code, which was written and then reverted.
 - **§7's citation-trust reading was wrong twice, and the corrections are worth keeping visible.**
   Draft one claimed two rejected quotes were verbatim-correct and the metric was at fault. Draft two
   claimed 36 of 46 pipe-bearing rejections were merged table rows whose cells were all present — an

@@ -337,27 +337,31 @@ extracting it at all."* Add `canonicalPaths` on the CHK-002 time-horizon group a
 group; optionally add `assumedAge` so the assumption is comparable against `/parties/clients[]/age`
 arithmetically. Recovers no benchmark finding.
 
-### 10. Percentage-direction contradictions within a check
+### 10. ~~Percentage-direction contradictions within a check~~ — withdrawn, no defect exists
 
-CHK-009 states the most material cost finding in both directions. G9.8: *"for Standard Life the cost
-actually **increases** by 0.26% annually."* G9.7 and G9.9: *"the new solution is actually 0.08%
-**CHEAPER**."* F9.3 survives on R2 because one group joins it correctly, but a reviewer reading CHK-009
-top to bottom meets the wrong answer twice.
+**The premise was wrong.** This item said CHK-009 stated the case's most material cost finding in both
+directions, quoting G9.8's *"the cost actually **increases** by 0.26%"* against G9.7 and G9.9's
+*"actually 0.08% **CHEAPER**"*.
 
-**Not a scope problem.** `CrossGroupContradictions` skips `a.Where == b.Where` — same-*group*, not
-same-check — so within-check pairs are already eligible. **It is a matcher problem:** `MoneyPattern`
-(`:44-46`) matches `£`-prefixed amounts only, and deliberately — *"Percentages and bare integers are
-deliberately not matched: the false-positive rate on years, ages, page numbers and risk ratings would
-bury the signal."* The CHK-009 contradiction is entirely in percentages.
+The second is a fragment. In full:
 
-Add a narrow charge-direction claim rather than matching percentages generally. Scope it to a sentence
-carrying a charge cue (`more expensive`, `less expensive`, `cheaper`, `increase`, `saving`) *and* a
-percentage; key on the arrangement named; record the **sign**; report opposite signs for one
-arrangement. A direction disagreement needs no `MinimumDisagreement` and will not fire on 0.43%
-against 0.44%.
+> Report states Standard Life existing is '0.08% more expensive' but P16 shows Standard Life existing
+> charge 0.52% and new solution 0.44%, indicating new solution is actually 0.08% CHEAPER, not
+> expensive — **the direction is inverted**
 
-**Item 3 will help here too** — much of the confusion comes from groups reading a charge figure out of
-a report passage without knowing which table it came from.
+All three groups say the same thing: **the report's stated direction is contradicted by the report's
+own table.** That is F6.3 and F9.3 being caught, three times over, and the pipeline working rather
+than failing.
+
+**A detector was built for this and reverted.** The design was to key on one arrangement said to cost
+both more and less, with a rule returning "no direction" for a sentence carrying cues both ways — so
+an assessor *explaining* a discrepancy would not be reported as one of the two sides. Checked against
+Run 17's real output, **every qualifying sentence carries cues both ways**, precisely because each is
+reporting an inversion. The rule therefore has no case it can fire on except a bare wrong claim, of
+which the run contains none.
+
+**What is genuinely true and stays:** `MoneyPattern` excludes percentages deliberately, for the reason
+its comment gives. Nothing here argues with that, and there is now no reason to change it.
 
 ---
 

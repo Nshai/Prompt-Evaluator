@@ -121,6 +121,8 @@ The rest were paths an existing requirement should already have been naming:
 
 The plan set moves from 85 groups to 87.
 
+The resulting fact-to-requirement map, for every fact rather than just the nine that moved, is [fact-check-housing.md](fact-check-housing.md).
+
 ### The guard
 
 `docs/artifacts/fact-library.map.json` maps each published fact to the model paths that carry it,

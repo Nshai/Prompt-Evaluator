@@ -13,6 +13,7 @@ Derived from the QA assessment checks (CHK-001 … CHK-010), the A–I document 
 | [examples/suitability-report-test-1.extract.json](examples/suitability-report-test-1.extract.json) | Worked instance from a five-plan pension consolidation report; validates against the schema |
 | [check-plan/](check-plan/) | Semantic-search query plans, one per check — 87 query groups, 324 queries. **Deployed with the app.** |
 | [fact-library-coverage.md](fact-library-coverage.md) | Reconciles the 44 published fact definitions against the model and the plans. Records the seven facts no requirement read, and the two the model had nowhere to put |
+| [fact-check-housing.md](fact-check-housing.md) | Every published fact and the requirement that reads it, by library section — plus what was added where to close the gaps. Generated from the plans |
 | [fact-library.map.json](fact-library.map.json) | Each published fact → the canonical paths that carry it. **Copied to the build output**, so `FactLibraryCoverageTests` can hold the reconciliation on every build rather than leaving it to an audit |
 
 ## How the app uses this

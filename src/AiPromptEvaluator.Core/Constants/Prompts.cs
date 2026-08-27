@@ -135,6 +135,9 @@ public static class Prompts
           value from an illustration or cashflow · "Recommended" part of the advice rather than
           the current position · "Conditional" holds only if a stated condition does, including
           a charge phrased as "if you were to retain the plan" · "Unknown" not determinable.
+          These are separate fields with separate vocabularies, and neither borrows the other's:
+          "Derived" is an assertionStatus and never a modality, and a value that fits one field's
+          list is not a reason to write it in the other's.
         - Use the identifiers given under "Identifiers" exactly as written. Every id field and
           every *Ids array must hold an id from that table. If something you would reference is
           not in the table, omit the reference — never coin a new id, and never put a name, a
@@ -170,6 +173,11 @@ public static class Prompts
         - Where the report describes something the vocabulary has no value for, use "Other" if
           the list offers it and omit the field otherwise. Say what the report actually said in
           the neighbouring free-text or provenance field, where nothing is constrained.
+        - A checkTriggers boolean must agree with the section it summarises. It is a derived flag,
+          not an independent reading: if you recorded a complex product, hasComplexProduct is true;
+          if you recorded contributions or withdrawals, hasCapitalContributionsOrWithdrawals is
+          true. Set each from what the rest of the model now holds, and do not leave it false while
+          the section it stands for is populated.
         - Write each property name at most once per object. A name repeated in the same object
           is invalid JSON that most parsers accept and then fail on later, and it has cost whole
           sections: one pass wrote "numberOfFundsAvailable" twice inside the same arrangement,

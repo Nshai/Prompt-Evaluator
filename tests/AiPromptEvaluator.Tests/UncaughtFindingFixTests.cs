@@ -279,6 +279,21 @@ public class UncaughtFindingFixTests
     }
 
     /// <summary>
+    /// The two Run 19 slips the vocabulary-parser fix could not reach, closed in the prompt. The
+    /// extraction wrote modality "Derived" — an assertionStatus value in the modality field — and
+    /// left hasComplexProduct false while the same pass recorded the product as Complex. Both are
+    /// crossings between fields the extractor conflated, and the rules against them are generic:
+    /// they name the fields and the concept, not the case.
+    /// </summary>
+    [Fact]
+    public void TheExtractorIsToldNotToCrossFieldsOrLeaveATriggerDisagreeingWithItsSection()
+    {
+        Assert.Contains("\"Derived\" is an assertionStatus and never a modality", Prompts.ExtractorSystem);
+        Assert.Contains("A checkTriggers boolean must agree with the section it summarises", Prompts.ExtractorSystem);
+        Assert.Contains("if you recorded a complex product, hasComplexProduct is true", Prompts.ExtractorSystem);
+    }
+
+    /// <summary>
     /// G7.4 held the page-11 table and not the page-5 one, so the group that owns the cost
     /// comparison could not see the pair it is supposed to compare. Both readings now reach it.
     /// </summary>

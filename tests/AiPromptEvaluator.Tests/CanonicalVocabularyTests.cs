@@ -138,6 +138,68 @@ public class CanonicalVocabularyTests
     }
 
     /// <summary>
+    /// The name-collision the parser used to have, measured on Run 19: it keyed vocabularies by
+    /// property name across the whole schema, and the schema reuses names. So a value legitimate on
+    /// one field was flagged against a same-named field's enum elsewhere. Of nineteen values a run
+    /// reported "outside the documented vocabulary", eighteen were correct for the field they were
+    /// on and only one — modality "Derived" — was a genuine slip.
+    ///
+    /// A name that carries free text anywhere cannot be validated by name, so it is dropped
+    /// entirely. `basis` is the clearest case: the schema uses it for Gross/Net/Unspecified, for
+    /// LikeForLike/…, and for the free text "what the percentage is of" — and nearly every flagged
+    /// value was the last of those.
+    /// </summary>
+    [Theory]
+    [InlineData("basis")]      // Gross/Net/Unspecified · LikeForLike/… · free text
+    [InlineData("role")]       // client role · research-option role · free text
+    [InlineData("category")]   // income category · free text
+    [InlineData("planType")]   // the pension-type enum · free text
+    public void ANameThatIsFreeTextAnywhereIsNotValidatedByName(string name)
+    {
+        var vocabularies = CanonicalVocabulary.Parse(File.ReadAllText(SchemaPath));
+
+        Assert.False(
+            vocabularies.ContainsKey(name),
+            $"\"{name}\" carries free text somewhere in the schema, so validating it by name would "
+            + "flag a value legitimate on the free-text field. It must be dropped, not half-enforced.");
+    }
+
+    /// <summary>
+    /// A name reused for two <i>different</i> vocabularies, with no free-text use, is unioned — a
+    /// value valid for either is accepted, which is the same leniency the enum stripper applies.
+    /// `direction` is Increased/Decreased/Unchanged on a risk reconciliation and
+    /// RecommendedCheaper/RecommendedMoreExpensive/Equivalent on a cost comparison; both must pass.
+    /// </summary>
+    [Fact]
+    public void ANameReusedForTwoVocabulariesAcceptsAValueFromEither()
+    {
+        var vocabularies = CanonicalVocabulary.Parse(File.ReadAllText(SchemaPath));
+
+        Assert.True(vocabularies.TryGetValue("direction", out var direction));
+        Assert.Contains("Decreased", direction!);          // the risk-reconciliation vocabulary
+        Assert.Contains("RecommendedCheaper", direction!);  // the cost-comparison vocabulary
+    }
+
+    /// <summary>
+    /// The one true positive from Run 19 survives the fix: modality has a single vocabulary and no
+    /// free-text use, so "Derived" — an assertionStatus value written into the modality field — is
+    /// still reported. The parser fix removes the false alarms without silencing the real one.
+    /// </summary>
+    [Fact]
+    public void AGenuineCrossFieldSlipIsStillReported()
+    {
+        var vocabularies = CanonicalVocabulary.Parse(File.ReadAllText(SchemaPath));
+
+        var fragment = JsonNode.Parse(
+            """{"riskAssessment":{"perClient":[{"attitudeToRisk":{"provenance":{"modality":"Derived"}}}]}}""")!
+            .AsObject();
+
+        var corrections = CanonicalVocabulary.Normalise(fragment, vocabularies);
+
+        Assert.Contains(corrections, c => c.Property == "modality" && c.Written == "Derived" && !c.WasMapped);
+    }
+
+    /// <summary>
     /// The value that started this: the schema documents Pension, extraction wrote
     /// RetirementObjective, and the worked example still carries it. It must be reported
     /// rather than corrected or deleted.

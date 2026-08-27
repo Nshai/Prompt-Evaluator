@@ -58,25 +58,49 @@ public static class CanonicalVocabulary
     /// </summary>
     public static Dictionary<string, IReadOnlyList<string>> Parse(string schemaJson)
     {
-        var found = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
+        // Insertion-ordered: a single-occurrence name keeps its schema order, and a name reused
+        // across two vocabularies keeps the first list's order with the second's new values
+        // appended. A test pins the common single-occurrence case, and order is not otherwise
+        // load-bearing — Map does membership, not position.
+        var vocabularies = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        var freeText = new HashSet<string>(StringComparer.Ordinal);
 
-        if (JsonNode.Parse(schemaJson) is not JsonNode root)
+        if (JsonNode.Parse(schemaJson) is JsonNode root)
         {
-            return found;
+            Walk(root, vocabularies, freeText);
         }
 
-        Walk(root, found);
-        return found;
+        // A name that carries a documented vocabulary in one place and free text in another
+        // cannot be validated by name: a value legitimate on the free-text field would be
+        // flagged against the enum. This matching keys only by name — the model's reply is a
+        // flat value, not a path — so the honest answer for such a name is to check nothing and
+        // report nothing, which is why it is dropped rather than half-enforced.
+        //
+        // The names that survive this either have no free-text use ("modality") or reuse the
+        // name across two DIFFERENT vocabularies with no free-text use ("direction",
+        // "dimension"), in which case the union below accepts a value valid for either — the
+        // same leniency StripEnumViolations already applies, and the reason a value like
+        // "RecommendedCheaper" or "RiskAlignment" is correct for the field it is on and must not
+        // be flagged against a same-named field's enum somewhere else in the schema.
+        return vocabularies
+            .Where(pair => !freeText.Contains(pair.Key))
+            .ToDictionary(
+                pair => pair.Key,
+                pair => (IReadOnlyList<string>)pair.Value,
+                StringComparer.Ordinal);
     }
 
-    private static void Walk(JsonNode? node, Dictionary<string, IReadOnlyList<string>> into)
+    private static void Walk(
+        JsonNode? node,
+        Dictionary<string, List<string>> vocabularies,
+        HashSet<string> freeText)
     {
         switch (node)
         {
             case JsonArray array:
                 foreach (var item in array)
                 {
-                    Walk(item, into);
+                    Walk(item, vocabularies, freeText);
                 }
 
                 break;
@@ -88,13 +112,32 @@ public static class CanonicalVocabulary
                 {
                     foreach (var (propertyName, propertySchema) in properties)
                     {
-                        if (ValuesIn(propertySchema) is { Count: > 1 } values
-                            && !into.ContainsKey(propertyName))
+                        if (ValuesIn(propertySchema) is { Count: > 1 } values)
                         {
-                            into[propertyName] = values;
+                            // Union across every occurrence of the name, so a name reused for
+                            // two vocabularies accepts a value valid for either rather than only
+                            // the first one Walk happened to reach. New values are appended in
+                            // encounter order and duplicates ignored, so a single-occurrence name
+                            // keeps its schema order exactly.
+                            if (!vocabularies.TryGetValue(propertyName, out var list))
+                            {
+                                vocabularies[propertyName] = list = [];
+                            }
+
+                            foreach (var value in values.Where(v =>
+                                !list.Contains(v, StringComparer.Ordinal)))
+                            {
+                                list.Add(value);
+                            }
+                        }
+                        else if (IsConstrainable(propertySchema))
+                        {
+                            // A same-named field carrying free text, not a vocabulary. Recorded
+                            // so Parse can drop the name entirely — see the note there.
+                            freeText.Add(propertyName);
                         }
 
-                        Walk(propertySchema, into);
+                        Walk(propertySchema, vocabularies, freeText);
                     }
                 }
 
@@ -102,12 +145,38 @@ public static class CanonicalVocabulary
                 {
                     if (key != "properties")
                     {
-                        Walk(value, into);
+                        Walk(value, vocabularies, freeText);
                     }
                 }
 
                 break;
         }
+    }
+
+    /// <summary>
+    /// Whether a property could carry a vocabulary at all — a string-typed leaf. A name that is
+    /// only ever an object or an array elsewhere in the schema is not a free-text collision with
+    /// a vocabulary field of the same name; it is a different kind of thing that happens to share
+    /// a word, and it should not suppress the vocabulary.
+    /// </summary>
+    private static bool IsConstrainable(JsonNode? propertySchema)
+    {
+        if (propertySchema?["type"] is not { } type)
+        {
+            // No declared type: treat as a possible string, so a free-text description still
+            // suppresses. This is the conservative direction — it drops a name rather than
+            // flag a value that might be legitimate.
+            return true;
+        }
+
+        return type switch
+        {
+            JsonValue value when value.TryGetValue<string>(out var single) =>
+                single is "string",
+            JsonArray union => union.Any(t =>
+                t is JsonValue v && v.TryGetValue<string>(out var s) && s == "string"),
+            _ => false,
+        };
     }
 
     /// <summary>The vocabulary a property's description documents, if it documents one.</summary>

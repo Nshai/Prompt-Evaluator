@@ -362,41 +362,40 @@ and several of the £12,000, ranking and performance quotes that F9.1, F9.2 and 
 sit in the NOT FOUND lists. **Under R7 the verdicts hold — the substance is printed in the rendered
 Discrepancies and narrative — but the working behind five Caught findings is not checkable.**
 
-**The dominant cause is table flattening, and it is a real defect rather than a metric artefact.**
-Checking all 145 rejected prose quotes against the converted corpus as fixed strings, normalising
-case, whitespace and typographic punctuation: **11 are present verbatim and 134 are not.** Of the 46
-that carry table pipes, **36 have every individual cell present in the corpus** and fail only because
-the row structure was rewritten.
+**The cause is a table read out as prose, and every one of the 146 is a prose quote.**
 
-The two the benchmark depends on are both of that kind. The Fact Find renders three separate rows:
+Counting them by kind: of the 146 rejections, **146 are quoted prose and none is a table read.**
+Every `cells` citation in the run verified. That matters because `CitationVerifier.Normalise` folds
+markdown pipes and emphasis markers to spaces, so a `cells` read survives being merged or reflowed —
+the structure it would have to get wrong has already been normalised away.
 
-```
-| **Total Net Monthly Income** | **£1,430.00** |
-| Total Monthly Expenditure | £1,718.00 |
-| Total Monthly Disposable Income | £-288.00 |
-```
-
-G10.4 cited them as **one** row, with spaces inserted inside the currency values:
+What the 146 actually are is the thing the assessor prompt already forbids. Three examples, verbatim
+from the NOT FOUND lists:
 
 ```
-table: Total Net Monthly Income  |  £ 1,430.00  |  Total Monthly Expenditure  |  £ 1,718.00  |  …  |  £ -288.00
+"Full Name Date of Birth 07/05/1960 Age 65 Relationship Spouse Related To Note Financially Dependent? No"
+"Basic Income, Employed CDH Recruitment, Monthly, £1,200.00; State Pension, Monthly, £230.00"
+"Illustration date 24 September 2025 Retirement date 7 June 2031 (age 75)"
 ```
 
-The Investor Experience quote fails the same way — the source is a two-column table row
-(`| Do you understand how stocks and shares work…? | No understanding / knowledge |`) and the model
-reproduced it as flowing prose with the answers inlined.
+None of those sentences is in any document. Each is a **table reconstructed as a sentence** — column
+headers and cell values run together, sometimes across several rows, with connecting punctuation the
+model supplied. 51 of the 146 still carry a pipe; 24 are over 200 characters, which is a multi-row
+merge. The prompt's rule is explicit — *"A table restated as a sentence is not a quotation and will
+be rejected, however accurately you read it"* — and the finding here is how often it is ignored:
+**26% of cited passages, and the instruction to use `cells` instead is being read past.**
 
-**So the verifier is right and my earlier reading of it was wrong.** `CitationVerifier` already
-folds case, whitespace and typographic punctuation, and its documented reason for refusing a
-near-miss rule is precisely this case: the altered `Risk rating of 6` → `5` quotation has a 96%
-contiguous run, so any threshold loose enough to admit a reflowed table admits a changed digit too.
-A merged row is a claim that three rows are one row, and `CellsPresent` deliberately requires every
-cell — *"a row read is a claim about the whole row."*
+**The verifier is right and both of my earlier readings of it were wrong.** The first draft of this
+section claimed two rejected quotes were verbatim-correct and the metric was at fault. The second
+claimed 36 of 46 pipe-bearing rejections were merged `cells` rows whose values were all present. The
+second was an artefact of my own script, which classified by counting pipe characters in the printed
+report rather than by the citation's kind: the merged Fact Find row it named as the example was
+**accepted**, not rejected. Checked directly, `grep -c '^        table:'` over the rejection blocks
+returns zero.
 
-That said, the figure still conflates two things a reviewer needs apart: **a fabricated or altered
-quotation** (the defect the class was built for) and **a correctly-sourced table restructured on the
-way out** (36 of 46 pipe-bearing rejections). Both are worth fixing; only the first is a fidelity
-problem. Splitting the count is the fix, not loosening the match.
+So there is nothing to split. The remedy is on the model's side of the boundary — the prompt already
+says what to do and a quarter of citations do not do it — and the honest reading of the figure is
+that it is measuring prompt adherence on citation form, not a defect in the check.
 
 ### CHK-009 contradicts itself on the most material cost finding
 
@@ -465,11 +464,12 @@ affected. It tracks the model, not the plans: every Haiku run is at 38–52% and
 4. **Give F7.1 the two tables in one pack.** §6. The pipeline holds both rows and never relates
    them, and F9.5 is entailed by that. One section hint per table, bound to G7.4, would put the
    contradiction in front of a single group for the first time.
-5. **Split the citation-trust count into altered quotations and restructured tables.** §7. 36 of the
-   46 pipe-bearing rejections have every cell present in the corpus and fail only on row structure.
-   The verifier is behaving correctly and must not be loosened — the near-miss rule it already
-   rejected would admit the `Risk rating of 6` → `5` alteration. Report the two classes separately
-   so the figure can be used as a gate on fidelity.
+5. **Get the assessor to use `cells` for a table instead of quoting it as a sentence.** §7. All 146
+   rejections are prose and none is a table read; each is a table row reconstructed as a sentence,
+   which the prompt already forbids in those words. The verifier is behaving correctly and must not
+   be loosened — the near-miss rule it already rejected would admit the `Risk rating of 6` → `5`
+   alteration. This is a prompt-adherence problem on citation form, and the figure should be read as
+   measuring that rather than as a defect in the check.
 6. **Reconcile cost direction within a check before rendering.** §7. CHK-009 asserts Standard Life's
    charge change in both directions; the *figures described differently* pass already does this
    across checks and would have caught it within one.
@@ -494,11 +494,15 @@ affected. It tracks the model, not the plans: every Haiku run is at 38–52% and
   wrong-route or unjoined-halves bullets. A reader who scores all three Caught reaches 26 / 4 / 6;
   one who scores F9.5 Caught as well reaches 27 / 3 / 6. The Missed count is the robust figure here,
   and at 6 it is the highest of any genuine run.
-- **§7's citation-trust reading was corrected after the first draft of this analysis.** The original
-  claimed two rejected quotes were verbatim-correct and the metric was at fault. Checking all 145 as
-  fixed strings showed both were reflowed tables and the verifier was right. The corrected reading is
-  a weaker claim about the metric and a stronger one about the model, and it changed recommendation 5
-  from *loosen/relabel* to *split the count*.
+- **§7's citation-trust reading was wrong twice, and the corrections are worth keeping visible.**
+  Draft one claimed two rejected quotes were verbatim-correct and the metric was at fault. Draft two
+  claimed 36 of 46 pipe-bearing rejections were merged table rows whose cells were all present — an
+  artefact of classifying by counting pipe characters in the printed report rather than by the
+  citation's kind, and the row it named as the example was accepted rather than rejected. The third
+  reading, checked with `grep -c '^        table:'` over the rejection blocks, is that **all 146 are
+  prose and none is a table read.** Recommendation 5 went from *loosen the metric* to *split the
+  count* to *fix the citation form*, and only the last one survives. Some code was written against
+  the second reading and reverted; the two `lifeExpectancyBasis` readers from the same item stand.
 - **The four *"ranked by Maturity Value"* section hints matched nothing again**, for the fifth
   consecutive run — G2.2, G6.4, G8.8, G9.7. That is the direct evidence route for F6.1, F8.2, F9.2
   and F9.4, all four of which are Caught only because the ranking surfaced in G9.9 through an

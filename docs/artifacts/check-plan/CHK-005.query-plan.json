@@ -184,7 +184,8 @@
         "canonicalPaths": [
           "/financialPosition/totals",
           "/needsAnalysis/scenarios[]",
-          "/needsAnalysis/assumptions[]"
+          "/needsAnalysis/assumptions[]",
+          "/needsAnalysis/lifeExpectancyBasis"
         ],
         "evidenceSections": [
           "Total Monthly Disposable Income",

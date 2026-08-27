@@ -185,7 +185,8 @@
           "/objectives[]/targetAge",
           "/objectives[]/termYears",
           "/objectives[]/timeHorizon",
-          "/parties/clients[]/employments[]/intendedRetirementAge"
+          "/parties/clients[]/employments[]/intendedRetirementAge",
+          "/needsAnalysis/lifeExpectancyBasis"
         ],
         "queries": [
           {

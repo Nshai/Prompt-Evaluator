@@ -307,18 +307,28 @@ retrieves by design, so a full dump would be noise.
 
 ### 9. Split citation trust, and give `lifeExpectancyBasis` a reader
 
-**Citation trust.** 146 untraceable quotes, 26% of 558 cited passages, worst in the series. Checking
-all 145 rejected prose quotes as fixed strings with case, whitespace and typographic folding: **11
-present, 134 absent.** Of the 46 carrying table pipes, **36 have every cell present** and fail only on
-row structure — the Fact Find's three rows cited as one, with spaces inserted into the currency values.
+**Citation trust — this plan's diagnosis was wrong, and the corrected one needs no code.** It claimed
+36 of 46 pipe-bearing rejections were merged table rows whose cells were all present. Counting Run
+17's rejections by *kind* rather than by pipe character: **all 146 are prose quotes and none is a
+table read.** Every `cells` citation verified — `Normalise` folds markdown pipes and emphasis to
+spaces, so a merged row survives the fold, and the row named as the example was accepted rather than
+rejected.
 
-**Do not loosen the match.** `CitationVerifier`'s doc comment records that a near-miss rule was
-designed and rejected because the altered `Risk rating of 6` → `5` quote has a **96% contiguous run**:
-any threshold admitting a reflowed table admits a changed digit. That judgement is correct.
+What the 146 are is a table reconstructed as a sentence — *"Full Name Date of Birth 07/05/1960 Age 65
+Relationship Spouse … Financially Dependent? No"* — which appears in no document, and which the
+assessor prompt already forbids in those words: *"A table restated as a sentence is not a quotation
+and will be rejected, however accurately you read it."* 51 of the 146 still carry a pipe and 24 run
+past 200 characters, which is a multi-row merge.
 
-Report two counts: **altered or unlocatable** (the fidelity defect; this is what can gate) and
-**restructured** (every cell present, row rewritten). Classification is available where `CellsPresent`
-already runs. Also normalise the 15 citations naming a `.pdf` where the indexed corpus is `.md`.
+**Do not loosen the match.** `CitationVerifier` records that a near-miss rule was designed and
+rejected because the altered `Risk rating of 6` → `5` quote has a **96% contiguous run**: any
+threshold admitting a reflowed table admits a changed digit. That judgement is correct and none of
+this disturbs it.
+
+So the work is prompt adherence on citation form rather than a split of the count — the instruction
+exists and a quarter of citations read past it. Low priority, and until it is done the figure should
+be read as measuring adherence rather than a defect in the check. Separately: normalise the 15
+citations naming a `.pdf` where the indexed corpus is `.md`.
 
 **`lifeExpectancyBasis`.** Populated in the artefact (`array(2)`) and read by **no** query-plan group —
 the one genuine publish-without-a-reader, which

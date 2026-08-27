@@ -128,9 +128,9 @@
               "1-10",
               "scale",
               "level",
-              "Dynamic Planner",
               "FE",
-              "Defaqto"
+              "risk profiler",
+              "out of 10"
             ],
             "canonicalPaths": [
               "/riskAssessment/perClient[]/attitudeToRisk/scaleName"
@@ -378,7 +378,7 @@
         "evidenceSections": [
           "Capacity For Loss questionnaire responses",
           "my investment horizon",
-          "Short Term"
+          "Time Horizon"
         ],
         "queries": [
           {
@@ -578,8 +578,7 @@
           "/riskAssessment/perClient[]/reconciliation"
         ],
         "evidenceSections": [
-          "ATR Wording",
-          "You are happy to proceed with a Risk rating"
+          "ATR Wording"
         ],
         "queries": [
           {
@@ -789,7 +788,6 @@
         ],
         "evidenceSections": [
           "ATR Wording",
-          "You are happy to proceed with a Risk rating",
           "Attitude To Risk questionnaire responses"
         ],
         "queries": [
@@ -1047,7 +1045,7 @@
               "Caution",
               "Low risk investments",
               "anxious",
-              "More than £4,000"
+              "More than"
             ],
             "priority": "Core"
           }
@@ -1128,7 +1126,7 @@
               "Risk Level",
               "risk rated",
               "shares",
-              "Defaqto"
+              "risk profiler"
             ],
             "priority": "Core"
           }

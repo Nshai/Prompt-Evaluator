@@ -128,6 +128,16 @@ public class SectionHintReachabilityTests
     /// Each one is the whole mechanism behind a benchmark finding the plans could not previously
     /// reach, and each is a plain string that a later edit could reword into something that still
     /// reads correctly and matches nothing.
+    ///
+    /// <b>Two were reworded deliberately, and the reason is the pipeline's scope.</b> A hint must
+    /// name something that recurs across cases — a heading, a field label, a tool's own wording —
+    /// because the next case has a different client, different providers and different sentences.
+    /// <c>"incorporates the assets of your main residence"</c> was one report's sentence and is now
+    /// <c>"cashflow modeller"</c>, which sits in the same chunk and is the modeller's phrasing rather
+    /// than this adviser's. The rest pass that test as written: <c>"ranked by Maturity Value"</c> and
+    /// <c>"Effect of switching"</c> are a research tool's column headings,
+    /// <c>"No understanding / knowledge"</c> is a profiler's fixed option label, <c>"LIQUIDATED"</c>
+    /// is a cashflow tool's marker, and <c>"Existing Arrangements"</c> is a report heading.
     /// </summary>
     [Theory]
     [InlineData("CHK-002", "G2.2", "ranked by Maturity Value")]
@@ -135,8 +145,8 @@ public class SectionHintReachabilityTests
     [InlineData("CHK-008", "G8.8", "ranked by Maturity Value")]
     [InlineData("CHK-009", "G9.7", "ranked by Maturity Value")]
     [InlineData("CHK-004", "G4.1", "No understanding / knowledge")]
-    [InlineData("CHK-001", "G1.11", "incorporates the assets of your main residence")]
-    [InlineData("CHK-005", "G5.2", "incorporates the assets of your main residence")]
+    [InlineData("CHK-001", "G1.11", "cashflow modeller")]
+    [InlineData("CHK-005", "G5.2", "cashflow modeller")]
     [InlineData("CHK-005", "G5.5", "LIQUIDATED")]
     [InlineData("CHK-008", "G8.5", "Effect of switching")]
     [InlineData("CHK-007", "G7.4", "Existing Arrangements")]

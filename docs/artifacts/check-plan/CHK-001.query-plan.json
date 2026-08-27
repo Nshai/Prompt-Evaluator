@@ -617,8 +617,9 @@
               "State Pension",
               "per week",
               "full",
-              "£230",
-              "£11,973"
+              "per week",
+              "per month",
+              "per annum"
             ],
             "priority": "Core"
           },
@@ -1219,7 +1220,7 @@
           }
         ],
         "evidenceSections": [
-          "incorporates the assets of your main residence"
+          "cashflow modeller"
         ]
       },
       "verification": {

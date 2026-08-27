@@ -150,6 +150,99 @@ public class CheckPlanLintTests
         Assert.Empty(CheckPlanLint.Inspect(plan));
     }
 
+    /// <summary>
+    /// Nothing in a plan may belong to one case only.
+    ///
+    /// <b>The plans were written against one file and drifted toward it.</b> A provider in an
+    /// expectSignals list, a risk-profiler vendor, one client's sentence as a section hint — each
+    /// works on that case and is mistuned to the next, because the pipeline validates whichever
+    /// suitability report it is given against whichever evidence came with it.
+    ///
+    /// In expectSignals it is worse than mistuned. A signal that does not appear makes the runner
+    /// tell the assessor the data point is "absent from the case file rather than merely
+    /// unretrieved", so a value carried over from another case manufactures a false absence.
+    /// </summary>
+    [Theory]
+    [InlineData("Standard Life")]
+    [InlineData("Defaqto")]
+    [InlineData("Sullivan")]
+    public void APlanNamingSomethingFromOneCaseIsCaught(string fromOneCase)
+    {
+        var group = Group("G7.4", declares: ["E"], queries: ["E"]);
+
+        var plan = Plan(
+            primary: ["E"],
+            group with
+            {
+                Retrieval = group.Retrieval! with { EvidenceSections = [fromOneCase] },
+            });
+
+        var violation = Assert.Single(CheckPlanLint.Inspect(plan));
+
+        Assert.Equal("L6", violation.Rule);
+        Assert.Contains("belongs to one case rather than to the domain", violation.Detail);
+    }
+
+    /// <summary>
+    /// An expectSignals value, which is the field where this does real damage.
+    /// </summary>
+    [Fact]
+    public void AnExpectSignalNamingOneCasesProviderIsCaught()
+    {
+        var plan = Plan(
+            primary: ["E"],
+            new PlanQueryGroup
+            {
+                GroupId = "G9.1",
+                Requirement = "Comparison of existing versus recommended",
+                Declares = new PlanDeclares { EvidenceCategories = ["E"] },
+                Retrieval = new PlanRetrieval
+                {
+                    Queries =
+                    [
+                        new PlannedQuery
+                        {
+                            Id = "Q9.1.1",
+                            Side = "Evidence",
+                            TargetCategories = ["E"],
+                            ExpectSignals = ["annual charge", "Zurich"],
+                        },
+                    ],
+                },
+            });
+
+        var violation = Assert.Single(CheckPlanLint.Inspect(plan));
+
+        Assert.Equal("L6", violation.Rule);
+        Assert.Contains("Zurich", violation.Detail);
+    }
+
+    /// <summary>
+    /// What must stay allowed, or the rule costs more than it saves. Statutory amounts are UK
+    /// constants; "main residence" and "a fact find" are domain vocabulary; a research tool's column
+    /// heading and a profiler's fixed option label appear in every case that uses that tool. All five
+    /// are load-bearing for benchmark findings.
+    /// </summary>
+    [Theory]
+    [InlineData("£60,000")]
+    [InlineData("main residence")]
+    [InlineData("ranked by Maturity Value")]
+    [InlineData("No understanding / knowledge")]
+    [InlineData("Total Monthly Disposable Income")]
+    public void DomainVocabularyAndToolWordingAreNotCaught(string generic)
+    {
+        var group = Group("G1.1", declares: ["B"], queries: ["B"]);
+
+        var plan = Plan(
+            primary: ["B"],
+            group with
+            {
+                Retrieval = group.Retrieval! with { EvidenceSections = [generic] },
+            });
+
+        Assert.Empty(CheckPlanLint.Inspect(plan));
+    }
+
     [Fact]
     public void APlanWithNoQueryGroupsIsCaught()
     {

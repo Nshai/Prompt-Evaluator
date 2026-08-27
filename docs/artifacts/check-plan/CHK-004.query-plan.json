@@ -107,7 +107,6 @@
             ],
             "expectSignals": [
               "No understanding / knowledge",
-              "I have no understanding of investments",
               "how would you describe yourself",
               "understanding",
               "experience"
@@ -122,11 +121,11 @@
               "D"
             ],
             "expectSignals": [
-              "I have no understanding of investments",
               "Compared to other people",
               "More cautious",
               "Caution",
-              "Low risk investments"
+              "Low risk investments",
+              "no understanding of investments"
             ],
             "priority": "Core"
           }

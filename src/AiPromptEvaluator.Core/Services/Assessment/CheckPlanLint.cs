@@ -38,6 +38,12 @@ namespace AiPromptEvaluator;
 /// read only their own document on purpose — mismatches "within the report itself" and whether
 /// disadvantages are "prominently presented" — and the exemption is keyed on that wording, so a
 /// group claiming it has to say so where a reader of the plan will see it.</item>
+/// <item><b>L6</b> — nothing in a plan may belong to one case only. The plans were written against
+/// one file and drifted toward it: a provider name in an <c>expectSignals</c> list, a risk-profiler
+/// vendor, one client's sentence as a section hint. Every one is tuned to that case and mistuned to
+/// the next, and in <c>expectSignals</c> it is actively wrong — a signal that does not appear makes
+/// the runner report the data point as "absent from the case file", so a value from one case
+/// manufactures a false absence on every other.</item>
 /// <item><b>L3</b> — a plan that omits the category the evidence actually lives in is
 /// internally consistent and simply wrong. <b>No rule here can catch that</b>; it needs review
 /// against the check catalogue. CHK-010 was the observed case: the vulnerability overlay never
@@ -123,6 +129,23 @@ public static class CheckPlanLint
                     + "supporting documents this requirement should be checked against, or say in "
                     + "the requirement that it is about the report's own internal consistency."));
             }
+
+            // L6. Nothing in a plan may belong to one case only. See OneCaseOnly.
+            foreach (var value in group.DeclaredEvidenceSections
+                         .Concat(group.Queries.SelectMany(q => q.ExpectSignals ?? []))
+                         .Concat(group.Queries.Select(q => q.Text ?? string.Empty)))
+            {
+                foreach (var named in OneCaseOnly
+                             .Where(n => value.Contains(n, StringComparison.OrdinalIgnoreCase)))
+                {
+                    violations.Add(new Violation(
+                        plan.CheckId, group.GroupId, "L6",
+                        $"names \"{named}\", which belongs to one case rather than to the domain, in "
+                        + $"\"{value}\". The next case has different providers, a different client and "
+                        + "different sentences. Name a heading, a field label or a tool's own wording "
+                        + "instead."));
+                }
+            }
         }
 
         // Assertion categories count here as well as evidence ones. A check names the
@@ -175,6 +198,29 @@ public static class CheckPlanLint
 
     /// <summary>The suitability report's own category — the document every check is testing.</summary>
     private const string ReportCategory = "I";
+
+    /// <summary>
+    /// Things that belong to one case and not to the domain: providers, risk-profiler vendors, and
+    /// verbatim sentences from the file the plans were written against.
+    ///
+    /// <b>The pipeline validates whichever suitability report it is given against whichever evidence
+    /// came with it, and both change per case.</b> A plan naming one case's provider or quoting one
+    /// client's sentence is tuned to that file and mistuned to the next — and in
+    /// <c>expectSignals</c> it is worse than useless, because a signal that does not appear makes the
+    /// runner tell the assessor the data point is "absent from the case file rather than merely
+    /// unretrieved". A value from case 1 therefore manufactures a false absence on case 2.
+    ///
+    /// Deliberately not listed: statutory amounts (the £60,000 annual allowance, the £10,000 MPAA),
+    /// domain vocabulary ("main residence", "a fact find"), a tool's own column headings ("ranked by
+    /// Maturity Value"), and a profiler's fixed option labels ("No understanding / knowledge"). Those
+    /// recur across cases, which is the whole test.
+    /// </summary>
+    private static readonly string[] OneCaseOnly =
+    [
+        "Standard Life", "Scottish Widows", "Zurich", "Aviva", "Peoples Pension", "People's Pension",
+        "Defaqto", "Dynamic Planner", "Sullivan", "Sea Cadets", "CDH Recruitment",
+        "happy to proceed with a Risk rating", "I have no understanding of investments",
+    ];
 
     /// <summary>
     /// Whether a requirement is asking about the report's own internal consistency, which is the

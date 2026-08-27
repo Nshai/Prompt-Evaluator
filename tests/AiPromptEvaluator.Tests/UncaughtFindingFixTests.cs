@@ -78,7 +78,11 @@ public class UncaughtFindingFixTests
     /// CHK-003 declared no section hints at all, which is also why both hint diagnostics printed
     /// nothing while the finding vanished — each iterates the hints a group declared.
     ///
-    /// The hints avoid apostrophes deliberately: the match is a plain substring test with no
+    /// The hint is the block's heading, not the sentence inside it. A hint quoting one client's
+    /// wording works on that client and nothing else, and this pipeline validates whichever report
+    /// it is given — so it names where the wording lives and lets retrieval find it there.
+    ///
+    /// Apostrophes are avoided for a separate reason: the match is a plain substring test with no
     /// unicode folding, and the source writes "didn’t" with a curly apostrophe.
     /// </summary>
     [Theory]
@@ -89,9 +93,11 @@ public class UncaughtFindingFixTests
         var sections = Group("CHK-003", groupId).Retrieval?.EvidenceSections ?? [];
 
         Assert.Contains("ATR Wording", sections);
-        Assert.Contains("You are happy to proceed with a Risk rating", sections);
         Assert.DoesNotContain(sections, s => s.Contains('\''));
         Assert.DoesNotContain(sections, s => s.Contains('’'));
+
+        // No hint may quote a sentence from one case's documents.
+        Assert.DoesNotContain(sections, s => s.Contains("happy to proceed", StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>
@@ -115,6 +121,10 @@ public class UncaughtFindingFixTests
     /// <summary>
     /// The horizon half of the same questionnaire, plus the fact find's own row, on the group whose
     /// requirement is the time horizon used to support the risk profile.
+    ///
+    /// The fact find hint is the field's <i>label</i> and not this client's answer. "Short Term" is
+    /// what one case recorded; "Time Horizon" is the row it recorded it in, and is there whatever the
+    /// answer turns out to be.
     /// </summary>
     [Fact]
     public void TheTimeHorizonGroupReservesASlotForBothRecordedHorizons()
@@ -122,7 +132,8 @@ public class UncaughtFindingFixTests
         var sections = Group("CHK-003", "G3.4").Retrieval?.EvidenceSections ?? [];
 
         Assert.Contains("my investment horizon", sections);
-        Assert.Contains("Short Term", sections);
+        Assert.Contains("Time Horizon", sections);
+        Assert.DoesNotContain("Short Term", sections);
     }
 
     // ── the report is not evidence about itself ────────────────────────────────
@@ -344,12 +355,23 @@ public class UncaughtFindingFixTests
         Assert.Contains("D", q.TargetCategories);
     }
 
+    /// <summary>
+    /// The signal was <c>"I have no understanding of investments"</c> — one client's sentence,
+    /// verbatim. <c>expectSignals</c> drives a claim to the assessor that a data point is "absent
+    /// from the case file rather than merely unretrieved", so a signal quoting one file reports a
+    /// false absence on every other, and the pipeline validates whichever report it is given.
+    ///
+    /// Shortened to the clause that carries the meaning rather than dropped: an ATR questionnaire
+    /// asking about understanding will be answered in words close to these whoever wrote them, and
+    /// the substring scan is case-insensitive.
+    /// </summary>
     [Fact]
-    public void TheAtrQueryInCheckFourExpectsTheSentenceThatCarriesTheFinding()
+    public void TheAtrQueryInCheckFourExpectsTheWordingThatCarriesTheFinding()
     {
         var q = Group("CHK-004", "G4.1").Queries.Single(x => x.Id == "Q4.1.4");
 
-        Assert.Contains("I have no understanding of investments", q.ExpectSignals);
+        Assert.Contains("no understanding of investments", q.ExpectSignals);
+        Assert.DoesNotContain("I have no understanding of investments", q.ExpectSignals);
     }
 
     // ── the shape must survive ────────────────────────────────────────────────

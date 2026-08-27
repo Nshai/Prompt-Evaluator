@@ -121,12 +121,26 @@ public class AssessorPromptTests
 
     /// <summary>
     /// Three rules were added to a prompt that a model reads in full before every one of eighty-
-    /// five calls. Length is a cost paid eighty-five times per run, and a prompt that grows
+    /// eight calls. Length is a cost paid eighty-eight times per run, and a prompt that grows
     /// without bound stops being read carefully at the end.
+    ///
+    /// <b>5,500 from 5,000, for the rule that category [I] cannot corroborate a claim the report
+    /// makes.</b> The ceiling is a judgement rather than a limit, and it is raised here rather than
+    /// met by trimming, because meeting it meant compressing rules each written for an observed
+    /// failure. Two were compressed to pay for most of this one; the rest is admitted as cost.
+    ///
+    /// What bought it: 151 of Run 17's 558 cited passages — 27% — were the suitability report,
+    /// and G1.11 wrote "the inflation assumptions … are corroborated by [P11] and [P12]" where both
+    /// are the report. Run 15 did the same on income and expenditure and Run 16 got the same
+    /// requirement right, so it fires intermittently, which is harder to catch in review than a
+    /// consistent fault.
+    ///
+    /// Raising it again should need the same kind of evidence. If it reaches 6,000, the right move
+    /// is probably to cut a rule that has stopped earning its place rather than to widen again.
     /// </summary>
     [Fact]
     public void ThePromptStaysShortEnoughToBeReadEveryTime()
     {
-        Assert.InRange(Raw.Length, 2_000, 5_000);
+        Assert.InRange(Raw.Length, 2_000, 5_500);
     }
 }

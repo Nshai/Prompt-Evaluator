@@ -31,6 +31,13 @@ namespace AiPromptEvaluator;
 /// query runs even under CoreQueriesOnly; a category code outside A–I reaches the Qdrant
 /// filter and matches nothing. Both were real — "Supporting" was found in CHK-007 and
 /// CHK-008.</item>
+/// <item><b>L5</b> — a group may not declare the suitability report as its only evidence. The
+/// report cannot corroborate itself: a requirement whose evidence side is the document under
+/// audit has no evidence side, and the outcome does not show it. Run 17 has a group writing "the
+/// inflation assumptions … are corroborated by [P11]" where [P11] is the report. Two groups do
+/// read only their own document on purpose — mismatches "within the report itself" and whether
+/// disadvantages are "prominently presented" — and the exemption is keyed on that wording, so a
+/// group claiming it has to say so where a reader of the plan will see it.</item>
 /// <item><b>L3</b> — a plan that omits the category the evidence actually lives in is
 /// internally consistent and simply wrong. <b>No rule here can catch that</b>; it needs review
 /// against the check catalogue. CHK-010 was the observed case: the vulnerability overlay never
@@ -96,12 +103,33 @@ public static class CheckPlanLint
                     + $"{(unqueried.Count == 1 ? "it" : "them")}. "
                     + $"Queried: {Describe(group.QueriedCategories)}."));
             }
+
+            // L5. The report is not evidence about itself. A group whose evidence side is the
+            // report and nothing else has no evidence side: whatever it concludes, it concluded
+            // from the document under audit, and nothing in the outcome shows that. Two groups do
+            // this deliberately — CHK-001's mismatches "within the report itself" and CHK-008's
+            // prominence, both of which are questions about the report's own internal consistency
+            // — so the rule is not that [I] may never be declared as evidence, but that a group
+            // declaring it alone must say in its requirement that this is what it is doing.
+            if (group.DeclaredEvidenceCategories.Count > 0
+                && group.DeclaredEvidenceCategories.All(
+                    c => c.Equals(ReportCategory, StringComparison.OrdinalIgnoreCase))
+                && !ReadsItsOwnDocumentOnPurpose(group.Requirement))
+            {
+                violations.Add(new Violation(
+                    plan.CheckId, group.GroupId, "L5",
+                    $"declares category {ReportCategory} as its only evidence, so the suitability "
+                    + "report is the sole support for a claim the report makes. Either name the "
+                    + "supporting documents this requirement should be checked against, or say in "
+                    + "the requirement that it is about the report's own internal consistency."));
+            }
         }
 
         // Assertion categories count here as well as evidence ones. A check names the
         // suitability report's own category (I) among its primaries because that is where the
-        // assertions come from, and no group declares it as *evidence* — correctly, since the
-        // report is the thing being tested rather than something that corroborates it.
+        // assertions come from, and almost no group declares it as *evidence* — correctly, since
+        // the report is the thing being tested rather than something that corroborates it. The two
+        // that do are the internal-consistency requirements L5 exempts by name.
         // Comparing against the evidence side alone reports every check as broken.
         var declaredAnywhere = plan.QueryGroups
             .SelectMany(g => g.DeclaredEvidenceCategories
@@ -144,6 +172,22 @@ public static class CheckPlanLint
 
     private static readonly string[] CategoryCodes =
         ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+
+    /// <summary>The suitability report's own category — the document every check is testing.</summary>
+    private const string ReportCategory = "I";
+
+    /// <summary>
+    /// Whether a requirement is asking about the report's own internal consistency, which is the
+    /// one case where the report is legitimately the whole of the evidence side.
+    ///
+    /// Matched on the requirement text rather than a flag in the plan, deliberately: the exemption
+    /// then has to be stated where a reader of the plan will see it, and a group that quietly
+    /// drops its supporting documents cannot keep the exemption by leaving a boolean set.
+    /// </summary>
+    private static bool ReadsItsOwnDocumentOnPurpose(string? requirement) =>
+        requirement is not null
+        && (requirement.Contains("within the report itself", StringComparison.OrdinalIgnoreCase)
+            || requirement.Contains("prominently presented", StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
     /// L4. Every fixed-vocabulary field, and every category code, checked against its list.

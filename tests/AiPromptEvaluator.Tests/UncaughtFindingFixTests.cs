@@ -125,6 +125,27 @@ public class UncaughtFindingFixTests
         Assert.Contains("Short Term", sections);
     }
 
+    // ── the report is not evidence about itself ────────────────────────────────
+
+    /// <summary>
+    /// 27% of Run 17's cited passages — 151 of 558 — were the suitability report, and one group
+    /// wrote "the inflation assumptions … are corroborated by [P11] and [P12]" where both are the
+    /// report. Run 15 did the same on income and expenditure; Run 16 got the same requirement right
+    /// on the same passage, so whether it fires is a coin toss, which is worse to leave than a
+    /// consistent fault: an intermittent false corroboration is harder to catch in review.
+    ///
+    /// The prompt already separated the canonical model from the retrieved passages and called the
+    /// passages "the rest of the case file". That was not enough, because a passage from category I
+    /// <i>is</i> the report and arrives looking like any other. The case is now named.
+    /// </summary>
+    [Fact]
+    public void TheAssessorIsToldTheReportCannotCorroborateItself()
+    {
+        Assert.Contains("A passage in category [I] is the suitability report itself", Prompts.AssessorSystem);
+        Assert.Contains("The report cannot corroborate itself", Prompts.AssessorSystem);
+        Assert.Contains("the evidence is absent", Prompts.AssessorSystem);
+    }
+
     // ── F3.4 — the plan the advice keeps, which nothing asked about ───────────
 
     /// <summary>

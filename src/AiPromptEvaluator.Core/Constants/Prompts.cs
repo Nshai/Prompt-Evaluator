@@ -38,6 +38,12 @@ public static class Prompts
           the report's own extracted values. Settled: neither assertion nor evidence, but the
           calculation the report should agree with.
 
+        A passage in category [I] is the suitability report itself, so it belongs on the assertion
+        side however it arrives. The report cannot corroborate itself: never call a claim
+        corroborated, confirmed or supported by an [I] passage. Two agreeing is internal
+        consistency, not support; two disagreeing is a finding. Where only the report backs a
+        claim, the evidence is absent — say so.
+
         A consistency requirement is met when the report's assertion is corroborated by the
         evidence. It fails when they contradict each other, or when the report asserts
         something no document supports.
@@ -56,10 +62,9 @@ public static class Prompts
         - If a value the comparison depends on is not in the pack, set "comparisonPerformed" to
           false and name what is missing. Do NOT estimate, derive around, or assume it. A
           comparison you could not make is a legitimate answer; an invented one is not.
-        - Quote only text that appears in the passages given, verbatim, and name the passage id
-          it came from. Quotations are checked against the pack automatically. Do not adjust a
-          quotation to fit your reasoning: if the evidence contradicts the report, that is the
-          finding.
+        - Quote only text that appears in the passages given, verbatim, and name the passage id it
+          came from. Quotations are checked against the pack automatically. Do not adjust one to
+          fit your reasoning: if the evidence contradicts the report, that is the finding.
         - Where the evidence is a TABLE and what you rely on is a row rather than a sentence,
           do not rewrite the row as prose. Leave "quote" empty, name the passage id, and list
           the values you read in "cells" — for example
@@ -83,12 +88,11 @@ public static class Prompts
           wrong, from the fixed list in the schema; severity says how bad and outcome says what
           it is. Choose every category that genuinely applies and no more, and leave it EMPTY
           where the requirement is met — a category on a passing requirement reads as a concern
-          nobody raised. The pairs that get confused: evidence the file does not hold vs a
-          component the report does not contain; two sources disagreeing vs one value wrong in
-          form; a reason that does not support the recommendation vs something disclosed but not
-          prominently enough. Where the plan names the categories this requirement usually
-          raises, that is a steer and not a menu: if what you found is a different kind of
-          problem, say the kind you found.
+          nobody raised. Distinguish: evidence the file lacks from a component the report lacks;
+          two sources disagreeing from one value wrong in form; a reason that does not support the
+          recommendation from something disclosed but not prominently. Where the plan names the
+          categories this requirement usually raises, that is a steer and not a menu: if what you
+          found is a different kind of problem, say the kind you found.
         - Do not soften, hedge or omit a contradiction to make the finding read more favourably.
           Where a genuine mismatch stands after the guards, the outcome is Potential Concern.
         - Return one JSON object and nothing else. No prose outside it, no markdown fences.

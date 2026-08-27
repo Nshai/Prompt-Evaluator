@@ -94,6 +94,62 @@ public class CheckPlanLintTests
         Assert.Empty(CheckPlanLint.Inspect(plan));
     }
 
+    /// <summary>
+    /// The report cannot corroborate itself, and a group whose evidence side is category I and
+    /// nothing else has no evidence side — it reaches a verdict about the report from the report.
+    ///
+    /// Run 17's G1.11 is the observed case: "the inflation assumptions … are corroborated by [P11]
+    /// and [P12]", where both are the suitability report. The group's conclusion reads exactly like
+    /// one drawn from a supporting document, and nothing in the output distinguishes them.
+    /// </summary>
+    [Fact]
+    public void AGroupWhoseOnlyEvidenceIsTheReportIsCaught()
+    {
+        var plan = Plan(
+            primary: ["I"],
+            Group("G1.11", declares: ["I"], queries: ["I"]));
+
+        var violation = Assert.Single(CheckPlanLint.Inspect(plan));
+
+        Assert.Equal("L5", violation.Rule);
+        Assert.Contains("sole support for a claim the report makes", violation.Detail);
+    }
+
+    /// <summary>
+    /// The exemption, and why it is keyed on the requirement text. Two shipped groups read only
+    /// their own document on purpose — CHK-001's data mismatches "within the report itself" and
+    /// CHK-008's prominence — and for those the report genuinely is the whole comparison. Keying
+    /// the exemption on the wording rather than a flag means a group has to declare the intent
+    /// where a reader of the plan meets it, and cannot keep it by leaving a boolean set after the
+    /// requirement has changed underneath it.
+    /// </summary>
+    [Theory]
+    [InlineData("Data mismatches and unsupported figures within the report itself")]
+    [InlineData("Disadvantages and risks are fairly and prominently presented")]
+    public void AGroupThatSaysItIsCheckingTheReportAgainstItselfIsAllowedTo(string requirement)
+    {
+        var group = Group("G1.8", declares: ["I"], queries: ["I"]);
+
+        var plan = Plan(primary: ["I"], group with { Requirement = requirement });
+
+        Assert.Empty(CheckPlanLint.Inspect(plan));
+    }
+
+    /// <summary>
+    /// [I] alongside a supporting category is not the failure. Several requirements need a table
+    /// from the report to set against a claim made elsewhere in it, and that is a comparison with
+    /// two sides.
+    /// </summary>
+    [Fact]
+    public void TheReportAmongOtherEvidenceCategoriesIsFine()
+    {
+        var plan = Plan(
+            primary: ["B", "I"],
+            Group("G7.4", declares: ["B", "I"], queries: ["B", "I"]));
+
+        Assert.Empty(CheckPlanLint.Inspect(plan));
+    }
+
     [Fact]
     public void APlanWithNoQueryGroupsIsCaught()
     {

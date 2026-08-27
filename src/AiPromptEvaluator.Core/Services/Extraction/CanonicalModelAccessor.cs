@@ -56,6 +56,18 @@ public sealed class CanonicalModelAccessor
         _root.Where(pair => pair.Value is not null).Select(pair => pair.Key).ToList();
 
     /// <summary>
+    /// Triggers this model sets false that the model itself contradicts.
+    ///
+    /// Read at run time as well as at extraction, because the model a run gates on may have been
+    /// stored by an earlier one: the run that is about to switch a check off is the one that needs
+    /// to know the trigger cannot be trusted. See <see cref="TriggerConsistency"/>.
+    /// </summary>
+    public IReadOnlyList<TriggerContradiction> TriggerContradictions =>
+        _triggerContradictions ??= TriggerConsistency.Contradictions(_root);
+
+    private IReadOnlyList<TriggerContradiction>? _triggerContradictions;
+
+    /// <summary>
     /// Resolves one path. A path that matches nothing comes back with Found false rather
     /// than throwing — "the model has no value here" is a legitimate and frequent answer,
     /// and for most checks it is the finding.

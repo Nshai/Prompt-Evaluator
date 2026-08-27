@@ -20,6 +20,15 @@ public sealed record ExtractionResult(
     /// to "RetirementObjective" unnoticed is that nothing was looking.
     /// </summary>
     public IReadOnlyList<CanonicalVocabulary.Correction> VocabularyCorrections { get; init; } = [];
+
+    /// <summary>
+    /// Triggers the extraction set false that the model itself contradicts.
+    ///
+    /// Reported for the same reason and a sharper one: the cost of a wrongly false trigger is a
+    /// check that does not run, and the last two of those were printed under CHECKS CLEARED.
+    /// See <see cref="TriggerConsistency"/>.
+    /// </summary>
+    public IReadOnlyList<TriggerContradiction> TriggerContradictions { get; init; } = [];
 }
 
 /// <summary>
@@ -230,6 +239,7 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         return new ExtractionResult(document, failures, CostBreakdown.Create(_settings.SelectedModel, usage))
         {
             VocabularyCorrections = corrections.Distinct().ToList(),
+            TriggerContradictions = TriggerConsistency.Contradictions(root),
         };
     }
 

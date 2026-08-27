@@ -676,6 +676,27 @@ public partial class CheckEvaluatorForm : Form
                 }
             }
 
+            // Louder than a vocabulary miss, because the cost is a check that does not run. CHK-005
+            // was skipped by a false hasCapitalContributionsOrWithdrawals in two consecutive runs
+            // and printed under CHECKS CLEARED both times.
+            if (result.TriggerContradictions.Count > 0)
+            {
+                AppendResponseLine(string.Empty);
+                AppendResponseLine(
+                    $"{result.TriggerContradictions.Count} check trigger(s) are false and the model "
+                    + "contradicts them:");
+
+                foreach (var contradiction in result.TriggerContradictions)
+                {
+                    AppendResponseLine($"  {contradiction}");
+                }
+
+                AppendResponseLine(
+                    "A check gated on one of these will be assessed rather than skipped, so nothing "
+                    + "is lost — but the trigger is wrong and the extraction that derived it should "
+                    + "be looked at.");
+            }
+
             if (result.Failures.Count > 0)
             {
                 AppendResponseLine(string.Empty);

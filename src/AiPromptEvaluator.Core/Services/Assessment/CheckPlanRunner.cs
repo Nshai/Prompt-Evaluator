@@ -299,6 +299,25 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             {
                 fromModel = fragment.Json.Trim().Equals("true", StringComparison.OrdinalIgnoreCase);
                 detail.Append($"Canonical model {probe.TriggerField} = {fragment.Json.Trim()}. ");
+
+                // A false trigger the model itself contradicts does not get to switch a check
+                // off. CHK-005 was skipped twice on hasCapitalContributionsOrWithdrawals reading
+                // false for a case transferring £110,185, and both runs printed it under CHECKS
+                // CLEARED — the check that did not run looked exactly like one that passed.
+                //
+                // The check runs instead of being skipped, which is the safe direction: a check
+                // that need not have run is visible in the output and costs one call, and one that
+                // silently did not run costs a finding nobody can see missing.
+                var contradiction = _accessor.TriggerContradictions.FirstOrDefault(
+                    c => probe.TriggerField.EndsWith(c.Trigger, StringComparison.OrdinalIgnoreCase));
+
+                if (fromModel is false && contradiction is not null)
+                {
+                    fromModel = null;
+                    detail.Append(
+                        $"IGNORED — the model contradicts it: {contradiction.Contradicts} says "
+                        + $"{contradiction.Evidence}. The check was assessed rather than skipped. ");
+                }
             }
             else
             {

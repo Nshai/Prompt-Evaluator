@@ -3309,6 +3309,7 @@
             },
             "perArrangement": {
               "type": "array",
+              "description": "The report's own per-plan switch-charge table, read as printed. A report routinely states the same plan's existing charge in more than one place — an existing-arrangements table early on, a switch-charges table later — and the two disagree. Both readings are wanted, each with the page it came from: this array is the later table, and \"existing\" above is the earlier one. Do not reconcile the two, do not carry a figure across from the other table when a cell here is hard to read, and do not drop a row because it disagrees with something already extracted. The disagreement is what a check is looking for, and a silently reconciled pair destroys the finding while looking like clean data.",
               "items": {
                 "type": "object",
                 "additionalProperties": false,

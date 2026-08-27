@@ -147,6 +147,15 @@ public static class Prompts
         - Record contradictions rather than resolving them. If the report gives two different
           figures for the same thing, capture both where the model allows it and note the
           conflict; do not quietly pick one.
+        - This bites hardest where the same quantity is tabulated twice. A report states a plan's
+          existing charge in an early arrangements table and again in a later switch-charges
+          table, and the two disagree; the model has a separate home for each, so fill each from
+          its own table, with its own page. Read every cell from the table in front of you: do
+          not substitute a figure extracted earlier because it looks more likely, and do not skip
+          a row for disagreeing with one already recorded. Two readings quietly made to agree
+          look like clean data and have destroyed the finding — this happened to a Standard Life
+          charge printed as 0.18% in the switch table and 0.52% in the arrangements table, which
+          was extracted as 0.52% both times.
         - Boilerplate is data. Capture generic paragraphs with isClientSpecific false rather
           than skipping them — their presence without personalisation is itself a finding.
         - A description reading "One of: A, B, C." is a closed vocabulary, not a suggestion.

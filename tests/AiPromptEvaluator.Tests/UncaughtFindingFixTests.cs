@@ -63,6 +63,131 @@ public class UncaughtFindingFixTests
         Assert.Contains("testable on its own terms", guards);
     }
 
+    // ── F3.1 / F2.2 — the passage that reached eight groups and not the one ───
+
+    /// <summary>
+    /// F3.1 was caught in every genuine run from Run 7 to Run 16 and lost in Run 17. The file
+    /// note's ATR paragraph ends "You are happy to proceed with a Risk rating of 6" where the
+    /// report reproduces the same paragraph with 5.
+    ///
+    /// <b>It was not a retrieval failure.</b> The passage reached eight group prompts in Run 17 —
+    /// G2.1, G2.7, G4.5, G4.7, G6.7, G9.9, G10.3, G10.5 — and not one CHK-003 group, while G3.6's
+    /// pack grew from 123 passages to 164. Routing, not retrieval: the sentence was read by eight
+    /// groups with no requirement to check it and withheld from the one that has.
+    ///
+    /// CHK-003 declared no section hints at all, which is also why both hint diagnostics printed
+    /// nothing while the finding vanished — each iterates the hints a group declared.
+    ///
+    /// The hints avoid apostrophes deliberately: the match is a plain substring test with no
+    /// unicode folding, and the source writes "didn’t" with a curly apostrophe.
+    /// </summary>
+    [Theory]
+    [InlineData("G3.6")]
+    [InlineData("G3.8")]
+    public void TheRiskGroupsReserveASlotForTheFileNotesAtrWording(string groupId)
+    {
+        var sections = Group("CHK-003", groupId).Retrieval?.EvidenceSections ?? [];
+
+        Assert.Contains("ATR Wording", sections);
+        Assert.Contains("You are happy to proceed with a Risk rating", sections);
+        Assert.DoesNotContain(sections, s => s.Contains('\''));
+        Assert.DoesNotContain(sections, s => s.Contains('’'));
+    }
+
+    /// <summary>
+    /// F2.2 has never been caught in seventeen runs. Its evidence is the capacity-for-loss
+    /// questionnaire's investment horizon of "Less than 3 years" and the fact find's Time Horizon
+    /// of "Short Term" — <b>neither string appears anywhere in Run 17's output.</b> Every run
+    /// reaches the two-year conflict from the risk profile report's projection basis instead, which
+    /// scores Partial under R4: the right conclusion by the wrong route.
+    ///
+    /// The questionnaires are evidence documents, so retrieval is the correct channel for them and
+    /// not a workaround — the canonical model reads category I and nothing else, by design.
+    /// </summary>
+    [Fact]
+    public void TheCapacityForLossGroupReservesASlotForTheQuestionnaire()
+    {
+        var sections = Group("CHK-003", "G3.2").Retrieval?.EvidenceSections ?? [];
+
+        Assert.Contains("Capacity For Loss questionnaire responses", sections);
+    }
+
+    /// <summary>
+    /// The horizon half of the same questionnaire, plus the fact find's own row, on the group whose
+    /// requirement is the time horizon used to support the risk profile.
+    /// </summary>
+    [Fact]
+    public void TheTimeHorizonGroupReservesASlotForBothRecordedHorizons()
+    {
+        var sections = Group("CHK-003", "G3.4").Retrieval?.EvidenceSections ?? [];
+
+        Assert.Contains("my investment horizon", sections);
+        Assert.Contains("Short Term", sections);
+    }
+
+    // ── F7.1 — the two charge tables, and the reading that was reconciled ─────
+
+    /// <summary>
+    /// The report states each existing plan's charge twice: an arrangements table on page 5 and a
+    /// switch-charges table on page 11. They disagree — Zurich 0.18% against 0.93%, Standard Life
+    /// 0.52% against 0.18% — and the disagreement <i>is</i> F7.1.
+    ///
+    /// <b>Both tables were already extracted, and one cell was quietly made to agree.</b> Run 17's
+    /// model holds the page-5 reading in <c>costsAndCharges.existing.lines</c> and the page-11 one
+    /// in <c>comparison.perArrangement</c>, correctly disagreeing for Zurich. Standard Life's
+    /// page-11 cell, printed 0.18%, came out as 0.52% — the page-5 figure, carried across. A
+    /// reconciled pair looks like clean data and has destroyed the finding, which is worse than a
+    /// missing row because nothing marks it.
+    ///
+    /// So the array needed the instruction, not a new shape. Its description is the only place the
+    /// extractor is told these two tables are meant to disagree.
+    /// </summary>
+    [Fact]
+    public void ThePerArrangementChargeTableIsDocumentedAsASecondReadingAndNotAReconciliation()
+    {
+        var schema = File.ReadAllText(
+            Path.Combine(AppContext.BaseDirectory, "canonical-suitability-model.schema.json"));
+
+        using var document = System.Text.Json.JsonDocument.Parse(schema);
+
+        var description = document.RootElement
+            .GetProperty("$defs").GetProperty("CostsAndCharges")
+            .GetProperty("properties").GetProperty("comparison")
+            .GetProperty("properties").GetProperty("perArrangement")
+            .GetProperty("description").GetString()!;
+
+        Assert.Contains("Do not reconcile", description);
+        Assert.Contains("do not carry a figure across", description);
+        Assert.Contains("The disagreement is what a check is looking for", description);
+    }
+
+    /// <summary>
+    /// The general rule, in the shared extractor prompt rather than one property's description,
+    /// because the same substitution is available anywhere a report tabulates a quantity twice.
+    /// "Record contradictions rather than resolving them" was already there and was not enough:
+    /// it reads as a rule about prose, and the failure was in a table cell.
+    /// </summary>
+    [Fact]
+    public void TheExtractorIsToldNotToCarryAFigureBetweenTwoTablesOfTheSameQuantity()
+    {
+        Assert.Contains("tabulated twice", Prompts.ExtractorSystem);
+        Assert.Contains("Read every cell from the table in front of you", Prompts.ExtractorSystem);
+        Assert.Contains("look like clean data and have destroyed the finding", Prompts.ExtractorSystem);
+    }
+
+    /// <summary>
+    /// G7.4 held the page-11 table and not the page-5 one, so the group that owns the cost
+    /// comparison could not see the pair it is supposed to compare. Both readings now reach it.
+    /// </summary>
+    [Fact]
+    public void TheCostComparisonGroupReadsBothChargeTables()
+    {
+        var paths = Group("CHK-007", "G7.4").Retrieval?.CanonicalPaths ?? [];
+
+        Assert.Contains("/costsAndCharges/existing", paths);
+        Assert.Contains("/costsAndCharges/comparison/perArrangement", paths);
+    }
+
     // ── F1.9 — the question a value comparison cannot ask ─────────────────────
 
     /// <summary>

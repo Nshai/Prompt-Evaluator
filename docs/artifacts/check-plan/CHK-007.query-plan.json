@@ -435,6 +435,8 @@
       "retrieval": {
         "canonicalPaths": [
           "/costsAndCharges/comparison",
+          "/costsAndCharges/comparison/perArrangement",
+          "/costsAndCharges/existing",
           "/existingArrangements[]/charges"
         ],
         "queries": [

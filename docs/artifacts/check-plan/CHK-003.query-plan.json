@@ -179,6 +179,10 @@
           "/riskAssessment/perClient[]/capacityForLoss/assessmentBasis",
           "/riskAssessment/perClient[]/capacityForLoss/isSeparatelyAssessedFromAtr"
         ],
+        "evidenceSections": [
+          "Capacity For Loss questionnaire responses",
+          "Capacity for loss questionnaire"
+        ],
         "queries": [
           {
             "id": "Q3.2.1",
@@ -370,6 +374,11 @@
         "canonicalPaths": [
           "/riskAssessment/perClient[]/investmentTermYears",
           "/objectives[]/timeHorizon"
+        ],
+        "evidenceSections": [
+          "Capacity For Loss questionnaire responses",
+          "my investment horizon",
+          "Short Term"
         ],
         "queries": [
           {
@@ -567,6 +576,10 @@
       "retrieval": {
         "canonicalPaths": [
           "/riskAssessment/perClient[]/reconciliation"
+        ],
+        "evidenceSections": [
+          "ATR Wording",
+          "You are happy to proceed with a Risk rating"
         ],
         "queries": [
           {
@@ -773,6 +786,11 @@
           "/riskAssessment/perClient[]/attitudeToRisk/agreedCode",
           "/riskAssessment/perClient[]/attitudeToRisk/scaleName",
           "/riskAssessment/perClient[]/attitudeToRisk/label"
+        ],
+        "evidenceSections": [
+          "ATR Wording",
+          "You are happy to proceed with a Risk rating",
+          "Attitude To Risk questionnaire responses"
         ],
         "queries": [
           {

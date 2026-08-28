@@ -38,7 +38,8 @@ public sealed record RunFingerprint(
     string PlanDigest,
     string CanonicalModelDigest,
     string SchemaVersion,
-    string SettingsDigest)
+    string SettingsDigest,
+    IReadOnlyList<string>? NonDefault = null)
 {
     /// <summary>
     /// Everything the runner reads that is not the case file itself. The plan digest covers
@@ -69,7 +70,8 @@ public sealed record RunFingerprint(
             PlanDigest: DigestOfFolder(planFolder, CheckQueryPlanLoader.SearchPattern),
             CanonicalModelDigest: model is null ? "none" : Digest(model.Json),
             SchemaVersion: model?.SchemaVersion ?? "-",
-            SettingsDigest: DigestOfSettings(settings));
+            SettingsDigest: DigestOfSettings(settings),
+            NonDefault: NonDefaultSettings(settings));
 
     /// <summary>
     /// A digest over every setting that can move a finding.
@@ -89,21 +91,47 @@ public sealed record RunFingerprint(
     {
         var sb = new StringBuilder();
 
-        foreach (var property in settings.GetType()
-                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                     .Where(p => p.CanRead && p.CanWrite)
-                     .Where(p => p.GetCustomAttribute<JsonPropertyNameAttribute>() is not null)
-                     .Where(p => !AppSettings.NotFingerprinted.Contains(p.Name))
-                     .OrderBy(p => p.Name, StringComparer.Ordinal))
+        foreach (var (name, value) in Fingerprinted(settings))
         {
-            sb.Append(property.Name)
-              .Append('=')
-              .Append(Convert.ToString(property.GetValue(settings), CultureInfo.InvariantCulture))
-              .Append('\0');
+            sb.Append(name).Append('=').Append(value).Append('\0');
         }
 
         return sb.Length == 0 ? "empty" : Digest(sb.ToString());
     }
+
+    /// <summary>
+    /// Which fingerprinted settings this run does not leave at the shipped default.
+    ///
+    /// <b>A digest is a comparison nobody can make from one run.</b> Two runs differing only in
+    /// the assessor print two different digests with nothing saying why, and a reader holding one
+    /// report has no way to tell a deliberately configured run from a default one. The digest
+    /// answers "are these two runs the same"; this answers "what is unusual about this one",
+    /// which is the question somebody reading a single report actually has.
+    ///
+    /// Named rather than valued, so a credential can never reach the line by being renamed into
+    /// the fingerprinted set.
+    /// </summary>
+    public static IReadOnlyList<string> NonDefaultSettings(AppSettings settings)
+    {
+        var defaults = Fingerprinted(new AppSettings())
+            .ToDictionary(p => p.Name, p => p.Value, StringComparer.Ordinal);
+
+        return Fingerprinted(settings)
+            .Where(p => !defaults.TryGetValue(p.Name, out var shipped)
+                        || !string.Equals(shipped, p.Value, StringComparison.Ordinal))
+            .Select(p => p.Name)
+            .ToList();
+    }
+
+    /// <summary>Every setting that reaches the digest, in a stable order, as name and value.</summary>
+    private static IEnumerable<(string Name, string? Value)> Fingerprinted(AppSettings settings) =>
+        settings.GetType()
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.CanRead && p.CanWrite)
+            .Where(p => p.GetCustomAttribute<JsonPropertyNameAttribute>() is not null)
+            .Where(p => !AppSettings.NotFingerprinted.Contains(p.Name))
+            .OrderBy(p => p.Name, StringComparer.Ordinal)
+            .Select(p => (p.Name, Convert.ToString(p.GetValue(settings), CultureInfo.InvariantCulture)));
 
     /// <summary>
     /// Each pinned parameter is releasable on its own — a gateway can reject one without
@@ -137,7 +165,7 @@ public sealed record RunFingerprint(
         + $"extraction cap {ExtractionMaxTokens:N0} tok · "
         + $"plans {PlanCount}@{PlanDigest} · model {CanonicalModelDigest} (schema v{SchemaVersion})"
         + Environment.NewLine
-        + $"Settings {SettingsDigest} · "
+        + $"Settings {SettingsDigest}{Adjusted} · "
         + $"scope {(CoreQueriesOnly ? "Core queries only" : "Core and Supplementary queries")}"
         + $" · {(IgnoreTriggerProbe ? "trigger probes bypassed — every check assessed" : "trigger probes honoured")}"
         + Environment.NewLine
@@ -167,6 +195,18 @@ public sealed record RunFingerprint(
               + "size against another run as an effect; score two runs each side."
             : "Sampling is pinned, which narrows run-to-run disagreement without abolishing it. "
               + "A small difference against another run is still worth confirming twice.";
+
+    /// <summary>
+    /// What this run changed from the shipped defaults, named on the fingerprint line.
+    ///
+    /// The digest says whether two runs match; this says what is unusual about one, which is the
+    /// question a reader holding a single report actually has. Empty on a default run, where the
+    /// digest alone is the whole story.
+    /// </summary>
+    private string Adjusted =>
+        NonDefault is { Count: > 0 } changed
+            ? $" (adjusted: {string.Join(", ", changed)})"
+            : string.Empty;
 
     /// <summary>How the near-duplicate pass reads, including when it is switched off.</summary>
     private static string DescribeOverlap(double overlap) =>

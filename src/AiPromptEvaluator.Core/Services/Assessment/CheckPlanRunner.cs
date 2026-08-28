@@ -383,6 +383,66 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             searches, passages, verdict.Narrowed);
     }
 
+    /// <summary>
+    /// The document category of the suitability report itself — the thing under audit, and the
+    /// one category that cannot corroborate a claim the report makes.
+    /// </summary>
+    private const string ReportCategory = "I";
+
+    /// <summary>
+    /// The extraction's recorded contradictions that bear on one group, by path overlap.
+    ///
+    /// Matched on the leading segments of a canonical path rather than on equality, because the
+    /// two are written at different granularities and always have been: an inconsistency names
+    /// <c>/financialPosition/expenditure/monthlyEssential</c> while the group that needs it asks
+    /// for <c>/financialPosition/expenditure</c>. Requiring them to agree exactly would route
+    /// nothing, which is indistinguishable from the behaviour this replaces.
+    ///
+    /// The extraction's own <c>relatedCheckIds</c> is honoured as well, since it is the
+    /// extractor saying where it thought the contradiction mattered — but it is a steer and not
+    /// the only route in, for the same reason a categorisation steer is not a menu.
+    /// </summary>
+    internal static IReadOnlyList<CanonicalModelAccessor.InternalInconsistency>
+        RelevantInconsistenciesFor(CanonicalModelAccessor accessor, PlanQueryGroup group)
+    {
+        var paths = group.AllCanonicalPaths
+            .Select(Normalise)
+            .Where(p => p.Length > 1)
+            .ToList();
+
+        if (paths.Count == 0)
+        {
+            return [];
+        }
+
+        return accessor.InternalInconsistencies
+            .Where(inconsistency => inconsistency.Paths
+                .Select(Normalise)
+                .Any(recorded => paths.Any(asked =>
+                    recorded.StartsWith(asked, StringComparison.OrdinalIgnoreCase)
+                    || asked.StartsWith(recorded, StringComparison.OrdinalIgnoreCase))))
+            .ToList();
+    }
+
+    /// <summary>
+    /// A canonical path reduced to what two spellings of it have in common: array markers and
+    /// element ids removed, so <c>/existingArrangements/EA1/riskLevel</c> and
+    /// <c>/existingArrangements[]/riskLevel</c> are the same path.
+    /// </summary>
+    private static string Normalise(string path)
+    {
+        var segments = path
+            .Split('/', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Replace("[]", string.Empty, StringComparison.Ordinal))
+            .Where(s => s.Length > 0)
+
+            // An element identifier is addressing one member of a collection; the contradiction
+            // and the group are about the collection.
+            .Where(s => !s.All(c => char.IsUpper(c) || char.IsDigit(c)));
+
+        return "/" + string.Join('/', segments);
+    }
+
     /// <summary>Whether the check applies, and whether a rule was overruled to say so.</summary>
     internal sealed record TriggerVerdict(bool Applies, bool Narrowed);
 
@@ -1340,6 +1400,27 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             sb.AppendLine($"Categories represented: {string.Join(", ", pack.CategoriesFound)}");
             sb.AppendLine("Cite by passage id. Quotes are checked against these passages.");
 
+            // Printed where the category codes are, because that is where the mistake is made.
+            //
+            // The standing rules already say the report cannot corroborate itself. It is stated
+            // in the abstract, three thousand characters earlier, and the assessor is here — with
+            // a list of passages each carrying a category letter — when it decides whether a
+            // claim is supported. Both models have written "the report confirms" of a passage
+            // whose category is the report, and the weaker one did it on the same requirement in
+            // two separate runs.
+            //
+            // The category of every passage the group was given is known, so this says which of
+            // them are the document under audit rather than leaving it to be worked out.
+            if (pack.Passages.Any(p => p.CategoryCode.Equals(ReportCategory, StringComparison.OrdinalIgnoreCase)))
+            {
+                sb.AppendLine(
+                    $"Passages marked [{ReportCategory}] are the report under audit. They are the "
+                    + "assertion side, not the evidence side: a claim supported only by passages "
+                    + "marked that way has no support in the case file, whatever those passages "
+                    + "say. Two of them agreeing is internal consistency; two disagreeing is a "
+                    + "finding.");
+            }
+
             for (var i = 0; i < pack.Passages.Count; i++)
             {
                 var passage = pack.Passages[i];
@@ -1359,6 +1440,40 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             sb.AppendLine(
                 $"Searches that returned nothing carrying their expected signals: {string.Join(", ", pack.MissedSignals)}. "
                 + "Treat those data points as absent from the case file, not merely unretrieved.");
+        }
+
+        // Contradictions the extraction found in the report, filtered to the ones this group's
+        // own paths touch.
+        //
+        // The whole extraction report is printed once in the check header, ahead of every group.
+        // That is the right place for a summary and the wrong place for a fact one requirement
+        // turns on: a contradiction between two expenditure figures reaches eleven requirements,
+        // ten of which have no use for it. Measured, the group that used the recorded
+        // inconsistencies was not the group whose requirement rested on them.
+        //
+        // Printed here, beside this group's own evidence, and only where the paths overlap.
+        var relevant = RelevantInconsistenciesFor(_accessor, group);
+
+        if (relevant.Count > 0)
+        {
+            sb.AppendLine();
+            sb.AppendLine("#### Contradictions the extraction found in the report, on your paths");
+            sb.AppendLine(
+                "These were recorded when the report was read in full. They are the report "
+                + "disagreeing with itself, not a document disagreeing with the report, so no "
+                + "passage is needed to establish them and no guard about differing sources "
+                + "explains them.");
+
+            foreach (var inconsistency in relevant)
+            {
+                sb.AppendLine();
+                sb.AppendLine($"- {inconsistency.Description}");
+
+                if (inconsistency.Values.Count > 0)
+                {
+                    sb.AppendLine("  Values recorded: " + string.Join(" · ", inconsistency.Values));
+                }
+            }
         }
 
         // The numeric half of a ValueMatch or RangeMatch, settled in code before the assessor

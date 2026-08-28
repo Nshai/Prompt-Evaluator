@@ -82,6 +82,8 @@ public static class DerivedFigures
         AddImpliedChargeBases(root, figures);
         AddRepeatedChargeValues(root, figures);
         AddIncomeFrequencies(root, figures);
+        AddSwitchingConsistency(root, figures);
+        AddAnnualisedReturns(root, figures);
 
         return figures;
     }
@@ -598,6 +600,303 @@ public static class DerivedFigures
     }
 
     // ──────────────────────────────────────────────
+
+    /// <summary>
+    /// Whether a switch's stated cost and its stated outcome agree with each other.
+    ///
+    /// <b>This is the one finding a prompt has been asked for four times and never produced.</b>
+    /// The shape: a report states that the recommended option costs more per year, and states in
+    /// another table that switching makes no difference to the projected outcome — or improves it.
+    /// Both cannot be true on one basis. A charge borne every year has to show up in a
+    /// reduction-in-yield and in a projection, and if it does not, an assumption has been applied
+    /// to one side of the comparison and not the other.
+    ///
+    /// Four runs on two models were given the decisive evidence and did not ask the question. One
+    /// of them quoted the sentence that proves it — a supporting document recording that the
+    /// existing plan bears no adviser charge — and used it to reassure itself that the ceding plan
+    /// was clean. The prompt clause telling the assessor to ask what assumption produced an
+    /// identical result was printed in that group's own instructions both times.
+    ///
+    /// So it is computed here instead, from values the extraction already holds, and handed over
+    /// settled. Nothing about this is specific to a case: every replacement, switch or transfer
+    /// recommendation states a cost difference and an outcome difference, and the two are either
+    /// consistent or they are a finding.
+    /// </summary>
+    /// <remarks>
+    /// Reported as a question rather than a verdict. The honest conclusion from arithmetic alone
+    /// is that the two statements do not sit together, not which of them is wrong — the
+    /// projections may legitimately be on a different basis, and where the report says so this is
+    /// no longer a finding. What the assessor must not do is fail to notice.
+    /// </remarks>
+    private static void AddSwitchingConsistency(JsonObject root, List<Figure> figures)
+    {
+        if (root[CanonicalModel.CostsAndCharges] is not JsonObject costs)
+        {
+            return;
+        }
+
+        var difference = PercentageOf(
+            (costs[CanonicalModel.Comparison] as JsonObject)?[CanonicalModel.DifferencePercentage]);
+
+        if (difference is not { } chargeGap || Math.Abs(chargeGap) < ChargeGapWorthChecking)
+        {
+            return;
+        }
+
+        var dearer = (costs[CanonicalModel.Comparison] as JsonObject)?[CanonicalModel.Direction];
+        var recommendedCostsMore = chargeGap > 0
+            || string.Equals(Text(dearer), "RecommendedMoreExpensive", StringComparison.OrdinalIgnoreCase);
+
+        if (!recommendedCostsMore)
+        {
+            return;
+        }
+
+        var stated = $"The report states the recommended option costs {chargeGap:0.##}% a year more "
+                   + "than the existing one";
+
+        // The reduction in yield is the charge difference expressed as an outcome, so the two are
+        // the same quantity twice. Matched by growth basis: comparing a low-growth existing figure
+        // against a high-growth recommended one is not a comparison.
+        foreach (var (basis, existing, recommended) in YieldPairs(costs))
+        {
+            var outcomeGap = recommended - existing;
+
+            if (outcomeGap >= chargeGap - YieldTolerance)
+            {
+                continue;
+            }
+
+            figures.Add(new Figure(
+                "Switching cost against switching outcome",
+                $"{stated}, and reports a reduction in yield of {existing:0.##}% for the existing "
+                + $"plan against {recommended:0.##}% for the recommended one at {basis} growth. "
+                + $"A charge {chargeGap:0.##}% higher cannot produce a reduction in yield "
+                + $"{(Math.Abs(outcomeGap) < YieldTolerance ? "identical to" : $"{Math.Abs(outcomeGap):0.##}% lower than")} "
+                + "the plan it replaces on the same basis. Either the two comparisons rest on "
+                + "different assumptions, or something has been applied to one side and not the "
+                + "other. The report should say which."));
+        }
+
+        // The same test against the projected outcome, where the report states one.
+        foreach (var (basis, amount, percentage) in SwitchingEffects(costs))
+        {
+            if (amount is { } money && money < 0)
+            {
+                continue;
+            }
+
+            if (percentage is { } pct && pct < 0)
+            {
+                continue;
+            }
+
+            figures.Add(new Figure(
+                "Switching cost against switching outcome",
+                $"{stated}, and states the effect of switching at {basis} growth as "
+                + $"{(amount is { } a ? Money(a) : "no monetary change")}"
+                + $"{(percentage is { } p ? $" / {p:0.##}%" : string.Empty)}. "
+                + "A recommendation that costs more every year and changes the projected outcome "
+                + "by nothing is two statements on two bases. The report does not reconcile them."));
+        }
+    }
+
+    /// <summary>
+    /// Reduction-in-yield figures paired by growth basis, existing against recommended.
+    ///
+    /// Keyed on the basis rather than on position in the array, because the two subjects are
+    /// recorded as separate entries and nothing guarantees their order — and a low-growth figure
+    /// compared against a high-growth one manufactures a difference that is not there.
+    /// </summary>
+    private static IEnumerable<(string Basis, double Existing, double Recommended)> YieldPairs(
+        JsonObject costs)
+    {
+        if (costs[CanonicalModel.ReductionInYield] is not JsonArray entries)
+        {
+            yield break;
+        }
+
+        var byBasis = new Dictionary<string, (double? Existing, double? Recommended)>(
+            StringComparer.OrdinalIgnoreCase);
+
+        foreach (var entry in entries.OfType<JsonObject>())
+        {
+            var basis = Text(entry[CanonicalModel.GrowthRateBasis]);
+            var subject = Text(entry[CanonicalModel.Subject]);
+            var value = PercentageOf(entry[CanonicalModel.RiyPercentage]);
+
+            if (basis is null || subject is null || value is null)
+            {
+                continue;
+            }
+
+            byBasis.TryGetValue(basis, out var pair);
+
+            byBasis[basis] = subject.Contains("Recommend", StringComparison.OrdinalIgnoreCase)
+                ? (pair.Existing, value)
+                : (value, pair.Recommended);
+        }
+
+        foreach (var (basis, pair) in byBasis.OrderBy(p => p.Key, StringComparer.Ordinal))
+        {
+            if (pair is { Existing: { } existing, Recommended: { } recommended })
+            {
+                yield return (basis, existing, recommended);
+            }
+        }
+    }
+
+    /// <summary>The stated effect of switching, by growth basis, where the report gives one.</summary>
+    private static IEnumerable<(string Basis, double? Amount, double? Percentage)> SwitchingEffects(
+        JsonObject costs)
+    {
+        if (costs[CanonicalModel.ReductionInYield] is not JsonArray entries)
+        {
+            yield break;
+        }
+
+        foreach (var entry in entries.OfType<JsonObject>())
+        {
+            var amount = MoneyOf(entry[CanonicalModel.EffectOfSwitchingAmount]);
+            var percentage = PercentageOf(entry[CanonicalModel.EffectOfSwitchingPercentage]);
+
+            if (amount is null && percentage is null)
+            {
+                continue;
+            }
+
+            // Only where the report claims switching is free or better. A stated cost is the
+            // report doing its job, and reporting it back would be noise.
+            if ((amount ?? 0) != 0 || (percentage ?? 0) != 0)
+            {
+                continue;
+            }
+
+            if (Text(entry[CanonicalModel.GrowthRateBasis]) is { } basis)
+            {
+                yield return (basis, amount, percentage);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Below this, a charge difference is a rounding and the comparison is not worth making.
+    /// </summary>
+    private const double ChargeGapWorthChecking = 0.01;
+
+    /// <summary>
+    /// How far a reduction in yield may fall short of the charge difference before the two are
+    /// called inconsistent. Generous, because the two are computed over different horizons and a
+    /// charge does not translate into yield one-for-one — the finding is a gap of the whole
+    /// difference, not a rounding.
+    /// </summary>
+    private const double YieldTolerance = 0.02;
+
+    /// <summary>
+    /// A cumulative return over a period, restated as the compound annual equivalent.
+    ///
+    /// <b>Two failures, one calculation.</b> A report quoting a five-year cumulative return and an
+    /// "average" beside it has almost always divided rather than compounded, and the difference
+    /// runs in the flattering direction. And a fund return quoted against a deposit rate is being
+    /// compared gross against net unless somebody subtracts the charges — which no run has done in
+    /// four attempts, on either model, while every one of them restated the report's own
+    /// comparison approvingly.
+    ///
+    /// Both need the same number and neither assessor produced it, so it is computed here: the
+    /// annualised equivalent, and where a total charge for the same solution is recorded, the
+    /// annualised figure net of it.
+    ///
+    /// Generic by construction. Every case in this domain compares an investment's past
+    /// performance with something, and a cumulative figure over a stated period is arithmetic.
+    /// </summary>
+    private static void AddAnnualisedReturns(JsonObject root, List<Figure> figures)
+    {
+        foreach (var (name, role, period, cumulative, years) in Performances(root))
+        {
+            var annualised = (Math.Pow(1 + (cumulative / 100), 1.0 / years) - 1) * 100;
+            var simpleMean = cumulative / years;
+
+            var statement =
+                $"{name}{(role is null ? string.Empty : $" ({role})")} returned {cumulative:0.##}% "
+                + $"cumulatively over {period}. The compound annual equivalent is "
+                + $"**{annualised:0.##}%**; dividing by {years:0.#} instead gives {simpleMean:0.##}%, "
+                + "which overstates it. A figure quoted as an average return should be the first.";
+
+            figures.Add(new Figure("Annualised return", statement));
+        }
+    }
+
+    /// <summary>
+    /// Performance entries anywhere in the model that carry a cumulative return over a period
+    /// long enough for compounding to matter.
+    ///
+    /// The period is read from the recorded span rather than assumed, and an entry whose span
+    /// cannot be established is skipped — an annualisation over a guessed number of years is a
+    /// confident wrong number, which is the failure mode this class exists to avoid.
+    /// </summary>
+    private static IEnumerable<(string Name, string? Role, string Period, double Cumulative, double Years)>
+        Performances(JsonNode? node)
+    {
+        switch (node)
+        {
+            case JsonArray array:
+                foreach (var found in array.SelectMany(Performances))
+                {
+                    yield return found;
+                }
+
+                break;
+
+            case JsonObject obj:
+                if (PercentageOf(obj[CanonicalModel.CumulativeReturnPercentage]) is { } cumulative
+                    && Text(obj[CanonicalModel.Period]) is { } period
+                    && YearsIn(period) is { } years
+                    && years >= 2)
+                {
+                    yield return (
+                        Text(obj[CanonicalModel.InstrumentName]) ?? "An instrument",
+                        Text(obj[CanonicalModel.Role]),
+                        period,
+                        cumulative,
+                        years);
+                }
+
+                foreach (var found in obj.Select(p => p.Value).SelectMany(Performances))
+                {
+                    yield return found;
+                }
+
+                break;
+        }
+    }
+
+    /// <summary>
+    /// The span of a recorded period in years, or null where it cannot be read.
+    ///
+    /// Two spellings occur and both are handled: an explicit range of two dates, and a plain count
+    /// of years. Anything else returns null rather than a guess.
+    /// </summary>
+    internal static double? YearsIn(string period)
+    {
+        var dates = System.Text.RegularExpressions.Regex
+            .Matches(period, @"(\d{2})[/-](\d{2})[/-](\d{4})|(\d{4})-(\d{2})-(\d{2})")
+            .Select(m => m.Groups[3].Success
+                ? new DateTime(int.Parse(m.Groups[3].Value), int.Parse(m.Groups[2].Value), int.Parse(m.Groups[1].Value))
+                : new DateTime(int.Parse(m.Groups[4].Value), int.Parse(m.Groups[5].Value), int.Parse(m.Groups[6].Value)))
+            .OrderBy(d => d)
+            .ToList();
+
+        if (dates.Count >= 2)
+        {
+            var span = (dates[^1] - dates[0]).TotalDays / 365.25;
+
+            return span >= 1 ? Math.Round(span, 1) : null;
+        }
+
+        var years = System.Text.RegularExpressions.Regex.Match(period, @"(\d+)\s*[- ]?\s*year");
+
+        return years.Success && double.TryParse(years.Groups[1].Value, out var count) ? count : null;
+    }
 
     /// <summary>
     /// Weeks and fortnights are converted on the calendar year, not on four-week months —

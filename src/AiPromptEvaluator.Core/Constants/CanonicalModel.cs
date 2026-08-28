@@ -65,4 +65,31 @@ public static class CanonicalModel
     public const string Gross = "gross";
     public const string Frequency = "frequency";
     public const string Category = "category";
+
+    /// <summary>
+    /// What a switch is stated to cost, and what it is stated to achieve.
+    ///
+    /// These two are the same quantity written down twice, and a report that disagrees with
+    /// itself across them is stating that a recommendation costs more every year and changes the
+    /// outcome by nothing. Read together by <see cref="DerivedFigures"/>, because four runs on two
+    /// models were given both halves and never put them side by side.
+    /// </summary>
+    public const string Comparison = "comparison";
+    public const string DifferencePercentage = "differencePercentage";
+    public const string Direction = "direction";
+    public const string ReductionInYield = "reductionInYield";
+    public const string Subject = "subject";
+    public const string GrowthRateBasis = "growthRateBasis";
+    public const string RiyPercentage = "riyPercentage";
+    public const string EffectOfSwitchingAmount = "effectOfSwitchingAmount";
+    public const string EffectOfSwitchingPercentage = "effectOfSwitchingPercentage";
+
+    /// <summary>
+    /// A recorded performance figure. Cumulative over a period, which is what makes an
+    /// annualisation possible and a simple mean wrong.
+    /// </summary>
+    public const string CumulativeReturnPercentage = "cumulativeReturnPercentage";
+    public const string Period = "period";
+    public const string InstrumentName = "instrumentName";
+    public const string Role = "role";
 }

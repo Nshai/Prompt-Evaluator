@@ -68,6 +68,62 @@ public sealed class CanonicalModelAccessor
     private IReadOnlyList<TriggerContradiction>? _triggerContradictions;
 
     /// <summary>
+    /// A contradiction the extraction found in the report and wrote down, with the paths it sits
+    /// between.
+    /// </summary>
+    /// <param name="Paths">Canonical paths the contradicting values were read from.</param>
+    /// <param name="CheckIds">Checks the extraction thought it bore on. A steer, not a filter.</param>
+    public sealed record InternalInconsistency(
+        string Description,
+        IReadOnlyList<string> Paths,
+        IReadOnlyList<string> Values,
+        IReadOnlyList<string> CheckIds);
+
+    /// <summary>
+    /// Contradictions the extraction recorded in the report itself.
+    ///
+    /// <b>These were already being found and already reaching the assessor, and that was not
+    /// enough.</b> The whole extraction report is printed once in a check's header, capped, ahead
+    /// of every group — so a contradiction between two expenditure figures arrives in front of
+    /// eleven requirements, ten of which have no use for it, and competes for attention with
+    /// everything else the extraction wanted to say.
+    ///
+    /// Measured: one group used the recorded expenditure and charge inconsistencies well and named
+    /// them explicitly. The groups whose requirements actually turned on those same figures did
+    /// not mention them. Nothing was missing; nothing routed it.
+    ///
+    /// Exposed here so a group can be given the ones that touch its own canonical paths, printed
+    /// where its evidence is rather than in a preamble.
+    /// </summary>
+    public IReadOnlyList<InternalInconsistency> InternalInconsistencies =>
+        _inconsistencies ??= ReadInconsistencies();
+
+    private IReadOnlyList<InternalInconsistency>? _inconsistencies;
+
+    private IReadOnlyList<InternalInconsistency> ReadInconsistencies()
+    {
+        if (_root["extractionReport"]?["internalInconsistencies"] is not JsonArray entries)
+        {
+            return [];
+        }
+
+        return entries
+            .OfType<JsonObject>()
+            .Select(entry => new InternalInconsistency(
+                entry["description"]?.ToString().Trim() ?? string.Empty,
+                Strings(entry["paths"]),
+                Strings(entry["valuesObserved"]),
+                Strings(entry["relatedCheckIds"])))
+            .Where(i => i.Description.Length > 0)
+            .ToList();
+    }
+
+    private static IReadOnlyList<string> Strings(JsonNode? node) =>
+        node is JsonArray array
+            ? [.. array.Where(v => v is not null).Select(v => v!.ToString().Trim())]
+            : [];
+
+    /// <summary>
     /// Resolves one path. A path that matches nothing comes back with Found false rather
     /// than throwing — "the model has no value here" is a legitimate and frequent answer,
     /// and for most checks it is the finding.

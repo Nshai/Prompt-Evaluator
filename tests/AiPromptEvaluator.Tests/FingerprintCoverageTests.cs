@@ -137,6 +137,45 @@ public class FingerprintCoverageTests
         Assert.Contains("trigger probes honoured", Fingerprint().Format());
     }
 
+    /// <summary>
+    /// What a run changed from the shipped defaults, named on the line.
+    ///
+    /// The digest answers "are these two runs the same" — a question needing two runs. A reader
+    /// holding one report is asking something else: what is unusual about this one. Two runs
+    /// differing only in the assessor print two different digests with nothing saying why.
+    /// </summary>
+    [Fact]
+    public void TheFingerprintNamesWhatWasChangedFromTheDefaults()
+    {
+        var adjusted = RunFingerprint.NonDefaultSettings(
+            new AppSettings { IgnoreTriggerProbe = true, MaxPassagesPerGroup = 12 });
+
+        Assert.Contains(nameof(AppSettings.IgnoreTriggerProbe), adjusted);
+        Assert.Contains(nameof(AppSettings.MaxPassagesPerGroup), adjusted);
+        Assert.DoesNotContain(nameof(AppSettings.CoreQueriesOnly), adjusted);
+    }
+
+    /// <summary>A run at the shipped defaults says nothing, rather than listing everything.</summary>
+    [Fact]
+    public void ADefaultRunNamesNothing()
+    {
+        Assert.Empty(RunFingerprint.NonDefaultSettings(new AppSettings()));
+        Assert.DoesNotContain("adjusted:", Fingerprint().Format());
+    }
+
+    /// <summary>
+    /// Names, never values. A credential renamed into the fingerprinted set must not be able to
+    /// reach a line that gets printed at the head of every report.
+    /// </summary>
+    [Fact]
+    public void OnlyNamesAreNamed()
+    {
+        var adjusted = RunFingerprint.NonDefaultSettings(
+            new AppSettings { SelectedModel = "a-secret-looking-value" });
+
+        Assert.Equal([nameof(AppSettings.SelectedModel)], adjusted);
+    }
+
     /// <summary>A pass that is switched off says "off" rather than printing a number.</summary>
     [Fact]
     public void ADisabledNearDuplicatePassReadsAsOff()

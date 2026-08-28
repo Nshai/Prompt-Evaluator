@@ -175,6 +175,87 @@ public class DocumentDisputeTests
         Assert.Empty(disputes);
     }
 
+    // ── defects found by running it on real output ────────────────────────────
+
+    /// <summary>
+    /// <b>The false pair that showed the whole approach was inverted.</b> "no corroborating
+    /// figure found in fact find" denies a figure; it was reported as one check calling the fact
+    /// find missing while another had it.
+    ///
+    /// The old rule asked whether the intervening word was a <i>known</i> document part — a
+    /// whitelist, so a noun nobody had listed made the sentence look like a denial of the
+    /// document. It now asks whether anything intervenes at all, which fails the safe way.
+    /// </summary>
+    [Fact]
+    public void ADenialOfSomethingFoundInADocumentIsNotADenialOfTheDocument()
+    {
+        var disputes = CrossGroupContradictions.Documents(
+        [
+            Finding("CHK-001",
+                Group("G1.1", "Fact find [P4] records the client's date of birth and marital status."),
+                Group("G1.10", "There is no corroborating figure found in fact find or supporting documents.")),
+        ]);
+
+        Assert.Empty(disputes);
+    }
+
+    /// <summary>
+    /// The qualifiers that may sit between the negation and the document without changing what is
+    /// denied. "No standalone questionnaire is present" still denies the questionnaire.
+    /// </summary>
+    [Fact]
+    public void AQualifierBetweenTheNegationAndTheDocumentStillDeniesIt()
+    {
+        var disputes = CrossGroupContradictions.Documents(
+        [
+            Finding("CHK-003",
+                Group("G3.1", "The risk profile report is on file."),
+                Group("G3.9", "No separate standalone risk profile report is present in the pack.")),
+        ]);
+
+        Assert.Single(disputes);
+    }
+
+    /// <summary>
+    /// One sentence must not be printed as both halves of the section. It can legitimately assert
+    /// a document and deny one of its parts — but read under one key as *found* and another as
+    /// *missing*, three lines apart, it reads as the pass contradicting itself.
+    /// </summary>
+    [Fact]
+    public void OneSentenceIsNotQuotedOnBothSidesOfTheSection()
+    {
+        var disputes = CrossGroupContradictions.Documents(
+        [
+            Finding("CHK-003",
+                Group("G3.2", "[P1] shows a questionnaire section exists but it records no responses."),
+                Group("G3.9", "No standalone questionnaire is present in the retrieved passages."),
+                Group("G10.4", "The questionnaire [P1] records the responses on file.")),
+        ]);
+
+        Assert.DoesNotContain(
+            disputes,
+            d => d.Present.Contains("shows a questionnaire section exists")
+                 && disputes.Any(other => other.Absent.Contains("shows a questionnaire section exists")));
+    }
+
+    /// <summary>Irregular plurals keep their spelling: "entries" is one "entry", not one "entrie".</summary>
+    [Theory]
+    [InlineData("entries", "entry")]
+    [InlineData("responses", "response")]
+    [InlineData("notes", "note")]
+    [InlineData("rating", "rating")]
+    public void PluralPartsAreNamedProperly(string plural, string expected)
+    {
+        var disputes = CrossGroupContradictions.Documents(
+        [
+            Finding("CHK-001",
+                Group("G1.1", $"The fact find shows the {plural} on file."),
+                Group("G1.2", $"The fact find has no recorded {plural} for this section.")),
+        ]);
+
+        Assert.Equal($"fact find ({expected})", Assert.Single(disputes).DocumentKind);
+    }
+
     // ── the report ────────────────────────────────────────────────────────────
 
     /// <summary>

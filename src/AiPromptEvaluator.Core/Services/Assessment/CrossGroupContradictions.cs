@@ -336,9 +336,28 @@ public static class CrossGroupContradictions
             }
         }
 
+        // One sentence must not be printed as both halves of the section.
+        //
+        // A sentence can legitimately assert a document and deny one of its parts — "the
+        // questionnaire is on file and records no rating" is the most useful sentence an assessor
+        // writes about a thin document, and both halves of it are true. But printed under one key
+        // as *found* and under another as *missing*, it reads as the pass contradicting itself,
+        // and a reviewer asked to act on the section stops trusting it.
+        //
+        // Observed: one sentence appeared as the found side of one pair and the missing side of
+        // the next, three lines apart.
+        //
+        // So a sentence that has been used to say a document is present is not also used to say
+        // something is absent. The claim is still recorded — it simply does not get to be the
+        // quotation on both sides.
+        var quoted = present.Values
+            .Select(v => v.Sentence)
+            .ToHashSet(StringComparer.Ordinal);
+
         return present.Keys
             .Where(absent.ContainsKey)
             .Where(key => present[key].Where != absent[key].Where)
+            .Where(key => !quoted.Contains(absent[key].Sentence))
             .OrderBy(key => key, StringComparer.Ordinal)
             .Select(key => new DocumentDispute(
                 key,
@@ -496,7 +515,7 @@ public static class CrossGroupContradictions
                     // Before the document, and near enough to be about it — but only if nothing
                     // else is named in between, or "no rating was recorded in the questionnaire"
                     // would read as a denial of the questionnaire.
-                    if (at - cueEnd <= CueReach && ObjectAfter(sentence, cueEnd, at) is null)
+                    if (at - cueEnd <= CueReach && NothingIntervenes(sentence[cueEnd..at]))
                     {
                         yield return Key(kind, string.Empty);
                     }
@@ -568,8 +587,48 @@ public static class CrossGroupContradictions
     /// Plural and singular are the same part. "has no recorded response" and "shows the
     /// responses" are about one thing, and keying them apart would silently un-pair them.
     /// </summary>
+    /// <remarks>
+    /// The <c>ies</c> case is handled before the bare <c>s</c>, because stripping one character
+    /// from "entries" gives "entrie" — which matched correctly, both sides normalising the same
+    /// way, and printed in a report a reviewer was being asked to act on.
+    /// </remarks>
     private static string Singular(string part) =>
-        part.EndsWith('s') ? part[..^1] : part;
+        part.EndsWith("ies", StringComparison.Ordinal) ? part[..^3] + "y"
+        : part.EndsWith('s') ? part[..^1]
+        : part;
+
+    /// <summary>
+    /// Words that may sit between a negation and a document's name without changing what is being
+    /// denied. Articles, and the adjectives a finding reaches for when it means "of this kind":
+    /// "no <b>standalone</b> questionnaire", "no <b>separate</b> illustration".
+    ///
+    /// <b>Everything else intervening is a different object, and the denial is not about the
+    /// document.</b> That distinction is the difference between a real pair and a false one, and
+    /// it was got wrong: "no corroborating <b>figure</b> found in fact find" denies a figure, and
+    /// was reported as a check calling the fact find missing.
+    ///
+    /// The previous rule asked whether the intervening word was a *known* document part, which is
+    /// a whitelist — so a noun nobody had listed made the sentence look like a denial of the
+    /// document. This asks the opposite question, which fails the safe way: an unrecognised word
+    /// suppresses the pair rather than inventing one. A missed pair is invisible; a false pair is
+    /// read, discarded, and teaches the reader to discard the next one.
+    /// </summary>
+    private static readonly string[] Qualifiers =
+    [
+        "the", "a", "an", "any", "such", "other", "further", "additional", "separate",
+        "standalone", "second", "formal", "completed", "signed", "written", "dedicated",
+        "independent", "explicit", "specific", "relevant", "actual", "own", "this", "that",
+        "these", "those", "client", "provider", "supporting",
+    ];
+
+    /// <summary>
+    /// Whether the words between a negation and a document's name leave the negation attached to
+    /// the document. See <see cref="Qualifiers"/> for why this is a blacklist.
+    /// </summary>
+    private static bool NothingIntervenes(string between) =>
+        between
+            .Split([' ', ',', '\'', '"', '-', '(', ')'], StringSplitOptions.RemoveEmptyEntries)
+            .All(word => Qualifiers.Contains(word, StringComparer.OrdinalIgnoreCase));
 
     /// <summary>A claim's key: the document, and the part of it being claimed about.</summary>
     private static string Key(string kind, string part) =>

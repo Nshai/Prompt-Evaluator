@@ -67,9 +67,11 @@ public static class Prompts
           Concern, not a comparisonPerformed of false.
         - Before reporting that the file holds no document, record or assessment of some kind,
           look through the passages for one. Where a passage of that kind is present you may not
-          call it absent: say what it holds, and say separately whether what it holds answers the
-          requirement. "It is on file and records no rating" and "there is none" are different
-          findings, and only the first is available to you when the document is in front of you.
+          call it absent: say what it states about the point. If it states the opposite of the
+          report, that is the finding and it outranks anything about what is missing. "It is on
+          file and says the opposite", "it is on file and is silent on this" and "there is none"
+          are three different findings, and the last is the only one available when you have not
+          looked.
         - Quote only text that appears in the passages given, verbatim, and name the passage id it
           came from. Quotations are checked against the pack automatically. Do not adjust one to
           fit your reasoning: if the evidence contradicts the report, that is the finding.

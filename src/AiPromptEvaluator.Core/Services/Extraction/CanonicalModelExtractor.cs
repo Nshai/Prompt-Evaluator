@@ -52,6 +52,13 @@ public sealed record ExtractionResult(
 /// The report is parsed a section at a time (see <see cref="ExtractionSection.All"/>) with
 /// the document held constant at the front of every prompt, so the provider's prefix cache
 /// covers the expensive part and only the section instruction and its schema slice change.
+///
+/// The sections run in dependency waves (see <see cref="ExtractionSection.Waves"/>) rather than
+/// strictly one after another: the passes within a wave have no reference between them and run
+/// concurrently, while the first pass runs alone to warm that prefix cache before the fan-out and
+/// the self-report pass runs alone last. The model produced is identical to running them in
+/// series — the merge and id-adoption that build it happen sequentially in a fixed order after
+/// each wave's calls return — so this changes a run's duration and never its conclusions.
 /// </summary>
 public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
 {
@@ -156,52 +163,81 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         // leave a log indistinguishable from a completed one.
         try
         {
-            foreach (var section in ExtractionSection.All)
+            foreach (var wave in ExtractionSection.Waves(schemaJson))
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var startedAt = Stopwatch.GetTimestamp();
-                var length = 0;
-                string? error = null;
-                string? shortfallNote = null;
+                // The model calls of a wave are independent — no pass references an id another in
+                // the same wave defines — so they run concurrently, bounded by the run-wide request
+                // budget. The identity registry is only read here (Table/HasEntities, through
+                // ExtractSectionAsync); it is not written until the calls have all returned, which
+                // is what keeps it safe without a lock. Results are kept by position so the merge
+                // below is in the wave's own order however the calls interleave.
+                var outcomes = new SectionOutcome?[wave.Count];
 
-                try
+                await ParallelWork.ForEachAsync(
+                    wave.Count,
+                    _settings.MaxParallelRequests,
+                    async (index, token) =>
+                    {
+                        var section = wave[index];
+                        var startedAt = Stopwatch.GetTimestamp();
+
+                        try
+                        {
+                            var (fragment, sectionUsage, shortfall) = await ExtractSectionAsync(
+                                section, schemaJson, documentText, caseReference, identity, root,
+                                failedProperties, promptLog, bypass, token).ConfigureAwait(false);
+
+                            outcomes[index] = new SectionOutcome(
+                                section, fragment, sectionUsage, shortfall, null, startedAt);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            throw;
+                        }
+                        catch (Exception ex)
+                        {
+                            outcomes[index] = new SectionOutcome(
+                                section, null, TokenUsage.Empty, null, ex.Message.Trim(), startedAt);
+                        }
+                    },
+                    cancellationToken).ConfigureAwait(false);
+
+                // Merge and adopt sequentially in the wave's order, so the growing model and the
+                // identifier table are built the same way on every run — a failed pass is recorded
+                // exactly as the sequential loop did, and the next wave sees its ids.
+                foreach (var outcome in outcomes)
                 {
-                    var (fragment, sectionUsage, shortfall) = await ExtractSectionAsync(
-                        section, schemaJson, documentText, caseReference, identity, root,
-                        failedProperties, promptLog, bypass, cancellationToken).ConfigureAwait(false);
+                    var section = outcome!.Section;
+                    var length = 0;
 
-                    usage = Add(usage, sectionUsage);
+                    if (outcome.Error is { } error)
+                    {
+                        failures.Add((section.Name, error));
+                        failedProperties.AddRange(section.Properties);
+                    }
+                    else
+                    {
+                        var fragment = outcome.Fragment!;
+                        usage = Add(usage, outcome.Usage);
 
-                    // Before the merge, so the stored model carries the documented spelling and a
-                    // check reading it by value is not defeated by capitalisation.
-                    corrections.AddRange(CanonicalVocabulary.Normalise(fragment, vocabularies));
+                        // Before the merge, so the stored model carries the documented spelling and
+                        // a check reading it by value is not defeated by capitalisation.
+                        corrections.AddRange(CanonicalVocabulary.Normalise(fragment, vocabularies));
 
-                    length = Merge(root, fragment, section);
+                        length = Merge(root, fragment, section);
 
-                    // Ids are adopted the moment the pass that defines them lands, so the next
-                    // pass is choosing from a table rather than inventing its own naming.
-                    identity.Adopt(root);
+                        // Ids are adopted the moment the pass that defines them lands, so the next
+                        // wave is choosing from a table rather than inventing its own naming.
+                        identity.Adopt(root);
+                    }
 
-                    // A section that lost a value still succeeded. Recording it as a failure is
-                    // what made a run announce eight broken sections when none was broken.
-                    shortfallNote = shortfall;
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                error = ex.Message.Trim();
-                failures.Add((section.Name, error));
-                failedProperties.AddRange(section.Properties);
-            }
-
-                done++;
-                progress?.Report(new ExtractionProgress(
-                    done, ExtractionSection.All.Count, section.Name, length,
-                    Stopwatch.GetElapsedTime(startedAt), error, shortfallNote));
+                    done++;
+                    progress?.Report(new ExtractionProgress(
+                        done, ExtractionSection.All.Count, section.Name, length,
+                        Stopwatch.GetElapsedTime(outcome.StartedAt), outcome.Error, outcome.Shortfall));
+                }
             }
         }
         catch (OperationCanceledException)
@@ -437,6 +473,19 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
 
     /// <summary>The property whose pass reports on the extraction as a whole.</summary>
     private const string ExtractionReportProperty = "extractionReport";
+
+    /// <summary>
+    /// What one pass's model call produced, held until its wave finishes so the merge into the
+    /// growing model can happen sequentially in a fixed order. Exactly one of <see cref="Fragment"/>
+    /// and <see cref="Error"/> is set: a pass that threw carries the message and no fragment.
+    /// </summary>
+    private sealed record SectionOutcome(
+        ExtractionSection Section,
+        JsonObject? Fragment,
+        TokenUsage Usage,
+        string? Shortfall,
+        string? Error,
+        long StartedAt);
 
     private static string BuildSectionPrompt(
         ExtractionSection section,

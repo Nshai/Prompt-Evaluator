@@ -1,3 +1,5 @@
+using System.Text.Json.Nodes;
+
 namespace AiPromptEvaluator;
 
 /// <summary>
@@ -89,6 +91,132 @@ public sealed record ExtractionSection(string Name, string Description, IReadOnl
             "The derived check triggers, and the extraction's own account of what was missing, ambiguous or internally contradictory.",
             ["checkTriggers", "extractionReport"]),
     ];
+
+    /// <summary>
+    /// The passes grouped into dependency waves: every section in a wave may run concurrently, and
+    /// the waves themselves run in order. A section lands in a strictly later wave than the section
+    /// defining any id it references, so the identifier table a pass is shown (see
+    /// <see cref="CanonicalModelIdentityRegistry"/>) already holds every id the pass may cite — a
+    /// reference to a kind not yet defined would be dropped rather than resolved, and that dropped
+    /// link is exactly what CHK-006 checks.
+    ///
+    /// <b>Case and parties is wave 0 alone, deliberately.</b> It defines the clients nearly
+    /// everything references, so it has to precede the fan-out on the dependency graph — and it is
+    /// also the pass that warms the provider's prefix cache over the report, so running it alone
+    /// first is what keeps every later pass in the run affordable. Firing the passes cold together
+    /// would re-bill the document on each. The self-report pass is the final wave alone, because it
+    /// summarises the whole model the other passes produced.
+    ///
+    /// The edges are read from the schema rather than hand-listed, so they cannot drift from it: a
+    /// section depends on a kind when its schema slice carries one of that kind's reference keys.
+    /// Edges are kept only where the defining section comes earlier in <see cref="All"/>, which
+    /// both breaks the one cycle in the model — an objective links to recommendations while a
+    /// recommendation links back to objectives — and pins the direction to the canonical order the
+    /// sequential passes already ran in.
+    /// </summary>
+    /// <param name="schemaJson">The canonical model schema, sliced per section to read its references.</param>
+    public static IReadOnlyList<IReadOnlyList<ExtractionSection>> Waves(string schemaJson)
+    {
+        var sections = All;
+        var last = sections.Count - 1;
+
+        // The section index that defines each kind, found by the collection's root property. A kind
+        // whose collection is not owned by any section (none today) simply produces no edges.
+        var definerOf = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var kind in CanonicalModelIdentityRegistry.Kinds)
+        {
+            var rootProperty = kind.CollectionPath[0];
+            for (var i = 0; i < sections.Count; i++)
+            {
+                if (sections[i].Properties.Contains(rootProperty, StringComparer.Ordinal))
+                {
+                    definerOf[kind.Prefix] = i;
+                    break;
+                }
+            }
+        }
+
+        var level = new int[sections.Count];
+
+        for (var i = 0; i < sections.Count; i++)
+        {
+            // Case and parties warms the cache and defines the widest kind, so it is wave 0 alone;
+            // the self-report pass reads the whole model, so it is forced to the last wave below.
+            if (i == 0 || i == last)
+            {
+                continue;
+            }
+
+            var referenceKeys = PropertyNamesIn(JsonSchemaSlicer.Slice(schemaJson, sections[i].Properties));
+
+            var deepest = 0;
+            foreach (var kind in CanonicalModelIdentityRegistry.Kinds)
+            {
+                if (!definerOf.TryGetValue(kind.Prefix, out var definer) || definer >= i)
+                {
+                    // Self-definer, or a back-edge to a later section: not a dependency this pass
+                    // waits on. The back-edge is the objective/recommendation cycle, cut here.
+                    continue;
+                }
+
+                if (kind.ReferenceKeys.Any(key => referenceKeys.Contains(key)))
+                {
+                    deepest = Math.Max(deepest, level[definer]);
+                }
+            }
+
+            // Minimum wave 1: nothing but Case runs in wave 0, so the cache is warm before any
+            // fan-out pass starts.
+            level[i] = deepest + 1;
+        }
+
+        level[last] = level.Max() + 1;
+
+        return level
+            .Select((wave, index) => (wave, section: sections[index]))
+            .GroupBy(x => x.wave)
+            .OrderBy(g => g.Key)
+            .Select(g => (IReadOnlyList<ExtractionSection>)g.Select(x => x.section).ToList())
+            .ToList();
+    }
+
+    /// <summary>Every property name appearing anywhere in a schema document, for a reference-key scan.</summary>
+    private static HashSet<string> PropertyNamesIn(string schemaJson)
+    {
+        var names = new HashSet<string>(StringComparer.Ordinal);
+        Walk(JsonNode.Parse(schemaJson));
+        return names;
+
+        void Walk(JsonNode? node)
+        {
+            switch (node)
+            {
+                case JsonObject obj:
+                    if (obj["properties"] is JsonObject properties)
+                    {
+                        foreach (var (name, _) in properties)
+                        {
+                            names.Add(name);
+                        }
+                    }
+
+                    foreach (var (_, value) in obj)
+                    {
+                        Walk(value);
+                    }
+
+                    break;
+
+                case JsonArray array:
+                    foreach (var item in array)
+                    {
+                        Walk(item);
+                    }
+
+                    break;
+            }
+        }
+    }
 }
 
 /// <summary>Progress for one extraction pass, reported as the run proceeds.</summary>

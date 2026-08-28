@@ -1,0 +1,9 @@
+﻿Case: ABC-99
+Run started: 2026-08-26 18:17:01 +01:00
+
+----------------------------------------------------------------------------------------------------
+[RUN CONFIGURATION]
+Chat intelliflo-claude-haiku-4-5 · temperature default, top-p default, seed not pinned · findings schema-constrained
+Embeddings amazon.titan-embed-text-v2:0 · top unbounded/search, unbounded/group (reserving 0/section, 0/category) · extraction cap 32,000 tok · plans 10@20ac87292651 · model 8a0120d90ea2 (schema v1.0)
+----------------------------------------------------------------------------------------------------
+

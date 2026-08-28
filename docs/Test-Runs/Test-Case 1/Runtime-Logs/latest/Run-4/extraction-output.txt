@@ -1,0 +1,59 @@
+Model: intelliflo-claude-haiku-4-5
+
+Total: £0.6217 for 298,962 tokens
+
+ 
+
+Extracting the canonical model for case ABC-99 (tenant 99)
+
+Schema: C:\work\Prompt-Evaluator-Semantic\src\AiPromptEvaluator\bin\Debug\net8.0-windows\canonical-suitability-model.schema.json
+
+Store:  C:\Users\nshaikh\AppData\Local\AiPromptEvaluator\canonical-models.db
+
+Report: Suitability Report Test 1.md
+
+------------------------------------------------------------------------
+
+Logging extraction to C:\logs\apipromptevaluator\extract_ABC-99_20260814_184611.log
+
+[ 1/12] Case and parties                     8,916 chars (22.9s)
+
+[ 2/12] Financial position                   13,778 chars (29.0s)
+
+[ 3/12] Objectives                           2,510 chars (5.8s)
+
+[ 4/12] Risk, knowledge and vulnerability    9,160 chars (21.6s)
+
+[ 5/12] Existing arrangements                18,847 chars (40.6s)
+
+[ 6/12] Needs analysis and research          16,877 chars (38.8s)
+
+[ 7/12] Solution                             17,907 chars (39.3s)
+
+[ 8/12] Recommendations                      34,860 chars (176.3s)
+
+[ 9/12] Costs and charges                    23,812 chars (49.5s)
+
+[10/12] Replacement analysis                 35,280 chars (77.0s)
+
+[11/12] Disclosures                          21,102 chars (41.0s)
+
+[12/12] Triggers and extraction report       6,543 chars (20.2s)
+
+------------------------------------------------------------------------
+
+Stored 318,294 characters of canonical model for case ABC-99 in 562.1s.
+
+Sections populated: modelVersion, source, case, parties, clientAuthority, financialPosition, objectives, riskAssessment, knowledgeAndExperience, vulnerability, existingArrangements, needsAnalysis, research, solution, recommendations, costsAndCharges, replacementAnalysis, riskWarningsAndDisadvantages, taxTreatment, ongoingService, checkTriggers, extractionReport
+
+ 
+
+1 section(s) failed and are missing from the model:
+
+  Cross-references — Reference resolves to nothing: linkedObjectiveIds → REC5
+
+Extract again to retry them; checks that rely on a missing section will report the data as absent.
+
+ 
+
+ 

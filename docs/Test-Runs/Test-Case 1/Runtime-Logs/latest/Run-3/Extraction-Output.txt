@@ -1,0 +1,71 @@
+Model: intelliflo-claude-haiku-4-5
+
+Total: £0.6096 for 282,073 tokens
+
+ 
+
+Extracting the canonical model for case ABC-99 (tenant 99)
+
+Schema: C:\work\Prompt-Evaluator-Semantic\src\AiPromptEvaluator\bin\Debug\net8.0-windows\canonical-suitability-model.schema.json
+
+Store:  C:\Users\nshaikh\AppData\Local\AiPromptEvaluator\canonical-models.db
+
+Report: Suitability Report Test 1.md
+
+------------------------------------------------------------------------
+
+Logging extraction to C:\logs\apipromptevaluator\extract_ABC-99_20260814_152237.log
+
+[ 1/12] Case and parties                     FAILED — Dropped 1 value(s) the schema's enums do not allow: role = "Financial Adviser" (0.4s)
+
+[ 2/12] Financial position                   FAILED — Dropped 1 value(s) the schema's enums do not allow: category = "Household" (0.2s)
+
+[ 3/12] Objectives                           2,291 chars (0.1s)
+
+[ 4/12] Risk, knowledge and vulnerability    12,425 chars (0.2s)
+
+[ 5/12] Existing arrangements                FAILED — Dropped 2 value(s) the schema's enums do not allow: basis = "of fund pa"; basis = "of fund pa (estimated)" (0.1s)
+
+[ 6/12] Needs analysis and research          17,932 chars (0.1s)
+
+[ 7/12] Solution                             FAILED — An item with the same key has already been added. Key: withdrawalType (Parameter 'key') (0.2s)
+
+[ 8/12] Recommendations                      51,451 chars (0.1s)
+
+[ 9/12] Costs and charges                    FAILED — Dropped 8 value(s) the schema's enums do not allow: basis = "of fund value pa"; basis = "of amount invested"; basis = "per annum of fund value"; basis = "annual recurring charge"; basis = "annual reduction in yield"; … (0.1s)
+
+[10/12] Replacement analysis                 FAILED — Dropped 1 value(s) the schema's enums do not allow: basis = "of fund value pa" (0.2s)
+
+[11/12] Disclosures                          FAILED — Dropped 1 value(s) the schema's enums do not allow: basis = "of fund value per annum" (0.1s)
+
+[12/12] Triggers and extraction report       9,792 chars (0.1s)
+
+------------------------------------------------------------------------
+
+Stored 324,675 characters of canonical model for case ABC-99 in 2.0s.
+
+Sections populated: modelVersion, source, case, parties, clientAuthority, financialPosition, objectives, riskAssessment, knowledgeAndExperience, vulnerability, existingArrangements, needsAnalysis, research, recommendations, costsAndCharges, replacementAnalysis, riskWarningsAndDisadvantages, taxTreatment, ongoingService, checkTriggers, extractionReport
+
+ 
+
+8 section(s) failed and are missing from the model:
+
+  Case and parties — Dropped 1 value(s) the schema's enums do not allow: role = "Financial Adviser"
+
+  Financial position — Dropped 1 value(s) the schema's enums do not allow: category = "Household"
+
+  Existing arrangements — Dropped 2 value(s) the schema's enums do not allow: basis = "of fund pa"; basis = "of fund pa (estimated)"
+
+  Solution — An item with the same key has already been added. Key: withdrawalType (Parameter 'key')
+
+  Costs and charges — Dropped 8 value(s) the schema's enums do not allow: basis = "of fund value pa"; basis = "of amount invested"; basis = "per annum of fund value"; basis = "annual recurring charge"; basis = "annual reduction in yield"; …
+
+  Replacement analysis — Dropped 1 value(s) the schema's enums do not allow: basis = "of fund value pa"
+
+  Disclosures — Dropped 1 value(s) the schema's enums do not allow: basis = "of fund value per annum"
+
+  Cross-references — Reference resolves to nothing: targetPlanId → PLAN-AVIVA-PLATFORM
+
+Extract again to retry them; checks that rely on a missing section will report the data as absent.
+
+ 

@@ -1,0 +1,101 @@
+Model: intelliflo-claude-haiku-4-5
+
+Total: £0.6453 for 307,232 tokens
+
+ 
+
+Extracting the canonical model for case ABC-99 (tenant 99)
+
+Schema: C:\work\Prompt-Evaluator-Semantic\src\AiPromptEvaluator\bin\Debug\net8.0-windows\canonical-suitability-model.schema.json
+
+Store:  C:\Users\nshaikh\AppData\Local\AiPromptEvaluator\canonical-models.db
+
+Report: Suitability Report Test 1.md
+
+------------------------------------------------------------------------
+
+Logging extraction to C:\logs\apipromptevaluator\extract_ABC-99_20260826_192039.log
+
+[ 1/12] Case and parties                     8,621 chars (0.5s)
+
+[ 2/12] Financial position                   9,641 chars (0.1s)
+
+[ 3/12] Objectives                           2,473 chars (0.1s)
+
+[ 4/12] Risk, knowledge and vulnerability    15,906 chars (0.1s)
+
+[ 5/12] Existing arrangements                20,007 chars (0.1s)
+
+[ 6/12] Needs analysis and research          28,221 chars (0.1s)
+
+[ 7/12] Solution                             13,843 chars (0.1s)
+
+[ 8/12] Recommendations                      43,491 chars (0.1s)
+
+[ 9/12] Costs and charges                    20,050 chars (0.1s)
+
+[10/12] Replacement analysis                 39,290 chars (0.1s)
+
+[11/12] Disclosures                          16,508 chars (0.1s)
+
+[12/12] Triggers and extraction report       5,838 chars (0.1s)
+
+------------------------------------------------------------------------
+
+Stored 335,729 characters of canonical model for case ABC-99 in 1.8s.
+
+Sections populated: modelVersion, source, case, parties, clientAuthority, financialPosition, objectives, riskAssessment, knowledgeAndExperience, vulnerability, existingArrangements, needsAnalysis, research, solution, recommendations, costsAndCharges, replacementAnalysis, riskWarningsAndDisadvantages, taxTreatment, ongoingService, checkTriggers, extractionReport
+
+ 
+
+1 value(s) corrected to the documented vocabulary:
+
+  planType: "Personal Pension" → "PersonalPension"
+
+21 value(s) are outside the documented vocabulary and were left as written:
+
+  role: "Independent Financial Adviser" is not in the documented vocabulary
+
+  basis: "of fund value pa" is not in the documented vocabulary
+
+  basis: "of fund value pa plus fixed admin" is not in the documented vocabulary
+
+  basis: "of fund value pa equivalent" is not in the documented vocabulary
+
+  role: "Existing" is not in the documented vocabulary
+
+  basis: "of amount invested" is not in the documented vocabulary
+
+  basis: "LikeForLike" is not in the documented vocabulary
+
+  basis: "annual recurring charges" is not in the documented vocabulary
+
+  direction: "RecommendedCheaper" is not in the documented vocabulary
+
+  basis: "annual reduction in yield" is not in the documented vocabulary
+
+  basis: "annual growth required" is not in the documented vocabulary
+
+  basis: "of current fund value" is not in the documented vocabulary
+
+  basis: "including adviser fees" is not in the documented vocabulary
+
+  dimension: "Charges" is not in the documented vocabulary
+
+  dimension: "RiskAlignment" is not in the documented vocabulary
+
+  dimension: "AdviserServicing" is not in the documented vocabulary
+
+  dimension: "RetirementOptions" is not in the documented vocabulary
+
+  basis: "of fund value pa - receiving scheme more expensive" is not in the documented vocabulary
+
+  basis: "annual additional cost" is not in the documented vocabulary
+
+  basis: "Current" is not in the documented vocabulary
+
+  basis: "of fund value per annum" is not in the documented vocabulary
+
+Nothing was discarded. A check matching one of these fields by value will not see them, so either the report uses a word the model does not have or the extraction invented one.
+
+ 

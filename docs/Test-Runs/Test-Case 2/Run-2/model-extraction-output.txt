@@ -1,0 +1,30 @@
+Model: intelliflo-claude-sonnet-4-6
+Total: £2.2252 for 358,776 tokens
+
+Extracting the canonical model for case Test-Case-2 (tenant 99)
+Schema: C:\work\Prompt-Evaluator-Semantic\src\AiPromptEvaluator\bin\Debug\net8.0-windows\canonical-suitability-model.schema.json
+Store:  C:\Users\nshaikh\AppData\Local\AiPromptEvaluator\canonical-models.db
+Report: Suitability Report - Barnes.md
+------------------------------------------------------------------------
+Logging extraction to C:\work\Prompt-Evaluator-Semantic\docs\QA-Checks\extract_Test-Case-2_20260828_170332.log
+Response cache bypassed — every section carries a run marker, so nothing can be replayed from an earlier extraction. Expect the full input cost.
+[ 1/12] Case and parties                     11,506 chars (40.1s)
+[ 2/12] Financial position                   24,702 chars (73.4s)
+[ 3/12] Objectives                           5,395 chars (73.4s)
+[ 4/12] Risk, knowledge and vulnerability    13,092 chars (201.0s)
+[ 5/12] Existing arrangements                18,845 chars (201.0s)
+[ 6/12] Needs analysis and research          28,828 chars (201.0s)
+[ 7/12] Solution                             18,186 chars (200.9s)
+[ 8/12] Replacement analysis                 24,118 chars (200.9s)
+[ 9/12] Disclosures                          38,052 chars (200.9s)
+[10/12] Recommendations                      39,642 chars (200.8s)
+[11/12] Costs and charges                    30,872 chars (200.8s)
+[12/12] Triggers and extraction report       10,840 chars (43.9s)
+------------------------------------------------------------------------
+Stored 369,353 characters of canonical model for case Test-Case-2 in 559.3s.
+Sections populated: modelVersion, source, case, parties, clientAuthority, financialPosition, objectives, riskAssessment, knowledgeAndExperience, vulnerability, existingArrangements, needsAnalysis, research, solution, replacementAnalysis, riskWarningsAndDisadvantages, taxTreatment, ongoingService, recommendations, costsAndCharges, checkTriggers, extractionReport
+
+2 check trigger(s) were settled from the model:
+  checkTriggers.hasComplexProduct settled to true (was false) because "Aviva Platform Personal Pension (SIPP)" is Complex
+  checkTriggers.hasVulnerabilityIndicators settled to true (was false) because a client is recorded as "NotAssessed"
+

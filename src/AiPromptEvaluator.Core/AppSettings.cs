@@ -205,6 +205,19 @@ public class AppSettings
     public bool CoreQueriesOnly { get; set; }
 
     /// <summary>
+    /// Run every check's full evidence-gathering and assessment, even when its trigger probe
+    /// says the check does not apply and would otherwise settle as Not Applicable.
+    ///
+    /// Trigger probes exist to save the cost of assessing checks the case plainly doesn't
+    /// need. Turn this on to audit that judgement itself — confirming a trigger's N/A verdict
+    /// was correct, or debugging why a trigger looks wrong — since a suppressed check never
+    /// reaches the assessor and so leaves no evidence trail to inspect. Off by default: normal
+    /// runs should keep the cost saving.
+    /// </summary>
+    [JsonPropertyName("ignoreTriggerProbe")]
+    public bool IgnoreTriggerProbe { get; set; }
+
+    /// <summary>
     /// How many requests the whole run may have in flight at once.
     ///
     /// A run-wide budget rather than a per-check one. Checks are assessed in parallel and so are

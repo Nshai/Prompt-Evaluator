@@ -46,6 +46,8 @@ partial class CheckEvaluatorForm
     private Button saveModelButton;
     private Button saveExtractButton;
     private CheckBox bypassCacheCheckBox;
+    private CheckBox ignoreTriggerProbeCheckBox;
+    private CheckBox coreQueriesOnlyCheckBox;
     private TextBox responseTextBox;
 
     // Cost breakdown
@@ -112,6 +114,8 @@ partial class CheckEvaluatorForm
         saveModelButton = new Button();
         saveExtractButton = new Button();
         bypassCacheCheckBox = new CheckBox();
+        ignoreTriggerProbeCheckBox = new CheckBox();
+        coreQueriesOnlyCheckBox = new CheckBox();
         responseTextBox = new TextBox();
         actionPanel = new TableLayoutPanel();
         costGroup = new GroupBox();
@@ -448,7 +452,7 @@ partial class CheckEvaluatorForm
         // actionPanel — left: Run + Run All + Cancel + model/index buttons + status;
         // right: Prompt Evaluator + Configuration + Save
         actionPanel.AutoSize = true;
-        actionPanel.ColumnCount = 10;
+        actionPanel.ColumnCount = 12;
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 0 Run
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 1 Run All
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 2 Cancel
@@ -457,8 +461,10 @@ partial class CheckEvaluatorForm
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 5 Dry Run Retrieval
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 6 Unload Docs
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 7 Bypass cache
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 8 status (stretches)
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 9 Configuration
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 8 Ignore trigger probe
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 9 Core queries only
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 10 status (stretches)
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 11 Configuration
         actionPanel.Dock = DockStyle.Fill;
         actionPanel.Margin = new Padding(0);
         actionPanel.RowCount = 1;
@@ -470,8 +476,10 @@ partial class CheckEvaluatorForm
         actionPanel.Controls.Add(dryRunButton, 5, 0);
         actionPanel.Controls.Add(unloadDocsButton, 6, 0);
         actionPanel.Controls.Add(bypassCacheCheckBox, 7, 0);
-        actionPanel.Controls.Add(statusLabel, 8, 0);
-        actionPanel.Controls.Add(openConfigButton, 9, 0);
+        actionPanel.Controls.Add(ignoreTriggerProbeCheckBox, 8, 0);
+        actionPanel.Controls.Add(coreQueriesOnlyCheckBox, 9, 0);
+        actionPanel.Controls.Add(statusLabel, 10, 0);
+        actionPanel.Controls.Add(openConfigButton, 11, 0);
 
         // bypassCacheCheckBox — applies to Extract Model and to Run, because both are answered
         // by the same gateway and either can be served from cache.
@@ -482,6 +490,26 @@ partial class CheckEvaluatorForm
         bypassCacheCheckBox.Text = "Bypass cache";
         bypassCacheCheckBox.UseVisualStyleBackColor = true;
         bypassCacheCheckBox.CheckedChanged += BypassCacheCheckBox_CheckedChanged;
+
+        // ignoreTriggerProbeCheckBox — forces every check through full assessment even when its
+        // trigger probe would otherwise settle it as Not Applicable without ever running.
+        ignoreTriggerProbeCheckBox.Anchor = AnchorStyles.Left;
+        ignoreTriggerProbeCheckBox.AutoSize = true;
+        ignoreTriggerProbeCheckBox.Margin = new Padding(0, 0, 16, 0);
+        ignoreTriggerProbeCheckBox.Name = "ignoreTriggerProbeCheckBox";
+        ignoreTriggerProbeCheckBox.Text = "Run all checks (ignore trigger)";
+        ignoreTriggerProbeCheckBox.UseVisualStyleBackColor = true;
+        ignoreTriggerProbeCheckBox.CheckedChanged += IgnoreTriggerProbeCheckBox_CheckedChanged;
+
+        // coreQueriesOnlyCheckBox — skips Supplementary queries, running only the ones plans
+        // mark Core. The same setting Configuration exposes, mirrored here as a live toggle.
+        coreQueriesOnlyCheckBox.Anchor = AnchorStyles.Left;
+        coreQueriesOnlyCheckBox.AutoSize = true;
+        coreQueriesOnlyCheckBox.Margin = new Padding(0, 0, 16, 0);
+        coreQueriesOnlyCheckBox.Name = "coreQueriesOnlyCheckBox";
+        coreQueriesOnlyCheckBox.Text = "Core queries only";
+        coreQueriesOnlyCheckBox.UseVisualStyleBackColor = true;
+        coreQueriesOnlyCheckBox.CheckedChanged += CoreQueriesOnlyCheckBox_CheckedChanged;
         actionPanel.Name = "actionPanel";
 
         // runButton

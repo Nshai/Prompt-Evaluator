@@ -79,6 +79,8 @@ public partial class CheckEvaluatorForm : Form
 
         caseFolderTextBox.Text = _settings.DocumentFolder;
         bypassCacheCheckBox.Checked = _settings.BypassResponseCache;
+        ignoreTriggerProbeCheckBox.Checked = _settings.IgnoreTriggerProbe;
+        coreQueriesOnlyCheckBox.Checked = _settings.CoreQueriesOnly;
 
         _lastBreakdown = CostBreakdown.Empty(_settings.SelectedModel);
         ShowBreakdown(_lastBreakdown);
@@ -1639,6 +1641,34 @@ public partial class CheckEvaluatorForm : Form
             // A toggle is not worth a dialog. The run still honours the value either way; only
             // the next session would forget it.
             statusLabel.Text = $"Cache preference not saved: {ex.Message}";
+        }
+    }
+
+    private void IgnoreTriggerProbeCheckBox_CheckedChanged(object? sender, EventArgs e)
+    {
+        _settings.IgnoreTriggerProbe = ignoreTriggerProbeCheckBox.Checked;
+
+        try
+        {
+            SettingsStore.Save(_settings);
+        }
+        catch (Exception ex)
+        {
+            statusLabel.Text = $"Trigger preference not saved: {ex.Message}";
+        }
+    }
+
+    private void CoreQueriesOnlyCheckBox_CheckedChanged(object? sender, EventArgs e)
+    {
+        _settings.CoreQueriesOnly = coreQueriesOnlyCheckBox.Checked;
+
+        try
+        {
+            SettingsStore.Save(_settings);
+        }
+        catch (Exception ex)
+        {
+            statusLabel.Text = $"Query scope preference not saved: {ex.Message}";
         }
     }
 

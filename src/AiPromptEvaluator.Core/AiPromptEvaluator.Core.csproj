@@ -24,16 +24,16 @@
 
   <!--
     The canonical model schema and the per-check query plans are data the pipeline reads at run
-    time, not source. They are authored under docs/artifacts and copied beside whatever builds
-    against this library, so a fresh clone builds and a fresh install works without anyone
+    time, not source. They are authored under docs/Implementation and copied beside whatever
+    builds against this library, so a fresh clone builds and a fresh install works without anyone
     pointing Settings at anything; both locations stay overridable in Settings for anyone
     iterating on them.
   -->
   <ItemGroup>
-    <Content Include="..\..\docs\artifacts\canonical-suitability-model.schema.json"
+    <Content Include="..\..\docs\Implementation\canonical-suitability-model.schema.json"
              Link="canonical-suitability-model.schema.json"
              CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\docs\artifacts\check-plan\*.query-plan.json"
+    <Content Include="..\..\docs\Implementation\check-plan\*.query-plan.json"
              Link="check-plan\%(Filename)%(Extension)"
              CopyToOutputDirectory="PreserveNewest" />
     <!--

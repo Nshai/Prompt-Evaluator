@@ -128,7 +128,8 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             // A plan that says a missing trigger settles the check is taken at its word. This
             // is the cheapest possible outcome and the most commonly wrong one to guess at,
             // which is exactly why the plan states it rather than leaving it to the model.
-            if (trigger is { Applies: false, Settles: true })
+            // IgnoreTriggerProbe overrides that word when the point of the run is to audit it.
+            if (!_settings.IgnoreTriggerProbe && trigger is { Applies: false, Settles: true })
             {
                 startedAt.Stop();
                 return new CheckFinding

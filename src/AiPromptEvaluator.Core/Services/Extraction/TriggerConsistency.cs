@@ -15,7 +15,20 @@ public sealed record TriggerContradiction(string Trigger, string Contradicts, st
 }
 
 /// <summary>
-/// Checks the derived triggers against the model they were derived from.
+/// One trigger the extraction set false or omitted that the model settled to true, upgrade-only.
+/// </summary>
+/// <param name="Trigger">The <c>checkTriggers</c> field, without its prefix.</param>
+/// <param name="From">What the model wrote before it was settled, quoted, or <c>absent</c>.</param>
+/// <param name="Evidence">What in the model settles the trigger true, so the reader need not go looking.</param>
+public sealed record TriggerDerivation(string Trigger, string From, string Evidence)
+{
+    public override string ToString() =>
+        $"checkTriggers.{Trigger} settled to true (was {From}) because {Evidence}";
+}
+
+/// <summary>
+/// Settles the mechanical triggers from the model they summarise, and watches whatever it does not
+/// settle.
 ///
 /// <b>A false trigger switches a check off, and a wrongly false one switches it off silently.</b>
 /// CHK-005 did not run in two consecutive runs because <c>hasCapitalContributionsOrWithdrawals</c>
@@ -24,105 +37,155 @@ public sealed record TriggerContradiction(string Trigger, string Contradicts, st
 /// before anyone noticed, and the recall figures either side of it are out of 32 findings rather
 /// than 36.
 ///
-/// The next run's extraction was genuine and got that trigger right, which fixed the instance and
-/// not the class. Two others in the same artefact disagreed with the data beside them:
-/// <c>hasComplexProduct</c> was false while <c>recommendedProductComplexity[0].complexity</c> read
-/// "Complex" with six named drivers, and <c>hasVulnerabilityIndicators</c> was false for a file
-/// recording no investment knowledge and a monthly deficit. Neither cost anything, for unrelated
-/// reasons — no plan reads the first, and CHK-010 is an unconditional overlay that runs regardless.
-/// Both were luck, and the second is the warning: CHK-010's <c>triggerProbe</c> names
-/// <c>hasVulnerabilityIndicators</c>, so a gate there would have taken both Highest-severity
-/// vulnerability findings with it.
+/// A genuine re-run got that trigger right, which fixed the instance and not the class:
+/// <c>hasComplexProduct</c> came back false beside a Complex product with six named drivers across
+/// two further runs, because the pass that writes the triggers derives a boolean from sections it
+/// wrote earlier and reasons over a summary. But these triggers are pure functions of data already
+/// in the model, so the code settles them rather than asking. <see cref="Derive"/> does that,
+/// upgrade-only: a trigger the data supports is forced true, one it does not support is left as the
+/// model wrote it — never forced false, the same one-way direction the runtime net already ran.
 ///
-/// So the pairs are checked mechanically. Each is a place the model states something a trigger is
-/// meant to summarise, and the check runs one way only: a trigger false against data saying true is
-/// reported, and the reverse is not. A trigger that is true costs a check that need not have run,
-/// which is visible in the output and cheap; one that is wrongly false costs a check nobody sees
-/// missing.
+/// <see cref="Contradictions"/> stays as defence in depth. After derivation the four settled pairs
+/// report nothing, so it earns its keep on what is not derived — a future model-decided trigger, or
+/// an older stored model loaded at run time that predates the derive step. It runs one way only: a
+/// trigger false against data saying true is reported, and the reverse is not. A trigger wrongly
+/// true costs a check that need not have run, which is visible in the output and cheap; one wrongly
+/// false costs a check nobody sees missing.
 /// </summary>
 public static class TriggerConsistency
 {
     /// <summary>
-    /// Every trigger in <paramref name="model"/> that is false while the model contradicts it.
-    ///
-    /// The pairs are named rather than derived, because the relationship between a trigger and the
-    /// data behind it is a judgement about the check catalogue and not a property of the schema.
-    /// A pair added here should be one where the data plainly settles the question — not one where
-    /// a reader might reasonably read the model either way.
+    /// Every trigger in <paramref name="model"/> that is false while the model contradicts it. See
+    /// the type summary for why this still runs after <see cref="Derive"/> has settled the same pairs.
     /// </summary>
     public static IReadOnlyList<TriggerContradiction> Contradictions(JsonNode? model)
     {
-        if (model is not JsonObject root)
-        {
-            return [];
-        }
-
-        var triggers = root["checkTriggers"] as JsonObject;
-
-        if (triggers is null)
+        if (model is not JsonObject root || root["checkTriggers"] is not JsonObject triggers)
         {
             return [];
         }
 
         var found = new List<TriggerContradiction>();
 
-        // A product the model calls Complex, against the trigger that says none is.
-        Pair(
+        foreach (var pair in Pairs)
+        {
+            if (pair.Evidence(root) is { } evidence && IsFalse(triggers[pair.Trigger]))
+            {
+                found.Add(new TriggerContradiction(pair.Trigger, pair.Contradicts, evidence));
+            }
+        }
+
+        return found;
+    }
+
+    /// <summary>
+    /// Settles the mechanical triggers from the model they summarise, upgrade-only: a trigger the
+    /// data supports is forced true, and one the data does not support is left exactly as the model
+    /// wrote it — never forced false.
+    ///
+    /// This is the same one-way direction as the runtime net in <c>CheckPlanRunner.ProbeTriggerAsync</c>
+    /// — code can turn a check on, never silently off — moved to the source so the stored model
+    /// carries the right value instead of being rescued at run time. The pass-12 model kept getting
+    /// these wrong (<c>hasComplexProduct</c> false beside a Complex product over two runs), because it
+    /// derives a boolean from sections it wrote in earlier passes and reasons over a summary; these
+    /// four are pure functions of data already in the model, so the code settles them.
+    ///
+    /// A no-op where the model carries no <c>checkTriggers</c> object: a failed pass 12 leaves the
+    /// runner to fall through to applicability and probe search, which is the existing safe path.
+    /// Returns what it changed, for logging.
+    /// </summary>
+    public static IReadOnlyList<TriggerDerivation> Derive(JsonNode? model)
+    {
+        if (model is not JsonObject root || root["checkTriggers"] is not JsonObject triggers)
+        {
+            return [];
+        }
+
+        var settled = new List<TriggerDerivation>();
+
+        foreach (var pair in Pairs)
+        {
+            if (pair.Evidence(root) is not { } evidence)
+            {
+                continue;
+            }
+
+            var current = triggers[pair.Trigger];
+
+            // Already true is the model and the data agreeing — nothing to settle, nothing to log.
+            if (current is JsonValue value
+                && bool.TryParse(value.ToString(), out var parsed)
+                && parsed)
+            {
+                continue;
+            }
+
+            var from = current is null ? "absent" : current.ToJsonString();
+            triggers[pair.Trigger] = true;
+            settled.Add(new TriggerDerivation(pair.Trigger, from, evidence));
+        }
+
+        return settled;
+    }
+
+    /// <summary>
+    /// The trigger/data pairs, single-sourced so <see cref="Contradictions"/> and <see cref="Derive"/>
+    /// read the same predicates. Each <c>Evidence</c> returns a quoted description when the data
+    /// supports the trigger being true, else null.
+    ///
+    /// The pairs are named rather than derived from the schema, because the relationship between a
+    /// trigger and the data behind it is a judgement about the check catalogue and not a property of
+    /// the schema. A pair added here should be one where the data plainly settles the question — not
+    /// one where a reader might reasonably read the model either way.
+    /// </summary>
+    private static readonly IReadOnlyList<(string Trigger, string Contradicts, Func<JsonObject, string?> Evidence)> Pairs =
+    [
+        // A product the model calls Complex.
+        (
             "hasComplexProduct",
             "knowledgeAndExperience.recommendedProductComplexity[].complexity",
-            FirstMatch(
+            root => FirstMatch(
                 Array(root["knowledgeAndExperience"]?["recommendedProductComplexity"]),
                 item => Text(item?["complexity"]) is { } c
                         && c.Equals("Complex", StringComparison.OrdinalIgnoreCase)
                     ? $"\"{Text(item?["productName"]) ?? "a recommended product"}\" is Complex"
-                    : null));
+                    : null)),
 
-        // Money moving into or out of a plan, against the trigger that says none does. This is the
-        // pair that cost CHK-005 two runs.
-        Pair(
+        // Money moving into or out of a plan. This is the pair that cost CHK-005 two runs.
+        (
             "hasCapitalContributionsOrWithdrawals",
             "existingArrangements[].contributions / withdrawals",
-            FirstMatch(
+            root => FirstMatch(
                 Array(root["existingArrangements"]),
                 item => Array(item?["contributions"]).Count > 0
                     ? "an arrangement records contributions"
                     : Array(item?["withdrawals"]).Count > 0
                         ? "an arrangement records withdrawals"
                         : null)
-            ?? FirstMatch(
-                Array(root["costsAndCharges"]?["adviserFees"]),
-                _ => "an adviser fee is charged"));
+                ?? FirstMatch(
+                    Array(root["costsAndCharges"]?["adviserFees"]),
+                    _ => "an adviser fee is charged")),
 
-        // A vulnerability recorded per client, against the trigger that says there are none.
-        Pair(
+        // A vulnerability recorded per client.
+        (
             "hasVulnerabilityIndicators",
             "vulnerability.perClient[].hasVulnerability",
-            FirstMatch(
+            root => FirstMatch(
                 Array(root["vulnerability"]?["perClient"]),
                 item => Text(item?["hasVulnerability"]) is { } v
                         && !v.Equals("No", StringComparison.OrdinalIgnoreCase)
                         && !v.Equals("Unspecified", StringComparison.OrdinalIgnoreCase)
                     ? $"a client is recorded as \"{v}\""
-                    : null));
+                    : null)),
 
-        // A plan being replaced, against the trigger that says nothing is.
-        Pair(
+        // A plan being replaced.
+        (
             "hasReplacementOrSwitch",
             "replacementAnalysis[]",
-            Array(root["replacementAnalysis"]).Count > 0
+            root => Array(root["replacementAnalysis"]).Count > 0
                 ? $"{Array(root["replacementAnalysis"]).Count} arrangement(s) are being replaced"
-                : null);
-
-        return found;
-
-        void Pair(string trigger, string contradicts, string? evidence)
-        {
-            if (evidence is not null && IsFalse(triggers[trigger]))
-            {
-                found.Add(new TriggerContradiction(trigger, contradicts, evidence));
-            }
-        }
-    }
+                : null),
+    ];
 
     /// <summary>
     /// True only where the value is present and false. A trigger the extraction omitted is a

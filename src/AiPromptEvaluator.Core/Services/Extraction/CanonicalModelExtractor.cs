@@ -29,6 +29,16 @@ public sealed record ExtractionResult(
     /// See <see cref="TriggerConsistency"/>.
     /// </summary>
     public IReadOnlyList<TriggerContradiction> TriggerContradictions { get; init; } = [];
+
+    /// <summary>
+    /// Triggers the code settled to true from the model, having decided the pass-12 value was one
+    /// the model should not be trusted to derive.
+    ///
+    /// Reported for the same reason as the contradictions above — a trigger that changed what a
+    /// check does should be visible — but this is the value it was changed to, not a warning that it
+    /// is wrong. See <see cref="TriggerConsistency.Derive"/>.
+    /// </summary>
+    public IReadOnlyList<TriggerDerivation> TriggerDerivations { get; init; } = [];
 }
 
 /// <summary>
@@ -226,6 +236,13 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
 
         StampSource(root, reportFiles);
 
+        // Settle the mechanical triggers from the model they summarise, before the model is stored
+        // and a check gates on it. This runs where StampSource does, and for the same reason: it
+        // overwrites values the model produced but should not have been trusted to. Upgrade-only,
+        // so it can turn a check on and never silently off. Surfaced on the result rather than
+        // logged inline, the same way vocabulary corrections are. See TriggerConsistency.Derive.
+        var derivations = TriggerConsistency.Derive(root);
+
         var document = new CanonicalModelDocument(
             CaseReference: caseReference,
             TenantId: _settings.TenantId,
@@ -240,6 +257,7 @@ public sealed class CanonicalModelExtractor : ICanonicalModelExtractor
         {
             VocabularyCorrections = corrections.Distinct().ToList(),
             TriggerContradictions = TriggerConsistency.Contradictions(root),
+            TriggerDerivations = derivations,
         };
     }
 

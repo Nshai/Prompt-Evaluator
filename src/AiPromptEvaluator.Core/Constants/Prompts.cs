@@ -136,8 +136,10 @@ public static class Prompts
           the current position · "Conditional" holds only if a stated condition does, including
           a charge phrased as "if you were to retain the plan" · "Unknown" not determinable.
           These are separate fields with separate vocabularies, and neither borrows the other's:
-          "Derived" is an assertionStatus and never a modality, and a value that fits one field's
-          list is not a reason to write it in the other's.
+          never write an assertionStatus value (Stated, Inferred, Derived, Absent) into modality,
+          and never write a modality value into assertionStatus. A value that fits one field's list
+          is not a reason to write it in the other's — the field decides the vocabulary, not the
+          value.
         - Use the identifiers given under "Identifiers" exactly as written. Every id field and
           every *Ids array must hold an id from that table. If something you would reference is
           not in the table, omit the reference — never coin a new id, and never put a name, a

@@ -197,6 +197,107 @@ public class TriggerConsistencyTests
         Assert.DoesNotContain("hasCapitalContributionsOrWithdrawals", found);
     }
 
+    // ── deriving the triggers ─────────────────────────────────────────────────
+    //
+    // Same pairs, settled rather than reported. Upgrade-only: a false or absent trigger the data
+    // supports is forced true, and a trigger the data does not support is never touched.
+
+    /// <summary>
+    /// The recurrence this change is for: hasComplexProduct false beside a Complex product is
+    /// settled to true, and the stored model now carries the right value.
+    /// </summary>
+    [Fact]
+    public void AFalseTriggerTheDataSupportsIsSettledToTrue()
+    {
+        var model = Model(
+            "\"hasComplexProduct\": false",
+            ", \"knowledgeAndExperience\": { \"recommendedProductComplexity\": "
+            + "[ { \"productName\": \"Aviva Platform Personal Pension\", \"complexity\": \"Complex\" } ] }");
+
+        var settled = Assert.Single(TriggerConsistency.Derive(model));
+
+        Assert.Equal("hasComplexProduct", settled.Trigger);
+        Assert.Equal("false", settled.From);
+        Assert.Contains("Aviva Platform Personal Pension", settled.Evidence);
+        Assert.True(model["checkTriggers"]!["hasComplexProduct"]!.GetValue<bool>());
+    }
+
+    /// <summary>An absent trigger the data supports is written true, not left for the runner to miss.</summary>
+    [Fact]
+    public void AnAbsentTriggerTheDataSupportsIsSettledToTrue()
+    {
+        var model = Model(
+            "\"hasReplacementOrSwitch\": null",
+            ", \"replacementAnalysis\": [ { \"cedingArrangementId\": \"EA4\" } ]");
+
+        var settled = Assert.Single(TriggerConsistency.Derive(model));
+
+        Assert.Equal("hasReplacementOrSwitch", settled.Trigger);
+        Assert.Equal("absent", settled.From);
+        Assert.True(model["checkTriggers"]!["hasReplacementOrSwitch"]!.GetValue<bool>());
+    }
+
+    /// <summary>A trigger already true and agreeing with the data is a no-op — nothing to settle, nothing logged.</summary>
+    [Fact]
+    public void ATrueTriggerTheDataSupportsIsLeftAloneAndNotReported()
+    {
+        var model = Model(
+            "\"hasReplacementOrSwitch\": true",
+            ", \"replacementAnalysis\": [ { \"cedingArrangementId\": \"EA4\" } ]");
+
+        Assert.Empty(TriggerConsistency.Derive(model));
+        Assert.True(model["checkTriggers"]!["hasReplacementOrSwitch"]!.GetValue<bool>());
+    }
+
+    /// <summary>
+    /// The invariant that keeps this safe: a trigger the data does not support is left exactly as the
+    /// model wrote it, never forced false. Code turns a check on, never silently off.
+    /// </summary>
+    [Fact]
+    public void ATriggerTheDataDoesNotSupportIsNeverDowngraded()
+    {
+        var model = Model(
+            "\"hasReplacementOrSwitch\": true, \"hasComplexProduct\": false",
+            ", \"replacementAnalysis\": []");
+
+        Assert.Empty(TriggerConsistency.Derive(model));
+
+        // The true one the data does not corroborate stays true; the false one stays false.
+        Assert.True(model["checkTriggers"]!["hasReplacementOrSwitch"]!.GetValue<bool>());
+        Assert.False(model["checkTriggers"]!["hasComplexProduct"]!.GetValue<bool>());
+    }
+
+    [Fact]
+    public void AModelWithNoTriggersIsANoOp()
+    {
+        Assert.Empty(TriggerConsistency.Derive(JsonNode.Parse("{}")));
+        Assert.Empty(TriggerConsistency.Derive(null));
+    }
+
+    /// <summary>
+    /// Run 17's stored model, the control: the code settles its wrong hasComplexProduct to true while
+    /// leaving hasCapitalContributionsOrWithdrawals (already correct) untouched — the mirror of the
+    /// contradiction test above.
+    /// </summary>
+    [Fact]
+    public void RunSeventeensStoredModelHasItsComplexityTriggerSettledAndNothingElseDowngraded()
+    {
+        var path = Path.Combine(
+            Repository(), "docs", "test-results", "Runtime-Logs", "latest", "Run-17",
+            "canonical-model_ABC-99_20260827-095807.json");
+
+        Assert.True(File.Exists(path), $"The archived model is missing: {path}");
+
+        var model = JsonNode.Parse(File.ReadAllText(path));
+        var settled = TriggerConsistency.Derive(model).Select(d => d.Trigger).ToList();
+
+        Assert.Contains("hasComplexProduct", settled);
+        Assert.True(model!["checkTriggers"]!["hasComplexProduct"]!.GetValue<bool>());
+
+        // Already correct in the live extraction, so there was nothing to settle.
+        Assert.DoesNotContain("hasCapitalContributionsOrWithdrawals", settled);
+    }
+
     private static string Repository()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);

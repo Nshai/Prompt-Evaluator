@@ -682,6 +682,21 @@ public partial class CheckEvaluatorForm : Form
                 }
             }
 
+            // The mechanical triggers the code settled from the model rather than trusting the
+            // pass that writes them. Shown because a trigger that changed what a check does should
+            // be visible — but this is the value it was corrected to, not a warning.
+            if (result.TriggerDerivations.Count > 0)
+            {
+                AppendResponseLine(string.Empty);
+                AppendResponseLine(
+                    $"{result.TriggerDerivations.Count} check trigger(s) were settled from the model:");
+
+                foreach (var derivation in result.TriggerDerivations)
+                {
+                    AppendResponseLine($"  {derivation}");
+                }
+            }
+
             // Louder than a vocabulary miss, because the cost is a check that does not run. CHK-005
             // was skipped by a false hasCapitalContributionsOrWithdrawals in two consecutive runs
             // and printed under CHECKS CLEARED both times.

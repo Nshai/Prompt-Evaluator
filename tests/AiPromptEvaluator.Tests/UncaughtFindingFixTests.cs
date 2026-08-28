@@ -288,7 +288,12 @@ public class UncaughtFindingFixTests
     [Fact]
     public void TheExtractorIsToldNotToCrossFieldsOrLeaveATriggerDisagreeingWithItsSection()
     {
-        Assert.Contains("\"Derived\" is an assertionStatus and never a modality", Prompts.ExtractorSystem);
+        // The rule names the whole assertionStatus vocabulary, not just Derived: Run 19 swapped
+        // Derived for Inferred in the modality field, so a rule naming one value taught nothing
+        // about the next. It has to be about the category.
+        Assert.Contains(
+            "never write an assertionStatus value (Stated, Inferred, Derived, Absent) into modality",
+            Prompts.ExtractorSystem);
         Assert.Contains("A checkTriggers boolean must agree with the section it summarises", Prompts.ExtractorSystem);
         Assert.Contains("if you recorded a complex product, hasComplexProduct is true", Prompts.ExtractorSystem);
     }

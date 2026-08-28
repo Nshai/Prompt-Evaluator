@@ -771,7 +771,7 @@ public sealed record FindingsReport(
         }
 
         var cleared = Findings
-            .Where(f => f.ParsedOutcome is CheckOutcome.NoIssue or CheckOutcome.NotApplicable)
+            .Where(f => f.ParsedOutcome is CheckOutcome.NoIssue)
             .ToList();
 
         if (cleared.Count > 0)
@@ -781,6 +781,44 @@ public sealed record FindingsReport(
             sb.AppendLine(rule);
 
             foreach (var finding in cleared)
+            {
+                AppendDetail(sb, finding, full: false);
+            }
+        }
+
+        // A check that did not run gets its own heading.
+        //
+        // **It used to print here, under CHECKS CLEARED, and that is how three separate defects
+        // stayed invisible.** A trigger read false against a case transferring £110,185 and the
+        // check was skipped twice; an applicability rule omitted one member of a closed
+        // vocabulary and took six material findings with it across two runs on two models.
+        // In every one of those runs the output said the same thing it says for a check that
+        // ran, searched, weighed the evidence and found nothing wrong.
+        //
+        // They are not the same claim and they never were. "We looked and it is fine" and "we
+        // did not look" differ in exactly the way a reviewer needs to know about, and the second
+        // one is the one that costs findings nobody can see missing. Separated, a run that
+        // skipped a check it should have run is one heading a reader cannot miss, and the
+        // summary under it says which signal settled it.
+        var skipped = Findings
+            .Where(f => f.ParsedOutcome is CheckOutcome.NotApplicable)
+            .ToList();
+
+        if (skipped.Count > 0)
+        {
+            sb.AppendLine(rule);
+            sb.AppendLine("CHECKS NOT RUN — NOT APPLICABLE TO THIS CASE");
+            sb.AppendLine(rule);
+            sb.AppendLine(
+                "These checks were not assessed. Nothing below is a statement that the case is "
+                + "compliant with them: the trigger said they did not apply, and no evidence was "
+                + "searched or read. Read each reason and satisfy yourself it is right — a "
+                + "trigger that is wrong, or an applicability rule that omits a value its "
+                + "vocabulary documents, produces exactly this output and costs every finding "
+                + "the check would have made.");
+            sb.AppendLine();
+
+            foreach (var finding in skipped)
             {
                 AppendDetail(sb, finding, full: false);
             }
@@ -882,6 +920,7 @@ public sealed record FindingsReport(
         // Read across the finished findings rather than within any one of them, because the
         // check catalogue is exactly what splits these contradictions in half.
         sb.Append(CrossGroupContradictions.Format(CrossGroupContradictions.In(Findings)));
+        sb.Append(CrossGroupContradictions.Format(CrossGroupContradictions.Documents(Findings)));
 
         var (ids, requirements, total) = Adherence;
 

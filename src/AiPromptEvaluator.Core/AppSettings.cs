@@ -17,6 +17,68 @@ public class AppSettings
     /// <summary>The collection every case document chunk is written to.</summary>
     public const string DefaultQdrantCollection = "case_documents";
 
+    /// <summary>
+    /// Settings that cannot move a finding, and are therefore left out of
+    /// <see cref="RunFingerprint.SettingsDigest"/>.
+    ///
+    /// <b>The digest is deliberately opt-out rather than opt-in.</b> Listing what to include
+    /// means a setting added next month is silently uncovered, which is exactly the failure the
+    /// fingerprint exists to prevent: four settings that change which passages reach an assessor
+    /// were absent from it when this was written, and two of them had been added that week. A run
+    /// with core-only queries and a run with all of them retrieve different evidence and printed
+    /// the same fingerprint, so anyone diffing them was comparing two pipelines while reading a
+    /// line saying they were the same one.
+    ///
+    /// Opt-out inverts the cost: forgetting means an over-sensitive digest, which is noise a
+    /// reader can see and dismiss. Forgetting the other way is a wrong answer nobody can see.
+    ///
+    /// Three kinds of thing are here, and only these three:
+    ///
+    /// <list type="bullet">
+    /// <item><b>Credentials and endpoints</b> — where the service is and how to authenticate. The
+    /// same run against the same models through a different URL is the same run.</item>
+    /// <item><b>Case identity and storage paths</b> — which case, and where its artefacts live.
+    /// The fingerprint's subject is everything the runner reads <i>other than</i> the case, and
+    /// the case's own content already reaches it as the canonical model digest.</item>
+    /// <item><b>Concurrency</b> — how long a run takes and not what it produces. That is a
+    /// property the code works to preserve: results are written into arrays by index rather than
+    /// appended, precisely so parallelism cannot reorder a pack. It stops being exempt the moment
+    /// that stops being true.</item>
+    /// </list>
+    ///
+    /// Anything else — a cap, a floor, a threshold, a scope toggle, a chunk size, a token budget
+    /// — belongs in the digest, and the way to keep it out is to argue it into one of the three
+    /// categories above rather than to add a name here.
+    /// </summary>
+    public static readonly IReadOnlySet<string> NotFingerprinted = new HashSet<string>(StringComparer.Ordinal)
+    {
+        // Credentials and endpoints.
+        nameof(OpenAiApiKey),
+        nameof(OpenAiBaseUrl),
+        nameof(EmbeddingApiKey),
+        nameof(EmbeddingBaseUrl),
+        nameof(QdrantApiKey),
+        nameof(QdrantEndpoint),
+        nameof(DoclingEndpoint),
+        nameof(AvailableModels),
+
+        // Case identity and storage paths.
+        nameof(CaseReference),
+        nameof(TenantId),
+        nameof(DocumentFolder),
+        nameof(QdrantCollection),
+        nameof(CanonicalModelDbPath),
+        nameof(CanonicalSchemaPath),
+        nameof(CheckPlanFolder),
+        nameof(CheckRunDbPath),
+        nameof(PromptLogFolder),
+        nameof(LastChecksCsvPath),
+
+        // Concurrency.
+        nameof(MaxParallelRequests),
+        nameof(MaxParallelChecks),
+    };
+
     [JsonPropertyName("openAiApiKey")]
     public string OpenAiApiKey { get; set; } = string.Empty;
 
@@ -170,6 +232,46 @@ public class AppSettings
     /// </summary>
     [JsonPropertyName("reservedSlotsPerDeclaredSection")]
     public int ReservedSlotsPerDeclaredSection { get; set; } = 1;
+
+    /// <summary>
+    /// How many of a group's best-scoring passages are held before any other reservation runs.
+    /// A floor like the two above, so 0 means no reservation.
+    ///
+    /// <b>Nothing used to reserve a slot for the best answer a group's own searches returned.</b>
+    /// The section and category floors are served first, then the remainder is filled by score —
+    /// and where the floors plus a cluster of near-identical chunks fill the cap, the top-scoring
+    /// passage is evicted before the assessor sees it. Measured, twice, in two runs whose
+    /// retrieval was byte-identical: a passage at 0.737 was dropped while eight near-duplicates
+    /// at 0.627, all returned by one query, were kept.
+    ///
+    /// Score is the one signal that is neither the plan's guess nor the ranking's tie-break: it
+    /// is what the group asked for, answered. Reserving one slot for it costs one slot of
+    /// twenty-four.
+    ///
+    /// Blank forms and untargeted categories are excluded from the reservation — a passage that
+    /// asserts nothing does not become the group's best answer by embedding well. See
+    /// <c>CheckPlanRunner.Rank</c>.
+    /// </summary>
+    [JsonPropertyName("reservedSlotsForTopScore")]
+    public int ReservedSlotsForTopScore { get; set; } = 1;
+
+    /// <summary>
+    /// How much of two passages from the same document must overlap before the lower-scoring one
+    /// is dropped as a near-duplicate. <b>1.0 or more disables the pass entirely</b>, leaving only
+    /// the exact-text de-duplication that has always run.
+    ///
+    /// Exact de-duplication catches a chunk returned verbatim by two wordings of the same
+    /// question. It does not catch what overlapping chunk windows do to a long table: eight
+    /// passages over the same rows, 95% the same text, eight distinct keys, and a third of the
+    /// cap gone to one query's view of one table. That is not evidence, it is the same evidence
+    /// eight times, and the slots it takes come from passages the group has no other route to.
+    ///
+    /// 0.9 is deliberately conservative — two chunks must be near-identical, not merely similar,
+    /// because a table's rows genuinely repeat their column labels and two different rows of the
+    /// same table are two different facts.
+    /// </summary>
+    [JsonPropertyName("nearDuplicateOverlap")]
+    public double NearDuplicateOverlap { get; set; } = 0.9;
 
     /// <summary>
     /// How much of the extraction's self-report reaches an assessor. <b>0 means unbounded.</b>

@@ -27,11 +27,16 @@ public class PromptLogWriterTests
             MaxPassagesPerGroup: 12,
             ReservedSlotsPerTargetedCategory: 1,
             ReservedSlotsPerDeclaredSection: 1,
+            ReservedSlotsForTopScore: 1,
+            NearDuplicateOverlap: 0.9,
+            CoreQueriesOnly: false,
+            IgnoreTriggerProbe: false,
             ExtractionMaxTokens: extractionMaxTokens,
             PlanCount: 10,
             PlanDigest: "abc123def456",
             CanonicalModelDigest: "0011223344ff",
-            SchemaVersion: "1.0");
+            SchemaVersion: "1.0",
+            SettingsDigest: "ffeeddccbbaa");
 
     private static string Write(Action<PromptLogWriter> use)
     {

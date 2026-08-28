@@ -234,7 +234,12 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             // An overlay that ran with a missing trigger has not been excused anything, so its
             // summary must not open by implying the check did not really apply.
             var triggerNote =
-                trigger.Applies ? null
+                trigger.NarrowedButRan
+                    ? "This check ran despite an applicability rule saying it should not: the "
+                      + "canonical model's own trigger field says the check applies. Read the "
+                      + "trigger detail — either the rule omits a value its vocabulary documents, "
+                      + "or the trigger is wrong."
+                : trigger.Applies ? null
                 : plan.TriggerProbe?.ContinuesWithReducedScope == true
                     ? "No trigger was recorded; this check applies to every case and was assessed anyway."
                     : "The trigger appears absent.";
@@ -277,7 +282,18 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     // Retrieval
     // ──────────────────────────────────────────────
 
-    private sealed record TriggerOutcome(bool Applies, bool Settles, string Detail, int Searches, int Passages);
+    /// <param name="NarrowedButRan">
+    /// The trigger field said the check applies and an applicability rule disagreed. The check
+    /// ran anyway — see the switch in <see cref="ProbeTriggerAsync"/> — and this carries that
+    /// fact out so the finding can say so rather than reading like an ordinary assessment.
+    /// </param>
+    private sealed record TriggerOutcome(
+        bool Applies,
+        bool Settles,
+        string Detail,
+        int Searches,
+        int Passages,
+        bool NarrowedButRan = false);
 
     /// <summary>
     /// Establishes whether the check applies. The canonical model's own checkTriggers field
@@ -350,18 +366,70 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
 
         detail.Append($"{passages} corroborating passage(s) from {searches} probe search(es).");
 
-        // Both sources are read from the stored model, and both must agree the check applies —
-        // the AND is the point: a rule can only ever narrow, never rescue a check whose trigger
-        // field says no. The probe searches are the fallback, used only where neither spoke.
+        var verdict = Combine(fromModel, fromApplicability, passages);
+
+        if (verdict.Narrowed)
+        {
+            detail.Append(
+                $"OVERRIDDEN — {probe.TriggerField} affirmatively says the check applies, so the "
+                + "failed rule narrowed it rather than settling it, and the check was assessed "
+                + "rather than skipped. Either the rule omits a legitimate value of its "
+                + "vocabulary, or the trigger is wrong; both are visible here and neither is "
+                + "silent. ");
+        }
+
+        return new TriggerOutcome(
+            verdict.Applies, probe.ReturnsNotApplicable, detail.ToString(),
+            searches, passages, verdict.Narrowed);
+    }
+
+    /// <summary>Whether the check applies, and whether a rule was overruled to say so.</summary>
+    internal sealed record TriggerVerdict(bool Applies, bool Narrowed);
+
+    /// <summary>
+    /// The two signals combined into one verdict.
+    ///
+    /// A rule can only ever narrow, never rescue a check whose trigger field says no. That
+    /// direction is the point of having rules at all and is unchanged: they exist to keep a run
+    /// from spending an embedding on a check the case plainly does not need, and a rule that
+    /// could switch a check back on would be doing the opposite.
+    ///
+    /// <b>The other direction is the one that cost six findings, and it now warns instead of
+    /// skipping.</b> Where the trigger field affirmatively says the check applies and a rule
+    /// disagrees, the most likely explanation is that the rule enumerates a closed vocabulary and
+    /// has omitted a legitimate member of it — which is indistinguishable here from a case the
+    /// check genuinely does not cover. The two mistakes are not symmetrical. A check that need
+    /// not have run is visible in the output and costs a handful of calls. One that silently did
+    /// not run costs findings nobody can see missing, printed under a heading that reads like a
+    /// pass.
+    ///
+    /// Observed, and not marginally: a plan's rule listed five members of an advice-action
+    /// vocabulary the schema documents ten values for. Two runs on two different models both
+    /// recorded the omitted sixth — because it was the correct value — and the check settled as
+    /// not applicable before a single search ran, taking six material findings with it, three of
+    /// them the most severe in the case.
+    ///
+    /// This is the same reasoning as the trigger-contradiction path in
+    /// <see cref="ProbeTriggerAsync"/>, applied one signal later. Adding the missing value to the
+    /// plan fixes that plan; this fixes the next omission, in a plan nobody has written yet, and
+    /// <c>CheckPlanLint</c>'s L7 reports the exclusions before a run rather than after one.
+    ///
+    /// The probe searches are the fallback, used only where neither source spoke.
+    /// </summary>
+    internal static TriggerVerdict Combine(bool? fromModel, bool? fromApplicability, int probePassages)
+    {
+        var narrowed = fromModel is true && fromApplicability is false;
+
         var applies = (fromModel, fromApplicability) switch
         {
-            (null, null) => passages > 0,
+            (null, null) => probePassages > 0,
             (bool m, null) => m,
             (null, bool a) => a,
+            (true, false) => true,
             (bool m, bool a) => m && a,
         };
 
-        return new TriggerOutcome(applies, probe.ReturnsNotApplicable, detail.ToString(), searches, passages);
+        return new TriggerVerdict(applies, narrowed);
     }
 
     /// <summary>
@@ -606,8 +674,13 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             .SelectMany(q => q.TargetCategories)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+        // Overlapping chunk windows over one long table come back as several passages that are
+        // almost the same text and have nothing in common as far as exact de-duplication is
+        // concerned. Collapsed before ranking, so the cap is spent on distinct evidence.
+        var distinct = CollapseNearDuplicates(passages, _settings.NearDuplicateOverlap);
+
         var ranked = Rank(
-            passages, targeted, group.DeclaredEvidenceSections, group.DeclaredEvidenceCategories,
+            distinct, targeted, group.DeclaredEvidenceSections, group.DeclaredEvidenceCategories,
             _settings);
 
         var categories = ranked
@@ -640,6 +713,128 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     /// </remarks>
     internal static string DeduplicationKey(CaseDocumentSearchMatch hit) =>
         $"{hit.DocumentName.Length}:{hit.DocumentName}{hit.SearchedText}";
+
+    /// <summary>
+    /// Drops passages that are near-copies of a better-scoring passage from the same document.
+    ///
+    /// <b><see cref="DeduplicationKey"/> catches a chunk returned verbatim by two wordings of the
+    /// same question, and nothing else.</b> What it cannot catch is what the chunk windows do to
+    /// a long table: consecutive windows overlap by design, so one table comes back as several
+    /// passages that share most of their rows, differ in a few, and hash to as many distinct
+    /// keys as there are windows. Every one of them is admitted, and they compete for the cap
+    /// against passages the group has no second route to.
+    ///
+    /// Measured: eight passages at the same score, from one query, over one cash-flow table,
+    /// holding a third of a twenty-four slot pack while the group's best-scoring passage was
+    /// evicted. Both runs, identically — this is plan-and-code behaviour, not the model's.
+    ///
+    /// Same document only. Two documents saying the same thing is corroboration and the whole
+    /// point of the evidence side; two windows over the same rows is one document, counted twice.
+    ///
+    /// The comparison is word-level Jaccard overlap, which is enough and is stable. The threshold
+    /// is deliberately high: rows of one table repeat their column labels, so moderately similar
+    /// passages are routinely two different facts, and dropping one of those would cost exactly
+    /// the kind of finding this method exists to protect.
+    /// </summary>
+    /// <param name="passages">Candidates, already exact-de-duplicated, in retrieval order.</param>
+    /// <param name="overlap">
+    /// The fraction two passages must share before the weaker is dropped. <b>1.0 or more
+    /// disables the pass</b> and returns the input unchanged.
+    /// </param>
+    internal static List<CaseDocumentSearchMatch> CollapseNearDuplicates(
+        IReadOnlyList<CaseDocumentSearchMatch> passages, double overlap)
+    {
+        if (overlap >= 1.0 || passages.Count < 2)
+        {
+            return [.. passages];
+        }
+
+        // Strongest first, so the passage that survives a cluster is the best-scoring member of
+        // it rather than whichever query happened to return first. Ties break on document then
+        // text — the same keys Rank uses — so a cluster of equal scores collapses to the same
+        // member on every run, whatever order the store returned them in.
+        var strongestFirst = passages
+            .Select((passage, position) => (passage, position))
+            .OrderByDescending(p => p.passage.Score)
+            .ThenBy(p => p.passage.DocumentName, StringComparer.Ordinal)
+            .ThenBy(p => p.passage.SearchedText, StringComparer.Ordinal)
+            .ToList();
+
+        var kept = new List<(CaseDocumentSearchMatch Passage, int Position, HashSet<string> Words)>();
+
+        foreach (var (passage, position) in strongestFirst)
+        {
+            var words = Words(passage.SearchedText);
+
+            if (words.Count == 0)
+            {
+                kept.Add((passage, position, words));
+                continue;
+            }
+
+            var duplicate = kept.Any(k =>
+                string.Equals(k.Passage.DocumentName, passage.DocumentName, StringComparison.Ordinal)
+                && Overlap(k.Words, words) >= overlap);
+
+            if (!duplicate)
+            {
+                kept.Add((passage, position, words));
+            }
+        }
+
+        // Returned in the order they arrived, not in the order they were compared: everything
+        // downstream reads this as "the candidates", and re-ordering it here would silently
+        // change the ranking's own tie-breaks.
+        return kept
+            .OrderBy(k => k.Position)
+            .Select(k => k.Passage)
+            .ToList();
+    }
+
+    /// <summary>
+    /// The share of the smaller passage's vocabulary that the larger one also has.
+    ///
+    /// Deliberately not symmetric-difference Jaccard: a chunk window that wholly contains a
+    /// shorter one is a duplicate of it in every sense that matters here, and Jaccard would score
+    /// that pair by the length difference rather than by the containment.
+    /// </summary>
+    private static double Overlap(IReadOnlySet<string> a, IReadOnlySet<string> b)
+    {
+        var (smaller, larger) = a.Count <= b.Count ? (a, b) : (b, a);
+
+        return smaller.Count == 0 ? 0 : (double)smaller.Count(larger.Contains) / smaller.Count;
+    }
+
+    /// <summary>
+    /// A passage's distinct words, lowercased, punctuation and table pipes discarded. Table
+    /// markup is the noise here — every row of a Markdown table carries the same separators, and
+    /// counting them would make any two rows of any table look alike.
+    /// </summary>
+    private static HashSet<string> Words(string text)
+    {
+        var words = new HashSet<string>(StringComparer.Ordinal);
+        var current = new StringBuilder();
+
+        foreach (var c in text)
+        {
+            if (char.IsLetterOrDigit(c))
+            {
+                current.Append(char.ToLowerInvariant(c));
+            }
+            else if (current.Length > 0)
+            {
+                words.Add(current.ToString());
+                current.Clear();
+            }
+        }
+
+        if (current.Length > 0)
+        {
+            words.Add(current.ToString());
+        }
+
+        return words;
+    }
 
     /// <summary>
     /// Orders a group's passages and keeps the best <see cref="MaxPassagesPerGroup"/>, holding a
@@ -717,7 +912,48 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
 
         var keep = new HashSet<int>();
 
-        // Sections first. A plan naming "Current Monthly Cash Flow" has asked for something more
+        // The group's own best answer, before anything else is rationed.
+        //
+        // **Every other reservation in this method serves something the plan guessed in advance.**
+        // A declared section is a phrase somebody expected the document to carry; a declared
+        // category is where somebody expected the answer to live. Both are useful and both are
+        // guesses. Score is not: it is the group's own query, answered by the store, and until
+        // now it was the only signal with no slot of its own — filled from what the floors left
+        // over, which on a full pack is nothing.
+        //
+        // Measured across two runs whose retrieval extracts differ by two lines: a passage at
+        // 0.737 evicted while eight near-duplicates at 0.627, all from one query, were kept. The
+        // floors were working exactly as designed and the best evidence in the group did not
+        // reach the assessor.
+        //
+        // Restricted to targeted categories and to passages carrying content, for the same
+        // reasons the floors are: a hint promotes within what was requested, and an unfilled form
+        // grid embeds near any query while asserting nothing. A blank form does not become a
+        // group's best answer by scoring well, and neither does a document nobody asked for.
+        // Chosen by score directly rather than by position in `ordered`, which sorts a
+        // hint-matching passage above a better-scoring one — correctly, for filling the pack, and
+        // wrongly for this: the slot exists precisely to carry the passage the other keys would
+        // demote. Ties break on document then text, the same last two keys `ordered` uses, so the
+        // choice is reproducible across runs where scores collide.
+        var topScore = Math.Max(0, settings.ReservedSlotsForTopScore);
+
+        if (topScore > 0)
+        {
+            var best = Enumerable.Range(0, ordered.Count)
+                .Where(i => targeted.Count == 0 || targeted.Contains(ordered[i].CategoryCode))
+                .Where(i => !ContentDensity.IsFormSkeleton(ordered[i].SearchedText))
+                .OrderByDescending(i => ordered[i].Score)
+                .ThenBy(i => ordered[i].DocumentName, StringComparer.Ordinal)
+                .ThenBy(i => ordered[i].SearchedText, StringComparer.Ordinal)
+                .Take(topScore);
+
+            foreach (var i in best.TakeWhile(_ => keep.Count < cap))
+            {
+                keep.Add(i);
+            }
+        }
+
+        // Sections next. A plan naming "Current Monthly Cash Flow" has asked for something more
         // specific than one naming category B, and the section slot usually satisfies the
         // category slot as a side effect. Ordinal order for the same reason as the categories
         // below: the pack must not depend on the order the plan happened to list them in.
@@ -1074,7 +1310,10 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 + "the point, or the extraction failed to capture it. The extraction's own report "
                 + "above is the place to look. Where the comparison needs one of these values and "
                 + "you cannot establish it, set comparisonPerformed to false and name it in "
-                + "missingInputs rather than working around it.");
+                + "missingInputs rather than working around it. Neither case is something the "
+                + "report did wrong: an extraction that failed to read a value is this pipeline's "
+                + "defect, not the adviser's, and reporting it as a shortcoming of the report "
+                + "spends a finding a reviewer has to read and then discard.");
         }
 
         // Evidence side, from the vector store.
@@ -1155,6 +1394,32 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             {
                 sb.AppendLine($"- Guard: {guard}");
             }
+
+            // Two rules about the shape of a comparison rather than about this one, printed here
+            // rather than in the standing rules for two reasons: they only apply to a group that
+            // has a comparison to make, and the standing prompt is at its length budget — a rule
+            // added there is read on every group whether or not it can bite.
+            //
+            // Both were bought by the same observed failure, from opposite ends. Two runs, on two
+            // models at a 3.3x cost difference, met a pair of tables stating one quantity on two
+            // bases. Neither asked why the two columns of the like-for-like table were identical
+            // — the answer was an ongoing charge applied to a side that does not pay it, stated
+            // in three separate retrieved documents. And the same confusion produced the largest
+            // false positive in either run: ten "contradictions" at High severity that are one
+            // undisclosed basis, tabulated ten times. One reading, two failures, one on each side
+            // of the ledger.
+            sb.AppendLine(
+                "- Establish what each figure is ON before calling two of them contradictory. Two "
+                + "values on different bases — one including a charge, a tax or a fee the other "
+                + "excludes, one at a different date, age or term — are not two answers to one "
+                + "question. Name both bases in \"analysis\". A basis the report never states is "
+                + "one finding about disclosure, not one finding per row of the table.");
+            sb.AppendLine(
+                "- And the reverse: where a comparison between an existing option and a "
+                + "recommended one shows no difference, ask what assumption produced that. A "
+                + "charge, a rate or a term applied to one side and not the other makes two "
+                + "unlike things look alike. Say which assumptions were applied to each side, or "
+                + "name what you could not establish in \"missingInputs\".");
         }
 
         if (group.Sufficiency is { } sufficiency)
@@ -1336,12 +1601,154 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         var start = Math.Max(0, at - (max / 4));
         var length = Math.Min(max, text.Length - start);
 
-        return $"... [{start:N0} earlier characters omitted]"
+        return TableContext(text, start)
+             + $"... [{start:N0} earlier characters omitted]"
              + Environment.NewLine
              + text.Substring(start, length)
              + (start + length < text.Length
                  ? Environment.NewLine + $"... [truncated, {text.Length - start - length:N0} more characters]"
                  : string.Empty);
+    }
+
+    /// <summary>
+    /// The caption and column headings of the table a window opens inside, or the empty string
+    /// where it does not open inside one.
+    ///
+    /// <b>A window that starts mid-table delivers a grid of numbers with no statement of what
+    /// they are on, and the assessor has been observed reading exactly that and getting it
+    /// backwards.</b> The centred window above was the fix for a row being cut off the end; this
+    /// is the fix for the row arriving without its heading. They are the same defect at two ends
+    /// of the same passage.
+    ///
+    /// The shape it protects is general and recurs across the domain: the same quantity tabulated
+    /// twice on two different bases — before and after a charge, gross and net, two ages, two
+    /// terms. The numbers alone cannot distinguish them. The caption above the table is the only
+    /// thing that can, and it is the first thing a window drops.
+    ///
+    /// Measured: two runs, on two models at a 3.3× cost difference, both failed on one such pair.
+    /// The better of the two named the pre-charge table as the post-charge one explicitly, and
+    /// the same confusion is the largest false positive in either run — ten "contradictions"
+    /// reported at High severity that are one undisclosed basis, tabulated ten times.
+    ///
+    /// Only the header row and the separator are carried, plus the nearest non-table line above
+    /// the table — its caption, whether that is a Markdown heading, a bold line, or a sentence.
+    /// The rows between the header and the window are not: they are what the window was cut to
+    /// leave out, and re-admitting them would defeat the cap.
+    /// </summary>
+    internal static string TableContext(string text, int start)
+    {
+        // Walk back to the start of the line the window opens on, then up while the lines still
+        // look like table rows. A Markdown table row begins with a pipe once the converter has
+        // normalised it; a line that does not is where the table began.
+        var lineStart = text.LastIndexOf('\n', Math.Min(start, text.Length - 1)) + 1;
+
+        if (!IsTableRow(LineAt(text, lineStart)))
+        {
+            return string.Empty;
+        }
+
+        var header = lineStart;
+
+        while (header > 0)
+        {
+            var previous = text.LastIndexOf('\n', header - 2) + 1;
+
+            if (previous >= header || !IsTableRow(LineAt(text, previous)))
+            {
+                break;
+            }
+
+            header = previous;
+        }
+
+        // The window already opens on the first row of the table, so it has its own heading.
+        if (header == lineStart)
+        {
+            return string.Empty;
+        }
+
+        var lines = new List<string> { LineAt(text, header) };
+
+        // The separator, where there is one. It carries the column count and the alignment, and
+        // without it a header row and a data row are indistinguishable to a reader.
+        var afterHeader = text.IndexOf('\n', header) + 1;
+
+        if (afterHeader > 0 && afterHeader < lineStart && IsTableSeparator(LineAt(text, afterHeader)))
+        {
+            lines.Add(LineAt(text, afterHeader));
+        }
+
+        // The caption: the nearest line above the table that says anything. A blank line between
+        // the caption and the table is normal Markdown and is skipped over.
+        var caption = string.Empty;
+        var above = header;
+
+        while (above > 0)
+        {
+            above = text.LastIndexOf('\n', above - 2) + 1;
+            var line = LineAt(text, above).Trim();
+
+            if (line.Length > 0)
+            {
+                caption = line;
+                break;
+            }
+
+            if (above == 0)
+            {
+                break;
+            }
+        }
+
+        var sb = new StringBuilder();
+        sb.AppendLine("... [this passage opens inside a table. Its caption and column headings:]");
+
+        if (caption.Length > 0)
+        {
+            sb.AppendLine(caption);
+        }
+
+        foreach (var line in lines)
+        {
+            sb.AppendLine(line);
+        }
+
+        sb.AppendLine("... [rows between the headings and the window omitted]");
+
+        return sb.ToString();
+    }
+
+    /// <summary>The line beginning at <paramref name="from"/>, without its terminator.</summary>
+    private static string LineAt(string text, int from)
+    {
+        if (from < 0 || from >= text.Length)
+        {
+            return string.Empty;
+        }
+
+        var end = text.IndexOf('\n', from);
+
+        return (end < 0 ? text[from..] : text[from..end]).TrimEnd('\r');
+    }
+
+    private static bool IsTableRow(string line) =>
+        line.TrimStart().StartsWith('|');
+
+    /// <summary>
+    /// Whether a row is the <c>|---|---|</c> rule under a header rather than data. Cells hold
+    /// only dashes and alignment colons, and there is at least one of them.
+    /// </summary>
+    private static bool IsTableSeparator(string line)
+    {
+        var cells = line.Trim().Trim('|').Split('|');
+
+        return cells.Length > 0
+            && cells.All(cell =>
+            {
+                var trimmed = cell.Trim();
+
+                return trimmed.Length > 0 && trimmed.All(c => c is '-' or ':');
+            });
     }
 
     private static string Truncate(string text, int max) =>

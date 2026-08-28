@@ -181,7 +181,7 @@ public class TriggerConsistencyTests
     public void RunSeventeensStoredModelWouldHaveReportedItsWrongComplexityTrigger()
     {
         var path = Path.Combine(
-            Repository(), "docs", "test-results", "Runtime-Logs", "latest", "Run-17",
+            Repository(), "docs", "Test-Runs", "Test-Case 1", "Runtime-Logs", "latest", "Run-17",
             "canonical-model_ABC-99_20260827-095807.json");
 
         Assert.True(File.Exists(path), $"The archived model is missing: {path}");
@@ -283,7 +283,7 @@ public class TriggerConsistencyTests
     public void RunSeventeensStoredModelHasItsComplexityTriggerSettledAndNothingElseDowngraded()
     {
         var path = Path.Combine(
-            Repository(), "docs", "test-results", "Runtime-Logs", "latest", "Run-17",
+            Repository(), "docs", "Test-Runs", "Test-Case 1", "Runtime-Logs", "latest", "Run-17",
             "canonical-model_ABC-99_20260827-095807.json");
 
         Assert.True(File.Exists(path), $"The archived model is missing: {path}");

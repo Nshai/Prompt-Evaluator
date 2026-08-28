@@ -44,6 +44,17 @@ namespace AiPromptEvaluator;
 /// the next, and in <c>expectSignals</c> it is actively wrong — a signal that does not appear makes
 /// the runner report the data point as "absent from the case file", so a value from one case
 /// manufactures a false absence on every other.</item>
+/// <item><b>L7</b> — an applicability rule enumerating a closed vocabulary is asserting that
+/// every value it omits does <i>not</i> trigger the check, and until now nothing said which
+/// values those were. The failure is silent and total: the rule is ANDed into the trigger, a
+/// check whose vocabulary member was left out never runs, and the output shows a check that
+/// did not run beside checks that ran and passed. Observed on a rule listing five members of
+/// an advice-action vocabulary the schema documents ten values for; the omitted sixth was the
+/// value two separate extractions recorded, and six material findings were lost to it without
+/// a search being made. <see cref="CheckPlanRunner"/> now runs such a check with a warning
+/// rather than skipping it — this is the half that makes the omission visible before the run
+/// rather than after. Reported at every load, and <b>not an error</b>: an exclusion is
+/// frequently correct, and the point is that it should be a decision somebody made.</item>
 /// <item><b>L3</b> — a plan that omits the category the evidence actually lives in is
 /// internally consistent and simply wrong. <b>No rule here can catch that</b>; it needs review
 /// against the check catalogue. CHK-010 was the observed case: the vulnerability overlay never
@@ -63,14 +74,24 @@ public static class CheckPlanLint
     }
 
     /// <summary>Every violation across a set of plans, in check then group order.</summary>
-    public static IReadOnlyList<Violation> Inspect(IEnumerable<CheckQueryPlan> plans) =>
+    /// <param name="plans">The loaded plans.</param>
+    /// <param name="vocabularies">
+    /// The canonical schema's documented vocabularies, from
+    /// <see cref="CanonicalVocabulary.Parse"/>. Optional: without it L7 is skipped, because a
+    /// rule can only be compared against a vocabulary somebody has read.
+    /// </param>
+    public static IReadOnlyList<Violation> Inspect(
+        IEnumerable<CheckQueryPlan> plans,
+        IReadOnlyDictionary<string, IReadOnlyList<string>>? vocabularies = null) =>
         plans
             .OrderBy(p => p.CheckId, StringComparer.OrdinalIgnoreCase)
-            .SelectMany(Inspect)
+            .SelectMany(p => Inspect(p, vocabularies))
             .ToList();
 
     /// <summary>Every violation in one plan.</summary>
-    public static IReadOnlyList<Violation> Inspect(CheckQueryPlan plan)
+    public static IReadOnlyList<Violation> Inspect(
+        CheckQueryPlan plan,
+        IReadOnlyDictionary<string, IReadOnlyList<string>>? vocabularies = null)
     {
         var violations = new List<Violation>();
 
@@ -178,9 +199,110 @@ public static class CheckPlanLint
         }
 
         violations.AddRange(InspectVocabularies(plan));
+        violations.AddRange(InspectApplicabilityCoverage(plan, vocabularies));
 
         return violations;
     }
+
+    /// <summary>
+    /// L7. How each applicability rule lines up against the vocabulary it is enumerating, in
+    /// both directions.
+    ///
+    /// The rule is read as an assertion — "these values trigger the check, the rest do not" — and
+    /// that assertion is reported so it can be agreed with or corrected. Nothing is inferred
+    /// about whether an exclusion is right; most are.
+    ///
+    /// <list type="bullet">
+    /// <item><b>excludes</b> — documented values the rule does not accept. Each is a case the
+    /// check will decline to run on, decided before any search.</item>
+    /// <item><b>accepts undocumented</b> — values the rule accepts that the schema does not
+    /// document. These are usually defensive, added against an extraction that was drifting off
+    /// the vocabulary, and they are worth seeing for the same reason: once the drift is fixed
+    /// upstream they match nothing and quietly stop being the safety net somebody intended.</item>
+    /// </list>
+    ///
+    /// Only rules naming a canonical path that resolves to a documented vocabulary are examined.
+    /// A boolean rule (<c>"replacementOrSwitch": ["true"]</c>) has a two-value vocabulary nothing
+    /// documents as prose and would report "excludes false" on every plan, which is noise; it is
+    /// skipped by requiring more than two documented members.
+    /// </summary>
+    /// <remarks>
+    /// Every message opens with a clause of the form
+    /// <c>rule/property excludes A, B</c> and then a dash and the advice, so a caller approving
+    /// these can key on the assertion without re-parsing the prose around it.
+    /// </remarks>
+    private static IEnumerable<Violation> InspectApplicabilityCoverage(
+        CheckQueryPlan plan,
+        IReadOnlyDictionary<string, IReadOnlyList<string>>? vocabularies)
+    {
+        if (vocabularies is null || plan.TriggerProbe is not { } probe)
+        {
+            yield break;
+        }
+
+        foreach (var rule in probe.Applicability)
+        {
+            var accepted = rule.AcceptedValues;
+
+            if (accepted.Count == 0)
+            {
+                continue;
+            }
+
+            foreach (var property in rule.CanonicalPaths
+                         .Select(LeafProperty)
+                         .Where(p => p.Length > 0)
+                         .Distinct(StringComparer.Ordinal))
+            {
+                if (!vocabularies.TryGetValue(property, out var documented) || documented.Count <= 2)
+                {
+                    continue;
+                }
+
+                var excluded = documented
+                    .Where(d => !accepted.Contains(d, StringComparer.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (excluded.Count > 0)
+                {
+                    yield return new Violation(
+                        plan.CheckId, string.Empty, "L7",
+                        $"{rule.Name}/{property} excludes {string.Join(", ", excluded)}"
+                        + $" — the rule accepts {accepted.Count} of the {documented.Count} values "
+                        + "the schema documents, so it asserts that the rest do not trigger this "
+                        + "check. Confirm that is intended: a value omitted by accident settles "
+                        + "the check before any search runs.");
+                }
+
+                var undocumented = accepted
+                    .Where(a => !documented.Contains(a, StringComparer.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (undocumented.Count > 0)
+                {
+                    yield return new Violation(
+                        plan.CheckId, string.Empty, "L7",
+                        $"{rule.Name}/{property} accepts undocumented "
+                        + $"{string.Join(", ", undocumented)}"
+                        + " — the schema's vocabulary for this property does not include "
+                        + $"{(undocumented.Count == 1 ? "it" : "them")}. Either the vocabulary "
+                        + "should, or these entries are covering for an extraction that writes "
+                        + "off-vocabulary values and will match nothing once it stops.");
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// The property name a canonical path ends in — <c>/existingArrangements[]/adviceAction</c>
+    /// is <c>adviceAction</c>. Array markers are the path's own syntax and carry no name.
+    /// </summary>
+    internal static string LeafProperty(string canonicalPath) =>
+        canonicalPath
+            .Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(segment => segment.Replace("[]", string.Empty, StringComparison.Ordinal))
+            .LastOrDefault(segment => segment.Length > 0)
+        ?? string.Empty;
 
     /// <summary>The vocabularies the query-plan schema declares, mirrored here, keyed by field.</summary>
     private static readonly (string Field, string[] Allowed)[] Vocabularies =

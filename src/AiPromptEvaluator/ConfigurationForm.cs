@@ -34,6 +34,11 @@ public partial class ConfigurationForm : Form
         passagesPerGroupUpDown.Value = Clamp(passagesPerGroupUpDown, _settings.MaxPassagesPerGroup);
         reserveCategoryUpDown.Value = Clamp(reserveCategoryUpDown, _settings.ReservedSlotsPerTargetedCategory);
         reserveSectionUpDown.Value = Clamp(reserveSectionUpDown, _settings.ReservedSlotsPerDeclaredSection);
+        reserveTopScoreUpDown.Value = Clamp(reserveTopScoreUpDown, _settings.ReservedSlotsForTopScore);
+        nearDuplicateUpDown.Value = Math.Clamp(
+            (decimal)_settings.NearDuplicateOverlap,
+            nearDuplicateUpDown.Minimum,
+            nearDuplicateUpDown.Maximum);
         decisionTokensUpDown.Value = Clamp(decisionTokensUpDown, _settings.DecisionMaxTokens);
         extractionReportUpDown.Value = Clamp(extractionReportUpDown, _settings.ExtractionReportMaxChars);
         parallelRequestsUpDown.Value = Clamp(parallelRequestsUpDown, _settings.MaxParallelRequests);
@@ -373,6 +378,8 @@ public partial class ConfigurationForm : Form
         _settings.MaxPassagesPerGroup = (int)passagesPerGroupUpDown.Value;
         _settings.ReservedSlotsPerTargetedCategory = (int)reserveCategoryUpDown.Value;
         _settings.ReservedSlotsPerDeclaredSection = (int)reserveSectionUpDown.Value;
+        _settings.ReservedSlotsForTopScore = (int)reserveTopScoreUpDown.Value;
+        _settings.NearDuplicateOverlap = (double)nearDuplicateUpDown.Value;
         _settings.DecisionMaxTokens = (int)decisionTokensUpDown.Value;
         _settings.ExtractionReportMaxChars = (int)extractionReportUpDown.Value;
         _settings.MaxParallelRequests = (int)parallelRequestsUpDown.Value;

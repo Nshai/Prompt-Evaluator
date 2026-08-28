@@ -1,6 +1,9 @@
+using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace AiPromptEvaluator;
 
@@ -26,11 +29,16 @@ public sealed record RunFingerprint(
     int MaxPassagesPerGroup,
     int ReservedSlotsPerTargetedCategory,
     int ReservedSlotsPerDeclaredSection,
+    int ReservedSlotsForTopScore,
+    double NearDuplicateOverlap,
+    bool CoreQueriesOnly,
+    bool IgnoreTriggerProbe,
     int ExtractionMaxTokens,
     int PlanCount,
     string PlanDigest,
     string CanonicalModelDigest,
-    string SchemaVersion)
+    string SchemaVersion,
+    string SettingsDigest)
 {
     /// <summary>
     /// Everything the runner reads that is not the case file itself. The plan digest covers
@@ -52,11 +60,50 @@ public sealed record RunFingerprint(
             MaxPassagesPerGroup: maxPassagesPerGroup,
             ReservedSlotsPerTargetedCategory: settings.ReservedSlotsPerTargetedCategory,
             ReservedSlotsPerDeclaredSection: settings.ReservedSlotsPerDeclaredSection,
+            ReservedSlotsForTopScore: settings.ReservedSlotsForTopScore,
+            NearDuplicateOverlap: settings.NearDuplicateOverlap,
+            CoreQueriesOnly: settings.CoreQueriesOnly,
+            IgnoreTriggerProbe: settings.IgnoreTriggerProbe,
             ExtractionMaxTokens: settings.ExtractionMaxTokens,
             PlanCount: planCount,
             PlanDigest: DigestOfFolder(planFolder, CheckQueryPlanLoader.SearchPattern),
             CanonicalModelDigest: model is null ? "none" : Digest(model.Json),
-            SchemaVersion: model?.SchemaVersion ?? "-");
+            SchemaVersion: model?.SchemaVersion ?? "-",
+            SettingsDigest: DigestOfSettings(settings));
+
+    /// <summary>
+    /// A digest over every setting that can move a finding.
+    ///
+    /// <b>The named fields above are what a reader acts on; this is what catches the ones nobody
+    /// thought to name.</b> Settings arrive one at a time beside the code that reads them, and
+    /// this record is edited separately or not at all — so the gap opens silently, and the symptom
+    /// is two runs that differ for a reason the fingerprint swore was identical. It had already
+    /// happened four times over when this was added, twice in one week.
+    ///
+    /// Opt-out rather than opt-in, so a setting added tomorrow is covered by default. See
+    /// <see cref="AppSettings.NotFingerprinted"/> for the three categories that are excluded and
+    /// why. Property names are sorted ordinally, so the digest does not depend on the order
+    /// reflection happens to return them in.
+    /// </summary>
+    public static string DigestOfSettings(AppSettings settings)
+    {
+        var sb = new StringBuilder();
+
+        foreach (var property in settings.GetType()
+                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                     .Where(p => p.CanRead && p.CanWrite)
+                     .Where(p => p.GetCustomAttribute<JsonPropertyNameAttribute>() is not null)
+                     .Where(p => !AppSettings.NotFingerprinted.Contains(p.Name))
+                     .OrderBy(p => p.Name, StringComparer.Ordinal))
+        {
+            sb.Append(property.Name)
+              .Append('=')
+              .Append(Convert.ToString(property.GetValue(settings), CultureInfo.InvariantCulture))
+              .Append('\0');
+        }
+
+        return sb.Length == 0 ? "empty" : Digest(sb.ToString());
+    }
 
     /// <summary>
     /// Each pinned parameter is releasable on its own — a gateway can reject one without
@@ -84,9 +131,46 @@ public sealed record RunFingerprint(
         + $"Embeddings {EmbeddingModel} · top {Cap(MaxSearchResults)}/search, "
         + $"{Cap(MaxPassagesPerGroup)}/group "
         + $"(reserving {ReservedSlotsPerDeclaredSection}/section, "
-        + $"{ReservedSlotsPerTargetedCategory}/category) · "
+        + $"{ReservedSlotsPerTargetedCategory}/category, "
+        + $"{ReservedSlotsForTopScore}/top score; "
+        + $"near-duplicate {DescribeOverlap(NearDuplicateOverlap)}) · "
         + $"extraction cap {ExtractionMaxTokens:N0} tok · "
-        + $"plans {PlanCount}@{PlanDigest} · model {CanonicalModelDigest} (schema v{SchemaVersion})";
+        + $"plans {PlanCount}@{PlanDigest} · model {CanonicalModelDigest} (schema v{SchemaVersion})"
+        + Environment.NewLine
+        + $"Settings {SettingsDigest} · "
+        + $"scope {(CoreQueriesOnly ? "Core queries only" : "Core and Supplementary queries")}"
+        + $" · {(IgnoreTriggerProbe ? "trigger probes bypassed — every check assessed" : "trigger probes honoured")}"
+        + Environment.NewLine
+        + Variance;
+
+    /// <summary>
+    /// What the reader has to know before comparing this run with another one.
+    ///
+    /// <b>Two runs of one case at this exact configuration disagreed on 3 of 78 outcomes and 12
+    /// of 69 severities.</b> Same assessor, same plan digest, same model digest, same caps —
+    /// and two groups moved from No Issue to Potential Concern, one moved back, and the two
+    /// halves of a single check's largest finding moved in opposite directions.
+    ///
+    /// Every improvement anyone proposes to this pipeline claims an effect of about that size.
+    /// So the floor is printed beside the fingerprint rather than left in a document, because a
+    /// reviewer diffing two runs will otherwise read three moved findings as a result.
+    ///
+    /// Where sampling is pinned this says so and says less. Where it is not — some gateways
+    /// reject the seed parameter outright, and the fingerprint's sampling line names which
+    /// parameters were actually sent — it says what that costs.
+    /// </summary>
+    public string Variance =>
+        Sampling.Contains("seed not pinned", StringComparison.Ordinal)
+            ? "Sampling is not pinned on this route, so two runs of this configuration will "
+              + "differ. Measured on one case: 3 of 78 outcomes and 12 of 69 severities moved "
+              + "between two runs with identical fingerprints. Do not read a difference of that "
+              + "size against another run as an effect; score two runs each side."
+            : "Sampling is pinned, which narrows run-to-run disagreement without abolishing it. "
+              + "A small difference against another run is still worth confirming twice.";
+
+    /// <summary>How the near-duplicate pass reads, including when it is switched off.</summary>
+    private static string DescribeOverlap(double overlap) =>
+        overlap >= 1.0 ? "off" : overlap.ToString("0.00");
 
     /// <summary>
     /// How a cap reads in the fingerprint. A run at an unbounded cap and a run at a large one

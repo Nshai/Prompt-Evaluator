@@ -219,6 +219,362 @@ public static class CrossGroupContradictions
         return sb.ToString();
     }
 
+    // ── documents one group has and another says are missing ──────────────────
+
+    /// <summary>One kind of document two groups disagreed about the existence of.</summary>
+    public sealed record DocumentDispute(string DocumentKind, string Present, string Absent);
+
+    /// <summary>
+    /// Kinds of document, as the domain names them.
+    ///
+    /// <b>Types, never instances.</b> "A capacity for loss questionnaire" recurs in every case in
+    /// this domain; a provider, a client or a filename does not, and a list naming one would tune
+    /// this pass to the case it was written from. Each entry is a phrase a finding would use about
+    /// any file.
+    ///
+    /// Ordered longest first so "capacity for loss questionnaire" is recognised as itself rather
+    /// than as a "questionnaire", which keeps two genuinely different documents from being paired.
+    /// </summary>
+    private static readonly string[] DocumentKinds =
+    [
+        "capacity for loss questionnaire",
+        "attitude to risk questionnaire",
+        "risk profile questionnaire",
+        "key features document",
+        "letter of authority",
+        "annual statement",
+        "cash flow model",
+        "fund factsheet",
+        "risk profile report",
+        "provider illustration",
+        "comparison report",
+        "research report",
+        "questionnaire",
+        "illustration",
+        "fact find",
+        "factfind",
+        "kiid",
+        "cashflow",
+    ];
+
+    /// <summary>Ways a finding says a document is not there.</summary>
+    private static readonly string[] AbsenceCues =
+    [
+        "no ", "not on file", "absent", "missing", "does not contain", "is not present",
+        "holds no", "contains no", "nothing on file", "was not provided", "not been provided",
+        "no evidence of", "could not be located", "is not in the",
+    ];
+
+    /// <summary>Ways a finding says a document is there.</summary>
+    private static readonly string[] PresenceCues =
+    [
+        "on file", "is present", "provided", "holds a", "contains a", "records", "shows",
+        "in the pack", "was retrieved", "documents", "sets out", "is available",
+    ];
+
+    /// <summary>
+    /// Where one group says a kind of document is on file and another says it is not.
+    ///
+    /// <b>This is the machine-detectable signature of the most expensive failure on record, and
+    /// unlike a prompt rule it does not depend on the assessor taking instruction.</b>
+    ///
+    /// Measured: two runs of one case, on two models at a 3.3× cost difference, received
+    /// byte-identical evidence packs. Both reported a questionnaire as missing from the file while
+    /// a passage carrying it sat at rank 6 of 24 in the pack being read. In the stronger run the
+    /// two halves were one check apart — one group cited the passage id the document had arrived
+    /// under, the next said the file held no such document — and nothing in the pipeline held both
+    /// sentences at once, so nothing could see it.
+    ///
+    /// Costs no retrieval and no model call, like the figures pass above, and is reported the same
+    /// way: as something to look at rather than as a finding. One side may be talking about a
+    /// different document, and only a reader can settle that.
+    /// </summary>
+    public static IReadOnlyList<DocumentDispute> Documents(IEnumerable<CheckFinding> findings)
+    {
+        var present = new Dictionary<string, (string Where, string Sentence)>(StringComparer.Ordinal);
+        var absent = new Dictionary<string, (string Where, string Sentence)>(StringComparer.Ordinal);
+
+        foreach (var finding in findings)
+        {
+            foreach (var group in finding.Groups)
+            {
+                var where = $"{finding.CheckId}/{group.GroupId}";
+
+                foreach (var sentence in DocumentSentences(group))
+                {
+                    if (KindIn(sentence) is not { } kind)
+                    {
+                        continue;
+                    }
+
+                    var denied = Denials(sentence, kind).ToList();
+
+                    foreach (var key in denied)
+                    {
+                        absent.TryAdd(key, (where, Shorten(sentence)));
+                    }
+
+                    // A sentence that denies the document does not also assert it, whatever cues
+                    // it carries. "No risk profile report was provided" contains "provided", and
+                    // reading it both ways puts one sentence on both sides of its own dispute.
+                    // A denial of a *part* is not such a sentence: "the questionnaire is on file
+                    // and records no rating" asserts the document and denies the rating, and both
+                    // halves are true and worth keeping.
+                    if (!denied.Contains(Key(kind, string.Empty), StringComparer.Ordinal)
+                        && Claims(sentence, PresenceCues))
+                    {
+                        // Both keys. A sentence saying the responses are on file says the
+                        // questionnaire is too, and a group denying either should meet it.
+                        present.TryAdd(Key(kind, string.Empty), (where, Shorten(sentence)));
+
+                        if (ObjectAfter(sentence, sentence.IndexOf(kind, StringComparison.OrdinalIgnoreCase) + kind.Length) is { } carried)
+                        {
+                            present.TryAdd(Key(kind, carried), (where, Shorten(sentence)));
+                        }
+                    }
+                }
+            }
+        }
+
+        return present.Keys
+            .Where(absent.ContainsKey)
+            .Where(key => present[key].Where != absent[key].Where)
+            .OrderBy(key => key, StringComparer.Ordinal)
+            .Select(key => new DocumentDispute(
+                key,
+                $"[{present[key].Where}] {present[key].Sentence}",
+                $"[{absent[key].Where}] {absent[key].Sentence}"))
+            .ToList();
+    }
+
+    /// <summary>The addendum for the report.</summary>
+    public static string Format(IReadOnlyList<DocumentDispute> disputes)
+    {
+        if (disputes.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine(new string('=', 78));
+        sb.AppendLine("DOCUMENTS ONE CHECK FOUND AND ANOTHER CALLED MISSING");
+        sb.AppendLine(new string('=', 78));
+        sb.AppendLine();
+        sb.AppendLine(
+            "One requirement says a kind of document is on file and another says it is not. Both "
+            + "cannot be right, and the difference matters: a document wrongly called missing "
+            + "turns evidence the file holds into a gap the adviser is asked to explain. Check "
+            + "the passage ids — the group reporting the absence may simply not have been given "
+            + "the passage, which is a retrieval problem rather than an advice one.");
+        sb.AppendLine();
+
+        foreach (var dispute in disputes)
+        {
+            sb.AppendLine($"  {dispute.DocumentKind}");
+            sb.AppendLine($"    found:   {dispute.Present}");
+            sb.AppendLine($"    missing: {dispute.Absent}");
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// The sentences a claim about a document's existence is made in.
+    ///
+    /// A wider set than <see cref="Sentences"/>, and for a reason. That method reads only the two
+    /// sided fields, because for a figure it is the side — assertion or evidence — that turns two
+    /// numbers into a contradiction. A statement about whether a document exists has no such
+    /// structure and is usually written in "analysis", which is exactly where both observed halves
+    /// of the measured case were: <i>"the file holds no capacity for loss questionnaire
+    /// responses"</i> and <i>"the questionnaire responses in [P17] are on file"</i>.
+    ///
+    /// "reportSays" is included and rarely contributes. It is left in because a group occasionally
+    /// records the report's own claim about what the file contains, and that claim disagreeing
+    /// with another group is the same defect seen from the other side.
+    /// </summary>
+    private static IEnumerable<string> DocumentSentences(GroupFinding group)
+    {
+        var sources = new[] { group.FileSays, group.Analysis, group.ReportSays }
+            .Concat(group.Discrepancies);
+
+        foreach (var text in sources.Where(t => !string.IsNullOrWhiteSpace(t)))
+        {
+            foreach (var sentence in SentenceBoundary.Split(text))
+            {
+                var trimmed = sentence.Trim();
+
+                if (trimmed.Length > 12)
+                {
+                    yield return trimmed;
+                }
+            }
+        }
+    }
+
+    /// <summary>The document kind a sentence is about, longest match first, or null.</summary>
+    private static string? KindIn(string sentence) =>
+        DocumentKinds.FirstOrDefault(
+            kind => sentence.Contains(kind, StringComparison.OrdinalIgnoreCase));
+
+    private static bool Claims(string sentence, string[] cues) =>
+        cues.Any(cue => sentence.Contains(cue, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
+    /// Parts of a document a finding can separately say are missing.
+    ///
+    /// <b>A claim about a document is really a claim about a document and a part of it, and
+    /// collapsing the two inverts the result.</b> "The questionnaire is on file and records no
+    /// capacity for loss rating" is the most useful sentence an assessor can write about a thin
+    /// document: an absence cue, a presence cue, and no contradiction at all. Keyed on the
+    /// document alone it pairs against every presence claim about that document — including, in
+    /// the first draft of this pass, a sentence from the same finding.
+    ///
+    /// Keyed on the part, it pairs only against a claim about the same part, which is what a
+    /// contradiction is. Generic to the domain, like the document kinds: every case file has
+    /// documents with responses, notes and ratings in them.
+    /// </summary>
+    /// <remarks>
+    /// "record" and "records" are deliberately absent. In these findings they are almost always
+    /// verbs — "the report records", "[P8] records no additional notes" — and as a part they
+    /// matched inside "recorded", which turned "has no recorded responses" into a denial of
+    /// something called a record rather than of the responses. That un-paired the one real
+    /// contradiction this pass was built from.
+    /// </remarks>
+    private static readonly string[] DocumentParts =
+    [
+        "responses", "response", "answers", "answer", "notes", "entries", "rating", "ratings",
+        "score", "scores", "content", "contents", "data",
+    ];
+
+    /// <summary>
+    /// How far from a cue a document or a part may sit and still be what the cue is about. Long
+    /// enough to carry "the case file contains no", short enough not to reach across a clause
+    /// boundary into a negation about something else entirely.
+    /// </summary>
+    private const int CueReach = 40;
+
+    /// <summary>What a sentence denies about <paramref name="kind"/>, as zero or more keys.</summary>
+    /// <remarks>
+    /// Two shapes, and both were observed in one run of one check:
+    ///
+    /// <list type="bullet">
+    /// <item><b>Before</b> — "the file holds no capacity for loss questionnaire". The document
+    /// itself is denied, so the key names the document and nothing else.</item>
+    /// <item><b>After</b> — "the questionnaire has no recorded responses". A part is denied, so
+    /// the key names the part; a group saying the responses are on file meets it, and a group
+    /// saying the questionnaire is on file does not.</item>
+    /// </list>
+    ///
+    /// The second shape is why this returns a set rather than a boolean. One sentence can deny
+    /// two parts — "shows the responses but no derived rating" — and only one of them may have a
+    /// counterpart.
+    /// </remarks>
+    private static IEnumerable<string> Denials(string sentence, string kind)
+    {
+        var at = sentence.IndexOf(kind, StringComparison.OrdinalIgnoreCase);
+
+        if (at < 0)
+        {
+            yield break;
+        }
+
+        var after = at + kind.Length;
+
+        foreach (var cue in AbsenceCues)
+        {
+            var from = 0;
+
+            while (sentence.IndexOf(cue, from, StringComparison.OrdinalIgnoreCase) is var cueAt and >= 0)
+            {
+                var cueEnd = cueAt + cue.Length;
+                from = cueEnd;
+
+                if (cueAt < at)
+                {
+                    // Before the document, and near enough to be about it — but only if nothing
+                    // else is named in between, or "no rating was recorded in the questionnaire"
+                    // would read as a denial of the questionnaire.
+                    if (at - cueEnd <= CueReach && ObjectAfter(sentence, cueEnd, at) is null)
+                    {
+                        yield return Key(kind, string.Empty);
+                    }
+                }
+                else if (cueAt >= after && ObjectAfter(sentence, cueEnd) is { } part)
+                {
+                    yield return Key(kind, part);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// The first document part named within <see cref="CueReach"/> of <paramref name="from"/>,
+    /// or null. <paramref name="limit"/> bounds the search where the caller needs it to stop at a
+    /// known position rather than at the usual reach.
+    /// </summary>
+    private static string? ObjectAfter(string sentence, int from, int? limit = null)
+    {
+        if (from < 0 || from >= sentence.Length)
+        {
+            return null;
+        }
+
+        var to = Math.Min(limit ?? from + CueReach, sentence.Length);
+
+        if (to <= from)
+        {
+            return null;
+        }
+
+        var window = sentence[from..to];
+
+        // Whole words. Matched as substrings, "record" is inside "recorded" and "answer" inside
+        // "answered", so a denial of the responses became a denial of something else and the two
+        // halves of a real contradiction stopped meeting.
+        return DocumentParts
+            .Select(part => (part, at: WordAt(window, part)))
+            .Where(found => found.at >= 0)
+            .OrderBy(found => found.at)
+            .ThenByDescending(found => found.part.Length)
+            .Select(found => Singular(found.part))
+            .FirstOrDefault();
+    }
+
+    /// <summary>Where <paramref name="word"/> appears in <paramref name="text"/> as a whole word, or -1.</summary>
+    private static int WordAt(string text, string word)
+    {
+        for (var at = 0; at <= text.Length - word.Length; at++)
+        {
+            if (string.Compare(text, at, word, 0, word.Length, StringComparison.OrdinalIgnoreCase) != 0)
+            {
+                continue;
+            }
+
+            var before = at == 0 || !char.IsLetter(text[at - 1]);
+            var after = at + word.Length == text.Length || !char.IsLetter(text[at + word.Length]);
+
+            if (before && after)
+            {
+                return at;
+            }
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Plural and singular are the same part. "has no recorded response" and "shows the
+    /// responses" are about one thing, and keying them apart would silently un-pair them.
+    /// </summary>
+    private static string Singular(string part) =>
+        part.EndsWith('s') ? part[..^1] : part;
+
+    /// <summary>A claim's key: the document, and the part of it being claimed about.</summary>
+    private static string Key(string kind, string part) =>
+        part.Length == 0 ? kind : $"{kind} ({part})";
+
     // ──────────────────────────────────────────────
 
     /// <summary>

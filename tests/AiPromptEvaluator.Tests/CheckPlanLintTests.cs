@@ -471,6 +471,91 @@ public class CheckPlanLintTests
             "Vocabulary violations: " + string.Join("; ", violations));
     }
 
+    /// <summary>
+    /// L7, on the shipped plans: every value an applicability rule excludes from its schema
+    /// vocabulary is listed here, or the build fails.
+    ///
+    /// <b>This is an approval test, not a correctness test.</b> Excluding a value is usually
+    /// right — an advice action of "Retain" genuinely does not trigger a switch check. What was
+    /// wrong was that nobody could see the exclusions, so one made by accident looked exactly
+    /// like one made on purpose, and the check it silenced reported as clear having searched
+    /// nothing.
+    ///
+    /// Measured: a rule accepted five of the ten values documented for <c>adviceAction</c>. The
+    /// sixth, <c>RetainAndSwitchFunds</c>, is what two separate extractions of the same case
+    /// recorded — correctly — and six material findings were lost to its omission across two
+    /// runs on two different models. Adding it to the plan fixes that case. This test is what
+    /// makes the next omission fail here rather than in a run analysis.
+    ///
+    /// To change the shipped set: change the plan, run this, and paste the reported line in.
+    /// Re-approving is one edit; noticing without this test took two runs and a benchmark.
+    /// </summary>
+    [Fact]
+    public void EveryApplicabilityExclusionInTheShippedPlansHasBeenApproved()
+    {
+        var approved = new[]
+        {
+            // CHK-002's applicability narrows an objectives check to investment and pension
+            // goals. A case whose only recorded objective is protection, a mortgage or estate
+            // planning still has objectives to align, so this exclusion is doubtful — but it no
+            // longer decides anything on its own: the rule is ANDed with isAdvisedCase, and
+            // CheckPlanRunner now runs a check whose trigger field affirmatively says it applies
+            // even when a rule disagrees. Recorded here rather than widened, because which
+            // objectives CHK-002 covers is a question about the check catalogue, not about lint.
+            "CHK-002 goalTypes/objectiveType excludes Protection, Mortgage, EstatePlanning, "
+            + "Budget, EquityRelease, Other",
+
+            // The same rule accepts two values the schema does not document. They are covering
+            // for an extraction that was observed writing "RetirementObjective" where the
+            // vocabulary says "Pension"; CanonicalVocabulary now corrects that class
+            // mechanically, so these are a belt beside a brace rather than dead weight.
+            "CHK-002 goalTypes/objectiveType accepts undocumented Retirement, RetirementObjective",
+
+            // CHK-009 assesses a replacement or switch. A plan retained unchanged, stopped,
+            // amended in place, or carrying no advice at all is not one.
+            "CHK-009 adviceActions/adviceAction excludes Retain, Stop, Amend, NoAdviceGiven",
+        };
+
+        var (plans, _) = CheckQueryPlanLoader.Load(PlanFolder);
+
+        var vocabularies = CanonicalVocabulary.Parse(
+            File.ReadAllText(Path.Combine(
+                AppContext.BaseDirectory, "canonical-suitability-model.schema.json")));
+
+        var reported = CheckPlanLint.Inspect(plans.Values, vocabularies)
+            .Where(v => v.Rule == "L7")
+            .Select(Summarise)
+            .OrderBy(s => s, StringComparer.Ordinal)
+            .ToList();
+
+        var unapproved = reported.Except(approved, StringComparer.Ordinal).ToList();
+
+        Assert.True(
+            unapproved.Count == 0,
+            "An applicability rule excludes values nobody has approved. Confirm each exclusion "
+            + "is deliberate — a value omitted by accident settles its check before any search "
+            + "runs — then add the line to `approved`:"
+            + Environment.NewLine
+            + string.Join(Environment.NewLine, unapproved.Select(u => "  \"" + u + "\",")));
+
+        // The other direction: an approval left behind after the plan stopped excluding
+        // anything is a comment claiming a decision that is no longer being made.
+        Assert.Empty(approved.Except(reported, StringComparer.Ordinal));
+    }
+
+    /// <summary>
+    /// One L7 violation reduced to the assertion being approved, without the advice that
+    /// follows it. Every L7 message opens with that clause and separates it with an em dash.
+    /// </summary>
+    private static string Summarise(CheckPlanLint.Violation violation)
+    {
+        var end = violation.Detail.IndexOf(" — ", StringComparison.Ordinal);
+
+        return violation.CheckId
+            + " "
+            + (end < 0 ? violation.Detail : violation.Detail[..end]);
+    }
+
     // ──────────────────────────────────────────────
 
     private static string PlanFolder =>

@@ -65,6 +65,11 @@ public static class Prompts
           the report claims a fund, plan or figure is aligned, consistent or sufficient and the
           evidence that would support it is absent, the claim is unsupported — that is a Potential
           Concern, not a comparisonPerformed of false.
+        - Before reporting that the file holds no document, record or assessment of some kind,
+          look through the passages for one. Where a passage of that kind is present you may not
+          call it absent: say what it holds, and say separately whether what it holds answers the
+          requirement. "It is on file and records no rating" and "there is none" are different
+          findings, and only the first is available to you when the document is in front of you.
         - Quote only text that appears in the passages given, verbatim, and name the passage id it
           came from. Quotations are checked against the pack automatically. Do not adjust one to
           fit your reasoning: if the evidence contradicts the report, that is the finding.
@@ -93,11 +98,12 @@ public static class Prompts
           where the requirement is met — a category on a passing requirement reads as a concern
           nobody raised. Distinguish: evidence the file lacks from a component the report lacks;
           two sources disagreeing from one value wrong in form; a reason that does not support the
-          recommendation from something disclosed but not prominently. Where the plan names the
-          categories this requirement usually raises, that is a steer and not a menu: if what you
-          found is a different kind of problem, say the kind you found.
+          recommendation from something disclosed but not prominently.
         - Do not soften, hedge or omit a contradiction to make the finding read more favourably.
           Where a genuine mismatch stands after the guards, the outcome is Potential Concern.
+          Uncertainty about how serious it is belongs in "severity" and "analysis", never in the
+          decision whether to report it: a difference you cannot weigh is a Low finding, not a
+          silence.
         - Return one JSON object and nothing else. No prose outside it, no markdown fences.
         """;
 

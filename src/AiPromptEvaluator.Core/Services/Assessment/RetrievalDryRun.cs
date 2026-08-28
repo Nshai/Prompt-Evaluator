@@ -223,8 +223,15 @@ public sealed class RetrievalDryRun
             .SelectMany(q => q.TargetCategories)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+        // Every step CheckPlanRunner.GatherAsync takes, in the same order, because the entire
+        // value of this class is that its pack is the pack. A step added there and not here makes
+        // the dry run a report on a pack no assessor will ever see — and it would report it
+        // confidently, which is worse than not running at all.
+        var distinct = CheckPlanRunner.CollapseNearDuplicates(
+            passages, _settings.NearDuplicateOverlap);
+
         var ranked = CheckPlanRunner.Rank(
-            passages, targeted, group.DeclaredEvidenceSections, group.DeclaredEvidenceCategories,
+            distinct, targeted, group.DeclaredEvidenceSections, group.DeclaredEvidenceCategories,
             _settings);
 
         // Resolved against the stored model where one was supplied. A path that resolves to

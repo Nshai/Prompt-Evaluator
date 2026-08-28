@@ -93,6 +93,10 @@ partial class ConfigurationForm
     private NumericUpDown reserveCategoryUpDown;
     private Label reserveSectionLabel;
     private NumericUpDown reserveSectionUpDown;
+    private Label reserveTopScoreLabel;
+    private NumericUpDown reserveTopScoreUpDown;
+    private Label nearDuplicateLabel;
+    private NumericUpDown nearDuplicateUpDown;
     private FlowLayoutPanel budgetNumericRow;
     private Label decisionTokensLabel;
     private NumericUpDown decisionTokensUpDown;
@@ -228,6 +232,10 @@ partial class ConfigurationForm
         reserveCategoryUpDown = new NumericUpDown();
         reserveSectionLabel = new Label();
         reserveSectionUpDown = new NumericUpDown();
+        reserveTopScoreLabel = new Label();
+        reserveTopScoreUpDown = new NumericUpDown();
+        nearDuplicateLabel = new Label();
+        nearDuplicateUpDown = new NumericUpDown();
         budgetNumericRow = new FlowLayoutPanel();
         decisionTokensLabel = new Label();
         decisionTokensUpDown = new NumericUpDown();
@@ -277,6 +285,8 @@ partial class ConfigurationForm
         ((System.ComponentModel.ISupportInitialize)passagesPerGroupUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)reserveCategoryUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)reserveSectionUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)reserveTopScoreUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)nearDuplicateUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)decisionTokensUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)extractionReportUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)parallelRequestsUpDown).BeginInit();
@@ -981,6 +991,10 @@ partial class ConfigurationForm
         packNumericRow.Controls.Add(reserveCategoryUpDown);
         packNumericRow.Controls.Add(reserveSectionLabel);
         packNumericRow.Controls.Add(reserveSectionUpDown);
+        packNumericRow.Controls.Add(reserveTopScoreLabel);
+        packNumericRow.Controls.Add(reserveTopScoreUpDown);
+        packNumericRow.Controls.Add(nearDuplicateLabel);
+        packNumericRow.Controls.Add(nearDuplicateUpDown);
         packNumericRow.Margin = new Padding(0, 0, 0, 0);
         packNumericRow.Name = "packNumericRow";
         packNumericRow.WrapContents = true;
@@ -1026,6 +1040,37 @@ partial class ConfigurationForm
         reserveSectionUpDown.Minimum = 0;
         reserveSectionUpDown.Name = "reserveSectionUpDown";
         reserveSectionUpDown.Width = 70;
+        //
+        // reserveTopScoreLabel
+        reserveTopScoreLabel.Anchor = AnchorStyles.Left;
+        reserveTopScoreLabel.AutoSize = true;
+        reserveTopScoreLabel.Margin = new Padding(0, 7, 6, 0);
+        reserveTopScoreLabel.Name = "reserveTopScoreLabel";
+        reserveTopScoreLabel.Text = $"Reserve / top score (0 = none, default {Defaults.ReservedSlotsForTopScore})";
+        //
+        // reserveTopScoreUpDown
+        reserveTopScoreUpDown.Margin = new Padding(0, 3, 16, 3);
+        reserveTopScoreUpDown.Maximum = 10;
+        reserveTopScoreUpDown.Minimum = 0;
+        reserveTopScoreUpDown.Name = "reserveTopScoreUpDown";
+        reserveTopScoreUpDown.Width = 70;
+        //
+        // nearDuplicateLabel
+        nearDuplicateLabel.Anchor = AnchorStyles.Left;
+        nearDuplicateLabel.AutoSize = true;
+        nearDuplicateLabel.Margin = new Padding(0, 7, 6, 0);
+        nearDuplicateLabel.Name = "nearDuplicateLabel";
+        nearDuplicateLabel.Text =
+            $"Near-duplicate overlap (1 = off, default {Defaults.NearDuplicateOverlap:0.00})";
+        //
+        // nearDuplicateUpDown
+        nearDuplicateUpDown.DecimalPlaces = 2;
+        nearDuplicateUpDown.Increment = 0.05M;
+        nearDuplicateUpDown.Margin = new Padding(0, 3, 0, 3);
+        nearDuplicateUpDown.Maximum = 1.00M;
+        nearDuplicateUpDown.Minimum = 0.50M;
+        nearDuplicateUpDown.Name = "nearDuplicateUpDown";
+        nearDuplicateUpDown.Width = 70;
 
         // budgetNumericRow — how much a model may write, and how much context it is given
         budgetNumericRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
@@ -1285,6 +1330,8 @@ partial class ConfigurationForm
         ((System.ComponentModel.ISupportInitialize)parallelRequestsUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)extractionReportUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)decisionTokensUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)nearDuplicateUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)reserveTopScoreUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)reserveSectionUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)reserveCategoryUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)passagesPerGroupUpDown).EndInit();

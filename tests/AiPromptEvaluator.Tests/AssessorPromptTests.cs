@@ -99,6 +99,47 @@ public class AssessorPromptTests
         Assert.Contains("why the two are not comparable", Prompt);
     }
 
+    // ── absence discipline ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// The sharpest single result in the two-model comparison, and the rule it bought.
+    ///
+    /// Both runs received byte-identical packs. Both reported a questionnaire as absent from the
+    /// case file while a passage carrying it sat at rank 6 of 24 in the very pack being read. The
+    /// stronger model contradicted itself inside one check: one group cited the passage id the
+    /// document had arrived under, and another, one pack away, said the file held no such
+    /// document.
+    ///
+    /// The attractive explanation was requirement confusion — the weaker run misidentified which
+    /// requirement it was answering in 49 of 78 responses. The stronger run scored 0 of 78 and
+    /// missed it anyway, which rules that out and leaves the assessor's own reading of the pack.
+    ///
+    /// So the rule is narrow and mechanical: check before declaring an absence, and separate "it
+    /// is here and does not answer the question" from "it is not here". They are different
+    /// findings with different remedies, and the first is far more common than the runs suggest.
+    /// </summary>
+    [Fact]
+    public void TheRulesRequireCheckingThePackBeforeDeclaringADocumentAbsent()
+    {
+        Assert.Contains("Before reporting that the file holds no document", Prompt);
+        Assert.Contains("Where a passage of that kind is present you may not call it absent", Prompt);
+    }
+
+    /// <summary>
+    /// Severity is where uncertainty goes, not the decision to report at all.
+    ///
+    /// The model swap that fixed several false positives also <b>lost three findings the cheaper
+    /// model caught</b>, one of them a headline defect of the case, by raising less. Better
+    /// calibration should buy fewer spurious findings and not fewer real ones, and this is the
+    /// clause that separates the two. Merged into the existing "do not soften" rule rather than
+    /// added beside it: they are one instruction about the same reflex.
+    /// </summary>
+    [Fact]
+    public void TheRulesPutUncertaintyInSeverityRatherThanInSilence()
+    {
+        Assert.Contains("a difference you cannot weigh is a Low finding, not a silence", Prompt);
+    }
+
     // ── what must not be lost ─────────────────────────────────────────────────
 
     /// <summary>
@@ -137,11 +178,33 @@ public class AssessorPromptTests
     ///
     /// Raising it again should need the same kind of evidence. If it reaches 6,000, the right move
     /// is probably to cut a rule that has stopped earning its place rather than to widen again.
+    ///
+    /// <b>6,000 from 5,500, and this time the raise was paid for.</b> What bought it: one rule,
+    /// on not calling a document absent when a passage of that kind is in the pack. Two runs of
+    /// one case, on two models at a 3.3× cost difference, received byte-identical packs, and both
+    /// reported a questionnaire as missing from the file while it sat at rank 6 of 24 in the pack
+    /// they were reading. The stronger run contradicted itself inside one check — one group naming
+    /// the passage id the document arrived under, another saying the file held no such document.
+    ///
+    /// Prompt adherence rules out the obvious explanation: it went from 49 of 78 responses
+    /// misidentifying their own requirement to 0 of 78, and the miss survived unchanged.
+    ///
+    /// What paid for it, per the note above: the clause telling the assessor that a plan's
+    /// categorisation steer is "a steer and not a menu". That is printed verbatim by
+    /// <c>CheckPlanRunner.BuildGroupPrompt</c> directly beneath the steer itself, where it is
+    /// adjacent to the thing it qualifies. Two copies of one rule, and the standing one was the
+    /// weaker placement.
+    ///
+    /// Two further rules bought by the same comparison are deliberately <i>not</i> here. They
+    /// govern how to read a comparison whose two sides sit on different bases, they can only bite
+    /// on a group that has a comparison, and they are printed in that group's "How to compare"
+    /// block. A rule that cannot apply to two thirds of the groups reading it does not belong in
+    /// the text every group reads.
     /// </summary>
     [Fact]
     public void ThePromptStaysShortEnoughToBeReadEveryTime()
     {
-        Assert.InRange(Raw.Length, 2_000, 5_500);
+        Assert.InRange(Raw.Length, 2_000, 6_000);
     }
 
     /// <summary>

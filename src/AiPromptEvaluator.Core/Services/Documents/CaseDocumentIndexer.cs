@@ -219,8 +219,8 @@ public sealed class CaseDocumentIndexer : ICaseDocumentIndexer
         CancellationToken cancellationToken = default)
     {
         var documentName = Path.GetFileName(filePath);
-        var markdown = WebUtility.HtmlDecode(
-            await File.ReadAllTextAsync(filePath, cancellationToken).ConfigureAwait(false));
+        var markdown = PromoteBoldPseudoHeadings(WebUtility.HtmlDecode(
+            await File.ReadAllTextAsync(filePath, cancellationToken).ConfigureAwait(false)));
 
         try
         {
@@ -251,6 +251,99 @@ public sealed class CaseDocumentIndexer : ICaseDocumentIndexer
             return AsPlainText(documentName, markdown, maxElementCharacters);
         }
     }
+
+    /// <summary>
+    /// Rewrites a line that is nothing but bold text as a real heading.
+    ///
+    /// <b>A heading a converter emitted as bold text is not a heading to anything downstream, and
+    /// four section hints failed on that in every run they were measured in.</b> The document has
+    /// an appendix; the reader sees a paragraph that happens to be emphasised; the chunker gives
+    /// it no section context; the plan's hint naming the appendix matches nothing; the reserved
+    /// slot goes unclaimed; and the diagnostic correctly reports a hint that matched nothing,
+    /// which reads as a typo in the plan. Every layer behaves properly and the evidence does not
+    /// arrive.
+    ///
+    /// The same defect puts a table's caption out of reach. A caption is usually the bold line
+    /// immediately above the table, and where two tables state the same quantity on two different
+    /// bases it is the only thing distinguishing them — which is a shape both assessors on record
+    /// have got backwards.
+    ///
+    /// Deliberately conservative, because the alternative is inventing structure. A line
+    /// qualifies only if it is <i>entirely</i> one bold span, short enough to be a title, not
+    /// ending in sentence punctuation, and standing alone between blank lines. Emphasis inside a
+    /// paragraph, a bold lead-in followed by prose on the same line, and a long bold sentence are
+    /// all left exactly as they are.
+    ///
+    /// Level four, so a promoted heading nests under a document's real headings rather than
+    /// competing with them: the aim is to give the block a name the chunker and the hints can
+    /// see, not to reorganise a document that already has a structure.
+    /// </summary>
+    internal static string PromoteBoldPseudoHeadings(string markdown)
+    {
+        if (!markdown.Contains("**", StringComparison.Ordinal))
+        {
+            return markdown;
+        }
+
+        var lines = markdown.Split('\n');
+        var promoted = false;
+
+        for (var i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i].TrimEnd('\r');
+            var trimmed = line.Trim();
+
+            if (!IsBoldOnlyLine(trimmed))
+            {
+                continue;
+            }
+
+            // Standing alone: nothing but blank lines on either side. A bold line butting
+            // directly against a paragraph is that paragraph's emphasis, not its heading.
+            if (!IsBlank(lines, i - 1) || !IsBlank(lines, i + 1))
+            {
+                continue;
+            }
+
+            lines[i] = "#### " + trimmed[2..^2].Trim();
+            promoted = true;
+        }
+
+        return promoted ? string.Join('\n', lines) : markdown;
+    }
+
+    /// <summary>
+    /// Whether a line is one bold span and nothing else, short enough to be a title, and not a
+    /// sentence. The inner-span test is what keeps <c>**Total** for the year was **£4,000**</c>
+    /// out: two spans on one line is emphasis, however the line begins and ends.
+    /// </summary>
+    private static bool IsBoldOnlyLine(string trimmed)
+    {
+        const int LongestPlausibleHeading = 80;
+
+        if (trimmed.Length <= 4
+            || trimmed.Length > LongestPlausibleHeading
+            || !trimmed.StartsWith("**", StringComparison.Ordinal)
+            || !trimmed.EndsWith("**", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var inner = trimmed[2..^2].Trim();
+
+        return inner.Length > 0
+            && !inner.Contains("**", StringComparison.Ordinal)
+            && !inner.EndsWith('.')
+            && !inner.EndsWith(':')
+            && !inner.EndsWith('?');
+    }
+
+    /// <summary>
+    /// Whether the line at <paramref name="index"/> is blank, treating the edges of the document
+    /// as blank — a heading on the first line has nothing above it and is still a heading.
+    /// </summary>
+    private static bool IsBlank(string[] lines, int index) =>
+        index < 0 || index >= lines.Length || string.IsNullOrWhiteSpace(lines[index]);
 
     /// <summary>The size of the largest leaf element — what actually gets sent as one embedding call.</summary>
     internal static int LargestElement(IngestionDocument document) =>

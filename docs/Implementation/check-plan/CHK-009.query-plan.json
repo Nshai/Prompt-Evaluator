@@ -24,6 +24,7 @@
       {
         "adviceActions": [
           "Switch",
+          "RetainAndSwitchFunds",
           "PartialTransfer",
           "FullTransfer",
           "Encash",

@@ -1,3 +1,9 @@
+---
+source: Fact Find (96).pdf
+converted: 2026-08-31T01:09:47Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Your Information
 
 [No details]
@@ -14,17 +20,17 @@
 
 ## Advice Areas
 
-| Date of Meeting                      | 19/05/2026                                                                                                                                                          |
-|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Type of Meeting                      | Face to Face                                                                                                                                                        |
-| Anybody else present at the Meeting? | No                                                                                                                                                                  |
-| Please provide details               | Meeting took place at clients home at 12.30pm. Paper copies of IID taken with me and ran through at the meeting. Left a copy with them but will also e-mail a copy. |
-| Clients present                      |                                                                                                                                                                     |
-| Protection                           | No                                                                                                                                                                  |
-| Mortgage                             | No                                                                                                                                                                  |
-| Retirement Planning                  | Yes                                                                                                                                                                 |
-| Savings & Investments                | No                                                                                                                                                                  |
-| Estate Planning                      | No                                                                                                                                                                  |
+| Date of Meeting                      | 19/05/2026                                                                                                                                                                                                                                                                                                                                                                                                          |
+|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Type of Meeting                      | Face to Face                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Anybody else present at the Meeting? | No                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Please provide details               | Meeting took place at clients home at 12.30pm. Paper copies of IID taken with me and ran through at the meeting. Left a copy with them but will also e-mail a copy. They had started the Advixe Process with an IFA from Sandringham back in November. Had an initial meeting, had to chase him twice due to hearing nothing and 5 months on they had not received any advice so decided to go no further with them |
+| Clients present                      |                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Protection                           | No                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Mortgage                             | No                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Retirement Planning                  | Yes                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Savings & Investments                | No                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Estate Planning                      | No                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ## Data Protection
 
@@ -79,32 +85,32 @@
 
 ## Contact Address
 
-| Addressee           | Angela Stead Kevin Stead   |                              |
-|---------------------|----------------------------|------------------------------|
-| 2 Haigh Lane        | 2 Haigh Lane               | Address Line 1               |
-| Haigh               | Haigh                      | Address Line 2               |
-|                     |                            | Address Line 3               |
-|                     |                            | Address Line 4               |
-| Barnsley            | Barnsley                   | City / Town                  |
-| United Kingdom      | United Kingdom             | Country                      |
-| S75 4BZ             | S75 4BZ                    | Postcode                     |
-| Home                | Home                       | Address Type                 |
-|                     |                            | Residency Status             |
-|                     |                            | Date From                    |
-|                     |                            | Date To                      |
-|                     |                            | Default                      |
-| Current Address     | Current Address            | Address Status               |
-|                     |                            | Registered on Electoral Roll |
-| at Address (Months) |                            | Time                         |
+| Addressee                    | Angela Stead    | Kevin Stead     |        |
+|------------------------------|-----------------|-----------------|--------|
+| Address Line 1               | 2 Haigh Lane    | 2 Haigh Lane    |        |
+| Address Line 2               | Haigh           | Haigh           |        |
+| Address Line 3               |                 |                 |        |
+| Address Line 4               |                 |                 |        |
+| City / Town                  | Barnsley        | Barnsley        |        |
+| Country                      | United Kingdom  | United Kingdom  |        |
+| Postcode                     | S75 4BZ         | S75 4BZ         |        |
+| Address Type                 | Home            | Home            |        |
+| Residency Status             |                 |                 |        |
+| Date From                    |                 |                 |        |
+| Date To                      |                 |                 |        |
+| Default                      |                 |                 |        |
+| Address                      | Current Address | Current Address | Status |
+| Registered on Electoral Roll |                 |                 |        |
+| Time at Address (Months)     |                 |                 |        |
 
 ## Contact Details
 
-| Name         | Contact Type   | Value                   | Note Preferred   |
-|--------------|----------------|-------------------------|------------------|
-| Angela Stead | Mobile         | 07969051526             | Yes              |
-| Angela Stead | E-Mail         | ajs_stead@hotmail.com   | No               |
-| Kevin Stead  | Mobile         | 07774 706265            | No               |
-| Kevin Stead  | E-Mail         | kevin_stead@outlook.com | No               |
+| Name         | Contact Type   | Value                   | Note   | Preferred Contact   |
+|--------------|----------------|-------------------------|--------|---------------------|
+| Angela Stead | Mobile         | 07969051526             |        | Yes                 |
+| Angela Stead | E-Mail         | ajs_stead@hotmail.com   |        | No                  |
+| Kevin Stead  | Mobile         | 07774 706265            |        | No                  |
+| Kevin Stead  | E-Mail         | kevin_stead@outlook.com |        | No                  |
 
 ## Family And Dependants
 
@@ -251,7 +257,7 @@
 | Angela Stead | Cash           |                      | Skipton Cash ISA - Variable Rate 3.6%  | 100.00%     |             | GBP    |                  |                | £ 85,000.00  | 19/05/2026       |                      |
 | Angela Stead | Cash           |                      | Cash ISA Marcus - Variable Rate 4.1%   | 100.00%     |             | GBP    |                  |                | £ 49,000.00  | 19/05/2026       |                      |
 | Joint        | Own Business   |                      | Business Bank Account                  | 50.00%      | 50.00%      | GBP    |                  |                | £ 10,000.00  | 19/05/2026       |                      |
-| Joint        | Cash           |                      | Santander Current                      | 50.00%      | 50.00%      | GBP    |                  |                | £ 4,000.00   | 19/05/2026       |                      |
+| Joint        | Cash           |                      | Santander Current Account              | 50.00%      | 50.00%      | GBP    |                  |                | £ 4,000.00   | 19/05/2026       |                      |
 | Joint        | Motor Vehicles |                      | Motor Home                             | 50.00%      | 50.00%      | GBP    |                  |                | £ 40,000.00  | 21/05/2026       |                      |
 | Kevin Stead  | Cash           |                      | Skipton ISA - Variable Rate 3.6%       | 100.00%     |             | GBP    |                  |                | £ 88,000.00  | 19/05/2026       |                      |
 | Kevin Stead  | Cash           |                      | Marcus Cash ISA - Variable Rate - 4.1% | 100.00%     |             | GBP    |                  |                | £ 40,000.00  | 19/05/2026       |                      |
@@ -290,14 +296,14 @@ Joint Total
 
 ## Income
 
-|                                                                                                                                         | Angela Stead   | Kevin Stead   |
-|-----------------------------------------------------------------------------------------------------------------------------------------|----------------|---------------|
-| Total annual self-employed Gross Profit, Dividend, and Salary / employed gross basic, guaranteed and regular overtime and bonus incomes | £ 0.00         | £ 0.00        |
-| Total Gross Annual Earnings or Net Relevant Earnings                                                                                    |                |               |
+|                                                                                                              | Angela Stead   | Kevin Stead   |
+|--------------------------------------------------------------------------------------------------------------|----------------|---------------|
+| Total annual self-employed Gross Profit, Dividend, and Salary / employed gross basic, guaranteed and regular | £ 0.00         | £ 0.00        |
+| Total Gross Annual Earnings or Net Relevant Earnings                                                         |                |               |
 
-| Owner       | Category   | Descriptio n   | Frequency   | Gross Amount   | Net Amount   | Start Date   | End Date   | Last Updated   | Occupatio n   | Descriptio n   |
-|-------------|------------|----------------|-------------|----------------|--------------|--------------|------------|----------------|---------------|----------------|
-| Kevin Stead | State      |                | Four        | £ 954.15       | £ 954.15     |              |            | 19/05/2026     |               |                |
+| Owner       | Category      | Descriptio n   | Frequency   | Gross Amount   | Net Amount   | Start Date   | End Date   | Last Updated   | Occupatio n   | Descriptio n   |
+|-------------|---------------|----------------|-------------|----------------|--------------|--------------|------------|----------------|---------------|----------------|
+| Kevin Stead | State Pension |                | Four Weekly | £ 954.15       | £ 954.15     |              |            | 19/05/2026     |               |                |
 
 Angela Stead Total
 
@@ -320,37 +326,38 @@ Kevin Stead Total
 
 - **Do you wish to carry out a detailed expenditure analysis? If 'no' then please enter a value into the Total Monthly Expenditure field:** Yes
 
-| Category                               | Owner                       | Description                 | Net Amount                  | Frequency                   |
-|----------------------------------------|-----------------------------|-----------------------------|-----------------------------|-----------------------------|
-| Basic Essential Expenditure            | Basic Essential Expenditure | Basic Essential Expenditure | Basic Essential Expenditure | Basic Essential Expenditure |
-| Rent                                   |                             |                             |                             |                             |
-| Council Tax                            | Joint                       |                             | £ 231.00                    | Monthly                     |
-| Gas                                    | Joint                       |                             | £ 67.00                     | Monthly                     |
-| Electricity                            | Joint                       |                             | £ 70.00                     | Monthly                     |
-| Water                                  | Joint                       |                             | £ 17.50                     | Monthly                     |
-| Telephone/Mobile                       | Joint                       |                             | £ 52.00                     | Monthly                     |
-| Food & Personal Care                   | Joint                       |                             | £ 400.00                    | Monthly                     |
-| Car/Travelling Expenses                | Joint                       |                             | £ 200.00                    | Monthly                     |
-| Housekeeping                           | Joint                       |                             | £ 20.00                     | Monthly                     |
-| Building Insurance                     | Joint                       |                             | £ 360.00                    | Monthly                     |
-| Combined Utilities                     |                             |                             |                             |                             |
-| Maintenance/Alimony                    |                             |                             |                             |                             |
-| Other (Basic Essential)                | Joint                       |                             | £ 50.00                     | Monthly                     |
-| Other (Basic Essential)                | Joint                       | Car Tax & MOT               | £ 210.00                    | Monthly                     |
-| Basic Quality of Living                |                             |                             |                             |                             |
-| Clothing                               | Joint                       |                             | £ 50.00                     | Monthly                     |
-| Furniture/Appliances/Repair s          | Joint                       |                             | £ 20.00                     | Monthly                     |
-| TV/Satellite/Internet/Basic Recreation | Joint                       |                             | £ 49.00                     | Monthly                     |
-| School Fee/Childcare                   |                             |                             |                             |                             |
-| Other (Basic Quality of Living)        | Joint                       |                             | £ 1,000.00                  | Monthly                     |
-| Non-Essential Outgoings                | Non-Essential Outgoings     | Non-Essential Outgoings     | Non-Essential Outgoings     | Non-Essential Outgoings     |
-| Sports and Recreation                  |                             |                             |                             |                             |
-| Holidays                               | Joint                       |                             | £ 170.00                    | Monthly                     |
-| Entertainment                          |                             |                             |                             |                             |
-| Life/General Assurance Premium         |                             |                             |                             |                             |
-| Other (Non-Essential)                  |                             |                             |                             |                             |
-| Mortgage                               |                             |                             |                             |                             |
-| Other (Liability)                      |                             |                             |                             |                             |
+| Category                               | Owner                          | Description                    | Net Amount                     | Frequency                      |
+|----------------------------------------|--------------------------------|--------------------------------|--------------------------------|--------------------------------|
+| Basic Essential Expenditure            | Basic Essential Expenditure    | Basic Essential Expenditure    | Basic Essential Expenditure    | Basic Essential Expenditure    |
+| Rent                                   |                                |                                |                                |                                |
+| Council Tax                            | Joint                          |                                | £ 231.00                       | Monthly                        |
+| Gas                                    | Joint                          |                                | £ 67.00                        | Monthly                        |
+| Electricity                            | Joint                          |                                | £ 70.00                        | Monthly                        |
+| Water                                  | Joint                          |                                | £ 17.50                        | Monthly                        |
+| Telephone/Mobile                       | Joint                          |                                | £ 52.00                        | Monthly                        |
+| Food & Personal Care                   | Joint                          |                                | £ 400.00                       | Monthly                        |
+| Car/Travelling Expenses                | Joint                          |                                | £ 200.00                       | Monthly                        |
+| Housekeeping                           | Joint                          |                                | £ 20.00                        | Monthly                        |
+| Building Insurance                     | Joint                          |                                | £ 360.00                       | Monthly                        |
+| Combined Utilities                     | Combined Utilities             |                                |                                |                                |
+| Maintenance/Alimony                    |                                |                                |                                |                                |
+| Other (Basic Essential)                | Joint                          |                                | £ 50.00                        | Monthly                        |
+| Other (Basic Essential)                | Joint                          | Car Tax & MOT                  | £ 210.00                       | Monthly                        |
+| Basic Quality of Living                | Basic Quality of Living        |                                |                                |                                |
+| Clothing                               | Joint                          |                                | £ 50.00                        | Monthly                        |
+| Furniture/Appliances/Repair s          | Joint                          |                                | £ 20.00                        | Monthly                        |
+| TV/Satellite/Internet/Basic Recreation | Joint                          |                                | £ 49.00                        | Monthly                        |
+| School Fee/Childcare                   | School Fee/Childcare           |                                |                                |                                |
+| Other (Basic Quality of Living)        | Joint                          |                                | £ 1,000.00                     | Monthly                        |
+| Non-Essential Outgoings                | Non-Essential Outgoings        | Non-Essential Outgoings        | Non-Essential Outgoings        | Non-Essential Outgoings        |
+| Sports and Recreation                  | Sports and Recreation          |                                |                                |                                |
+| Holidays                               | Joint                          |                                | £ 170.00                       | Monthly                        |
+| Entertainment                          | Entertainment                  | Entertainment                  | Entertainment                  | Entertainment                  |
+| Life/General Assurance Premium         | Life/General Assurance Premium | Life/General Assurance Premium | Life/General Assurance Premium | Life/General Assurance Premium |
+| Other (Non-Essential)                  | Other (Non-Essential)          | Other (Non-Essential)          | Other (Non-Essential)          | Other (Non-Essential)          |
+| Liability Expenditure                  | Liability Expenditure          | Liability Expenditure          | Liability Expenditure          | Liability Expenditure          |
+| Mortgage                               | Mortgage                       | Mortgage                       | Mortgage                       | Mortgage                       |
+| Other (Liability)                      | Other (Liability)              | Other (Liability)              | Other (Liability)              | Other (Liability)              |
 
 ## Expenditure Details
 
@@ -466,9 +473,9 @@ Initial Advice to focus on doing a UFPLS of £1,396.66pm for Angela which will u
 | Provider                      | Phoenix Life & Pensions | Prudential            | Prudential            |
 | Linked To (Policy Number)     |                         |                       |                       |
 | Linked To (PlanType/Provider) |                         |                       |                       |
-| Policy No 500223804C          |                         | 50094231              | 50434629              |
+| Policy No                     | 500223804C              | 50094231              | 50434629              |
 | Agency Status                 | Not Under Agency        | Not Under Agency      | Not Under Agency      |
-| Currency                      | GBP GBP                 |                       | GBP                   |
+| Currency                      | GBP                     | GBP                   | GBP                   |
 | Policy Start Date             |                         |                       |                       |
 | Ret. Age                      |                         |                       |                       |
 | Your Cont. (reg)              |                         |                       |                       |
@@ -476,78 +483,89 @@ Initial Advice to focus on doing a UFPLS of £1,396.66pm for Angela which will u
 | Freq.                         |                         |                       |                       |
 | Transfer Cont.                |                         |                       |                       |
 | Lump Sum Cont.                |                         |                       |                       |
-| Value £ 85,317.22             | £                       | 31,463.79 £           | 135,000.00            |
-| Valuation Date 29/04/2026     | 20/05/2026              |                       | 20/05/2026            |
+| Value                         | £ 85,317.22             | £ 31,463.79           | £ 135,000.00          |
+| Valuation Date                | 29/04/2026              | 20/05/2026            | 20/05/2026            |
 | Pension Arrangement           |                         |                       |                       |
 
-| Crystallisation Status                         | Crystallisation Status   | Crystallisation Status   | Crystallisation Status   |
-|------------------------------------------------|--------------------------|--------------------------|--------------------------|
-| Crystallised Percentage - Pre 6th April 2024   |                          |                          |                          |
-| Crystallised Percentage - Post 6th April 2024  |                          |                          |                          |
-| Total Crystallised Percentage                  |                          |                          |                          |
-| Uncrystallised Percentage                      |                          |                          |                          |
-| PCLS                                           |                          |                          |                          |
-| PCLS Paid By                                   |                          |                          |                          |
-| Protected PCLS                                 |                          |                          |                          |
-| GAD / Maximum Income Limit (p.a.)              |                          |                          |                          |
-| Guaranteed / Minimum Income (p.a.)             |                          |                          |                          |
-| GAD Calculation Date                           |                          |                          |                          |
-| Next Review Date                               |                          |                          |                          |
-| Capital / Value Protected?                     |                          |                          |                          |
-| Capital / Value Protected Amount               |                          |                          |                          |
-| Indexed?                                       |                          |                          |                          |
-| Preserved?                                     |                          |                          |                          |
-| Lump Sum Death Benefit                         |                          |                          |                          |
-| In Trust?                                      |                          |                          |                          |
-| Status                                         |                          |                          |                          |
-| Enhanced Tax Free Cash                         |                          |                          |                          |
-| Guaranteed Annuity Rate / Pension (or similar) |                          |                          |                          |
-| Applicable Penalties                           |                          |                          |                          |
-| EFI/Loyalty Bonus/Terminal Bonus               |                          |                          |                          |
-| Guaranteed Growth Rates                        |                          |                          |                          |
-| Death in service spousal benefits              |                          |                          |                          |
-| Lifetime Allowance Used (%)                    |                          |                          |                          |
-| Details                                        |                          |                          |                          |
-| Options Available at Retirement                |                          |                          |                          |
-| Other Benefits and/or Material Features        |                          |                          |                          |
-| Additional Notes                               |                          |                          |                          |
-| Owner                                          |                          |                          |                          |
-| Provider                                       |                          |                          |                          |
-| Linked To (Policy Number)                      |                          |                          |                          |
+| Crystallisation Status                         |                       |          |          |
+|------------------------------------------------|-----------------------|----------|----------|
+| Crystallised Percentage - Pre 6th April 2024   |                       |          |          |
+| Crystallised Percentage - Post 6th April 2024  |                       |          |          |
+| Total Crystallised Percentage                  |                       |          |          |
+| Uncrystallised Percentage                      |                       |          |          |
+| PCLS                                           |                       |          |          |
+| PCLS Paid By                                   |                       |          |          |
+| Protected PCLS                                 |                       |          |          |
+| GAD / Maximum Income Limit (p.a.)              |                       |          |          |
+| Guaranteed / Minimum Income (p.a.)             |                       |          |          |
+| GAD Calculation Date                           |                       |          |          |
+| Next Review Date                               |                       |          |          |
+| Capital / Value Protected?                     |                       |          |          |
+| Capital / Value Protected Amount               |                       |          |          |
+| Indexed?                                       |                       |          |          |
+| Preserved?                                     |                       |          |          |
+| Lump Sum Death Benefit                         |                       |          |          |
+| In Trust?                                      |                       |          |          |
+| Status                                         | In force              | In force | In force |
+| GMP Amount (p.a.)                              |                       |          |          |
+| Enhanced Tax Free Cash                         |                       |          |          |
+| Guaranteed Annuity Rate / Pension (or similar) |                       |          |          |
+| Applicable Penalties                           |                       |          |          |
+| EFI/Loyalty Bonus/Terminal Bonus               |                       |          |          |
+| Guaranteed Growth Rates                        |                       |          |          |
+| Death in service spousal benefits              |                       |          |          |
+| Lifetime Allowance Used (%)                    |                       |          |          |
+| Lifestyling strategy?                          |                       |          |          |
+| Details                                        |                       |          |          |
+| Options Available at Retirement                |                       |          |          |
+| Other Benefits and/or Material Features        |                       |          |          |
+| Additional Notes                               |                       |          |          |
+| Owner                                          | Kevin Stead           |          |          |
+| Contract Type                                  | Personal Pension Plan |          |          |
+| Product Name                                   |                       |          |          |
+| Provider                                       | Standard Life         |          |          |
+| Linked To (Policy Number)                      |                       |          |          |
 
-| Linked To (PlanType/Provider)                  |                  |                                           |
-|------------------------------------------------|------------------|-------------------------------------------|
-| Policy No                                      | K176308000       |                                           |
-| Agency Status                                  | Not Under Agency |                                           |
-| Currency                                       | GBP              |                                           |
-| Policy Start                                   |                  | Date                                      |
-| Your Cont.                                     |                  | (reg)                                     |
-| Emp. Cont.                                     |                  | (reg)                                     |
-| Freq.                                          |                  |                                           |
-| Transfer                                       |                  | Cont.                                     |
-| Lump Sum                                       |                  | Cont.                                     |
-| Value                                          | £ 21,511.71      |                                           |
-| Valuation Date                                 | 31/10/2025       |                                           |
-| Pension Arrangement                            |                  | Crystallisation Status                    |
-|                                                |                  | Crystallised Percentage April 2024        |
-| - Pre 6th                                      |                  | Crystallised Percentage - Post April 2024 |
-| Total Crystallised Percentage                  |                  |                                           |
-| Uncrystallised Percentage                      |                  |                                           |
-| PCLS                                           |                  | Paid By                                   |
-| Protected PCLS                                 |                  |                                           |
-| GAD / Maximum Income Limit (p.a.)              |                  |                                           |
-|                                                |                  | GAD Calculation Date                      |
-|                                                |                  | Capital / Value                           |
-| Protected?                                     |                  |                                           |
-| Capital / Value Protected Amount               |                  |                                           |
-|                                                |                  | Indexed?                                  |
-| Preserved?                                     |                  |                                           |
-| Lump Sum Death Benefit                         |                  |                                           |
-| Status                                         | In force         |                                           |
-| GMP Amount (p.a.)                              |                  |                                           |
-| Guaranteed Annuity Rate / Pension (or similar) |                  |                                           |
-| Applicable Penalties                           |                  | EFI/Loyalty Bonus/Terminal                |
-| Guaranteed Growth Rates                        |                  |                                           |
+| To (PlanType/Provider)                        | Linked                  |
+|-----------------------------------------------|-------------------------|
+| Policy                                        | No K176308000           |
+| Agency Status                                 | Not Under Agency        |
+|                                               | Currency GBP            |
+| Policy Start Date                             |                         |
+| Ret.                                          | Age                     |
+| Your Cont.                                    | (reg)                   |
+| Emp. Cont. (reg)                              |                         |
+| Freq.                                         |                         |
+| Transfer                                      | Cont.                   |
+| Lump Sum                                      | Cont.                   |
+| Value                                         | £ 21,511.71             |
+| Valuation                                     | Date 31/10/2025         |
+| Pension Arrangement                           |                         |
+| Crystallisation Status                        |                         |
+| Crystallised Percentage - Pre April 2024      | 6th                     |
+| Crystallised Percentage - Post 6th April 2024 |                         |
+| Total Crystallised Percentage                 |                         |
+| Uncrystallised Percentage                     |                         |
+| PCLS                                          |                         |
+| PCLS                                          | Paid By                 |
+|                                               | Protected PCLS          |
+| GAD / Maximum Income Limit (p.a.)             |                         |
+| Guaranteed / Minimum (p.a.)                   | Income                  |
+| GAD Calculation Date                          |                         |
+| Next Review Date                              |                         |
+| Capital / Value Protected?                    |                         |
+| Capital / Value Protected                     | Amount                  |
+|                                               | Indexed?                |
+|                                               | Preserved?              |
+| Lump Sum Death Benefit                        |                         |
+| In                                            | Trust?                  |
+| Status                                        | In force                |
+| GMP Amount (p.a.)                             |                         |
+|                                               | Enhanced Tax Free Cash  |
+| Guaranteed Annuity Rate / (or similar)        | Pension                 |
+| Applicable Penalties                          |                         |
+| EFI/Loyalty Bonus/Terminal                    | Bonus                   |
+|                                               | Guaranteed Growth Rates |
 
 Death in service spousal benefits
 

@@ -20,8 +20,20 @@ public sealed class CaseDocumentStore : ICaseDocumentStore
     private const string ChunkIndexKey = "chunk_index";
     private const string TextKey = "text";
 
+    /// <summary>
+    /// The names a hybrid collection gives its two vectors.
+    ///
+    /// A dense-only collection uses Qdrant's unnamed default instead, and the two layouts are not
+    /// interchangeable: a point written for one cannot be read by the other. That is why turning
+    /// hybrid on or off requires the collection to be dropped and the case re-indexed, rather than
+    /// migrated in place.
+    /// </summary>
+    internal const string DenseVectorName = "dense";
+    internal const string SparseVectorName = "sparse";
+
     private readonly QdrantClient _client;
     private readonly string _collection;
+    private readonly bool _hybrid;
 
     public CaseDocumentStore(AppSettings settings)
     {
@@ -30,8 +42,12 @@ public sealed class CaseDocumentStore : ICaseDocumentStore
 
         _client = new QdrantClient(endpoint, apiKey);
         _collection = settings.ResolveCollection();
+        _hybrid = settings.HybridRetrieval;
         Endpoint = endpoint.ToString();
     }
+
+    /// <summary>Whether this store reads and writes a hybrid (dense + sparse) collection.</summary>
+    public bool IsHybrid => _hybrid;
 
     /// <summary>Where this store is pointed, for status messages.</summary>
     public string Endpoint { get; }
@@ -60,13 +76,42 @@ public sealed class CaseDocumentStore : ICaseDocumentStore
     {
         if (await _client.CollectionExistsAsync(_collection, cancellationToken).ConfigureAwait(false))
         {
+            await RequireMatchingLayoutAsync(cancellationToken).ConfigureAwait(false);
             return;
         }
 
-        await _client.CreateCollectionAsync(
-            _collection,
-            new VectorParams { Size = (ulong)dimensions, Distance = Distance.Cosine },
-            cancellationToken: cancellationToken).ConfigureAwait(false);
+        // Hybrid collections name their vectors; dense-only ones use the unnamed default. The two
+        // layouts are not interchangeable, and a point written for one cannot be read by the other
+        // — which is why a collection created under one setting has to be dropped and rebuilt
+        // under the other rather than migrated. Load() reports that rather than failing obscurely.
+        if (_hybrid)
+        {
+            await _client.CreateCollectionAsync(
+                _collection,
+                new VectorParamsMap
+                {
+                    Map =
+                    {
+                        [DenseVectorName] = new VectorParams
+                        {
+                            Size = (ulong)dimensions,
+                            Distance = Distance.Cosine,
+                        },
+                    },
+                },
+                sparseVectorsConfig: new SparseVectorConfig
+                {
+                    Map = { [SparseVectorName] = new SparseVectorParams() },
+                },
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+        else
+        {
+            await _client.CreateCollectionAsync(
+                _collection,
+                new VectorParams { Size = (ulong)dimensions, Distance = Distance.Cosine },
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
 
         await _client.CreatePayloadIndexAsync(
             _collection, TenantKey, PayloadSchemaType.Integer, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -74,6 +119,42 @@ public sealed class CaseDocumentStore : ICaseDocumentStore
             _collection, CaseKey, PayloadSchemaType.Keyword, cancellationToken: cancellationToken).ConfigureAwait(false);
         await _client.CreatePayloadIndexAsync(
             _collection, CategoryCodeKey, PayloadSchemaType.Keyword, cancellationToken: cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Refuses an existing collection whose vector layout does not match the configured mode.
+    ///
+    /// <b>The two layouts are not interchangeable and the failure is otherwise unreadable.</b> A
+    /// hybrid collection names its vectors; a dense-only one uses Qdrant's unnamed default. Writing
+    /// named vectors to an unnamed collection — or the reverse — fails deep inside the client with
+    /// a message about vector names that says nothing about the setting that caused it, halfway
+    /// through indexing a case. Said here instead, before anything is written, naming the setting
+    /// and the fix.
+    ///
+    /// There is no migration: the vectors themselves are stored differently, so the collection has
+    /// to be dropped and the case re-indexed. That is a real cost and the message states it rather
+    /// than implying the switch is free.
+    /// </summary>
+    private async Task RequireMatchingLayoutAsync(CancellationToken cancellationToken)
+    {
+        var info = await _client
+            .GetCollectionInfoAsync(_collection, cancellationToken)
+            .ConfigureAwait(false);
+
+        var named = info.Config?.Params?.VectorsConfig?.ParamsMap is not null;
+
+        if (named == _hybrid)
+        {
+            return;
+        }
+
+        throw new InvalidOperationException(
+            $"The collection \"{_collection}\" was built "
+            + (named ? "for hybrid retrieval" : "for dense-only retrieval")
+            + $", but hybrid retrieval is currently {(_hybrid ? "on" : "off")}. The two store their "
+            + "vectors differently and cannot be mixed, so the collection has to be deleted and the "
+            + "case re-indexed — either unload the case and load it again with this setting as you "
+            + "want it, or point Settings at a different collection name.");
     }
 
     /// <summary>
@@ -100,11 +181,33 @@ public sealed class CaseDocumentStore : ICaseDocumentStore
         for (var i = 0; i < chunks.Count; i++)
         {
             var chunk = chunks[i];
-            var point = new PointStruct
+            var point = new PointStruct { Id = chunk.PointId };
+
+            if (_hybrid)
             {
-                Id = chunk.PointId,
-                Vectors = vectors[i].ToArray(),
-            };
+                // The sparse side is derived from the chunk's own text rather than passed in: it is
+                // a pure function of what is being stored, so computing it anywhere else would
+                // create two places for the index and the query to disagree.
+                var sparse = SparseTextEncoder.Encode(chunk.Text);
+
+                var named = new NamedVectors();
+                named.Vectors[DenseVectorName] = vectors[i].ToArray();
+
+                if (sparse.Count > 0)
+                {
+                    var lexical = new SparseVector();
+                    lexical.Values.AddRange(sparse.Weights);
+                    lexical.Indices.AddRange(sparse.Indices);
+
+                    named.Vectors[SparseVectorName] = new Vector { Sparse = lexical };
+                }
+
+                point.Vectors = new Vectors { Vectors_ = named };
+            }
+            else
+            {
+                point.Vectors = vectors[i].ToArray();
+            }
 
             point.Payload[TenantKey] = chunk.TenantId;
             point.Payload[CaseKey] = chunk.CaseReference;
@@ -135,12 +238,18 @@ public sealed class CaseDocumentStore : ICaseDocumentStore
     /// query plans have always carried the categories each search wants; until now nothing acted
     /// on them at the point where it would have made a difference.
     /// </param>
+    /// <param name="queryText">
+    /// The search text as written, for the sparse half of a hybrid query. Ignored on a dense-only
+    /// collection. Null falls back to dense alone, which is what a caller that has only a vector
+    /// gets — correct, and quieter than throwing.
+    /// </param>
     public async Task<IReadOnlyList<CaseDocumentSearchResult>> SearchAsync(
         string caseReference,
         int tenantId,
         ReadOnlyMemory<float> queryVector,
         int limit,
         IReadOnlyCollection<string>? categoryCodes = null,
+        string? queryText = null,
         CancellationToken cancellationToken = default)
     {
         var filter = new Filter();
@@ -155,14 +264,61 @@ public sealed class CaseDocumentStore : ICaseDocumentStore
             filter.Must.Add(Conditions.Match(CategoryCodeKey, categoryCodes.ToList()));
         }
 
-        var points = await _client.QueryAsync(
+        var wanted = (ulong)Math.Max(1, limit);
+        var sparse = _hybrid ? SparseTextEncoder.Encode(queryText) : SparseText.Empty;
+
+        if (!_hybrid || sparse.Count == 0)
+        {
+            var dense = await _client.QueryAsync(
+                _collection,
+                queryVector.ToArray(),
+                usingVector: _hybrid ? DenseVectorName : null,
+                filter: filter,
+                limit: wanted,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            return dense.Select(ToResult).ToList();
+        }
+
+        // The client reads a sparse query as (weights, term ids).
+        var lexical = (sparse.Weights.ToArray(), sparse.Indices.ToArray());
+
+        // Both halves fetch deeper than the caller asked for, because fusion only has something to
+        // work with where the two lists overlap and differ: a passage ranked 20th by meaning and
+        // 1st by its literals is exactly the one this exists to promote, and prefetching only the
+        // final limit would have discarded it before the fusion saw it.
+        var depth = wanted * 4;
+
+        var prefetch = new List<PrefetchQuery>
+        {
+            new()
+            {
+                Query = queryVector.ToArray(),
+                Using = DenseVectorName,
+                Filter = filter,
+                Limit = depth,
+            },
+            new()
+            {
+                Query = lexical,
+                Using = SparseVectorName,
+                Filter = filter,
+                Limit = depth,
+            },
+        };
+
+        // Reciprocal rank fusion rather than a score blend: the two scores are not on one scale —
+        // cosine similarity and a lexical dot product have no common unit — so combining the
+        // numbers would weight whichever happened to be larger. RRF combines the ranks, which is
+        // the only thing the two lists genuinely share.
+        var fused = await _client.QueryAsync(
             _collection,
-            queryVector.ToArray(),
-            filter: filter,
-            limit: (ulong)Math.Max(1, limit),
+            Fusion.Rrf,
+            prefetch: prefetch,
+            limit: wanted,
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        return points.Select(ToResult).ToList();
+        return fused.Select(ToResult).ToList();
     }
 
     /// <summary>Forgets everything indexed for one case, so a reload starts from a clean slate.</summary>

@@ -1,3 +1,7 @@
+// GenerateVectorAsync is an extension on IEmbeddingGenerator, so the embedding test needs the
+// namespace even though nothing here names a type from it.
+using Microsoft.Extensions.AI;
+
 namespace AiPromptEvaluator;
 
 public partial class ConfigurationForm : Form
@@ -16,6 +20,15 @@ public partial class ConfigurationForm : Form
         documentFolderTextBox.Text = _settings.DocumentFolder;
         maxTokensUpDown.Value = Clamp(maxTokensUpDown, _settings.MaxTokens);
 
+        tableAwareChunkingCheckBox.Checked = _settings.TableAwareChunking;
+        hybridRetrievalCheckBox.Checked = _settings.HybridRetrieval;
+
+        pictureNarrationCheckBox.Checked = _settings.PictureNarration;
+        tableNarrationCheckBox.Checked = _settings.TableNarration;
+        narrationModelTextBox.Text = _settings.NarrationModel;
+        minimumImageBytesUpDown.Value = Clamp(minimumImageBytesUpDown, _settings.MinimumImageBytes);
+        maxImagesUpDown.Value = Clamp(maxImagesUpDown, _settings.MaxImagesPerDocument);
+
         embeddingModelTextBox.Text = _settings.EmbeddingModel;
         embeddingDimensionsUpDown.Value = Clamp(embeddingDimensionsUpDown, _settings.EmbeddingDimensions);
         qdrantTextBox.Text = _settings.QdrantEndpoint;
@@ -29,6 +42,18 @@ public partial class ConfigurationForm : Form
 
         embeddingBaseUrlTextBox.Text = _settings.EmbeddingBaseUrl;
         embeddingApiKeyTextBox.Text = _settings.EmbeddingApiKey;
+
+        chatProviderComboBox.Items.AddRange([.. EmbeddingProviders.All]);
+        chatProviderComboBox.SelectedItem =
+            EmbeddingProviders.All.FirstOrDefault(
+                p => p.Equals(_settings.ChatProvider?.Trim(), StringComparison.OrdinalIgnoreCase))
+            ?? EmbeddingProviders.OpenAi;
+
+        embeddingProviderComboBox.Items.AddRange([.. EmbeddingProviders.All]);
+        embeddingProviderComboBox.SelectedItem =
+            EmbeddingProviders.All.FirstOrDefault(
+                p => p.Equals(_settings.EmbeddingProvider?.Trim(), StringComparison.OrdinalIgnoreCase))
+            ?? EmbeddingProviders.OpenAi;
         promptLogTextBox.Text = _settings.PromptLogFolder;
 
         passagesPerGroupUpDown.Value = Clamp(passagesPerGroupUpDown, _settings.MaxPassagesPerGroup);
@@ -44,6 +69,10 @@ public partial class ConfigurationForm : Form
         parallelRequestsUpDown.Value = Clamp(parallelRequestsUpDown, _settings.MaxParallelRequests);
         parallelChecksUpDown.Value = Clamp(parallelChecksUpDown, _settings.MaxParallelChecks);
         coreQueriesOnlyCheckBox.Checked = _settings.CoreQueriesOnly;
+        assertionDigestCheckBox.Checked = _settings.AssertionDigest;
+        assertionDigestCharsUpDown.Value =
+            Clamp(assertionDigestCharsUpDown, _settings.AssertionDigestMaxChars);
+        joinedAssertionsUpDown.Value = Clamp(joinedAssertionsUpDown, _settings.MaxJoinedAssertions);
 
         canonicalSchemaTextBox.Text = _settings.CanonicalSchemaPath;
         checkPlanTextBox.Text = _settings.CheckPlanFolder;
@@ -253,6 +282,104 @@ public partial class ConfigurationForm : Form
     }
 
     /// <summary>
+    /// Embeds one short string as typed, without saving.
+    ///
+    /// <b>Two configuration mistakes, and the second is the reason this button exists.</b> An
+    /// endpoint, key or model that is not there fails immediately — the same class of mistake the
+    /// chat test catches, and until now the embedding half had no equivalent: it surfaced partway
+    /// through indexing a case, after the conversion had been paid for.
+    ///
+    /// The second is worse and is silent. A model whose vectors are a different width than the
+    /// collection was created for does not fail here at all — it embeds perfectly well, and then
+    /// either Qdrant refuses every upsert or, if the collection does not exist yet, it is created
+    /// at the wrong width and every later run quietly disagrees with it. So the dimension is
+    /// compared and reported whether or not it matches.
+    ///
+    /// <b>The resolved endpoint is named in the result on purpose.</b> Embeddings may run on their
+    /// own service or fall back to the chat one, and which of those happened is precisely what a
+    /// reader of this dialog cannot otherwise tell — the fields are blank in both the "not
+    /// configured" case and the "deliberately shared" one.
+    /// </summary>
+    private async void EmbeddingTestButton_Click(object? sender, EventArgs e)
+    {
+        var model = embeddingModelTextBox.Text.Trim();
+        if (string.IsNullOrEmpty(model))
+        {
+            MessageBox.Show(this, "Please enter an embedding model first.", "Embedding model",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        // As typed, including the chat fields: those are what the embedding settings fall back to
+        // when left blank, so a probe that read the saved ones would test a different
+        // configuration than the one on screen.
+        var probe = new AppSettings
+        {
+            OpenAiApiKey = apiKeyTextBox.Text.Trim(),
+            OpenAiBaseUrl = baseUrlTextBox.Text.Trim(),
+            EmbeddingApiKey = embeddingApiKeyTextBox.Text.Trim(),
+            EmbeddingBaseUrl = embeddingBaseUrlTextBox.Text.Trim(),
+            EmbeddingModel = model,
+            EmbeddingDimensions = (int)embeddingDimensionsUpDown.Value,
+            EmbeddingProvider =
+                embeddingProviderComboBox.SelectedItem as string ?? EmbeddingProviders.OpenAi,
+            MaxParallelRequests = (int)parallelRequestsUpDown.Value,
+        };
+
+        var endpoint = probe.ResolveEmbeddingBaseUrl();
+        var sharing = string.IsNullOrWhiteSpace(probe.EmbeddingBaseUrl)
+            ? " (the chat endpoint — no embedding base URL is set)"
+            : string.Empty;
+
+        embeddingTestButton.Enabled = false;
+        embeddingTestButton.Text = "Testing...";
+        try
+        {
+            var generator = AiClientFactory.CreateEmbeddingGenerator(probe);
+            var vector = await generator
+                .GenerateVectorAsync("case document", cancellationToken: CancellationToken.None)
+                .ConfigureAwait(true);
+
+            if (vector.Length != probe.EmbeddingDimensions)
+            {
+                MessageBox.Show(this,
+                    $"{model} responded at {endpoint}{sharing}, but returns "
+                    + $"{vector.Length}-dimension vectors where Settings says "
+                    + $"{probe.EmbeddingDimensions}.\n\nSet dimensions to {vector.Length}, or "
+                    + "choose a model that matches the collection. A collection created at the "
+                    + "wrong width has to be recreated and the case re-indexed.",
+                    "Embedding model", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                return;
+            }
+
+            MessageBox.Show(this,
+                $"{model} responded at {endpoint}{sharing}.\n\n"
+                + $"{vector.Length}-dimension vector, matching Settings.",
+                "Embedding model", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            // A 404 here is nearly always the base URL missing its version segment: the client
+            // appends "/embeddings" to whatever is configured. The same hint the indexer gives,
+            // said at the point where the URL can be corrected.
+            var hint = ex.Message.Contains("404", StringComparison.Ordinal)
+                ? $"\n\nA 404 usually means the base URL is missing its version segment — try "
+                  + $"\"{endpoint.TrimEnd('/')}/v1\" — or that the service does not serve this "
+                  + "embedding model."
+                : string.Empty;
+
+            MessageBox.Show(this, $"{ex.Message}{hint}", "Embedding model",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        finally
+        {
+            embeddingTestButton.Text = "Test";
+            embeddingTestButton.Enabled = true;
+        }
+    }
+
+    /// <summary>
     /// Probes Qdrant as typed, without saving — a wrong port (6333 instead of 6334 is the
     /// usual one) is then caught here rather than partway through indexing a case.
     /// </summary>
@@ -361,6 +488,15 @@ public partial class ConfigurationForm : Form
         _settings.MaxTokens = (int)maxTokensUpDown.Value;
 
         _settings.EmbeddingModel = embeddingModel;
+        _settings.TableAwareChunking = tableAwareChunkingCheckBox.Checked;
+        _settings.HybridRetrieval = hybridRetrievalCheckBox.Checked;
+
+        _settings.PictureNarration = pictureNarrationCheckBox.Checked;
+        _settings.TableNarration = tableNarrationCheckBox.Checked;
+        _settings.NarrationModel = narrationModelTextBox.Text.Trim();
+        _settings.MinimumImageBytes = (int)minimumImageBytesUpDown.Value;
+        _settings.MaxImagesPerDocument = (int)maxImagesUpDown.Value;
+
         _settings.EmbeddingDimensions = (int)embeddingDimensionsUpDown.Value;
         _settings.QdrantEndpoint = qdrantTextBox.Text.Trim();
         _settings.QdrantCollection = collectionTextBox.Text.Trim();
@@ -373,6 +509,10 @@ public partial class ConfigurationForm : Form
 
         _settings.EmbeddingBaseUrl = embeddingBaseUrlTextBox.Text.Trim();
         _settings.EmbeddingApiKey = embeddingApiKeyTextBox.Text.Trim();
+        _settings.EmbeddingProvider =
+            embeddingProviderComboBox.SelectedItem as string ?? EmbeddingProviders.OpenAi;
+        _settings.ChatProvider =
+            chatProviderComboBox.SelectedItem as string ?? EmbeddingProviders.OpenAi;
         _settings.PromptLogFolder = promptLogTextBox.Text.Trim();
 
         _settings.MaxPassagesPerGroup = (int)passagesPerGroupUpDown.Value;
@@ -385,6 +525,9 @@ public partial class ConfigurationForm : Form
         _settings.MaxParallelRequests = (int)parallelRequestsUpDown.Value;
         _settings.MaxParallelChecks = (int)parallelChecksUpDown.Value;
         _settings.CoreQueriesOnly = coreQueriesOnlyCheckBox.Checked;
+        _settings.AssertionDigest = assertionDigestCheckBox.Checked;
+        _settings.AssertionDigestMaxChars = (int)assertionDigestCharsUpDown.Value;
+        _settings.MaxJoinedAssertions = (int)joinedAssertionsUpDown.Value;
 
         _settings.CanonicalSchemaPath = canonicalSchemaTextBox.Text.Trim();
         _settings.CheckPlanFolder = checkPlanTextBox.Text.Trim();

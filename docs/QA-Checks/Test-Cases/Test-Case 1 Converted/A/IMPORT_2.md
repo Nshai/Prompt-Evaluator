@@ -1,26 +1,16 @@
 ---
-source_path: "A/IMPORT_2.PDF"
-file_name: "IMPORT_2.PDF"
-category_code: A
-pages: 9
-characters: 19418
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: IMPORT_2.PDF
+converted: 2026-08-31T00:23:54Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 <!-- image -->
 
-TFAS
+Logo
 
 ## IMPORTANT INFORMATION ABOUT OUR INVESTMENT, PENSION AND PROTECTION ADVICE SERVICES
 
-<!-- page: 2 -->
-
-TFAS
-
-<!-- image -->
+- **TFAS:** [blank]
 
 ## WHO ARE WE AND WHAT DO WE DO?
 
@@ -34,7 +24,11 @@ TFAS Wealth Limited is directly authorised and regulated by the Financial Conduc
 
 ## What can we do for you?
 
-Our mainstream service is to act on your behalf for the purpose of arranging and advising on the following:
+- **Our mainstream service is to act on your behalf for the purpose of arranging and advising on the following::** [blank]
+- For all the services described above we will complete a detailed fact find so we can understand your circumstances, specific needs and objectives to determine if these services are suitable for you. We will then undertake research in order to provide a personal recommendation(s) and related information relevant to your individual circumstances. If, after due consideration, you would like to accept any or all of our recommendation(s), we will then implement them and arrange any products and/or related services on your behalf.
+- Once your financial plans are in place it is important to keep them under review. Subject to the type of services you require from us, we can continue to act on your behalf through one of our service packages. Ultimately, whichever type or level of service is suitable for you we will act in your best interests at all times .
+- **We take the security of your data very seriously. You can find our Privacy Notice at the following location: https://www.tfaswealth.com/about-1:** [blank]
+- Further details about these and other related services we provide are contained in the pages below. This also confirms the typical cost and how you can pay us for them.
 
 - Investments &amp; Pensions, for example an ISAs or Personal Pension Plan;
 - Personal &amp; Family Protection, for example a Life Assurance or Critical Illness Plan;
@@ -49,17 +43,9 @@ Further details about these and other related services we provide are contained 
 
 ## IMPORTANT INFORMATION
 
-Before you consider our services in more detail, we would like to draw your attention to the following important information:
-
-When we have discussed and agreed with you the services that we are to provide we will confirm this to you in a Client Agreement. This will describe the scope and specific services to be provided, including any on-going services, the cost and how it can be paid for. A copy of our standard Client Agreement is available on request.
-
-<!-- page: 3 -->
-
-TFAS
-
-<!-- image -->
-
-Under the terms of Financial Conduct Authority (FCA) regulations we will classify you as a retail client for investment and pensions business. As a retail client you have the right to request re-classification as an elective professional client. This may be generally or in respect of a particular service, type of transaction or product, and is subject to the following:
+- **TFAS:** [blank]
+- **Before you consider our services in more detail, we would like to draw your attention to the following important information::** [blank]
+- When we have discussed and agreed with you the services that we are to provide we will confirm this to you in a Client Agreement. This will describe the scope and specific services to be provided, including any on-going services, the cost and how it can be paid for. A copy of our standard Client Agreement is available on request.
 
 - All requests for re-classification must be made in writing.
 - We will consider such requests on a case-by-case basis against the criteria set out in FCA rules.
@@ -82,17 +68,11 @@ We offer a range of services to help you meet your investment and/or retirement 
 
 ## Related Service Providers
 
-Subject to your individual needs and objectives, we may also recommend that you hold and trade your investments and/or pensions in one place via a Platform Service. We may also recommend that some or all of your investments and/or pensions are managed by a Discretionary Investment Management Service (DIMS).
-
-We will consider a broad range of these service providers from a fully researched panel that is representative of the whole of the market and which is also reviewed on a regular basis as described above.
-
-<!-- page: 4 -->
-
-TFAS
-
-<!-- image -->
-
-We may recommend products or services related to your investment and pension needs which are not regulated by the Financial Conduct Authority. For example, cash deposits, National Savings &amp; Investment Products (NS&amp;I), or Inheritance Tax Planning (IHT).
+- **TFAS:** [blank]
+- Under the terms of Financial Conduct Authority (FCA) regulations we will classify you as a retail client for investment and pensions business. As a retail client you have the right to request re-classification as an elective professional client. This may be generally or in respect of a particular service, type of transaction or product, and is subject to the following:
+- We will not advise you if you are experiencing difficulties managing debts. Free help and advice about managing your debts is available by contacting the Money and Pensions Service(MaPS) via its website; www.maps.org.uk
+- Subject to your individual needs and objectives, we may also recommend that you hold and trade your investments and/or pensions in one place via a Platform Service. We may also recommend that some or all of your investments and/or pensions are managed by a Discretionary Investment Management Service (DIMS).
+- We will consider a broad range of these service providers from a fully researched panel that is representative of the whole of the market and which is also reviewed on a regular basis as described above.
 
 ## OUR CHARGES
 
@@ -106,33 +86,29 @@ There is no charge for our initial discussion. Only if you decide to proceed wit
 
 ## Investments &amp; Pensions - Basic Advice Charge
 
-There will be a charge of 3% of the value of the funds that we advise on. In order to ensure we are able to consistently provide a high standard of professional service, our minimum initial advice fee for Pensions &amp; Investment related advice is £1,350.
-
-This service is typically only suitable for clients with at least £45,000 to invest.
-
-For advice on regular contributions to a pension or savings plan, the cost of our initial advice is equal to 30% of the first year's payments.
-
-This service is typically only suitable for clients who are in a position to save at least £250 per month.
+- There will be a charge of 3% of the value of the funds that we advise on. In order to ensure we are able to consistently provide a high standard of professional service, our minimum initial advice fee for Pensions & Investment related advice is £1,350.
+- **This service is typically only suitable for clients with at least £45,000 to invest.:** [blank]
+- For advice on regular contributions to a pension or savings plan, the cost of our initial advice is equal to 30% of the first year's payments.
+- **This service is typically only suitable for clients who are in a position to save at least £250 per month.:** [blank]
 
 ## EXAMPLE:
+
+[No details]
 
 ## Advice relating to a lump sum
 
-If the value of funds on which we advise were £50,000 our fee would be £1,500
-
-If the value of funds on which we advise were £40,000 our fee would be £1,350
+- **If the value of funds on which we advise were £50,000 our fee would be £1,500:** [blank]
+- **If the value of funds on which we advise were £40,000 our fee would be £1,350:** [blank]
 
 ## EXAMPLE:
 
+[No details]
+
 ## Advice relating to a regular contribution
 
-If the value of the contribution was £300 per month, the total advice cost would be £1,080. This cost can be spread over the first 12 months of the plan. Please refer to the section and table on page 6 to see how this can work in practice.
-
-<!-- page: 5 -->
-
-TFAS
-
-<!-- image -->
+- **TFAS:** [blank]
+- We may recommend products or services related to your investment and pension needs which are not regulated by the Financial Conduct Authority. For example, cash deposits, National Savings & Investment Products (NS&I), or Inheritance Tax Planning (IHT).
+- If the value of the contribution was £300 per month, the total advice cost would be £1,080. This cost can be spread over the first 12 months of the plan. Please refer to the section and table on page 6 to see how this can work in practice.
 
 ## On-Going Advice and Review Services
 
@@ -168,11 +144,11 @@ However, if your investment falls in value the amount you pay us will reduce -fo
 - We accept direct payment by cheque or bank transfer.
 - We do not accept cash or credit cards.
 
-<!-- page: 6 -->
-
 TFAS
 
 <!-- image -->
+
+Logo
 
 - We will tell you if it is possible to settle our fees through a deduction from your investment/pension.
 - For new investments and pension plans funded by regular contributions only, you can choose to pay our fees by instalments.
@@ -183,7 +159,8 @@ TFAS
 
 ## Example
 
-You choose to accept our recommendation to invest £300 per month into an investment product. Our fee for advice and arranging this on your behalf is £1,080 . You choose to settle our fee in 12 equal monthly instalments deducted from your first 12 monthly contributions to the product, as follows:
+- **TFAS:** [blank]
+- You choose to accept our recommendation to invest £300 per month into an investment product. Our fee for advice and arranging this on your behalf is £1,080 . You choose to settle our fee in 12 equal monthly instalments deducted from your first 12 monthly contributions to the product, as follows:
 
 | Investment Frequency   | Contribution Amount   | Fee Deduction   | Amount Invested   |
 |------------------------|-----------------------|-----------------|-------------------|
@@ -201,19 +178,21 @@ You choose to accept our recommendation to invest £300 per month into an invest
 | Month 12               | £300                  | £90             | £210              |
 | Month 13 onwards       | £300                  | N/A             | £300              |
 
-<!-- page: 7 -->
-
 TFAS
 
 <!-- image -->
+
+Logo
 
 - Please note that if you cancel your investment or pension product before our fee is settled in full, including cancellation during a statutory cooling off period, you will need to make alternative arrangements to pay our fee.
 
 ## Other benefits we may receive
 
-We are not otherwise permitted to receive or retain any financial inducements, significant gifts or hospitality from investment product providers, for arranging investments.
+- **We are not otherwise permitted to receive or retain any financial inducements, significant gifts or hospitality from investment product providers, for arranging investments.:** [blank]
 
 ## INFORMATION ABOUT OUR INSURANCE SERVICES
+
+[No details]
 
 ## Personal and Family Protection
 
@@ -229,25 +208,10 @@ There may be other costs, including taxes that are due through other organisatio
 
 ## RISKS
 
-Investment risks: The performance of individual funds and any portfolios containing them will rise and fall over time and it is important to remember the value of investments can go down.  Your financial adviser will recommend funds or services including those researched by TFAS Wealth centrally with oversight of our Group Investment Committee.  Please be aware that the past performance is not a guide to future performance.
-
-Insurances: If you do not keep up with the payment of premiums the cover will cease to exist.  You should not cancel any existing insurance cover unless you no longer require it and/ or you have an appropriate replacement policy in place. If you wish to cancel existing insurances, then you must inform the insurance company.
-
-Material facts: It is important that you reply honestly and fully to all the questions you are asked either directly or from your adviser or on the application forms of the institutions we introduce to you.  If you do not do so this will affect your ability to obtain loans today or in the future and could also prevent an insurance company agreeing to pay out any claim you may make under the insurance policy.
-
-<!-- page: 8 -->
-
-TFAS
-
-<!-- image -->
-
-WEALTH
-
-<!-- page: 9 -->
-
-TFAS
-
-<!-- image -->
+- **TFAS:** [blank]
+- Investment risks: The performance of individual funds and any portfolios containing them will rise and fall over time and it is important to remember the value of investments can go down.  Your financial adviser will recommend funds or services including those researched by TFAS Wealth centrally with oversight of our Group Investment Committee.  Please be aware that the past performance is not a guide to future performance.
+- Insurances: If you do not keep up with the payment of premiums the cover will cease to exist.  You should not cancel any existing insurance cover unless you no longer require it and/ or you have an appropriate replacement policy in place. If you wish to cancel existing insurances, then you must inform the insurance company.
+- Material facts: It is important that you reply honestly and fully to all the questions you are asked either directly or from your adviser or on the application forms of the institutions we introduce to you.  If you do not do so this will affect your ability to obtain loans today or in the future and could also prevent an insurance company agreeing to pay out any claim you may make under the insurance policy.
 
 ## NOMINEE AND SAFE CUSTODY SERVICES
 
@@ -255,21 +219,12 @@ We do not look after or deal with your assets, but we may arrange business with 
 
 ## WHAT HAPPENS IF YOU HAVE A COMPLAINT?
 
-If you are unhappy with the service, you have received or a product we have arranged on your behalf, a copy of our complaint's procedure, which sets out how we will handle your complaint, is available upon request.
-
-If you would like to make a complaint, please contact us either in writing to: TFAS Wealth Limited, St Andrew House, 119 -121 The Headrow, Leeds, LS1 5JW ; or by e-mail: karina.bowden@tfas.com ; or by telephone: 0800 888 6100.
-
-If we are unable to settle your complaint or you are unhappy with our response, the Financial Ombudsman Service may be able to help. We will explain how at that point.
-
-If you require further information about the Financial Ombudsman Service, you can contact them directly:
-
-Tel:
-
-0800 0234567
-
-Website:
-
-www.financial-ombudsman.org.uk
+- **Tel::** 0800 0234567
+- **Website::** www.financial-ombudsman.org.uk
+- If you are unhappy with the service, you have received or a product we have arranged on your behalf, a copy of our complaint's procedure, which sets out how we will handle your complaint, is available upon request.
+- If you would like to make a complaint, please contact us either in writing to: TFAS Wealth Limited, St Andrew House, 119 -121 The Headrow, Leeds, LS1 5JW ; or by e-mail: karina.bowden@tfas.com ; or by telephone: 0800 888 6100.
+- If we are unable to settle your complaint or you are unhappy with our response, the Financial Ombudsman Service may be able to help. We will explain how at that point.
+- **If you require further information about the Financial Ombudsman Service, you can contact them directly::** [blank]
 
 ## ARE WE COVERED BY THE FINANCIAL SERVICES COMPENSATION SCHEME (FSCS)?
 
@@ -277,10 +232,11 @@ Yes, we are covered by the FSCS. You may be entitled to compensation from the sc
 
 ## Investments:
 
-Arranging and advising on most types of investment (e.g. an ISA) is covered up to a maximum limit of £85,000 per person per firm.
+- **Arranging and advising on most types of investment (e.g. an ISA) is covered up to a maximum limit of £85,000 per person per firm.:** [blank]
 
 ## Long Term Insurance Contracts:
 
-Arranging and advising on long term insurance contracts (e.g. a life insurance or critical illness policy) is covered for 100% of the claim without upper limit.
+- **TFAS:** [blank]
+- Arranging and advising on long term insurance contracts (e.g. a life insurance or critical illness policy) is covered for 100% of the claim without upper limit.
+- **Further information about the FSCS is available from their website: www.fscs.org.uk:** [blank]
 
-Further information about the FSCS is available from their website: www.fscs.org.uk

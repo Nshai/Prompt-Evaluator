@@ -14,6 +14,15 @@ public sealed class PromptLogWriter : IDisposable
     private readonly StreamWriter _writer;
     private readonly object _gate = new();
 
+    /// <summary>
+    /// What the run's prompts had in common, accumulated as they are logged.
+    ///
+    /// Owned here rather than by the runner because this is the one object that already spans a
+    /// whole run and sees every exchange. A ledger the caller had to remember to create, feed and
+    /// flush would be a ledger that is empty in exactly the runs nobody set up carefully.
+    /// </summary>
+    public PromptPrefixLedger Prefixes { get; } = new();
+
     public string FilePath { get; }
 
     public PromptLogWriter(string logFolder, string caseReference, DateTimeOffset startedAt, string? filePrefix = null)
@@ -58,6 +67,10 @@ public sealed class PromptLogWriter : IDisposable
     /// <summary>Appends one check's system prompt, user prompt and the model's raw response.</summary>
     public void LogExchange(string checkId, string checkName, string systemPrompt, string userPrompt, string response)
     {
+        // The id arrives as "CHK-007/G7.3" — the ledger measures what a check's group prompts
+        // share, so it is keyed on the check and not on the group.
+        Prefixes.Record(checkId.Split('/')[0], systemPrompt, userPrompt);
+
         lock (_gate)
         {
             _writer.WriteLine(new string('=', 100));
@@ -152,5 +165,27 @@ public sealed class PromptLogWriter : IDisposable
         return cleaned.Length == 0 ? "case" : cleaned;
     }
 
-    public void Dispose() => _writer.Dispose();
+    /// <summary>
+    /// Closes the log, writing the prefix ledger last.
+    ///
+    /// <b>On dispose rather than on a call somebody has to remember.</b> It is the only block that
+    /// cannot be written until the run is over, and a summary that depends on a caller reaching
+    /// the end of a happy path is a summary that is missing from every run that was cancelled —
+    /// which are the runs whose cost anyone is most likely to be asking about.
+    /// </summary>
+    public void Dispose()
+    {
+        if (!Prefixes.IsEmpty)
+        {
+            lock (_gate)
+            {
+                _writer.WriteLine(new string('=', 100));
+                _writer.WriteLine(Prefixes.Format());
+                _writer.WriteLine(new string('=', 100));
+                _writer.WriteLine();
+            }
+        }
+
+        _writer.Dispose();
+    }
 }

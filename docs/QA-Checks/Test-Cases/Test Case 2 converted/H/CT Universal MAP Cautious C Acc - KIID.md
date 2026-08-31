@@ -1,3 +1,9 @@
+---
+source: CT Universal MAP Cautious C Acc - KIID.pdf
+converted: 2026-08-31T00:49:35Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## KEY INVESTOR INFORMATION
 
 - **COLUMBIA:** [blank]
@@ -34,6 +40,8 @@ Higher Risk, Typically higher rewards
 
 <!-- image -->
 
+Engineering drawing
+
 - n The Fund is rated 4 because historically it has shown a medium level of volatility (how much the value of the Fund goes up and down).
 - n The lowest category does not mean a risk-free investment.
 - n The  indicator  may  not  adequately  reflect  the  following  risks  of  investing  in particular assets, which may impact on future investment return:
@@ -49,14 +57,17 @@ Higher Risk, Typically higher rewards
 
 <!-- image -->
 
+Logo
+
 ## Charges
 
 - The charges you pay are used to pay the costs of running the Fund, including the costs of marketing and distributing it. These charges reduce the potential growth of your investment.
 - The ongoing charges figure is based on expenses for the year ending 29/11/24. This figure may vary from year to year. It excludes the costs of buying or selling assets for the Fund (unless these assets are shares of another fund).
 - **For more information about charges please see the Fund's prospectus.:** [blank]
 
-| Entry Charge:                                                                                                                                                                          | 0.00%                                                                                                                                                                                  |
+| One-off charges taken before or after you invest                                                                                                                                       |                                                                                                                                                                                        |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Entry Charge:                                                                                                                                                                          | 0.00%                                                                                                                                                                                  |
 | Exit Charge:                                                                                                                                                                           | 0.00%                                                                                                                                                                                  |
 | These are the maximum charges that we might take out of your money before it is invested. In some cases, you might pay less and you should speak to your financial adviser about this. | These are the maximum charges that we might take out of your money before it is invested. In some cases, you might pay less and you should speak to your financial adviser about this. |
 | Charges taken from the fund over a year                                                                                                                                                |                                                                                                                                                                                        |
@@ -65,6 +76,8 @@ Higher Risk, Typically higher rewards
 | Performance Fee:                                                                                                                                                                       | NONE                                                                                                                                                                                   |
 
 <!-- image -->
+
+Bar chart
 
 ## Practical Information
 
@@ -83,6 +96,8 @@ This Fund is authorised in the United Kingdom and regulated by the Financial Con
 en-GB
 
 <!-- image -->
+
+Logo
 
 The ongoing charges figure is based on expenses for the year ending 29/11/24. This figure may vary from year to year. It excludes the costs of buying or selling assets for the Fund (unless these assets are shares of another fund).
 
@@ -118,3 +133,6 @@ _The following details were present in Docling's structured JSON output but omit
 - -0.9
 - 12.7
 - -11.3
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 3: [bar_chart, 98 % confidence]

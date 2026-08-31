@@ -1,3 +1,9 @@
+---
+source: Aviva Pension T&C.pdf
+converted: 2026-08-31T01:07:06Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## PENSION PORTFOLIO TERMS AND CONDITIONS
 
 - **AVIVA:** [blank]
@@ -1197,6 +1203,8 @@ Insurance Retirement Wealth
 Aviva Wrap UK Limited. Registered in England No. 4470008. Aviva, Wellington Row, York YO90 1WR Authorised and regulated by the Financial Conduct Authority. Firm reference number 231530. Aviva Pension Trustees UK Limited. Registered in England No. 2407799. Aviva, Wellington Row, York YO90 1WR Authorised and regulated by the Financial Conduct Authority. Firm reference number 465132.
 
 <!-- image -->
+
+Logo
 
 ## Backfilled content (recovered from structured JSON export)
 _The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._

@@ -1,4 +1,12 @@
+---
+source: Aviva - GIA Illustration.pdf
+converted: 2026-08-31T00:48:03Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 16 December 2025
 

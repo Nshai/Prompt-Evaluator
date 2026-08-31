@@ -1,14 +1,12 @@
 ---
-source_path: "G/SIPP research report.docx"
-file_name: "SIPP research report.docx"
-category_code: G
-pages: 1
-characters: 39301
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: false
+source: SIPP research report.docx
+converted: 2026-08-31T00:35:18Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
 
 <!-- image -->
+
+Logo
 
 ########### 
 
@@ -23,6 +21,8 @@ page_provenance: false
 13 October 2025
 
 <!-- image -->
+
+Logo
 
 ########### Recommendation
 
@@ -75,6 +75,8 @@ The chart shows an investment’s performance, calculated as NAV to NAV/Bid to B
 
 <!-- image -->
 
+Line chart
+
 | ━━      | CT Universal MAP Balanced Fund C Acc (GBP)   | ━━      | HSBC Global Strategy Balanced Portfolio Accumulation C (GBP)   |
 |---------|----------------------------------------------|---------|----------------------------------------------------------------|
 
@@ -110,6 +112,8 @@ The table shows an investments performance, calculated as NAV to NAV/Bid to Bid/
 
 <!-- image -->
 
+Logo
+
 ########### 
 
 ########### 
@@ -123,6 +127,8 @@ The table shows an investments performance, calculated as NAV to NAV/Bid to Bid/
 13 October 2025
 
 <!-- image -->
+
+Logo
 
 **Contents**
 
@@ -291,6 +297,8 @@ The chart shows the combined investments performance, calculated as NAV to NAV/B
 
 <!-- image -->
 
+Line chart
+
 | ━━      | Combined   | ---      | Benchmark : Risk Level 5 Benchmark (GBP)   |
 |---------|------------|----------|--------------------------------------------|
 
@@ -307,6 +315,8 @@ The table shows the combined investments performance, calculated as NAV to NAV/B
 The chart shows an investment’s performance, calculated as NAV to NAV/Bid to Bid/Closing Price to Closing Price, with dividends/distributions reinvested, including the effect of ongoing costs and charges. These figures are calculated to the performance date 12 October 2025.
 
 <!-- image -->
+
+Line chart
 
 | ━━      | CT Universal MAP Balanced Fund C Acc (GBP)   | ━━      | HSBC Global Strategy Balanced Portfolio Accumulation C (GBP)   |
 |---------|----------------------------------------------|---------|----------------------------------------------------------------|
@@ -325,6 +335,8 @@ The table shows an investment’s performance, calculated as NAV to NAV/Bid to B
 The chart shows the combined investments performance, calculated as NAV to NAV/Bid to Bid/Closing Price to Closing Price, with dividends/distributions reinvested, including the effect of ongoing costs and charges. These figures are calculated for calendar years and/or the period within the current year specified.
 
 <!-- image -->
+
+Bar chart
 
 #### Combined discrete investment performance table
 
@@ -509,3 +521,15 @@ No Platform DNA analysis was carried out.
 KEY: na = not applicable, ns = not stated, nd = not disclosed
 
 The Data Numerical Analysis (DNA) allows the analysis of data on both a quantitative and a qualitative basis, showing not only who does what, but more importantly, how well they do it. This is achieved by a system of benchmarking or ranking on a 1 to 5 basis called DNA. A score of 1 indicates a weak feature; a score of 5 indicates an excellent feature.
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- This report was prepared with data sourced from Defaqto Engage. Whilst every attempt has been made to ensure the accuracy of the data used in this report, items can change and we advise that you check the issues most important to you if you proceed with the purchase of the selected contract.
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 3: [line_chart, 100 % confidence]
+- Image 6: [line_chart, 100 % confidence]
+- Image 7: [line_chart, 100 % confidence]
+- Image 8: [bar_chart, 98 % confidence]

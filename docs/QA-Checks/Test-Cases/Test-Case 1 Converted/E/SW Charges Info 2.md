@@ -1,40 +1,27 @@
 ---
-source_path: "E/SW Charges Info 2.pdf"
-file_name: "SW Charges Info 2.pdf"
-category_code: E
-pages: 2
-characters: 3273
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: SW Charges Info 2.pdf
+converted: 2026-08-31T00:29:50Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 ## Retirement Account
 
+[No details]
+
 ## Investment charges information
 
-This document shows the current charges that apply to the investments you have chosen. These charges may change in the future.
+- **This document shows the current charges that apply to the investments you have chosen. These charges may change in the future.:** [blank]
 
 ## Membership details
 
-Scheme name
-
-SWMT - Scottish Widows Master Trust Section 101
-
-Membership number
-
-ZU4225575
-
-Member
-
-Issue date
-
-24 September 2025
+- **Scheme name:** SWMT - Scottish Widows Master Trust Section 101
+- **Membership number:** ZU4225575
+- **Issue date:** 24 September 2025
+- **Member:** [blank]
 
 ## Cost of investment
 
-'Cost of investment' may also be referred to as 'Total Annual Fund Charge'.
+- **'Cost of investment' may also be referred to as 'Total Annual Fund Charge'.:** [blank]
 
 | Investment                      | Yearly Scottish Widows fund based charge   | Fund manager charges   | Fund manager charges   | Fund manager charges    |   Cost of investment (%) |
 |---------------------------------|--------------------------------------------|------------------------|------------------------|-------------------------|--------------------------|
@@ -48,7 +35,7 @@ These investments are part of a lifestyle option that will be rebalanced from ti
 
 <!-- image -->
 
-<!-- page: 2 -->
+Table
 
 ## Yearly Scottish Widows fund based charge
 
@@ -66,13 +53,12 @@ Fund expenses are not fixed. The figures shown are estimates based on what the f
 
 ## Total expense ratio
 
-This is the total of the fund expenses and the annual management charge less the annual management charge rebate.
+- **This is the total of the fund expenses and the annual management charge less the annual management charge rebate.:** [blank]
 
 ## Cost of investment
 
-This is the total of the yearly Scottish Widows fund based charge, Intermediary charges and total expense ratio.
-
-'Cost of investment' may also be referred to as 'Total Annual Fund Charge'.
+- **This is the total of the yearly Scottish Widows fund based charge, Intermediary charges and total expense ratio.:** [blank]
+- **'Cost of investment' may also be referred to as 'Total Annual Fund Charge'.:** [blank]
 
 ## Disinvestment strategy
 

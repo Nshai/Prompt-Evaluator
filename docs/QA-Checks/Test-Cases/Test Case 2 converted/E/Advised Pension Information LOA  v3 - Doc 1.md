@@ -1,3 +1,9 @@
+---
+source: Advised Pension Information LOA  v3 - Doc 1.pdf
+converted: 2026-08-31T00:38:50Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Plan Information Form
 
 [No details]
@@ -42,6 +48,8 @@ Aviva Pension Trustees UK Limited. Registered in England No. 2407799. Wellington
 Authorised and regulated by the Financial Conduct Authority. Firm Reference Number 465132.
 
 <!-- image -->
+
+Logo
 
 AVIVA
 

@@ -1,3 +1,9 @@
+---
+source: AL international.pdf
+converted: 2026-08-31T01:10:32Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## PHOENIX AL PENSIONS INTERNATIONAL ACCUMULATOR
 
 [No details]
@@ -29,6 +35,8 @@ To provide long term growth from investment in an actively managed po
 
 <!-- image -->
 
+Line chart
+
 ## Source: Lipper
 
 The figures above show the total percentage growth in the fund up to the quarter end for the past five years. Past performance is not a reliable guide to future performance and the value of investments may fall as well as rise. The graphs show percentage growth, bid to bid prices (see Prices and charges section) and income re­invested (see Unit­linked funds ­ how they work section). The value of an investment is not guaranteed and can go up and down depending on investment performance.
@@ -36,6 +44,8 @@ The figures above show the total percentage growth in the fund up to
 Data as of: 31 Mar 2026
 
 <!-- image -->
+
+Logo
 
 ## PHOENIX AL PENSIONS INTERNATIONAL ACCUMULATOR
 
@@ -97,3 +107,7 @@ _The following details were present in Docling's structured JSON output but omit
 ### Additional extracted text (not present in the base markdown export)
 - 40.00
 - 60.00
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [line_chart, 100 % confidence]
+- Image 3: [bar_chart, 98 % confidence]

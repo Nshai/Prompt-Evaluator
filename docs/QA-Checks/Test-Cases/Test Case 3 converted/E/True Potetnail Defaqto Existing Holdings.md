@@ -1,3 +1,9 @@
+---
+source: True Potetnail Defaqto Existing Holdings.docx
+converted: 2026-08-31T00:55:02Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Existing Holdings
 
 | **11.30 10 Year Volatility**  **[2]**   | **6**  Balanced Growth  [4]   |
@@ -18,7 +24,7 @@
 
 ## Asset allocation
 
-| <!-- image -->                                                                                                                                                                                                | ASSET ALLOCATION⁽¹⁾ ASSET ALLOCATION⁽¹⁾ NET %⁽²⁾  SHORT % LONG % l North America Equity 36.31 -0.11 36.42 l Global (ex-UK) Fixed Income 19.87 -3.21 23.08 l Europe (ex-UK) Equity 15.23 -0.02 15.25 l Japan Equity 6.13 0.00 6.13 l UK Equity 5.91 -0.10 6.01 l UK Government Bonds 5.51 0.00 5.51 l Emerging Markets Equity 5.31 -0.01 5.32 l Cash - Short Term Money Market 4.11 -0.61 4.72 l Developed Pacific (ex-Japan) Equity 3.62 -0.55 4.17 l Commodities 2.96 0.00 2.96 l UK Corporate Bonds 1.74 0.00 1.74 l Absolute Return 0.97 0.00 0.97 l UK Index Linked Bonds 0.07 0.00 0.07 l Private Equity 0.02 0.00 0.02 l Other -7.75 -46.31 38.56   |
+| <!-- image -->  Pie chart                                                                                                                                                                                     | ASSET ALLOCATION⁽¹⁾ ASSET ALLOCATION⁽¹⁾ NET %⁽²⁾  SHORT % LONG % l North America Equity 36.31 -0.11 36.42 l Global (ex-UK) Fixed Income 19.87 -3.21 23.08 l Europe (ex-UK) Equity 15.23 -0.02 15.25 l Japan Equity 6.13 0.00 6.13 l UK Equity 5.91 -0.10 6.01 l UK Government Bonds 5.51 0.00 5.51 l Emerging Markets Equity 5.31 -0.01 5.32 l Cash - Short Term Money Market 4.11 -0.61 4.72 l Developed Pacific (ex-Japan) Equity 3.62 -0.55 4.17 l Commodities 2.96 0.00 2.96 l UK Corporate Bonds 1.74 0.00 1.74 l Absolute Return 0.97 0.00 0.97 l UK Index Linked Bonds 0.07 0.00 0.07 l Private Equity 0.02 0.00 0.02 l Other -7.75 -46.31 38.56   |
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ⁽¹⁾ Due to the negative asset allocation within the selected portfolio the investment allocation chart is unavailable. ⁽²⁾ Due to rounding there may be a discrepancy between the Long/Short % and the Net %. | ⁽¹⁾ Due to the negative asset allocation within the selected portfolio the investment allocation chart is unavailable. ⁽²⁾ Due to rounding there may be a discrepancy between the Long/Short % and the Net %.                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
@@ -29,6 +35,8 @@
 The chart shows an investment’s performance, calculated as NAV to NAV/Bid to Bid/Closing Price to Closing Price, with dividends/distributions reinvested, including the effect of ongoing costs and charges. These figures are calculated to the performance date 19 March 2026.
 
 <!-- image -->
+
+Line chart
 
 | ━━      | True Potential Allianz Balanced Acc (GBP)          | ━━      | True Potential Goldman Sachs Balanced Acc (GBP)          |
 |---------|----------------------------------------------------|---------|----------------------------------------------------------|
@@ -65,3 +73,10 @@ The table shows an investments performance, calculated as NAV to NAV/Bid to Bid/
 | True Potential SEI Aggressive Inc                  |  -4.27 |   9.91 |  16.39 |  17.01 |  5.24 |
 | True Potential TrinityBridge Balanced A Acc Shares | -13.77 |   7.02 |   9.12 |   7.64 |  4.52 |
 | True Potential UBS Aggressive Acc                  | -15.28 |  12.22 |  13.66 |  13.95 |  5.91 |
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [pie_chart, 83 % confidence]
+- Image 2: [line_chart, 100 % confidence]

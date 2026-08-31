@@ -1,3 +1,9 @@
+---
+source: Fact Find (1).pdf
+converted: 2026-08-31T00:53:32Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Your Information
 
 [No details]
@@ -30,19 +36,19 @@
 
 ## Data Protection
 
-| Client             | Melanie Anness                                                                                                                                                                                                                                                 |
-|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Agreement Date     | 07/01/2026                                                                                                                                                                                                                                                     |
-| Statement 1        | We take your privacy seriously and want to be transparent about how we handle your information. Key points you should know - TFAS is a group of UK-registered companies providing telephone and video-based financial advice.                                  |
-| Statement 1 Answer | Yes                                                                                                                                                                                                                                                            |
-| Statement 2        | We collect your data directly or from third parties (e.g. introducers, providers, legal firms). We may share data with trusted third parties (e.g. service providers, regulators) when necessary. We won't share your data for marketing without your consent. |
-| Statement 2 Answer | Yes                                                                                                                                                                                                                                                            |
-| Statement 3        | We use AI to transcribe and record calls to support service quality and compliance.                                                                                                                                                                            |
-| Statement 3 Answer | Yes                                                                                                                                                                                                                                                            |
-| Statement 4        | Your data may be transferred outside the UK with appropriate safeguards in place. Information is kept secure and only for as long as needed. Recommendations are stored indefinitely.                                                                          |
-| Statement 4 Answer | Yes                                                                                                                                                                                                                                                            |
-| Statement 5        | You have rights under data protection law, including access, correction, deletion, and objection. Our full privacy policy is                                                                                                                                   |
-| Statement 5 Answer | Yes                                                                                                                                                                                                                                                            |
+| Client             | Melanie Anness                                                                                                                                                                                                                                                 |                    |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
+| Agreement Date     | 07/01/2026                                                                                                                                                                                                                                                     |                    |
+| Statement 1        | We take your privacy seriously and want to be transparent about how we handle your information. Key points you should know - TFAS is a group of UK-registered companies providing telephone and video-based financial advice.                                  |                    |
+| Statement 1        | Yes                                                                                                                                                                                                                                                            | Answer             |
+| Statement          | We collect your data directly or from third parties (e.g. introducers, providers, legal firms). We may share data with trusted third parties (e.g. service providers, regulators) when necessary. We won't share your data for marketing without your consent. | 2                  |
+| Statement 2 Answer | Yes                                                                                                                                                                                                                                                            |                    |
+| Statement          | We use AI to transcribe and record calls to support service quality and compliance.                                                                                                                                                                            | 3                  |
+| Statement 3        | Yes                                                                                                                                                                                                                                                            | Answer             |
+| Statement          | Your data may be transferred outside the UK with appropriate safeguards in place. Information is kept secure and only for as long as needed. Recommendations are stored indefinitely.                                                                          | 4                  |
+|                    | Yes                                                                                                                                                                                                                                                            | Statement 4 Answer |
+| Statement 5        | You have rights under data protection law, including access, correction, deletion, and objection. Our full privacy policy is available on request or via our website. Are you happy to proceed on this basis?                                                  |                    |
+|                    | Yes                                                                                                                                                                                                                                                            | Statement 5 Answer |
 
 ## Personal Details
 
@@ -285,12 +291,11 @@ Melanie has now stopped working through self employment, she was getting frustra
 - **Client did not disclose:** No
 - **Melanie Anness Total £587,000.00:** [blank]
 
-| Owner          | Category       | Related to Address   | Description                                                 | Owner 1 %   | Owner 2 %   | Cur.   | Original Value   | Purchased On   | Value        | Valuation Date   | Net Monthly Income   |
-|----------------|----------------|----------------------|-------------------------------------------------------------|-------------|-------------|--------|------------------|----------------|--------------|------------------|----------------------|
-| Melanie Anness | Main Residence |                      | House Primary residence with eco- friendly features         |             |             | GBP    |                  |                | £ 430,000.00 | 20/02/2026       |                      |
-| Melanie Anness | Cash           |                      | Savings                                                     | 100.00%     |             | GBP    |                  |                | £ 7,000.00   | 21/07/2026       |                      |
-| Melanie Anness | Other          |                      | Potential Inheritance of                                    |             |             | GBP    |                  |                | £ 150,000.00 | 21/07/2026       |                      |
-|                |                |                      | proceedings Estimated to be in 2-3 years time, maybe sooner |             |             |        |                  |                |              |                  |                      |
+| Owner          | Category       | Related to Address   | Description                                                                                                                 | Owner 1 %   | Owner 2 %   | Cur.   | Original Value   | Purchased On   | Value        | Valuation Date   | Net Monthly Income   |
+|----------------|----------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------|-------------|-------------|--------|------------------|----------------|--------------|------------------|----------------------|
+| Melanie Anness | Main Residence |                      | House Primary residence with eco- friendly features                                                                         |             |             | GBP    |                  |                | £ 430,000.00 | 20/02/2026       |                      |
+| Melanie Anness | Cash           |                      | Savings                                                                                                                     | 100.00%     |             | GBP    |                  |                | £ 7,000.00   | 21/07/2026       |                      |
+| Melanie Anness | Other          |                      | Potential Inheritance of £150,000 currently going through legal proceedings Estimated to be in 2-3 years time, maybe sooner |             |             | GBP    |                  |                | £ 150,000.00 | 21/07/2026       |                      |
 
 Melanie Anness Total £587,000.00
 
@@ -298,12 +303,12 @@ Melanie Anness Total £587,000.00
 
 It is desirable that a greater priority be given to the repayment / reduction of the levels of your debt prior to making an investment or committing to a regular premium.
 
-| Do you have any liabilities?                                                                 | Yes      |
-|----------------------------------------------------------------------------------------------|----------|
-| Do you wish to consider repayment or reduction of any liabilities? details in notes section) | (provide |
-| Why do you not want to consider this?                                                        |          |
-| Notes                                                                                        |          |
-| Client did not disclose                                                                      | No       |
+| Do you have any liabilities?                                                                          | Yes   |
+|-------------------------------------------------------------------------------------------------------|-------|
+| Do you wish to consider repayment or reduction of any liabilities? (provide details in notes section) |       |
+| Why do you not want to consider this?                                                                 |       |
+| Notes                                                                                                 |       |
+| Client did not disclose                                                                               | No    |
 
 | Owner                              | Melanie Anness   | Melanie Anness     | Melanie Anness   |
 |------------------------------------|------------------|--------------------|------------------|
@@ -372,9 +377,9 @@ It is desirable that a greater priority be given to the repayment / reduction of
 - **Melanie Anness Total:** £0.00
 - £800.00
 
-| Owner          | Category     | Descriptio n          | Frequency   | Gross Amount   | Net Amount   | Start Date   | End Date   | Last Updated   | Occupatio n   | Descriptio n   |
-|----------------|--------------|-----------------------|-------------|----------------|--------------|--------------|------------|----------------|---------------|----------------|
-| Melanie Anness | Other Income | Partner's Contributio | Monthly     | £ 0.00         | £ 800.00     |              |            | 21/07/2026     |               |                |
+| Owner          | Category     | Descriptio n            | Frequency   | Gross Amount   | Net Amount   | Start Date   | End Date   | Last Updated   | Occupatio n   | Descriptio n   |
+|----------------|--------------|-------------------------|-------------|----------------|--------------|--------------|------------|----------------|---------------|----------------|
+| Melanie Anness | Other Income | Partner's Contributio n | Monthly     | £ 0.00         | £ 800.00     |              |            | 21/07/2026     |               |                |
 
 Melanie Anness Total
 
@@ -395,40 +400,40 @@ Melanie Anness Total
 |----------------------------------------------------------------------------------------------------------------------------------------|-------|
 | Total Net Monthly Expenditure                                                                                                          |       |
 
-| Category                               | Owner          | Description   | Net Amount   | Frequency   |
-|----------------------------------------|----------------|---------------|--------------|-------------|
-| Basic Essential Expenditure            |                |               |              |             |
-| Rent                                   |                |               |              |             |
-| Council Tax                            | Melanie Anness |               | £ 221.00     | Monthly     |
-| Electricity                            | Melanie Anness |               | £ 120.00     | Monthly     |
-| Water                                  | Melanie Anness |               | £ 42.00      | Monthly     |
-| Telephone/Mobile                       | Melanie Anness |               | £ 20.00      | Monthly     |
-| Food & Personal Care                   | Melanie Anness |               | £ 300.00     | Monthly     |
-| Car/Travelling Expenses                | Melanie Anness | pcp           | £ 440.00     | Monthly     |
-| Car/Travelling Expenses                | Melanie Anness |               | £ 50.00      | Monthly     |
-| Car/Travelling Expenses                | Melanie Anness | tax           | £ 1,000.00   | Annually    |
-| Car/Travelling Expenses                | Melanie Anness | Fuel          | £ 200.00     | Monthly     |
-| Housekeeping                           |                |               |              |             |
-| Ground Rent/Service charge             | Melanie Anness |               | £ 150.00     | Annually    |
-| Building Insurance                     |                |               |              |             |
-| Combined Utilities                     |                |               |              |             |
-| Maintenance/Alimony                    |                |               |              |             |
-| Other (Basic Essential)                |                |               |              |             |
-| Basic Quality of Living                |                |               |              |             |
-| Clothing                               | Melanie Anness |               | £ 150.00     | Monthly     |
-| Furniture/Appliances/Repair s          | Melanie Anness |               | £ 50.00      | Monthly     |
-| TV/Satellite/Internet/Basic Recreation | Melanie Anness |               | £ 61.00      | Monthly     |
-| School Fee/Childcare                   |                |               |              |             |
-| Other (Basic Quality of Living)        | Melanie Anness | TV licence    | £ 15.00      | Monthly     |
-| Non-Essential Outgoings                |                |               |              |             |
-| Sports and Recreation                  | Melanie Anness |               | £ 41.40      | Monthly     |
-| Holidays                               | Melanie Anness |               | £ 3,000.00   | Annually    |
-| Entertainment                          | Melanie Anness |               | £ 150.00     | Monthly     |
-| Life/General Assurance Premium         | Melanie Anness |               | £ 30.00      | Monthly     |
-| Other (Non-Essential)                  |                |               |              |             |
-| Liability Expenditure                  |                |               |              |             |
-| Mortgage                               | Melanie Anness |               | £ 600.00     | Monthly     |
-| Other (Liability)                      |                |               |              |             |
+| Category                               | Owner                       | Description                 | Net Amount                  | Frequency                   |
+|----------------------------------------|-----------------------------|-----------------------------|-----------------------------|-----------------------------|
+| Basic Essential Expenditure            | Basic Essential Expenditure | Basic Essential Expenditure | Basic Essential Expenditure | Basic Essential Expenditure |
+| Rent                                   |                             |                             |                             |                             |
+| Council Tax                            | Melanie Anness              |                             | £ 221.00                    | Monthly                     |
+| Electricity                            | Melanie Anness              |                             | £ 120.00                    | Monthly                     |
+| Water                                  | Melanie Anness              |                             | £ 42.00                     | Monthly                     |
+| Telephone/Mobile                       | Melanie Anness              |                             | £ 20.00                     | Monthly                     |
+| Food & Personal Care                   | Melanie Anness              |                             | £ 300.00                    | Monthly                     |
+| Car/Travelling Expenses                | Melanie Anness              | pcp                         | £ 440.00                    | Monthly                     |
+| Car/Travelling Expenses                | Melanie Anness              |                             | £ 50.00                     | Monthly                     |
+| Car/Travelling Expenses                | Melanie Anness              | tax                         | £ 1,000.00                  | Annually                    |
+| Car/Travelling Expenses                | Melanie Anness              | Fuel                        | £ 200.00                    | Monthly                     |
+| Housekeeping                           |                             |                             |                             |                             |
+| Ground Rent/Service charge             | Melanie Anness              |                             | £ 150.00                    | Annually                    |
+| Building Insurance                     |                             |                             |                             |                             |
+| Combined Utilities                     |                             |                             |                             |                             |
+| Maintenance/Alimony                    |                             |                             |                             |                             |
+| Other (Basic Essential)                |                             |                             |                             |                             |
+| Basic Quality of Living                |                             |                             |                             |                             |
+| Clothing                               | Melanie Anness              |                             | £ 150.00                    | Monthly                     |
+| Furniture/Appliances/Repair s          | Melanie Anness              |                             | £ 50.00                     | Monthly                     |
+| TV/Satellite/Internet/Basic Recreation | Melanie Anness              |                             | £ 61.00                     | Monthly                     |
+| School Fee/Childcare                   |                             |                             |                             |                             |
+| Other (Basic Quality of Living)        | Melanie Anness              | TV licence                  | £ 15.00                     | Monthly                     |
+| Non-Essential Outgoings                |                             |                             |                             |                             |
+| Sports and Recreation                  | Melanie Anness              |                             | £ 41.40                     | Monthly                     |
+| Holidays                               | Melanie Anness              |                             | £ 3,000.00                  | Annually                    |
+| Entertainment                          | Melanie Anness              |                             | £ 150.00                    | Monthly                     |
+| Life/General Assurance Premium         | Melanie Anness              |                             | £ 30.00                     | Monthly                     |
+| Other (Non-Essential)                  |                             |                             |                             |                             |
+| Liability Expenditure                  |                             |                             |                             |                             |
+| Mortgage                               | Melanie Anness              |                             | £ 600.00                    | Monthly                     |
+| Other (Liability)                      |                             |                             |                             |                             |
 
 ## Expenditure Details
 
@@ -537,42 +542,42 @@ Melanie Anness Total
 - **Policy Number:** [blank]
 - **Address Line 1:** [blank]
 
-| Rate Type                                |                         |                |
-|------------------------------------------|-------------------------|----------------|
-| Rate period from completion(mths)        |                         |                |
-| Mortgage Type                            | Standard Residential    |                |
-| Are you a First Time Buyer?              |                         |                |
-| Property Type                            |                         |                |
-| Repayment                                | Interest Only/Endowment | Method         |
-| Capital Repayment Amount                 |                         |                |
-| Capital Repayment Term                   |                         |                |
-| Interest Only Amount                     |                         |                |
-| Interest Only Term                       |                         |                |
-| Interest Only Repayment Vehicle          |                         |                |
-| Monthly Repayment Amount                 | £ 0.00                  |                |
-| Original Loan Amount                     |                         |                |
-| Lender Fees                              |                         |                |
-| Interest Rate (%)                        | 1.24%                   |                |
-| Base Rate                                |                         |                |
-| Feature Expires                          |                         |                |
-| Original Mortgage Term                   |                         |                |
-| Start Date                               |                         |                |
-| End Date                                 |                         |                |
-| Remaining Term                           |                         |                |
-| Current Balance                          | £ -70,000.00            |                |
-| Account Number                           |                         |                |
-| Is Guarantor Mortgage?                   |                         |                |
-| Is the loan subject to Redemption        | No                      | Penalty?       |
-| Redemption Terms                         |                         |                |
-| Redemption End Date                      |                         |                |
-| Is the mortgage Portable?                |                         |                |
-| Consent to Let?                          |                         |                |
-| Consent To Let Expiry Date               |                         |                |
-| Discharge on completion                  |                         |                |
-| Linked to Asset                          |                         |                |
-| Asset Value                              |                         |                |
-| Income Status                            |                         |                |
-| Is any Mortgage Equity to be used debts? |                         | to consolidate |
+|                                                         |                         | Rate Type        |
+|---------------------------------------------------------|-------------------------|------------------|
+| Rate period from                                        |                         | completion(mths) |
+|                                                         | Standard Residential    | Mortgage Type    |
+| Are you a First Time Buyer?                             |                         |                  |
+| Property                                                |                         | Type             |
+| Repayment Method                                        | Interest Only/Endowment |                  |
+| Capital Repayment                                       |                         | Amount           |
+| Capital Repayment Term                                  |                         |                  |
+| Interest Only                                           |                         | Amount           |
+| Interest Only                                           |                         | Term             |
+| Interest Only Repayment Vehicle                         |                         |                  |
+| Monthly Repayment Amount                                | £ 0.00                  |                  |
+| Original Loan                                           |                         | Amount           |
+| Lender                                                  |                         | Fees             |
+| Interest Rate                                           | 1.24%                   | (%)              |
+| Base Rate                                               |                         |                  |
+| Feature Expires                                         |                         |                  |
+| Original Mortgage Term                                  |                         |                  |
+| Start                                                   |                         | Date             |
+| End                                                     |                         | Date             |
+| Remaining                                               |                         | Term             |
+| Current                                                 | £ -70,000.00            | Balance          |
+| Account Number                                          |                         |                  |
+| Is Guarantor                                            |                         | Mortgage?        |
+| Is the loan subject to Redemption Penalty?              | No                      |                  |
+|                                                         |                         | Redemption Terms |
+| Redemption End Date                                     |                         |                  |
+| Is the mortgage Portable?                               |                         |                  |
+| Consent to                                              |                         | Let?             |
+| Consent To Let Expiry Date                              |                         |                  |
+| Discharge on completion                                 |                         |                  |
+| Linked to Asset                                         |                         |                  |
+| Asset Value                                             |                         |                  |
+| Income                                                  |                         | Status           |
+| Is any Mortgage Equity to be used to consolidate debts? |                         |                  |
 
 ## Existing Equity Release Details
 
@@ -606,37 +611,41 @@ Melanie Anness Total
 
 ## Property Details
 
-| Addressee                                          |
-|----------------------------------------------------|
-| Property Type                                      |
-| Additional Property Detail                         |
-| Tenure Type                                        |
-| Leasehold End Date                                 |
-| Property Status                                    |
-| Construction                                       |
-| Roof Construction                                  |
-| Year Built                                         |
-| New Build?                                         |
-| Is property covered by NHBC                        |
-| Certificate (Y/N) Is property covered by any Other |
-| Certificates (Y/N and details freetext)            |
-| Builder's name                                     |
-| Ex-Local Authority                                 |
-| No. of Outbuildings                                |
-| Address Line 1                                     |
-| Address Line 2                                     |
-| Address Line 3                                     |
-| Address Line 4                                     |
-| County/state/province                              |
-| Country                                            |
-| Post Code                                          |
-| Address Type                                       |
-| Residency Status Date From                         |
-| Date To                                            |
-| Default                                            |
-| Address Status                                     |
-| Registered on Electoral Roll                       |
-| Linked Goal&Objective                              |
+|                                                                | Addressee       |
+|----------------------------------------------------------------|-----------------|
+| Property Type                                                  |                 |
+| Additional Property Detail                                     |                 |
+| Tenure Type                                                    |                 |
+| Leasehold End                                                  | Date            |
+|                                                                | Property Status |
+| Construction                                                   |                 |
+|                                                                | Other           |
+| Roof                                                           | Construction    |
+| Number of Bedrooms                                             |                 |
+| Year                                                           | Built           |
+| New                                                            | Build?          |
+| Is property covered by NHBC Certificate (Y/N)                  |                 |
+| Is property covered by any Other Certificates (Y/N and details | freetext)       |
+| Other Certificates Details                                     |                 |
+| Builder's                                                      | name            |
+| Ex-Local Authority                                             |                 |
+| No. of Outbuildings                                            |                 |
+| Address Line                                                   | 1               |
+| Address Line                                                   | 2               |
+| Address Line                                                   | 3               |
+| Address Line 4                                                 |                 |
+|                                                                | City/Town       |
+| County/state/province                                          |                 |
+|                                                                | Country         |
+| Post                                                           | Code            |
+| Address Type                                                   |                 |
+| Residency Status                                               |                 |
+|                                                                | Date From       |
+| Date                                                           | To              |
+|                                                                | Default         |
+| Address                                                        | Status          |
+| Registered on Electoral Roll                                   |                 |
+| Linked Goal&Objective                                          |                 |
 
 ## Mortgage Preferences &amp; Attitude to Risk
 
@@ -668,28 +677,28 @@ Melanie Anness Total
 
 ## Checklist
 
-|         | Question                                                                                                                                                                                               |     |
-|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----|
-| General | General                                                                                                                                                                                                |     |
-| 1       | Key messages about the service being ofered have been disclosed and discussed with the client                                                                                                          |     |
-| 2       | The different types of products and interest rate arrangements that might meet your customer's future needs (including what your customer's future repayments will be after a concessionary scheme)    |     |
-| 3       | The main repayment methods available                                                                                                                                                                   |     |
-| 4       | mortgages based in part or in full on an interest only basis:                                                                                                                                          | For |
-| a)      | The various methods available for repayment of the loan                                                                                                                                                |     |
-| b)      | The consequences of failing to make suitable arrangements for the repayment of the mortgage                                                                                                            |     |
-| c)      | Confirm that it is the customer's responsibility to ensure that a repayment vehicle is maintained for the duration of the mortgage                                                                     |     |
-| d)      | Client is aware that they will have to demonstrate to the Lender that a clearly understood and credible repayment strategy is in place                                                                 |     |
-| 5       | The consequences should they repay the mortgage early                                                                                                                                                  |     |
-| 6       | Related insurances                                                                                                                                                                                     |     |
-| 7       | The customer's responsibility to ensure that all necessary forms of insurance relating to the property and mortgage are in place                                                                       |     |
-| 8       | Explain that certain insurances may be a condition of the mortgage                                                                                                                                     |     |
-| 9       | All costs and fees associated with the mortgage                                                                                                                                                        |     |
-| 10      | Whether or not the terms and conditions of the mortgage product are portable in the event of moving house                                                                                              |     |
-| 11      | Explain when the customer's account details may be passed to a credit reference agency                                                                                                                 |     |
-| 12      | Explain what a higher lending charge is                                                                                                                                                                |     |
-| 13      | The possible consequences for the customer's mortgage should their personal circumstances change (e.g. accident, sickness, redundancy) and the options open to them (e.g. Mortgage Payment Protection) |     |
-| 14      | Joint applications - concept of joint and several liability                                                                                                                                            |     |
-| 15      | The implications of adding fees and costs to the loan / or of debt consolidation                                                                                                                       |     |
+|         | Question                                                                                                                                                                                               |         |
+|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| General | General                                                                                                                                                                                                | General |
+| 1       | Key messages about the service being ofered have been disclosed and discussed with the client                                                                                                          |         |
+| 2       | The different types of products and interest rate arrangements that might meet your customer's future needs (including what your customer's future repayments will be after a concessionary scheme)    |         |
+| 3       | The main repayment methods available                                                                                                                                                                   |         |
+| 4       | For mortgages based in part or in full on an interest only basis:                                                                                                                                      |         |
+| a)      | The various methods available for repayment of the loan                                                                                                                                                |         |
+| b)      | The consequences of failing to make suitable arrangements for the repayment of the mortgage                                                                                                            |         |
+| c)      | Confirm that it is the customer's responsibility to ensure that a repayment vehicle is maintained for the duration of the mortgage                                                                     |         |
+| d)      | Client is aware that they will have to demonstrate to the Lender that a clearly understood and credible repayment strategy is in place                                                                 |         |
+| 5       | The consequences should they repay the mortgage early                                                                                                                                                  |         |
+| 6       | Related insurances                                                                                                                                                                                     |         |
+| 7       | The customer's responsibility to ensure that all necessary forms of insurance relating to the property and mortgage are in place                                                                       |         |
+| 8       | Explain that certain insurances may be a condition of the mortgage                                                                                                                                     |         |
+| 9       | All costs and fees associated with the mortgage                                                                                                                                                        |         |
+| 10      | Whether or not the terms and conditions of the mortgage product are portable in the event of moving house                                                                                              |         |
+| 11      | Explain when the customer's account details may be passed to a credit reference agency                                                                                                                 |         |
+| 12      | Explain what a higher lending charge is                                                                                                                                                                |         |
+| 13      | The possible consequences for the customer's mortgage should their personal circumstances change (e.g. accident, sickness, redundancy) and the options open to them (e.g. Mortgage Payment Protection) |         |
+| 14      | Joint applications - concept of joint and several liability                                                                                                                                            |         |
+| 15      | The implications of adding fees and costs to the loan / or of debt consolidation                                                                                                                       |         |
 
 ## Mortgage Notes
 
@@ -713,42 +722,43 @@ Melanie Anness Total
 - **Do you have any existing policies (including death-in-service benefits)?:** [blank]
 - **Client did not disclose:** [blank]
 
-| Owner                           | Melanie Anness       |                |
-|---------------------------------|----------------------|----------------|
-|                                 | Unknown Provider     | Provider       |
-| Policy Number                   |                      |                |
-| Agency                          | Not Under Agency     | Status         |
-| Currency                        | GBP                  |                |
-| Currency                        | GBP                  |                |
-| Type Of                         | Relevant Life Policy | Contract       |
-| Purpose                         |                      |                |
-| Product                         | Life Insurance       | Name           |
-| Start Date                      |                      |                |
-| Expiry Date                     |                      |                |
-| Expiry                          |                      | Date           |
-| Premium                         | £ 0.00               |                |
-| Premium Frequency               |                      |                |
-| Sum Assured                     | £ 70,000.00          |                |
-| Benefit                         |                      |                |
-| Income Protection               |                      |                |
-| Benefit Payable                 |                      |                |
-| Benefit Frequency               |                      |                |
-| Split Benefit Payable           |                      |                |
-| Split Benefit Frequency         |                      |                |
-| Life Cover Sum Assured          |                      |                |
-| Critical Illness Sum Assured    |                      |                |
-| Life Assured                    | Client 1             |                |
-| Payment Basis                   |                      |                |
-| Benefit Period (if applicable)  |                      |                |
-| Specify                         |                      |                |
-| Deferred Period (if applicable) |                      |                |
-| Deferred Period Interval        |                      |                |
-| Split Deferred Period           |                      |                |
-| Split Deferred Period Interval  |                      |                |
-| Assigned / In Trust             |                      |                |
-| Related to Product              |                      | Held in Super? |
-| Status                          | In force             |                |
-| (p.a.)                          |                      | GMP Amount     |
+|                                 | Melanie Anness       | Owner                 |
+|---------------------------------|----------------------|-----------------------|
+|                                 | Unknown Provider     | Provider              |
+| Policy                          |                      | Number                |
+| Agency Status                   | Not Under Agency     |                       |
+|                                 | GBP                  | Currency              |
+|                                 | GBP                  | Currency              |
+| Type Of                         | Relevant Life Policy | Contract              |
+|                                 |                      | Purpose               |
+| Product Name                    | Life Insurance       |                       |
+| Start Date                      |                      |                       |
+| Expiry Date                     |                      |                       |
+| Expiry                          |                      | Date                  |
+|                                 | £ 0.00               | Premium               |
+| Premium                         |                      | Frequency             |
+| Sum                             | £ 70,000.00          | Assured               |
+|                                 |                      | Benefit               |
+| Income Protection               |                      |                       |
+| Benefit                         |                      | Payable               |
+| Benefit Frequency               |                      |                       |
+| Split Benefit Payable           |                      |                       |
+| Split Benefit Frequency         |                      |                       |
+| Life Cover Sum Assured          |                      |                       |
+| Critical Illness Sum Assured    |                      |                       |
+| Life                            | Client 1             | Assured               |
+| Payment Basis                   |                      |                       |
+| Benefit Period (if applicable)  |                      |                       |
+|                                 |                      | Specify               |
+| Deferred Period (if applicable) |                      |                       |
+| Deferred Period Interval        |                      |                       |
+|                                 |                      | Split Deferred Period |
+| Split Deferred Period Interval  |                      |                       |
+| Assigned / In Trust             |                      |                       |
+| Held in                         |                      | Super?                |
+| Related to Product              |                      |                       |
+| Status                          | In force             |                       |
+| GMP Amount (p.a.)               |                      |                       |
 
 ## Protection for your mortgage, debts and standard of living in the event of death or critical illness
 
@@ -783,26 +793,26 @@ Melanie Anness Total
 
 ## Existing Protection for Buildings and Contents
 
-| Owner                       |
-|-----------------------------|
-| Insurance Type              |
-| Type                        |
-| Product Name                |
-| Provider                    |
-| Agency Status               |
-| Currency                    |
-| Premium                     |
-| Premium Frequency           |
-| Start Date                  |
-| Renewal Date                |
-| Buildings Sum Insured       |
-| Buildings Accidental Damage |
-| Buildings Excess            |
-| Contents Sum Insured        |
-| Contents Accidental Damage  |
-| Contents Excess             |
-| Premium Loading             |
-| Exclusions                  |
+|                             | Owner      |
+|-----------------------------|------------|
+| Insurance                   | Type       |
+| Type                        |            |
+| Product Name                |            |
+| Provider                    |            |
+| Agency                      | Status     |
+|                             | Currency   |
+|                             | Premium    |
+| Premium Frequency           |            |
+| Start Date                  |            |
+| Renewal                     | Date       |
+| Buildings Sum Insured       |            |
+| Buildings Accidental Damage |            |
+| Buildings Excess            |            |
+| Contents Sum Insured        |            |
+| Contents Accidental Damage  |            |
+| Contents                    | Excess     |
+| Premium Loading             |            |
+|                             | Exclusions |
 
 ## Life Protection
 
@@ -966,94 +976,97 @@ Melanie Anness Total
 
 - **Do you have any existing Personal Pension arrangements?:** Yes
 
-| Client did not disclose            |                                |                 |
-|------------------------------------|--------------------------------|-----------------|
-| Owner                              | Melanie Anness                 |                 |
-| Contract                           | Personal Pension Plan          | Type            |
-| Product Name                       | Aviva pension Aviva Platform   | Provider        |
-| Linked To (Policy Number)          |                                |                 |
-| Linked To (PlanType/Provider)      |                                |                 |
-| Policy No                          | AV2966413-001                  |                 |
-| Agency Status                      | Under Agency - Servicing Agent |                 |
-| Currency                           | GBP                            |                 |
-| Policy Start                       | 13/04/2026                     |                 |
-| Date                               |                                |                 |
-| Your Cont. (reg)                   |                                |                 |
-| Emp. Cont. (reg)                   |                                |                 |
-| Freq.                              |                                |                 |
-| Transfer Cont.                     | £ 351,493.34                   |                 |
-|                                    |                                | Lump Sum Cont.  |
-| Value                              | £ 294,867.94                   |                 |
-| Valuation Date                     | 20/07/2026                     |                 |
-| Pension Arrangement                |                                |                 |
-| Crystallisation                    |                                | Status          |
-| Crystallised Percentage - Post 6th |                                | April 2024      |
-| April 2024                         |                                |                 |
-| Uncrystallised Percentage          |                                |                 |
-| PCLS                               |                                |                 |
-|                                    |                                | PCLS Paid By    |
-| Protected PCLS                     |                                |                 |
-| GAD / Maximum Income Limit (p.a.)  |                                |                 |
-| Guaranteed / Minimum Income (p.a.) |                                | GAD Calculation |
-| Date                               |                                |                 |
-| Date                               |                                | Next Review     |
-|                                    |                                | Capital / Value |
-| Capital / Value Protected Amount   |                                |                 |
-| Indexed?                           |                                |                 |
-| Lump Sum Death Benefit             |                                |                 |
+| Client did not disclose                       | Melanie Anness                 | Owner                     |
+|-----------------------------------------------|--------------------------------|---------------------------|
+| Contract Type                                 | Personal Pension Plan          |                           |
+| Product                                       | Aviva pension                  | Name                      |
+|                                               | Aviva Platform                 | Provider                  |
+|                                               |                                | Linked To (Policy Number) |
+| Linked To (PlanType/Provider)                 |                                |                           |
+| Policy                                        | AV2966413-001                  | No                        |
+| Agency Status                                 | Under Agency - Servicing Agent |                           |
+| Currency                                      | GBP                            |                           |
+| Policy Start                                  | 13/04/2026                     | Date                      |
+| Ret.                                          |                                | Age                       |
+| Your Cont. (reg)                              |                                |                           |
+| Emp. Cont. (reg)                              |                                |                           |
+| Freq.                                         |                                |                           |
+| Transfer                                      | £ 351,493.34                   | Cont.                     |
+| Lump Sum Cont.                                |                                |                           |
+| Value                                         | £ 294,867.94                   |                           |
+| Valuation                                     | 20/07/2026                     | Date                      |
+| Pension                                       |                                | Arrangement               |
+| Crystallisation Status                        |                                |                           |
+| Crystallised Percentage - Pre 6th April 2024  |                                |                           |
+| Crystallised Percentage - Post 6th April 2024 |                                |                           |
+| Percentage                                    |                                | Total Crystallised        |
+| Uncrystallised Percentage                     |                                |                           |
+| PCLS                                          |                                |                           |
+| PCLS Paid                                     |                                | By                        |
+| Protected                                     |                                | PCLS                      |
+| GAD / Maximum Income Limit (p.a.)             |                                |                           |
+| Guaranteed / Minimum Income (p.a.)            |                                |                           |
+| GAD Calculation Date                          |                                |                           |
+| Next Review Date                              |                                |                           |
+| Capital / Value Protected?                    |                                |                           |
+| Capital / Value Protected Amount              |                                |                           |
+|                                               |                                | Indexed?                  |
+| Preserved?                                    |                                |                           |
+| Lump Sum Death Benefit                        |                                |                           |
 
-| In Trust?                                      |          |        |
-|------------------------------------------------|----------|--------|
-|                                                | In force | Status |
-| GMP Amount (p.a.)                              |          |        |
-| Enhanced Tax Free Cash                         |          |        |
-| Guaranteed Annuity Rate / Pension (or similar) |          |        |
-| Applicable Penalties                           |          |        |
-| EFI/Loyalty Bonus/Terminal Bonus               |          |        |
-| Guaranteed Growth Rates                        |          |        |
-| Death in service spousal benefits              | £ 0.00   |        |
-| Lifetime Allowance Used (%)                    |          |        |
-| Lifestyling strategy?                          |          |        |
-| Details                                        |          |        |
-| Options Available at Retirement                |          |        |
-| Other Benefits and/or Material Features        |          |        |
-| Additional Notes                               |          |        |
+| In Trust?                               |          |            |
+|-----------------------------------------|----------|------------|
+| Status                                  | In force |            |
+| GMP Amount (p.a.)                       |          |            |
+| Enhanced Tax Free Cash                  |          |            |
+| Annuity Rate / Pension (or similar)     |          | Guaranteed |
+| Applicable Penalties                    |          |            |
+| EFI/Loyalty Bonus/Terminal Bonus        |          |            |
+| Guaranteed Growth Rates                 |          |            |
+| Death in service spousal benefits       | £ 0.00   |            |
+| Lifetime Allowance Used (%)             |          |            |
+| Lifestyling strategy?                   |          |            |
+| Details                                 |          |            |
+| Options Available at Retirement         |          |            |
+| Other Benefits and/or Material Features |          |            |
+| Additional Notes                        |          |            |
 
 ## Annuities
 
-| Do you have any existing Annuity plans?   |                   |
-|-------------------------------------------|-------------------|
-| Client did not disclose                   |                   |
-| Owner                                     |                   |
-| Type                                      |                   |
-| Product Name                              |                   |
-| Provider                                  |                   |
-| Policy No                                 |                   |
-| Agency Status                             |                   |
-| Currency                                  |                   |
-| Policy Start Date                         |                   |
-| Total Purchase Amount                     |                   |
-| Value                                     |                   |
-| Valuation Date                            |                   |
-| Premium Start Date                        |                   |
-| Capital Element (p.a.)                    |                   |
-| Assumed Growth Rate %                     |                   |
-| Income Amount                             |                   |
-| Income Frequency                          |                   |
-| Income Effective Date                     |                   |
-| Annuity Payment Type                      |                   |
-| PCLS                                      |                   |
-| PCLS Paid By                              |                   |
-| Spouses / Dependants Benefits             |                   |
-| Spouses / Dependants %                    |                   |
-| Overlap                                   |                   |
-| Guarantee (Yrs)                           |                   |
-| With Proportion                           |                   |
-| Capital / Value Protected?                |                   |
-| Capital / Value Protected Amount          |                   |
-| Status                                    |                   |
-| WRAP                                      |                   |
-| GMP Amount (p.a.)                         | GMP Amount (p.a.) |
+| Do you have any existing Annuity plans?   | Do you have any existing Annuity plans?   |
+|-------------------------------------------|-------------------------------------------|
+| Client did not disclose                   | Client did not disclose                   |
+|                                           | Owner                                     |
+| Type                                      | Type                                      |
+|                                           | Product Name                              |
+|                                           | Provider                                  |
+| Policy No                                 | Policy No                                 |
+|                                           | Agency Status                             |
+|                                           | Currency                                  |
+|                                           | Policy Start Date                         |
+| Total Purchase Amount                     | Total Purchase Amount                     |
+| Value                                     | Value                                     |
+| Valuation Date                            | Valuation Date                            |
+|                                           | Premium Start Date                        |
+| Capital Element (p.a.)                    | Capital Element (p.a.)                    |
+| Assumed Growth Rate %                     | Assumed Growth Rate %                     |
+|                                           | Income Amount                             |
+| Income Frequency                          | Income Frequency                          |
+| Income Effective Date                     | Income Effective Date                     |
+| Annuity Payment Type                      | Annuity Payment Type                      |
+| PCLS                                      | PCLS                                      |
+|                                           | PCLS Paid By                              |
+|                                           | Spouses / Dependants Benefits             |
+| Spouses / Dependants %                    | Spouses / Dependants %                    |
+|                                           | Overlap                                   |
+|                                           | Guarantee (Yrs)                           |
+|                                           | With Proportion                           |
+|                                           | Capital / Value Protected?                |
+|                                           | Capital / Value Protected Amount          |
+|                                           | Status                                    |
+|                                           | WRAP                                      |
+|                                           | GMP Amount (p.a.)                         |
+|                                           | Additional Notes                          |
 
 ## Retirement Risk Profile
 
@@ -1076,19 +1089,19 @@ Melanie Anness Total
 
 ## Investment Goals &amp; Objectives
 
-| Owner                                                     |
-|-----------------------------------------------------------|
-| Category                                                  |
-| Name                                                      |
-| Details                                                   |
-| Time Horizon                                              |
-| Target Amount                                             |
-| Target Date                                               |
-| Frequency                                                 |
-| Term                                                      |
-| Do you have any investment preferences (for example ESG)? |
-| Investment Preference Details                             |
-| Risk Profile                                              |
+|                                                           | Owner     |
+|-----------------------------------------------------------|-----------|
+|                                                           | Category  |
+|                                                           | Name      |
+|                                                           | Details   |
+| Time                                                      | Horizon   |
+| Target                                                    | Amount    |
+| Target                                                    | Date      |
+|                                                           | Frequency |
+| Term                                                      |           |
+| Do you have any investment preferences (for example ESG)? |           |
+| Investment Preference Details                             |           |
+| Risk                                                      | Profile   |
 
 ## Investment Goals &amp; Objectives Notes
 
@@ -1121,36 +1134,36 @@ Melanie Anness Total
 - **Do you have any existing investments?:** [blank]
 - **Client did not disclose:** [blank]
 
-| Owner                                                    | Melanie Anness                 |             |
-|----------------------------------------------------------|--------------------------------|-------------|
-| Provider                                                 | Aviva Platform                 |             |
-| Policy No                                                | AV2966413                      |             |
-| Agency Status                                            | Under Agency - Servicing Agent |             |
-| Currency                                                 | GBP                            |             |
-| Contract                                                 | Wrap                           | Type        |
-| Linked To (Policy Number)                                |                                |             |
-| Linked To (PlanType/Provider)                            |                                |             |
-| Product Name                                             | Aviva wrap                     |             |
-| Purpose                                                  |                                |             |
-| Cont. this tax year?                                     |                                |             |
-| Your Cont. (reg)                                         | £ 0.00                         |             |
-| Regular Cont.                                            |                                | Freq.       |
-| Lump Sum Cont.                                           | £ 0.00                         |             |
-| Current Value                                            | £ 0.00                         |             |
-| Valuation                                                |                                | Date        |
-| Start Date                                               | 13/04/2026                     |             |
-| Maturity Date                                            |                                |             |
-| Low Maturity Value                                       |                                |             |
-| Medium Maturity Value                                    |                                |             |
-| High Maturity Value                                      |                                |             |
-| Maturity Value Projection Details                        |                                |             |
-| Monthly Income, if applicable                            |                                |             |
-| In Trust                                                 |                                |             |
-| To Whom                                                  |                                |             |
-| Product has a guarantee / protection to protect original | No                             | investment? |
-|                                                          | In force                       | Status      |
-| WRAP                                                     |                                |             |
-| Gross Interest Rate                                      |                                |             |
+|                                                                      | Melanie Anness                 | Owner    |
+|----------------------------------------------------------------------|--------------------------------|----------|
+|                                                                      | Aviva Platform                 | Provider |
+| Policy No                                                            | AV2966413                      |          |
+| Agency Status                                                        | Under Agency - Servicing Agent |          |
+|                                                                      | GBP                            | Currency |
+| Contract                                                             | Wrap                           | Type     |
+| Linked To (Policy                                                    |                                | Number)  |
+| Linked To (PlanType/Provider)                                        |                                |          |
+| Product Name                                                         | Aviva wrap                     |          |
+|                                                                      |                                | Purpose  |
+| Cont. this tax year?                                                 |                                |          |
+| Your Cont.                                                           | £ 0.00                         | (reg)    |
+| Regular Cont. Freq.                                                  |                                |          |
+| Lump Sum                                                             | £ 0.00                         | Cont.    |
+| Current                                                              | £ 0.00                         | Value    |
+| Valuation Date                                                       |                                |          |
+| Start                                                                | 13/04/2026                     | Date     |
+| Maturity                                                             |                                | Date     |
+| Low Maturity Value                                                   |                                |          |
+| Medium Maturity Value                                                |                                |          |
+| High Maturity Value                                                  |                                |          |
+| Maturity Value Projection Details                                    |                                |          |
+| Monthly Income, if applicable                                        |                                |          |
+| In                                                                   |                                | Trust    |
+|                                                                      |                                | To Whom  |
+| Product has a guarantee / protection to protect original investment? | No                             |          |
+|                                                                      | In force                       | Status   |
+|                                                                      |                                | WRAP     |
+| Gross Interest Rate                                                  |                                |          |
 
 ## Investment Risk Profile
 

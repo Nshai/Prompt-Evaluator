@@ -228,6 +228,53 @@
           "description": "ROLE: verification. What the assessor may make of what it was given. Every field here is a string interpolated into the group's prompt; nothing in the runner branches on any of them.",
           "additionalProperties": false,
           "properties": {
+            "reconciliation": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "ROLE: reconciliation. DIRECTIVE, not a steer: the reconciler branches on these. They say what code may establish for this requirement before any model is asked.",
+              "properties": {
+                "detect": {
+                  "enum": ["ValueDivergence", "SetDifference", "Absence", "RangeBreach", "None"],
+                  "description": "What makes a candidate here. None means code compares nothing: narrative has no value to diverge, and comparing prose as values manufactures findings."
+                },
+                "emitOnePerPath": {
+                  "type": "boolean",
+                  "description": "One candidate for the path rather than one per array element. Sixteen missing allocation rows are one observation, not sixteen findings."
+                },
+                "modality": {
+                  "enum": ["CurrentOnly", "AnyModality"],
+                  "description": "CurrentOnly refuses to compare a projection against a current figure, which is not a discrepancy."
+                },
+                "asAtToleranceDays": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "How far apart two dated values may be before the difference is an as-at artefact rather than a conflict."
+                },
+                "note": { "type": "string" }
+              },
+              "required": ["detect"]
+            },
+            "adjudication": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "ROLE: adjudication. DIRECTIVE, not a steer: the adjudicator branches on these. They say whether this requirement needs judgement at all, and how far its severity may reach.",
+              "properties": {
+                "mode": {
+                  "enum": ["Model", "Deterministic"],
+                  "description": "Deterministic where code has already proved the finding and only a sentence is wanted. An Appropriateness limb is never Deterministic: code can establish the facts but not the verdict."
+                },
+                "severityCeiling": {
+                  "enum": ["Low", "Moderate", "High", "Critical"],
+                  "description": "The highest severity this requirement may report. An absence is held below the severities reserved for a demonstrated contradiction."
+                },
+                "requiresCitation": {
+                  "type": "boolean",
+                  "description": "Whether a finding here must carry a locatable quote to be reported."
+                },
+                "note": { "type": "string" }
+              },
+              "required": ["mode"]
+            },
             "limb": {
               "enum": ["Consistency", "Appropriateness", "Both"],
               "description": "One line of the group prompt. Consistency groups diff the report against the file; appropriateness groups apply rules to the merged model. No code branches on it."

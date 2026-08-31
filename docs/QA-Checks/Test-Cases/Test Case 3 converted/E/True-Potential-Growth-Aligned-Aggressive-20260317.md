@@ -1,3 +1,9 @@
+---
+source: True-Potential-Growth-Aligned-Aggressive-20260317.pdf
+converted: 2026-08-31T00:55:41Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## True Potential Growth-Aligned Aggressive
 
 - **true:** potential
@@ -16,6 +22,8 @@ The True Potential Growth-Aligned Aggressive Fund returned 2.91% (net of fees). 
 ## Growth of £10,000 invested 5 years ago
 
 <!-- image -->
+
+Line chart
 
 - l True Potential Growth-Aligned Aggressive Acc*
 - l Morningstar UK Adventurous Target Allocation Index**
@@ -53,6 +61,8 @@ The True Potential Growth-Aligned Aggressive Fund returned 2.91% (net of fees). 
 - The fund's aggressive risk profile focuses on maximizing longterm returns over minimizing short-term losses.
 
 <!-- image -->
+
+Logo
 
 ## Key fund information
 
@@ -129,18 +139,20 @@ The OCF of this fund is currently 0.54%. This means that if you invest £1000 in
 - **l:** [blank]
 - **l:** [blank]
 
-| Asset   | class                               | % of total exposure***   |
-|---------|-------------------------------------|--------------------------|
-| l       | US Stocks                           | 48.91%                   |
-| l       | Emerging Markets Stocks             | 14.04%                   |
-| l       | Europe ex UK Equity Stocks          | 13.43%                   |
-| l       | Asia Pacific Stocks                 | 10.13%                   |
-| l       | UK Stocks                           | 8.76%                    |
-| l       | Gold                                | 2.08%                    |
-| l       | Global High Yield Bond (GBP Hedged) | 1.46%                    |
-| l       | Cash and Cash Equivalents****       | 1.17%                    |
+| Asset class                           | % of total exposure***   |
+|---------------------------------------|--------------------------|
+| l US Stocks                           | 48.91%                   |
+| l Emerging Markets Stocks             | 14.04%                   |
+| l Europe ex UK Equity Stocks          | 13.43%                   |
+| l Asia Pacific Stocks                 | 10.13%                   |
+| l UK Stocks                           | 8.76%                    |
+| l Gold                                | 2.08%                    |
+| l Global High Yield Bond (GBP Hedged) | 1.46%                    |
+| l Cash and Cash Equivalents****       | 1.17%                    |
 
 <!-- image -->
+
+Pie chart
 
 O
 
@@ -198,3 +210,7 @@ _The following details were present in Docling's structured JSON output but omit
 - £15,000
 - £17,000
 - £19,000
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [line_chart, 100 % confidence]
+- Image 10: [pie_chart, 100 % confidence]

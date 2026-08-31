@@ -165,6 +165,19 @@
         "sufficiency": {
           "ifAssertionAbsent": "Note as a gap where a new ongoing commitment is created from income.",
           "ifEvidenceAbsent": "Potential Concern: affordability asserted with no income and expenditure record."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -331,6 +344,19 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Note that cashflow conclusions are asserted with no modelling output on file."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -437,6 +463,19 @@
         },
         "sufficiency": {
           "ifBothAbsent": "Potential Concern: emergency fund and liquidity are named explicitly by this check."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -529,6 +568,19 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Assess on the report alone and record that no surplus figure was available to test against."
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -636,6 +688,18 @@
         },
         "sufficiency": {
           "ifBothAbsent": "No finding where no capital is being drawn from liquid savings."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -725,6 +789,19 @@
         },
         "sufficiency": {
           "ifAssertionAbsent": "Potential Concern where an access need falls inside a period the recommended wrapper restricts."
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -820,6 +897,19 @@
           "ifAssertionAbsent": "Note as a gap where the affordability case depends on future income starting.",
           "ifEvidenceAbsent": "Potential Concern: future income relied on for affordability with no forecast or statement on file.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -912,6 +1002,18 @@
           "ifAssertionAbsent": "Note as a gap; the report should address known future calls on capital.",
           "ifEvidenceAbsent": "Potential Concern: a future need is asserted with no record of the client raising it.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     }

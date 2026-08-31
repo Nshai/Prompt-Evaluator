@@ -1,11 +1,7 @@
 ---
-source_path: "C/File notes notes - updated.docx"
-file_name: "File notes notes - updated.docx"
-category_code: C
-pages: 1
-characters: 4567
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: false
+source: File notes notes - updated.docx
+converted: 2026-08-31T00:25:14Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
 
 **ATR Wording**
@@ -24,27 +20,39 @@ XXXX, you are aware that investment values can rise as well as fall, and althoug
 
 <!-- image -->
 
+Screenshot from computer
+
 Peoples pension current risk - 9
 
 Scottish widows current risk – 4 (funds not on defaqto, built manually)
 
 <!-- image -->
 
+Screenshot from computer
+
 Aviva current risk – 2
 
 <!-- image -->
+
+Screenshot from computer
 
 Zurich current risk – 7
 
 <!-- image -->
 
+Screenshot from computer
+
 Standard Life current risk – 4
 
 <!-- image -->
 
+Full page image
+
 SL performance
 
 <!-- image -->
+
+Screenshot from computer
 
 Peoples Penson – alternative option
 
@@ -54,13 +62,19 @@ Scottish widows – alternative option – 30% liquid fund and 70% of Portfolio 
 
 <!-- image -->
 
+Screenshot from computer
+
 Discounted as no servicing and reduced flexibility with withdrawing, so no more research was done.
 
 Aviva – Alternative option
 
 <!-- image -->
 
+Screenshot from computer
+
 <!-- image -->
+
+Screenshot from computer
 
 Only mixed asset aviva fund available is risk rated 4 which does not meet the clients ATR.. Discounted switch.
 
@@ -70,16 +84,44 @@ Zurich do not have risk level 5 funds, a blend of a 7 and a 2 has been used to c
 
 <!-- image -->
 
+Screenshot from computer
+
 <!-- image -->
+
+Line chart
 
 Standard Life – Alternative option
 
 <!-- image -->
 
+Table
+
 <!-- image -->
+
+Table
 
 Discounted as all funds within the same range of 20-60% equities are more expensive than what we can offer at Aviva.
 
 SL fund charge
 
 <!-- image -->
+
+Table
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- CONFIDENTIAL
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [screenshot_from_computer, 87 % confidence]
+- Image 2: [screenshot_from_computer, 73 % confidence]
+- Image 3: [screenshot_from_computer, 85 % confidence]
+- Image 4: [screenshot_from_computer, 96 % confidence]
+- Image 5: [full_page_image, 85 % confidence]
+- Image 6: [screenshot_from_computer, 88 % confidence]
+- Image 9: [screenshot_from_computer, 91 % confidence]
+- Image 11: [line_chart, 93 % confidence]
+- Image 13: [table, 100 % confidence]
+- Image 14: [table, 98 % confidence]

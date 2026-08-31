@@ -1,4 +1,12 @@
+---
+source: Aviva - ISA Illustration.pdf
+converted: 2026-08-31T00:48:24Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 16 December 2025
 
@@ -66,10 +74,11 @@ Please read this document along with the 'Key features of the ISA Portfolio' and
 
 - **The total amount invested in each asset is shown below.:** [blank]
 
-| Investment                                       | Transfers in    |
-|--------------------------------------------------|-----------------|
-| Assets                                           |                 |
-| CT Universal MAP Cautious C Acc Total investment | 100.00% 100.00% |
+| Investment                      | Transfers in   |
+|---------------------------------|----------------|
+| Assets                          |                |
+| CT Universal MAP Cautious C Acc | 100.00%        |
+| Total investment                | 100.00%        |
 
 ## The charges for your ISA Portfolio
 
@@ -113,9 +122,8 @@ In addition to the fund manager initial charge, fund managers will also take cha
 
 - **You've agreed to pay adviser charges through your ISA Portfolio:** [blank]
 
-| Ongoing adviser charge   | 1.00% of the value of your ISA Portfolio each year. Based on your new payments and today's value of your ISA Portfolio, this is estimated as £16.67   |
-|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-|                          | taken each month. The amount you pay will vary over time as the value of your ISA Portfolio changes.                                                  |
+| Ongoing adviser charge   | 1.00% of the value of your ISA Portfolio each year. Based on your new payments and today's value of your ISA Portfolio, this is estimated as £16.67 taken each month. The amount you pay will vary over time as the value of your ISA Portfolio changes.   |
+|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 ## Interest on your cash account
 
@@ -162,6 +170,8 @@ The numbers below are calculated on the middle basis 5.0% each year after taking
 
 <!-- image -->
 
+Table
+
 The product and Investment charges could reduce the value of this ISA Portfolio from £32,500 to £31,000 - this is the same as reducing the investment growth after inflation from 5.0% to 4.5% . This is a reduction in the growth rate of 0.5%.
 
 All charges could reduce the value of this ISA Portfolio from £32,500 to £28,000 - this is the same as reducing the investment growth after inflation from 5.0% to 3.4%. This is a reduction in the growth rate of 1.6% .
@@ -195,3 +205,6 @@ _The following details were present in Docling's structured JSON output but omit
 - £29,500
 - £28,400
 - £29,700
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 4: [table, 100 % confidence]

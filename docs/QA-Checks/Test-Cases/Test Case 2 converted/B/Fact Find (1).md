@@ -1,3 +1,9 @@
+---
+source: Fact Find (1).pdf
+converted: 2026-08-31T00:38:42Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Your Information
 
 [No details]
@@ -26,18 +32,19 @@
 
 ## Data Protection
 
-| Client             | Anthony Barnes                                                                                                                                                                                                                                        |                    |
-|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| Agreement          | 04/08/2025                                                                                                                                                                                                                                            | Date               |
-|                    | We take your privacy seriously and want to be transparent about how we handle your information. Key points you should know - TFAS is a group of UK-registered companies providing telephone and video-based financial advice.                         | Statement 1        |
-| Statement 1 Answer | Yes                                                                                                                                                                                                                                                   |                    |
-| Statement 2        | We collect your data directly or from third parties (e.g. introducers, providers, legal firms). We may share data with trusted third parties (e.g. service providers, regulators) when necessary. We won't share your data for marketing without your |                    |
-|                    | We use AI to transcribe and record calls to                                                                                                                                                                                                           |                    |
-|                    | support service quality and compliance.                                                                                                                                                                                                               | Statement 3        |
-|                    | Yes                                                                                                                                                                                                                                                   | Statement 3 Answer |
-| Statement 4        | Your data may be transferred outside the UK with appropriate safeguards in place. Information is kept secure and only for as long as needed. Recommendations are stored indefinitely.                                                                 |                    |
-| Statement 4 Answer | Yes                                                                                                                                                                                                                                                   |                    |
-| Statement 5        | You have rights under data protection law, including access, correction, deletion, and objection. Our full privacy policy is available on request or via our website. Are you happy to proceed on this basis?                                         |                    |
+| Client             | Anthony Barnes                                                                                                                                                                                                                                                 |                    |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
+| Agreement Date     | 04/08/2025                                                                                                                                                                                                                                                     |                    |
+| Statement 1        | We take your privacy seriously and want to be transparent about how we handle your information. Key points you should know - TFAS is a group of UK-registered companies providing telephone and video-based financial advice.                                  |                    |
+| Statement 1        | Yes                                                                                                                                                                                                                                                            | Answer             |
+| Statement          | We collect your data directly or from third parties (e.g. introducers, providers, legal firms). We may share data with trusted third parties (e.g. service providers, regulators) when necessary. We won't share your data for marketing without your consent. | 2                  |
+| Statement 2 Answer | Yes                                                                                                                                                                                                                                                            |                    |
+| Statement          | We use AI to transcribe and record calls to support service quality and compliance.                                                                                                                                                                            | 3                  |
+| Statement 3        | Yes                                                                                                                                                                                                                                                            | Answer             |
+| Statement          | Your data may be transferred outside the UK with appropriate safeguards in place. Information is kept secure and only for as long as needed. Recommendations are stored indefinitely.                                                                          | 4                  |
+|                    | Yes                                                                                                                                                                                                                                                            | Statement 4 Answer |
+| Statement 5        | You have rights under data protection law, including access, correction, deletion, and objection. Our full privacy policy is available on request or via our website. Are you happy to proceed on this basis?                                                  |                    |
+| Statement 5 Answer | Yes                                                                                                                                                                                                                                                            |                    |
 
 ## Personal Details
 
@@ -75,23 +82,23 @@
 
 ## Contact Address
 
-| Addressee                    | Anthony Barnes                |          |
-|------------------------------|-------------------------------|----------|
-| Line 1                       | 27 Reigate Road               | Address  |
-| Address Line 2               | Urmston                       |          |
-| Address Line 3               |                               |          |
-| Address Line                 |                               | 4        |
-| City / Town                  | Manchester                    |          |
-| Country                      | United Kingdom                |          |
-| Postcode                     | M41 6PT                       |          |
-| Address                      | Home                          | Type     |
-| Residency Status             | Owner Occupier - unencumbered |          |
-| Date From                    |                               |          |
-| Date To                      |                               |          |
-|                              |                               | Default  |
-| Address Status               | Current Address               |          |
-| Registered on Electoral Roll |                               |          |
-| Time at Address              |                               | (Months) |
+|                              | Anthony Barnes                | Addressee   |
+|------------------------------|-------------------------------|-------------|
+| Address Line                 | 27 Reigate Road               | 1           |
+| Address Line                 | Urmston                       | 2           |
+| Address Line 3               |                               |             |
+| Address Line 4               |                               |             |
+| City /                       | Manchester                    | Town        |
+|                              | United Kingdom                | Country     |
+|                              | M41 6PT                       | Postcode    |
+| Address                      | Home                          | Type        |
+| Residency Status             | Owner Occupier - unencumbered |             |
+| Date                         |                               | From        |
+| Date                         |                               | To          |
+|                              |                               | Default     |
+| Address                      | Current Address               | Status      |
+| Registered on Electoral Roll |                               |             |
+| Time at Address (Months)     |                               |             |
 
 ## Contact Details
 
@@ -157,67 +164,68 @@
 - **Total annual self-employed Gross Profit, Dividend, and Salary / employed gross basic, guaranteed and regular overtime and bonus incomes:** £ 14,000.00
 - **Highest rate of income tax paid (%):** 20
 
-| Owner                                               | Anthony Barnes                                 | Anthony Barnes                                 |
-|-----------------------------------------------------|------------------------------------------------|------------------------------------------------|
-| Employment Status                                   | Employed                                       | Employed                                       |
-| Business Type                                       |                                                |                                                |
-| Occupation                                          | Driver                                         | Driver                                         |
-| Employer                                            |                                                |                                                |
-|                                                     |                                                | Address Line 1                                 |
-| Address Line                                        |                                                | 2                                              |
-| Address Line                                        |                                                | 3                                              |
-| Address Line                                        |                                                | 4                                              |
-|                                                     |                                                | City / Town                                    |
-|                                                     |                                                | County/state/province                          |
-| Country                                             | United Kingdom                                 |                                                |
-| Post Code                                           |                                                |                                                |
-| Intended Retirement Age                             | 60                                             |                                                |
-| Start Date                                          |                                                |                                                |
-| End Date                                            |                                                |                                                |
-| Description                                         |                                                |                                                |
-| Most Recent Annual Accounts Gross Profit            |                                                |                                                |
-| Most Recent Annual Accounts Net Profit              |                                                |                                                |
-| Most Recent Annual Accounts Gross Dividend          |                                                |                                                |
-| Most Recent Annual Accounts Net Dividend            |                                                |                                                |
-| Most Recent Annual Accounts Gross Salary            |                                                |                                                |
-| Most Recent Annual Accounts Net Salary              |                                                |                                                |
-| Most Recent Annual Accounts Share of Company Profit |                                                |                                                |
-| Most Recent Annual Accounts Year End                |                                                |                                                |
-| Year 2 Annual Accounts Gross Profit                 |                                                |                                                |
-| Year 2 Annual Accounts Net Profit                   |                                                |                                                |
-| Year 2 Annual Accounts Gross Dividend               |                                                |                                                |
-| Year 2 Annual Accounts Net Dividend                 |                                                | Year 2 Annual                                  |
-| Accounts Gross Salary                               |                                                |                                                |
-| Year 2 Annual Accounts Net Salary                   |                                                |                                                |
-| Year 2 Year End                                     |                                                |                                                |
-| Year 3 Annual Accounts Gross Profit                 |                                                |                                                |
-| Year 3 Annual Accounts Net Profit                   |                                                |                                                |
-| Year 3 Annual Accounts Gross Dividend               |                                                |                                                |
-| Year 3 Annual Accounts Net Dividend                 |                                                |                                                |
-| Year 3 Annual Accounts Gross Salary                 |                                                |                                                |
-| Year 3 Annual Accounts Net Salary                   |                                                |                                                |
-| Year 3 Annual Accounts Share of Company Profit      | Year 3 Annual Accounts Share of Company Profit | Year 3 Annual Accounts Share of Company Profit |
-| Year 3 Year End                                     | Year 3 Year End                                | Year 3 Year End                                |
+|                                                     | Anthony Barnes   | Owner                           |
+|-----------------------------------------------------|------------------|---------------------------------|
+|                                                     | Employed         | Employment Status               |
+| Business Type                                       |                  |                                 |
+|                                                     | Driver           | Occupation                      |
+|                                                     |                  | Employer                        |
+| Address Line                                        |                  | 1                               |
+| Address Line                                        |                  | 2                               |
+| Address Line                                        |                  | 3                               |
+| Address Line                                        |                  | 4                               |
+| City /                                              |                  | Town                            |
+|                                                     |                  | County/state/province           |
+| Country                                             | United Kingdom   |                                 |
+| Post                                                |                  | Code                            |
+| Intended Retirement Age                             | 60               |                                 |
+| Start Date                                          |                  |                                 |
+| End Date                                            |                  |                                 |
+|                                                     |                  | Description                     |
+| Most Recent Annual Accounts Gross Profit            |                  |                                 |
+| Most Recent Annual Accounts Net Profit              |                  |                                 |
+| Gross Dividend                                      |                  | Most Recent Annual Accounts     |
+| Dividend                                            |                  | Most Recent Annual Accounts Net |
+| Most Recent Annual Accounts Gross Salary            |                  |                                 |
+| Most Recent Annual Accounts Net Salary              |                  |                                 |
+| Most Recent Annual Accounts Share of Company Profit |                  |                                 |
+| Year End                                            |                  | Most Recent Annual Accounts     |
+| Year 2 Annual Accounts Gross Profit                 |                  |                                 |
+| Year 2 Annual Accounts Net Profit                   |                  |                                 |
+| Year 2 Annual Accounts Gross Dividend               |                  |                                 |
+| Year 2 Annual Accounts Net Dividend                 |                  |                                 |
+| Salary                                              |                  | Year 2 Annual Accounts Gross    |
+| Year 2 Annual Accounts Net Salary                   |                  |                                 |
+| Year 2 Annual Accounts Share of Company Profit      |                  |                                 |
+| Year 2 Year                                         |                  | End                             |
+| Year 3 Annual Accounts Gross Profit                 |                  |                                 |
+| Year 3 Annual Accounts Net Profit                   |                  |                                 |
+| Dividend                                            |                  | Year 3 Annual Accounts Gross    |
+| Year 3 Annual Accounts Net Dividend                 |                  |                                 |
+| Salary                                              |                  | Year 3 Annual Accounts Gross    |
+| Salary                                              |                  | Year 3 Annual Accounts Net      |
+| Year 3 Annual Accounts Share of Company Profit      |                  |                                 |
+| Year 3 Year                                         |                  | End                             |
 
-| Gross Basic Annual Income        | £ 14,000.00   |
-|----------------------------------|---------------|
-| Net Basic Monthly Income         | £ 890.00      |
-| Do you receive Overtime Income?  | No            |
-| Gross Guaranteed Annual Overtime |               |
-| Net Guaranteed Monthly Overtime  |               |
-| Gross Regular Annual Overtime    |               |
-| Net Regular Monthly Overtime     |               |
-| Do you receive Bonus Income?     | No            |
-| Gross Guaranteed Annual Bonus    |               |
-| Net Guaranteed Annual Bonus      |               |
-| Gross Regular Annual Bonus       |               |
-| Net Regular Annual Bonus         |               |
-| Other Gross Income               |               |
-| Other Gross Income Description   |               |
-| Total Gross Annual Earnings      | £ 14,000.00   |
-| Continuous Employment (Months)   |               |
-| In Probation                     | No            |
-| Probation Period (Months)        |               |
+| Gross Basic Annual Income        | £ 14,000.00   |          |
+|----------------------------------|---------------|----------|
+| Net Basic Monthly Income         | £ 890.00      |          |
+| Do you receive Overtime Income?  | No            |          |
+| Gross Guaranteed Annual Overtime |               |          |
+| Net Guaranteed Monthly Overtime  |               |          |
+| Gross Regular Annual Overtime    |               |          |
+| Net Regular Monthly              |               | Overtime |
+| Do you receive Bonus Income?     | No            |          |
+| Gross Guaranteed Annual Bonus    |               |          |
+| Net Guaranteed Annual Bonus      |               |          |
+| Gross Regular Annual Bonus       |               |          |
+| Net Regular Annual Bonus         |               |          |
+| Other Gross Income               |               |          |
+| Other Gross Income Description   |               |          |
+| Total Gross Annual               | £ 14,000.00   | Earnings |
+| Continuous Employment (Months)   |               |          |
+| In Probation                     | No            |          |
+| Probation Period (Months)        |               |          |
 
 ## Employment Notes
 
@@ -229,14 +237,14 @@
 - **Client did not disclose:** No
 - **Anthony Barnes Total £590,000.00:** [blank]
 
-| Owner          | Category       | Related to Address   | Description                                | Owner 1 %   | Owner 2 %   | Cur.   | Original Value   | Purchased On   | Value        | Valuation Date   | Net Monthly Income   |
-|----------------|----------------|----------------------|--------------------------------------------|-------------|-------------|--------|------------------|----------------|--------------|------------------|----------------------|
-| Anthony Barnes | Main Residence |                      | House Mortgage- free                       |             |             | GBP    |                  |                | £ 400,000.00 | 06/08/2025       |                      |
-| Anthony Barnes | Cash           |                      | Incoming funds from sale of Dad's property |             |             | GBP    |                  |                | £ 100,000.00 | 06/08/2025       |                      |
-| Anthony Barnes | Cash           |                      | Chartered Savings Account                  |             |             | GBP    |                  |                | £ 40,000.00  | 06/08/2025       |                      |
-| Anthony Barnes | Cash           |                      | MoneyBox Cash ISA 4.5%                     |             |             | GBP    |                  |                | £ 20,000.00  | 06/08/2025       |                      |
-| Anthony Barnes | Cash           |                      | Wife's MoneyBox Cash ISA                   |             |             | GBP    |                  |                | £ 20,000.00  | 06/08/2025       |                      |
-| Anthony Barnes | Cash           |                      | Cash Emergency Fund                        |             |             | GBP    |                  |                | £ 10,000.00  | 06/08/2025       |                      |
+| Owner   | Category   | Related to Address Description             | Owner 1 %   | Owner 2 %   | Original Value   | Purchased On   | Value Valuation Date   | Cur. Net Monthly Income   |
+|---------|------------|--------------------------------------------|-------------|-------------|------------------|----------------|------------------------|---------------------------|
+| Main    | Residence  | House Mortgage- free                       |             | GBP         |                  | £ 400,000.00   | 06/08/2025             | Anthony Barnes            |
+| Barnes  | Cash       | Incoming funds from sale of Dad's property |             | GBP         |                  | £ 100,000.00   | 06/08/2025             | Anthony                   |
+| Barnes  | Cash       | Chartered Savings Account                  |             | GBP         |                  | £ 40,000.00    | 06/08/2025             | Anthony                   |
+| Cash    |            | MoneyBox Cash ISA 4.5%                     |             | GBP         |                  | £ 20,000.00    | 06/08/2025             | Anthony Barnes            |
+|         | Cash       | Wife's MoneyBox Cash ISA                   |             | GBP         |                  | £ 20,000.00    | 06/08/2025             | Anthony Barnes            |
+|         | Cash       | Cash Emergency Fund                        |             | GBP         |                  | £ 10,000.00    | 06/08/2025             | Anthony Barnes            |
 
 ## Liabilities
 
@@ -255,10 +263,10 @@
 - **Total Gross Annual Earnings or Net Relevant Earnings:** [blank]
 - £2,590.00
 
-| Owner   | Category                         | Descriptio n     | Frequency   | Gross Amount   |   Net Amount | Start Date   | End Date   | Last Updated   | Occupatio n   | Descriptio n   |
-|---------|----------------------------------|------------------|-------------|----------------|--------------|--------------|------------|----------------|---------------|----------------|
-| Anthony | Basic Income                     | Employed Monthly | £ 1,166.67  | £              |       890.00 |              | 06/08/2025 |                |               | Barnes         |
-| Barnes  | Private Pension Aon Final Salary | Monthly          | £ 1,833.00  | £              |     1,700.00 |              |            | 06/08/2025     |               | Anthony        |
+| Owner          | Category        | Descriptio n             | Frequency   | Gross Amount   | Net Amount   | Start Date   | End Date   | Last Updated   | Occupatio n   | Descriptio n   |
+|----------------|-----------------|--------------------------|-------------|----------------|--------------|--------------|------------|----------------|---------------|----------------|
+| Anthony Barnes | Basic Income    | Employed                 | Monthly     | £ 1,166.67     | £ 890.00     |              |            | 06/08/2025     |               |                |
+| Anthony Barnes | Private Pension | Aon Final Salary Pension | Monthly     | £ 1,833.00     | £ 1,700.00   |              |            | 06/08/2025     |               |                |
 
 Anthony Barnes Total
 
@@ -272,35 +280,34 @@ Anthony Barnes Total
 
 - **Do you wish to carry out a detailed expenditure analysis? If 'no' then please enter a value into the Total Monthly Expenditure field:** Yes
 
-| Category                               | Owner                       | Description                 | Net Amount                  | Frequency                   |
-|----------------------------------------|-----------------------------|-----------------------------|-----------------------------|-----------------------------|
-| Basic Essential Expenditure            | Basic Essential Expenditure | Basic Essential Expenditure | Basic Essential Expenditure | Basic Essential Expenditure |
-| Rent                                   |                             |                             |                             |                             |
-| Council Tax                            | Anthony Barnes              |                             | £ 130.00                    | Monthly                     |
-| Electricity                            | Anthony Barnes              |                             | £ 160.00                    | Monthly                     |
-| Water                                  | Anthony Barnes              |                             | £ 60.00                     | Monthly                     |
-| Telephone/Mobile                       | Anthony Barnes              |                             | £ 20.00                     | Monthly                     |
-| Food & Personal Care                   | Anthony Barnes              |                             | £ 300.00                    | Monthly                     |
-| Car/Travelling Expenses                | Anthony Barnes              |                             | £ 220.00                    | Monthly                     |
-| Housekeeping                           |                             |                             |                             |                             |
-| Building Insurance                     | Anthony Barnes              |                             | £ 60.00                     | Monthly                     |
-| Combined Utilities                     |                             |                             |                             |                             |
-| Maintenance/Alimony                    |                             |                             |                             |                             |
-| Other (Basic Essential)                | Anthony Barnes              | Broadband                   | £ 40.00                     | Monthly                     |
-| Basic Quality of Living                | Basic Quality of Living     | Basic Quality of Living     | Basic Quality of Living     | Basic Quality of Living     |
-| Clothing                               |                             |                             |                             |                             |
-| TV/Satellite/Internet/Basic Recreation |                             |                             |                             |                             |
-| School Fee/Childcare                   |                             |                             |                             |                             |
-| Other (Basic Quality of Living)        |                             |                             |                             |                             |
-| Non-Essential Outgoings                |                             |                             |                             |                             |
-| Sports and Recreation                  |                             |                             |                             |                             |
-| Holidays                               | Anthony Barnes              |                             | £ 5,000.00                  | Annually                    |
-| Entertainment                          | Anthony Barnes              |                             | £ 800.00                    | Monthly                     |
-| Life/General Assurance Premium         |                             |                             |                             |                             |
-| Other (Non-Essential)                  |                             |                             |                             |                             |
-| Liability Expenditure                  |                             |                             |                             |                             |
-| Mortgage                               |                             |                             |                             |                             |
-| Other (Liability)                      |                             |                             |                             |                             |
+| Category                                      | Owner                                         | Description                                   | Net Amount                                    | Frequency                                     |
+|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|
+| Basic Essential Expenditure                   | Basic Essential Expenditure                   | Basic Essential Expenditure                   | Basic Essential Expenditure                   | Basic Essential Expenditure                   |
+| Rent                                          | Rent                                          | Rent                                          | Rent                                          | Rent                                          |
+| Council Tax                                   | Anthony Barnes                                |                                               | £ 130.00                                      | Monthly                                       |
+| Electricity                                   | Anthony Barnes                                |                                               | £ 160.00                                      | Monthly                                       |
+| Water                                         | Anthony Barnes                                |                                               | £ 60.00                                       | Monthly                                       |
+| Telephone/Mobile                              | Anthony Barnes                                |                                               | £ 20.00                                       | Monthly                                       |
+| Food & Personal Care                          | Anthony Barnes                                |                                               | £ 300.00                                      | Monthly                                       |
+| Car/Travelling Expenses                       | Anthony Barnes                                |                                               | £ 220.00                                      | Monthly                                       |
+| Housekeeping                                  | Housekeeping                                  | Housekeeping                                  | Housekeeping                                  | Housekeeping                                  |
+| Building Insurance                            | Anthony Barnes                                |                                               | £ 60.00                                       | Monthly                                       |
+| Combined Utilities                            |                                               |                                               |                                               |                                               |
+| Maintenance/Alimony                           | Maintenance/Alimony                           | Maintenance/Alimony                           | Maintenance/Alimony                           | Maintenance/Alimony                           |
+| Other (Basic Essential)                       | Anthony Barnes                                | Broadband                                     | £ 40.00                                       | Monthly                                       |
+| Basic Quality of Living                       | Basic Quality of Living                       | Basic Quality of Living                       | Basic Quality of Living                       | Basic Quality of Living                       |
+| Clothing                                      | Clothing                                      | Clothing                                      | Clothing                                      | Clothing                                      |
+| TV/Satellite/Internet/Basic Recreation        | TV/Satellite/Internet/Basic Recreation        | TV/Satellite/Internet/Basic Recreation        | TV/Satellite/Internet/Basic Recreation        | TV/Satellite/Internet/Basic Recreation        |
+| School Fee/Childcare                          | School Fee/Childcare                          | School Fee/Childcare                          | School Fee/Childcare                          | School Fee/Childcare                          |
+| Other (Basic Quality of Living)               | Other (Basic Quality of Living)               | Other (Basic Quality of Living)               | Other (Basic Quality of Living)               | Other (Basic Quality of Living)               |
+| Non-Essential Outgoings Sports and Recreation | Non-Essential Outgoings Sports and Recreation | Non-Essential Outgoings Sports and Recreation | Non-Essential Outgoings Sports and Recreation | Non-Essential Outgoings Sports and Recreation |
+| Holidays                                      | Anthony Barnes                                |                                               | £ 5,000.00                                    | Annually                                      |
+| Entertainment                                 | Anthony Barnes                                |                                               | £ 800.00                                      | Monthly                                       |
+| Life/General Assurance Premium                | Life/General Assurance Premium                | Life/General Assurance Premium                | Life/General Assurance Premium                | Life/General Assurance Premium                |
+| Other (Non-Essential)                         | Other (Non-Essential)                         | Other (Non-Essential)                         | Other (Non-Essential)                         | Other (Non-Essential)                         |
+| Liability Expenditure                         | Liability Expenditure                         | Liability Expenditure                         | Liability Expenditure                         | Liability Expenditure                         |
+| Mortgage                                      | Mortgage                                      | Mortgage                                      | Mortgage                                      | Mortgage                                      |
+| Other (Liability)                             | Other (Liability)                             | Other (Liability)                             | Other (Liability)                             | Other (Liability)                             |
 
 ## Expenditure Details
 
@@ -355,21 +362,22 @@ Anthony Barnes Total
 
 ## Retirement Goals &amp; Objectives
 
-| Owner                                                     | Anthony Barnes                                                                                                                                                                                     |               |
-|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
-|                                                           | Income at retirement                                                                                                                                                                               | Category      |
-| Name                                                      | Retirement Planning Review his Aviva pension and look to improve upon it. Client will complete ATRQ in his own time. Wants to be fully retired by 60. Min                                          |               |
-| Details                                                   | income in retirement is £2,200 net per month. Also looking at investment advice on £60k of his Dad's property money coming in this month, and the £40k cash he currently has so as to avoid paying |               |
-|                                                           | Medium Term                                                                                                                                                                                        | Time Horizon  |
-| Lump Sum Value                                            |                                                                                                                                                                                                    | Lump Sum Type |
-| Regular Income (Today's Money)                            | £2,200.00                                                                                                                                                                                          |               |
-| Regular Income (Future Money)                             |                                                                                                                                                                                                    |               |
-| Income Frequency                                          | Monthly                                                                                                                                                                                            |               |
-| Term                                                      |                                                                                                                                                                                                    |               |
-| Target Age                                                | 60                                                                                                                                                                                                 |               |
-| Do you have any investment preferences (for example ESG)? | No                                                                                                                                                                                                 |               |
-| Investment Preference Details                             |                                                                                                                                                                                                    |               |
-| Risk Profile                                              |                                                                                                                                                                                                    |               |
+|                                                           | Anthony Barnes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Owner     |
+|-----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+|                                                           | Income at retirement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Category  |
+| Name                                                      | Retirement Planning                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |           |
+| Details                                                   | Review his Aviva pension and look to improve upon it. Client will complete ATRQ in his own time. Wants to be fully retired by 60. Min income in retirement is £2,200 net per month. Also looking at investment advice on £60k of his Dad's property money coming in this month, and the £40k cash he currently has so as to avoid paying tax on interest. He has already used his full ISA allowance this year, so has his wife. Potentially interested in transferring his cash ISA to S&S ISA but would have to be really worth his while - not dead set on doing this. |           |
+| Time                                                      | Medium Term                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Horizon   |
+| Lump Sum Type                                             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |           |
+| Lump Sum Value                                            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |           |
+| Regular Income (Today's Money)                            | £2,200.00                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |           |
+| Regular Income (Future Money)                             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |           |
+| Income                                                    | Monthly                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Frequency |
+| Term                                                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |           |
+| Target                                                    | 60                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Age       |
+| Do you have any investment preferences (for example ESG)? | No                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |           |
+| Investment Preference Details                             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |           |
+| Risk Profile                                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |           |
 
 ## Retirement Goals &amp; Objectives Notes
 
@@ -424,57 +432,60 @@ Review his Aviva pension and look to improve upon it. Client will complete ATRQ 
 - **Lump Sum Cont.:** [blank]
 - **Value:** [blank]
 
-| Owner                         | Anthony Barnes        |               |
-|-------------------------------|-----------------------|---------------|
-|                               | Personal Pension Plan | Contract Type |
-| Product Name                  |                       |               |
-| Provider                      | Aviva Platform        |               |
-| Linked To (Policy             | AV2075926             | Number)       |
-| Linked To (PlanType/Provider) | Wrap/Aviva Platform   |               |
-| Policy No                     | AV2075926-001         |               |
-| Agency Status                 | Not Under Agency      |               |
-| Currency                      | GBP                   |               |
-| Policy Start Date             | 09/03/2026            |               |
-| Ret. Age                      |                       |               |
-| Your Cont. (reg)              |                       |               |
-| Emp. Cont. (reg)              |                       |               |
-| Freq.                         |                       |               |
-| Transfer Cont.                |                       |               |
-| Lump Sum Cont.                |                       |               |
-| Value                         | £ 88,590.88           |               |
+| Owner                         | Anthony Barnes        |          |
+|-------------------------------|-----------------------|----------|
+| Contract Type                 | Personal Pension Plan |          |
+| Product Name                  |                       |          |
+| Provider                      | Aviva Platform        |          |
+| Linked To (Policy Number)     | AV2075926             |          |
+| Linked To (PlanType/Provider) | Wrap/Aviva Platform   |          |
+| Policy No                     | AV2075926-001         |          |
+| Agency Status                 | Not Under Agency      |          |
+|                               | GBP                   | Currency |
+| Policy Start                  | 09/03/2026            | Date     |
+| Ret. Age                      |                       |          |
+| Your Cont. (reg)              |                       |          |
+| Emp. Cont. (reg)              |                       |          |
+| Freq.                         |                       |          |
+| Transfer Cont.                |                       |          |
+| Lump Sum Cont.                |                       |          |
+| Value                         | £ 88,590.88           |          |
 
-| Valuation                                     | 23/07/2026          | Date                             | Date                             |
-|-----------------------------------------------|---------------------|----------------------------------|----------------------------------|
-| Pension Arrangement                           | Pension Arrangement | Pension Arrangement              | Pension Arrangement              |
-| Crystallisation Status                        |                     |                                  |                                  |
-| Crystallised Percentage - Pre 6th April 2024  |                     |                                  |                                  |
-| Crystallised Percentage - Post 6th April 2024 |                     |                                  |                                  |
-| Total Crystallised Percentage                 |                     |                                  |                                  |
-| Uncrystallised Percentage                     |                     |                                  |                                  |
-| PCLS                                          |                     |                                  |                                  |
-| PCLS Paid By                                  |                     |                                  |                                  |
-| Protected PCLS                                |                     |                                  |                                  |
-| GAD / Maximum Income (p.a.)                   |                     |                                  |                                  |
-| Limit                                         |                     |                                  |                                  |
-| Guaranteed / Minimum Income (p.a.)            |                     | GAD                              | GAD                              |
-| Calculation Date                              |                     | Next                             | Next                             |
-| Review Date                                   |                     |                                  |                                  |
-| Capital / Value Protected?                    |                     | Capital / Value Protected Amount | Capital / Value Protected Amount |
-| Indexed?                                      |                     |                                  |                                  |
-| Preserved?                                    |                     | Lump Sum Death Benefit           | Lump Sum Death Benefit           |
-| In Trust?                                     |                     |                                  |                                  |
-| GMP Amount (p.a.)                             |                     |                                  |                                  |
-| Guaranteed Annuity Rate / Pension             |                     | (or similar)                     |                                  |
-|                                               |                     |                                  | Applicable                       |
-| Penalties                                     |                     |                                  |                                  |
-| EFI/Loyalty Bonus/Terminal Bonus              |                     |                                  |                                  |
-| Guaranteed Growth Rates                       |                     |                                  |                                  |
-| Death in service spousal benefits             | £ 0.00              |                                  |                                  |
-| Lifestyling strategy?                         |                     |                                  |                                  |
-| Details                                       |                     |                                  |                                  |
-| Options Available at Retirement               |                     |                                  |                                  |
-| Other Benefits and/or Material Features       |                     |                                  |                                  |
-| Additional Notes                              | Additional Notes    | Additional Notes                 |                                  |
+| Valuation                                      | 23/07/2026   | Date                     |
+|------------------------------------------------|--------------|--------------------------|
+| Pension                                        |              | Arrangement              |
+| Crystallisation                                |              | Status                   |
+| Crystallised Percentage - Pre 6th April 2024   |              |                          |
+| Crystallised Percentage - Post 6th April 2024  |              |                          |
+| Total Crystallised Percentage                  |              |                          |
+| Uncrystallised                                 |              | Percentage               |
+| PCLS                                           |              |                          |
+| PCLS Paid                                      |              | By                       |
+| Protected PCLS                                 |              |                          |
+| GAD / Maximum Income Limit (p.a.)              |              |                          |
+| Guaranteed / Minimum Income (p.a.)             |              |                          |
+| GAD Calculation Date                           |              |                          |
+| Next Review Date                               |              |                          |
+| Capital / Value Protected?                     |              |                          |
+| Capital / Value Protected Amount               |              |                          |
+|                                                |              | Indexed?                 |
+| Preserved?                                     |              |                          |
+| Lump Sum Death                                 |              | Benefit                  |
+|                                                |              | In Trust?                |
+| Status                                         | In force     |                          |
+| GMP Amount (p.a.)                              |              |                          |
+| Enhanced Tax Free Cash                         |              |                          |
+| Guaranteed Annuity Rate / Pension (or similar) |              |                          |
+|                                                |              | Applicable Penalties     |
+| Bonus/Terminal Bonus                           |              | EFI/Loyalty              |
+| Guaranteed Growth Rates                        |              |                          |
+| benefits                                       | £ 0.00       | Death in service spousal |
+| Lifetime Allowance Used (%)                    |              |                          |
+| Lifestyling strategy?                          |              |                          |
+|                                                |              | Details                  |
+| Options Available at Retirement                |              |                          |
+| Other Benefits and/or Material Features        |              |                          |
+| Additional Notes                               |              |                          |
 
 ## Annuities
 

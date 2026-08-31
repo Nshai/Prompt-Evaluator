@@ -1,4 +1,12 @@
+---
+source: Phoenix Life - A Stead.pdf
+converted: 2026-08-31T01:12:39Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 Phoenix Life PO Box 1457 PETERBOROUGH PE2 2WG
 
@@ -36,48 +44,50 @@ If you would like this information in large print, in braille or audio, please c
 
 <!-- image -->
 
+Signature
+
 Yours faithfully
 
 Milind Dhuru Operations Director
 
 ## Policy Details Statement : Personal Pension Plan 11 June 2026
 
-| Policyholder details                                    | Policyholder details                                    |
-|---------------------------------------------------------|---------------------------------------------------------|
-| Name of policy holder:                                  | Mrs Angela Jayne Stead                                  |
-| NI number:                                              | NA407095C                                               |
-| Life assured:                                           | Mrs Angela Jayne Stead                                  |
-| Life assured date of birth:                             | 16/10/1962                                              |
-| Age admitted:                                           | No                                                      |
-| Policy summary                                          | Policy summary                                          |
-| Policy number:                                          | 500223804C008-015                                       |
-| Policy start date:                                      | 03/12/1990                                              |
-| Policy loan held:                                       | No                                                      |
-| Intended retirement date:                               | 16/10/2027                                              |
-| Selected retirement date at policy start date:          | 16/10/2016                                              |
-| Plan used to contract out:                              | No                                                      |
-| Contribution details                                    | Contribution details                                    |
-| No contributions are currently being paid in the policy | No contributions are currently being paid in the policy |
-| Personal single contributions:                          | £0.01                                                   |
-| Fund value                                              |                                                         |
-| Date of fund value                                      | 11/06/2026                                              |
-| Fund value                                              | £89,162.54                                              |
-| Non-protected rights                                    | £89,162.54                                              |
-| Pre-97 protected rights                                 | Not available                                           |
-| Post-97 protected rights                                | Not available                                           |
-| Death benefits                                          | Death benefits                                          |
-| Fund value                                              | £89,162.54                                              |
-| Policy subject to a trust:                              | No                                                      |
-| Widows annuity:                                         | No                                                      |
-| Death value                                             | Death value                                             |
-| Current death value:                                    | £89,162.54                                              |
-| Transfer value                                          | Transfer value                                          |
-| Date of transfer value:                                 | 11/06/2026                                              |
-| Transfer value:                                         | £89,162.54                                              |
+| Policyholder details                                    | Policyholder details   |
+|---------------------------------------------------------|------------------------|
+| Name of policy holder:                                  | Mrs Angela Jayne Stead |
+| NI number:                                              | NA407095C              |
+| Life assured:                                           | Mrs Angela Jayne Stead |
+| Life assured date of birth:                             | 16/10/1962             |
+| Age admitted:                                           | No                     |
+| Policy summary                                          |                        |
+| Policy number:                                          | 500223804C008-015      |
+| Policy start date:                                      | 03/12/1990             |
+| Policy loan held:                                       | No                     |
+| Intended retirement date:                               | 16/10/2027             |
+| Selected retirement date at policy start date:          | 16/10/2016             |
+| Plan used to contract out:                              | No                     |
+| Contribution details                                    |                        |
+| No contributions are currently being paid in the policy |                        |
+| Personal single contributions:                          | £0.01                  |
+| Fund value                                              |                        |
+| Date of fund value                                      | 11/06/2026             |
+| Fund value                                              | £89,162.54             |
+| Non-protected rights                                    | £89,162.54             |
+| Pre-97 protected rights                                 | Not available          |
+| Post-97 protected rights                                | Not available          |
+| Death benefits                                          |                        |
+| Fund value                                              | £89,162.54             |
+| Policy subject to a trust:                              | No                     |
+| Widows annuity:                                         | No                     |
+| Death value                                             |                        |
+| Current death value:                                    | £89,162.54             |
+| Transfer value                                          |                        |
+| Date of transfer value:                                 | 11/06/2026             |
+| Transfer value:                                         | £89,162.54             |
 
-| Unit Investments   | Unit Investments   |
-|--------------------|--------------------|
-| InvestmentType:    | Unit Linked        |
+| Unit Investments   |             |
+|--------------------|-------------|
+| InvestmentType:    | Unit Linked |
 
 ## Fund value details
 
@@ -87,16 +97,16 @@ Milind Dhuru Operations Director
 
 ## Current premium investment split
 
-| Benefit name                      | Fund name   | Fund investment split (%)   |
-|-----------------------------------|-------------|-----------------------------|
-| Phoenix AL Pensions International | 100.0%      | Employee Single Investment  |
-| Phoenix AL Pensions International | 100.0%      | Employee Investment         |
+| Benefit name               | Fund name                         | Fund investment split (%)   |
+|----------------------------|-----------------------------------|-----------------------------|
+| Employee Single Investment | Phoenix AL Pensions International | 100.0%                      |
+| Employee Investment        | Phoenix AL Pensions International | 100.0%                      |
 
 ## Annual management fees
 
-| Fund Type   |   Unit Type | Annual management fee percentage   |
+| Fund Type   | Unit Type   |   Annual management fee percentage |
 |-------------|-------------|------------------------------------|
-| ACCM        |        0.75 | ULIN                               |
+| ULIN        | ACCM        |                               0.75 |
 
 It is important that you regularly review your current investment choices along with those available from your pension to ensure they continue to meet your needs.
 
@@ -169,6 +179,8 @@ Please refer to the original Policy and terms &amp; conditions for full particul
 
 <!-- image -->
 
+Logo
+
 ## Notes on the PolicyDetails Statement
 
 ## General Note
@@ -204,3 +216,9 @@ that is attributable to the benefits shown on that page. The amount shown compri
 ## Commencing
 
 This shows the date that the premium amount last altered or, if there has been no alteration, the date premiums under the policy commenced to be payable. If your policy has increments (see general note above), the date shown may be the date the previous increment policy commenced.
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 2: [signature, 97 % confidence]

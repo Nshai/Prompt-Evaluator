@@ -59,6 +59,13 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     private readonly CanonicalModelDocument _model;
     private readonly CanonicalModelAccessor _accessor;
     private readonly IReadOnlyList<DerivedFigures.Figure> _derived;
+
+    /// <summary>
+    /// Every populated leaf of the canonical model, walked once for the run. Empty when the
+    /// assertion digest is switched off, so a run that does not want it pays nothing for it.
+    /// </summary>
+    private readonly IReadOnlyList<CanonicalLeaf> _leaves;
+
     private readonly PromptLogWriter? _promptLog;
     private readonly CheckRunRecorder? _recorder;
     private readonly PromptCacheBypass _bypass;
@@ -96,6 +103,15 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         // model, and asking the assessor to redo it per group is how it came to be done
         // differently in different groups.
         _derived = DerivedFigures.From(model.Json);
+
+        // Same reasoning, and the same cost profile: one walk of the model for the run rather
+        // than one per group. Eighty-eight groups would otherwise re-walk an identical document
+        // eighty-eight times to print the same lines.
+        _leaves = (settings.AssertionDigest && settings.AssertionDigestMaxChars > 0)
+                  || settings.MaxJoinedAssertions > 0
+            ? CanonicalPaths.Enumerate(model.Json)
+            : [];
+
         _promptLog = promptLog;
         _recorder = recorder;
 
@@ -179,7 +195,9 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             // knows nothing of the others, so the only thing serialising them bought was a
             // longer run. Findings and usage are collected by position for the same reason as
             // above: the report reads in plan order whatever order the answers arrive in.
-            var findings = new GroupFinding[packs.Length];
+            // Nullable by element on purpose: an unwritten slot is a state this array can be in,
+            // and the type saying so is what forces the reconciliation below to exist.
+            var findings = new GroupFinding?[packs.Length];
             var usages = new TokenUsage[packs.Length];
             var assessed = 0;
 
@@ -206,7 +224,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 // Verified against the evidence this group was actually given — never against
                 // the whole check's evidence, or a quote lifted from a neighbouring group's
                 // passages would verify and the check would be worthless.
-                findings[i] = CitationVerifier.Verify(
+                var verified = CitationVerifier.Verify(
                     ParseGroup(result.Response, pack.Group),
                     EvidenceTextOf(pack),
                     PassagesById(pack)) with
@@ -217,6 +235,20 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                     EvidenceShortfall = pack.EvidenceShortfall,
                 };
 
+                // The plan's adjudication directive, applied after verification and only ever
+                // downwards. Severity was steered in prose and produced ten High "contradictions"
+                // on one undisclosed basis; a ceiling code applies cannot be argued with.
+                var (adjudicated, applied) = Adjudication.Apply(verified, pack.Group);
+
+                findings[i] = applied.Count == 0
+                    ? adjudicated
+                    : adjudicated with
+                    {
+                        Analysis = adjudicated.Analysis
+                            + "\n\nApplied by the plan's adjudication directive: "
+                            + string.Join(" ", applied),
+                    };
+
                 // After verification, so the archive holds the finding as the app understood it —
                 // unverified quotes and all — beside the raw text the model actually returned.
                 _recorder?.RecordResponse(
@@ -226,6 +258,26 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 progress?.Report(
                     $"{plan.CheckId}: assessed {Interlocked.Increment(ref assessed)}/{packs.Length}");
             }, cancellationToken).ConfigureAwait(false);
+
+            // Every group the plan declares must produce a finding, and the run must say so
+            // rather than assume it.
+            //
+            // Six groups across three runs of one case were assessed and then appeared nowhere in
+            // the output — a full retrieval pack, a prompt, and no line anywhere. G8.3 was one of
+            // them: "tax consequences of the recommendation", silently absent from a compliance
+            // report. Non-deterministic and model-independent, and worse than a failure, because
+            // everything downstream is computed over what survived: a check's outcome is derived
+            // from its groups, the benchmark is scored against the output, and a requirement that
+            // vanished scores as a requirement that found nothing. Every measurement taken over a
+            // dropped group is quietly wrong in the same direction.
+            //
+            // The array is allocated by position and written inside a parallel body, so a slot
+            // that is still null here is a group whose assessment did not complete and did not
+            // throw. That must not be silently compacted away by the aggregation below — so it
+            // becomes a loud, per-group Error carrying the group's identity into the report.
+            var assessments = findings
+                .Select((finding, i) => finding ?? NotAssessed(packs[i].Group))
+                .ToList();
 
             var usage = usages.Aggregate(TokenUsage.Empty, AddUsage);
 
@@ -245,7 +297,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                     : "The trigger appears absent.";
 
             var finding = CheckFinding.FromGroups(
-                plan.CheckId, plan.CheckName, findings, triggerNote);
+                plan.CheckId, plan.CheckName, assessments, triggerNote);
 
             return finding with
             {
@@ -415,12 +467,30 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
             return [];
         }
 
-        return accessor.InternalInconsistencies
+        var relevant = accessor.InternalInconsistencies
             .Where(inconsistency => inconsistency.Paths
                 .Select(Normalise)
                 .Any(recorded => paths.Any(asked =>
                     recorded.StartsWith(asked, StringComparison.OrdinalIgnoreCase)
                     || asked.StartsWith(recorded, StringComparison.OrdinalIgnoreCase))))
+            .ToList();
+
+        // The plan's `emitOnePerPath` directive, applied to the routing this method performs.
+        //
+        // Sixteen missing allocation rows are one observation, not sixteen — and this mechanism
+        // was measured broadcasting a single item into 26 of 88 groups, 92 times over. Where the
+        // plan asks for one per path, contradictions recorded against the same leading path are
+        // collapsed to the first, which is the one the extraction wrote first.
+        if (!group.Reconciliation.EmitOnePerPath)
+        {
+            return relevant;
+        }
+
+        return relevant
+            .GroupBy(
+                i => i.Paths.Select(Normalise).FirstOrDefault() ?? string.Empty,
+                StringComparer.OrdinalIgnoreCase)
+            .Select(g => g.First())
             .ToList();
     }
 
@@ -741,7 +811,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
 
         var ranked = Rank(
             distinct, targeted, group.DeclaredEvidenceSections, group.DeclaredEvidenceCategories,
-            _settings);
+            _settings, group.Retrieval.MaxPassages);
 
         var categories = ranked
             .Select(p => p.CategoryCode)
@@ -926,16 +996,27 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
     /// vector store happened to return, which an approximate index is under no obligation to keep
     /// stable.
     /// </summary>
+    /// <param name="planned">
+    /// The group's own pack budget, where its plan sets one. The plan may narrow the global cap
+    /// but never widen it: a budget is a ceiling somebody configured, and a plan file should not
+    /// be able to raise the bill of a run without the run's consent.
+    /// </param>
     internal static List<CaseDocumentSearchMatch> Rank(
         IEnumerable<CaseDocumentSearchMatch> passages,
         IReadOnlySet<string> targeted,
         IReadOnlyList<string>? sections = null,
         IReadOnlySet<string>? declared = null,
-        AppSettings? settings = null)
+        AppSettings? settings = null,
+        int? planned = null)
     {
         settings ??= Defaults;
 
-        var cap = AppSettings.Unbounded(settings.MaxPassagesPerGroup);
+        var configured = settings.MaxPassagesPerGroup;
+
+        var cap = AppSettings.Unbounded(
+            planned is { } budget && budget > 0
+                ? configured <= 0 ? budget : Math.Min(budget, configured)
+                : configured);
         var perSection = settings.ReservedSlotsPerDeclaredSection;
         var perCategory = settings.ReservedSlotsPerTargetedCategory;
 
@@ -1376,6 +1457,24 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 + "spends a finding a reviewer has to read and then discard.");
         }
 
+        // The rest of the assertion side, one line per path.
+        //
+        // Printed here, with the assertion side and above the evidence, deliberately. It is the
+        // same kind of thing as the fragments above — the report's own claims, from the stored
+        // model, needing no passage to establish — and putting it below the passages would invite
+        // the assessor to read it as more evidence, which is exactly the confusion category [I]
+        // passages already cause.
+        //
+        // Group-scoped rather than run-scoped in what it excludes: every group is shown the same
+        // model minus its own paths, because those are printed in full a few lines earlier.
+        if (_leaves.Count > 0
+            && AssertionDigest.Render(
+                _leaves, group.AllCanonicalPaths, _settings.AssertionDigestMaxChars) is { } digest)
+        {
+            sb.AppendLine();
+            sb.Append(digest);
+        }
+
         // Evidence side, from the vector store.
         sb.AppendLine();
 
@@ -1442,6 +1541,30 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
                 + "Treat those data points as absent from the case file, not merely unretrieved.");
         }
 
+        // The code-level join: assertions from elsewhere in the report that share an exact figure
+        // with a passage this group was actually given.
+        //
+        // Printed after the passages because it names them by id — the assessor has just read
+        // [P1]..[Pn] and can turn back to the one cited. This is the half of the routing problem
+        // that is decidable in code: the plan decides what to retrieve, and this decides nothing,
+        // it only introduces two facts that the plan happened to keep apart.
+        //
+        // Gated on the plan's `detect` directive. A requirement whose answer is narrative has no
+        // value to diverge, and joining figures into it is the same mistake as comparing prose as
+        // values: it manufactures findings. 18 of the 88 groups say `None`, and they mean it.
+        if (_leaves.Count > 0 && !group.Reconciliation.DetectsNothing)
+        {
+            var joins = EvidenceJoin.For(
+                _leaves, group.AllCanonicalPaths, PassagesById(pack), _settings.MaxJoinedAssertions,
+                group.Reconciliation.CurrentOnly);
+
+            if (EvidenceJoin.Format(joins) is { } joined)
+            {
+                sb.AppendLine();
+                sb.Append(joined);
+            }
+        }
+
         // Contradictions the extraction found in the report, filtered to the ones this group's
         // own paths touch.
         //
@@ -1479,10 +1602,15 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         // The numeric half of a ValueMatch or RangeMatch, settled in code before the assessor
         // is asked anything. Placed above "How to compare" so the guards read as qualifications
         // on an established result rather than instructions for work still to be done.
-        var figures = NumericComparison.Format(
-            group.Comparison?.Method,
-            pack.Fragments.Where(f => f.Found).Select(f => f.Json),
-            PassagesById(pack));
+        // Also gated on `detect`: the plan's comparison *method* says how to compare, and the
+        // directive says whether code should compare at all. A group set to None gets no computed
+        // figures, however its method reads.
+        var figures = group.Reconciliation.DetectsNothing
+            ? null
+            : NumericComparison.Format(
+                group.Comparison?.Method,
+                pack.Fragments.Where(f => f.Found).Select(f => f.Json),
+                PassagesById(pack));
 
         if (figures is not null)
         {
@@ -1932,6 +2060,28 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         _modelCalls.Dispose();
         _searches.Dispose();
     }
+
+    /// <summary>
+    /// The finding a group gets when no finding was produced for it at all.
+    ///
+    /// <b>Error rather than Indeterminate, and present rather than absent.</b> Indeterminate is a
+    /// real assessment outcome — the assessor read the pack and could not close the comparison —
+    /// and a requirement nothing assessed has not earned it. Error propagates to the check, so a
+    /// run cannot report No Issue on a check one of whose requirements never ran.
+    /// </summary>
+    internal static GroupFinding NotAssessed(PlanQueryGroup group) => new()
+    {
+        GroupId = group.GroupId,
+        Requirement = group.Requirement,
+        Analysis =
+            "No assessment completed for this requirement: its evidence was gathered and its "
+            + "prompt built, but no finding came back. This is a defect in the run, not a "
+            + "judgement about the advice — nothing here says the requirement is met or breached. "
+            + "Re-run the check before relying on its outcome.",
+        Outcome = nameof(CheckOutcome.Error),
+        ComparisonPerformed = false,
+        MissingInputs = ["an assessment of this requirement"],
+    };
 
     private static GroupFinding Unreadable(PlanQueryGroup group, string why, string response) => new()
     {

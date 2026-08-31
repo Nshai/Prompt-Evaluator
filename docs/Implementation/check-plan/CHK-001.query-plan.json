@@ -164,6 +164,19 @@
           "ifAssertionAbsent": "Not a finding on its own — a report need not restate every personal detail.",
           "ifEvidenceAbsent": "Potential Concern: the report asserts personal facts with no supporting KYC record.",
           "ifBothAbsent": "No finding."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -260,6 +273,19 @@
         "sufficiency": {
           "ifAssertionAbsent": "Note as a gap where the recommendation depends on tax band (encashment, contribution relief, drawdown).",
           "ifEvidenceAbsent": "Potential Concern: tax treatment asserted without a recorded tax position."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -334,6 +360,19 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern where employment income underpins affordability."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -454,6 +493,19 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern: unsupported figures. This is the check's stated core - 'data mismatches and unsupported figures'."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -585,6 +637,19 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern where the asset position supports the capacity-for-loss or affordability conclusion."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -660,6 +725,19 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern: state pension entitlement is named explicitly by this check and is often asserted without a forecast on file."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -874,6 +952,19 @@
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern: plan values quoted with no provider documentation to support them.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -954,6 +1045,19 @@
         "sufficiency": {
           "ifBothAbsent": "No finding.",
           "ifEvidenceAbsent": "Not applicable — this group compares the report against itself."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -1023,6 +1127,19 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern: an emergency fund figure asserted with no supporting account statement or fact find record."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -1125,6 +1242,19 @@
           "ifAssertionAbsent": "Note as a gap; a report relying on a figure should state its frequency and basis.",
           "ifEvidenceAbsent": "Potential Concern: a figure is used in the report with no source in the file to reconcile it against.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -1243,6 +1373,19 @@
           "ifEvidenceAbsent": "Potential Concern: the report quotes modelled figures with no modelling output in the file.",
           "ifBothAbsent": "No issue on this requirement; no modelling was relied on.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     }

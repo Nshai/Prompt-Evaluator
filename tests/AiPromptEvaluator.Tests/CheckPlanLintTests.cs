@@ -561,6 +561,105 @@ public class CheckPlanLintTests
     private static string PlanFolder =>
         Path.Combine(AppContext.BaseDirectory, "check-plan");
 
+    // ──────────────────────────────────────────────
+    // L8 — a comparison needs two sides
+    // ──────────────────────────────────────────────
+
+    /// <summary>
+    /// Move 2 of the pipeline plan, in its decidable half. ValueMatch, RangeMatch and SetCoverage
+    /// each put a figure the report states against something the file evidences. A group
+    /// declaring one with only one side has declared a comparison it cannot make — and the
+    /// outcome does not show it: the group reports on whichever half it received, in the
+    /// confident register of a comparison that closed.
+    /// </summary>
+    [Fact]
+    public void ATwoSidedComparisonWithNoAssertionSideIsCaught()
+    {
+        var group = Group("G9.10", declares: ["B"], queries: ["B"]) with
+        {
+            Verification = new PlanVerification
+            {
+                Comparison = new PlanComparison { Method = "ValueMatch" },
+            },
+        };
+
+        var violation = Assert.Single(CheckPlanLint.Inspect(Plan(["B"], group)));
+
+        Assert.Equal("L8", violation.Rule);
+        Assert.Contains("selects no canonical paths", violation.Detail);
+    }
+
+    [Fact]
+    public void ATwoSidedComparisonWithNoEvidenceSideIsCaught()
+    {
+        var group = new PlanQueryGroup
+        {
+            GroupId = "G9.2",
+            Declares = new PlanDeclares { EvidenceCategories = ["B"] },
+            Retrieval = new PlanRetrieval
+            {
+                CanonicalPaths = ["/replacementAnalysis[]/benefitsOfSwitching[]"],
+                Queries = [new PlannedQuery { Id = "Q1", Side = "Evidence", TargetCategories = [] }],
+            },
+            Verification = new PlanVerification
+            {
+                Comparison = new PlanComparison { Method = "SetCoverage" },
+            },
+        };
+
+        var violations = CheckPlanLint.Inspect(Plan(["B"], group));
+
+        Assert.Contains(violations, v => v.Rule == "L8" && v.Detail.Contains("no query targets"));
+    }
+
+    /// <summary>
+    /// A model-only group compares the report against itself on purpose — internal
+    /// contradictions, charge arithmetic, the prominence of a risk section. Requiring it to
+    /// target a document category would be requiring it to retrieve something it has correctly
+    /// decided does not exist.
+    /// </summary>
+    [Fact]
+    public void AModelOnlyGroupIsExemptFromTheEvidenceHalf()
+    {
+        var group = new PlanQueryGroup
+        {
+            GroupId = "G1.4",
+            Requirement = "Mismatches within the report itself",
+            Retrieval = new PlanRetrieval
+            {
+                CanonicalPaths = ["/costsAndCharges"],
+                Queries = [new PlannedQuery { Id = "Q1", Side = "Assertion" }],
+            },
+            Verification = new PlanVerification
+            {
+                Comparison = new PlanComparison { Method = "ValueMatch" },
+            },
+        };
+
+        Assert.Empty(CheckPlanLint.Inspect(Plan([], group)));
+    }
+
+    /// <summary>
+    /// The one-sided methods are one-sided on purpose: PresenceOnly asks whether something was
+    /// said at all, NarrativeAlignment whether two pieces of prose agree in substance. Neither
+    /// needs a stated figure to compare against.
+    /// </summary>
+    [Theory]
+    [InlineData("PresenceOnly")]
+    [InlineData("NarrativeAlignment")]
+    public void AOneSidedMethodNeedsNoAssertionPaths(string method)
+    {
+        var group = Group("G4.1", declares: ["B"], queries: ["B"]) with
+        {
+            Verification = new PlanVerification
+            {
+                Comparison = new PlanComparison { Method = method },
+            },
+        };
+
+        Assert.Empty(CheckPlanLint.Inspect(Plan(["B"], group)));
+    }
+
     private static CheckQueryPlan Plan(string[] primary, params PlanQueryGroup[] groups) =>
         new()
         {

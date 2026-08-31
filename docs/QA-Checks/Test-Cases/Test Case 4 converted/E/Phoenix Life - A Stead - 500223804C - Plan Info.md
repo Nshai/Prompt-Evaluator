@@ -1,8 +1,20 @@
-<!-- image -->
+---
+source: Phoenix Life - A Stead - 500223804C - Plan Info.pdf
+converted: 2026-08-31T01:12:05Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Logo
+
+<!-- image -->
+
+Qr code
 
 ## PHOENIX LIFE
 
@@ -45,15 +57,15 @@
 - The following figures show what the pension might be at age 65. If your plan is invested in fund(s) with a gua a s  s i   r  s  e    r he guaranteed rate.
 - **The pension will be payable as follows::** [blank]
 
-| Assumed yearly rates of return.   | -0.49%                           | 2.45%                            | 5.39%                            |
-|-----------------------------------|----------------------------------|----------------------------------|----------------------------------|
-| Projected pension fund value      | Projected pension fund value     | Projected pension fund value     | Projected pension fund value     |
-| Personal (non-protected) rights   | £93,900.00                       | £97,800.00                       | £101,000.00                      |
-| This could provide a pension of:  | This could provide a pension of: | This could provide a pension of: | This could provide a pension of: |
-| Personal (non-protected) rights   | £5,520.00                        | £7,030.00                        | £8,730.00                        |
-| A tax free lump sum of:           | £23,400.00                       | £24,400.00                       | £25,400.00                       |
-| Plus a pension of:                | Plus a pension of:               | Plus a pension of:               | Plus a pension of:               |
-| Personal (non-protected) rights   | £4,140.00                        | £5,270.00                        | £6,550.00                        |
+| Assumed yearly rates of return.   | -0.49%     | 2.45%      | 5.39%       |
+|-----------------------------------|------------|------------|-------------|
+| Projected pension fund value      |            |            |             |
+| Personal (non-protected) rights   | £93,900.00 | £97,800.00 | £101,000.00 |
+| This could provide a pension of:  |            |            |             |
+| Personal (non-protected) rights   | £5,520.00  | £7,030.00  | £8,730.00   |
+| A tax free lump sum of:           | £23,400.00 | £24,400.00 | £25,400.00  |
+| Plus a pension of:                |            |            |             |
+| Personal (non-protected) rights   | £4,140.00  | £5,270.00  | £6,550.00   |
 
 The pension will be payable as follows:
 
@@ -117,3 +129,7 @@ _The following details were present in Docling's structured JSON output but omit
 - If you would like this information in large print, in braille or audio, please call 0345 960 0900. If calling from outside the UK please call +44 (0) 1733 793270.
 - Yours faithfully
 - MilindDhuru Operations Director
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 3: [qr_code, 74 % confidence]
+- Image 4: [signature, 98 % confidence]

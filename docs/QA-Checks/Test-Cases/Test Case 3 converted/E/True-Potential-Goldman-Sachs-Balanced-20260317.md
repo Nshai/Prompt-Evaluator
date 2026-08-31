@@ -1,3 +1,9 @@
+---
+source: True-Potential-Goldman-Sachs-Balanced-20260317.pdf
+converted: 2026-08-31T00:55:29Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## True Potential Goldman Sachs Balanced
 
 - **true:** potential
@@ -16,6 +22,8 @@ The True Potential Goldman Sachs Balanced Fund returned 2.11% (net of fees), wit
 ## Growth of £10,000 invested 5 years ago
 
 <!-- image -->
+
+Line chart
 
 - l True Potential Goldman Sachs Balanced Acc*
 - l Morningstar UK Moderate Target Allocation Index**
@@ -51,6 +59,8 @@ The True Potential Goldman Sachs Balanced Fund returned 2.11% (net of fees), wit
 - The balanced approach of the fund strives to provide both growth and income, while managing short-term losses through a diversified mix of assets that moderate risk.
 
 <!-- image -->
+
+Logo
 
 ## Key fund information
 
@@ -131,23 +141,21 @@ The OCF of this fund is currently 0.87%. This means that if you invest £1000 in
 - **l:** [blank]
 - **l:** [blank]
 
-| Asset class                           | % of total exposure***   |     |
-|---------------------------------------|--------------------------|-----|
-| US Stocks                             | 40.10%                   | l   |
-| Global Treasury Bonds                 | 12.62%                   |     |
-| Global Corporate Bonds                | 10.46%                   | l l |
-| Europe ex UK Equity Stocks            | 8.39%                    | l   |
-| l Alternatives                        | 7.71%                    |     |
-| l Emerging Markets Stocks             | 6.86%                    |     |
-| Asia Pacific Stocks                   | 4.65%                    | l   |
-| l Cash and Cash Equivalents****       | 3.96%                    |     |
-| Emerging Market Bond HC               | 2.07%                    | l   |
-| l Global High Yield Bond (GBP Hedged) |                          |     |
-| l Stocks                              | 1.65%                    |     |
-| UK                                    | 0.91%                    |     |
-| l UK Gilts                            | 0.62%                    |     |
+| Asset class                                                                                                                                                | % of total exposure***     |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------|
+| l US Stocks l Global Treasury Bonds l Global Corporate Bonds l Europe ex UK Equity Stocks l Alternatives l Emerging Markets Stocks l Asia Pacific Stocks l | 40.10% 12.62% 10.46% 8.39% |
+|                                                                                                                                                            | 7.71%                      |
+|                                                                                                                                                            | 6.86%                      |
+|                                                                                                                                                            | 4.65%                      |
+| Cash and Cash Equivalents****                                                                                                                              | 3.96%                      |
+| l Emerging Market Bond HC                                                                                                                                  | 2.07%                      |
+| l Global High Yield Bond (GBP Hedged)                                                                                                                      | 1.65%                      |
+| l UK Stocks                                                                                                                                                | 0.91%                      |
+| l UK Gilts                                                                                                                                                 | 0.62%                      |
 
 <!-- image -->
+
+Pie chart
 
 ## Risks
 
@@ -159,7 +167,7 @@ The following are some of the key risks associated with investing in this Fund. 
 | Performance Risk     | Investment objectives express an intended result but there is no guarantee that such a result will be achieved. Depending on market conditions and the macro-economic environment, certain investment types and styles may perform better than others and investment objectives may become more difficult to achieve.      |
 | Emerging Market Risk | Investments in emerging markets may involve greater risks due to political and economic instability, and underdeveloped markets and systems.                                                                                                                                                                               |
 | Counterparty Risk    | There may be cases where the organisation from which we buy a derivative, or an asset, fails to meet its obligations. The Fund's cash deposits are also subject to counterparty risk.                                                                                                                                      |
-| Derivative Risk      | The Fund is entitled to use derivatives. Derivatives may not achieve their intended purpose. Their prices may move up or                                                                                                                                                                                                   |
+| Derivative Risk      | The Fund is entitled to use derivatives. Derivatives may not achieve their intended purpose. Their prices may move up or down significantly over relatively short periods of time which may result in losses greater than the amount paid.                                                                                 |
 | Operational Risk     | The Fund faces non-market risk, relating to purchasing, holding and servicing the Fund's assets.                                                                                                                                                                                                                           |
 | Credit Risk          | Where the Fund invests in bonds, there is a risk the bond issuer may fail to meet its repayments. Changes in interest rates, inflation and the creditworthiness of the bond issuer may also affect the bond's market value. This risk is particularly relevant where the fund invests in bonds with a lower credit rating. |
 | Exchange Rate Risk   | The Fund may invest in securities not denominated in GBP. The value of your investments may be affected by changes in currency exchange rates.                                                                                                                                                                             |
@@ -204,3 +212,7 @@ _The following details were present in Docling's structured JSON output but omit
 - £12,000
 - £13,000
 - £14,000
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [line_chart, 100 % confidence]
+- Image 14: [pie_chart, 100 % confidence]

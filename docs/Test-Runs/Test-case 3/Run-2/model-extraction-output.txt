@@ -1,0 +1,34 @@
+Model: intelliflo-claude-haiku-4-5
+Total: £0.6610 for 307,349 tokens
+
+Extracting the canonical model for case Test-Case-3 (tenant 99)
+Schema: C:\work\Prompt-Evaluator-Semantic\src\AiPromptEvaluator\bin\Debug\net8.0-windows\canonical-suitability-model.schema.json
+Store:  C:\Users\nshaikh\AppData\Local\AiPromptEvaluator\canonical-models.db
+Report: Suitability report 2026.md
+------------------------------------------------------------------------
+Logging extraction to C:\logs\apipromptevaluator\extract_Test-Case-3_20260828_234103.log
+Response cache bypassed — every section carries a run marker, so nothing can be replayed from an earlier extraction. Expect the full input cost.
+[ 1/12] Case and parties                     6,307 chars (19.0s)
+[ 2/12] Financial position                   15,695 chars (31.6s)
+[ 3/12] Objectives                           7,293 chars (31.6s)
+[ 4/12] Risk, knowledge and vulnerability    16,003 chars (58.0s)
+[ 5/12] Existing arrangements                19,760 chars (58.0s)
+[ 6/12] Needs analysis and research          25,866 chars (58.0s)
+[ 7/12] Solution                             22,378 chars (58.0s)
+[ 8/12] Replacement analysis                 30,958 chars (58.0s)
+[ 9/12] Disclosures                          17,822 chars (58.0s)
+[10/12] Recommendations                      43,011 chars (177.4s)
+[11/12] Costs and charges                    22,664 chars (177.4s)
+[12/12] Triggers and extraction report       5,788 chars (17.1s)
+------------------------------------------------------------------------
+Stored 347,261 characters of canonical model for case Test-Case-3 in 303.3s.
+Sections populated: modelVersion, source, case, parties, clientAuthority, financialPosition, objectives, riskAssessment, knowledgeAndExperience, vulnerability, existingArrangements, needsAnalysis, research, solution, replacementAnalysis, riskWarningsAndDisadvantages, taxTreatment, ongoingService, recommendations, costsAndCharges, checkTriggers, extractionReport
+
+1 value(s) are outside the documented vocabulary and were left as written:
+  modality: "Comparative" is not in the documented vocabulary
+Nothing was discarded. A check matching one of these fields by value will not see them, so either the report uses a word the model does not have or the extraction invented one.
+
+2 check trigger(s) were settled from the model:
+  checkTriggers.hasComplexProduct settled to true (was false) because "Aviva Platform Personal Pension with Flexi-access Drawdown" is Complex
+  checkTriggers.hasVulnerabilityIndicators settled to true (was false) because a client is recorded as "Possible"
+

@@ -1,3 +1,9 @@
+---
+source: K Stead - Plan Info 50434629.pdf
+converted: 2026-08-31T01:11:34Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 TFAS COMPLIANCE SERVICES LTD 2ND FLR ST ANDREWS HOUSE 119-121 THE HEADROW LS15JW
 
 25 June 2026
@@ -60,3 +66,6 @@ _The following details were present in Docling's structured JSON output but omit
 
 ### Additional extracted text (not present in the base markdown export)
 - Lee Bullen Head of Customer Operations
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 3: [signature, 100 % confidence]

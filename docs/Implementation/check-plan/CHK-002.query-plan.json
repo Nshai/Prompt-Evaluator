@@ -162,6 +162,18 @@
           "ifAssertionAbsent": "Potential Concern: a suitability report with no stated objectives cannot demonstrate suitability.",
           "ifEvidenceAbsent": "Potential Concern: objectives asserted with no fact find, file note or needs analysis recording them.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -295,6 +307,19 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern where the risk profile or strategy is justified by a term that appears nowhere else."
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -386,6 +411,18 @@
         },
         "sufficiency": {
           "ifBothAbsent": "Potential Concern: access requirements are named explicitly by this check and should have been established."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -476,6 +513,18 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Note as a gap; escalate where a foreseeable change would materially alter the recommendation."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -548,6 +597,18 @@
         },
         "sufficiency": {
           "ifBothAbsent": "No finding unless a structural conflict is visible in the retrieved objectives themselves."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -637,6 +698,18 @@
         "sufficiency": {
           "ifAssertionAbsent": "Potential Concern: recommendations not tied to any stated objective.",
           "ifEvidenceAbsent": "Assess on the report alone; note that no needs analysis supports the linkage."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -729,6 +802,18 @@
           "ifAssertionAbsent": "No issue on this requirement; nothing was asserted to verify.",
           "ifEvidenceAbsent": "Potential Concern: an objective the recommendation rests on has no source anywhere in the file.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -831,6 +916,19 @@
           "ifAssertionAbsent": "Not a finding on its own where the case has no retirement income objective; where the report models a retirement income it has to say what income it is modelling.",
           "ifEvidenceAbsent": "Potential Concern: the report quantifies a retirement income the file does not record the client asking for.",
           "ifBothAbsent": "No finding."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     }

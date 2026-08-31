@@ -1,44 +1,30 @@
 ---
-source_path: "I/Suitability Report Test 1.pdf"
-file_name: "Suitability Report Test 1.pdf"
-category_code: I
-pages: 21
-characters: 61447
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: Suitability Report Test 1.pdf
+converted: 2026-08-31T00:37:25Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 ## Suitability Report
 
-<!-- image -->
-
-John Sullivan
-
-Date: 14/10/2025
-
-Thomas Redmond DipPFS Cert CII
-
-Independent Financial Adviser
-
-TFAS Wealth Ltd Second Floor St Andrews House 119-121 The Headrow Leeds LS1 5JW
-
-0800 888 6100
-
-TFAS Wealth Limited is authorised and regulated by the Financial Conduct Authority, reference number 968148.  TFAS Wealth Limited (13664696) is a registered company in England and Wales.
-
-<!-- image -->
-
-TFAS | WEALTH
-
-<!-- page: 2 -->
+- **TFAS:** [blank]
+- **WEALTH:** [blank]
+- **John Sullivan:** [blank]
+- **Date: 14/10/2025:** [blank]
+- **Thomas Redmond DipPFS Cert CII:** [blank]
+- **Independent Financial Adviser:** [blank]
+- **TFAS Wealth Ltd Second Floor St Andrews House 119-121 The Headrow Leeds LS1 5JW:** [blank]
+- **0800 888 6100:** [blank]
+- TFAS Wealth Limited is authorised and regulated by the Financial Conduct Authority, reference number 968148.  TFAS Wealth Limited (13664696) is a registered company in England and Wales.
 
 ## Recommendation Summary
 
-<!-- image -->
-
-Recommendations | Investments | Attitude to Risk | $
+- **Recommendations:** [blank]
+- **$:** [blank]
+- **Investments:** [blank]
+- **CT Universal Map Balanced - 50%:** [blank]
+- **HSBC Global Strategy Balanced Portfolio - 50%:** [blank]
+- **Attitude to Risk:** [blank]
+- **5 - Balanced:** [blank]
 
 ## My Recommendation
 
@@ -62,15 +48,11 @@ HSBC Global Strategy Balanced Portfolio - 50%
 
 5 - Balanced
 
-<!-- page: 3 -->
-
 ## Your current situation
 
-You are currently aged 69 and married to Kim, aged 65. You are both in good health and have three grown-up children, all of whom are financially independent. You work full-time as an HGV driver through an agency, typically earning around £300 per week net, with additional income of £20 per week from your volunteer role with the Sea Cadets. Kim earns approximately £1,100 per month net. You are in receipt of your full State Pension of £230 per week, and Kim will receive her full State Pension of around £230 per week when she reaches State Pension age. You expect to retire within the next two years, while Kim intends to continue working until she reaches 66, at which point she plans to retire fully.
-
-Your current household expenditure is approximately £1,700 per month, covering rent, utilities, food, transport, entertainment, and insurance. You hold savings of around £6,000 and have no outstanding liabilities, providing a secure financial base. You also hold several pension arrangements with a combined value of approximately £110,000, which form the basis of your retirement provision. You have contacted me to review your position for retirement, seeking guidance on consolidating your pensions and ensuring your income and assets meet your future needs.
-
-You have confirmed that you retain sufficient liquid capital to cover any unexpected emergencies, giving you reassurance as you progress with your retirement planning.
+- You are currently aged 69 and married to Kim, aged 65. You are both in good health and have three grown-up children, all of whom are financially independent. You work full-time as an HGV driver through an agency, typically earning around £300 per week net, with additional income of £20 per week from your volunteer role with the Sea Cadets. Kim earns approximately £1,100 per month net. You are in receipt of your full State Pension of £230 per week, and Kim will receive her full State Pension of around £230 per week when she reaches State Pension age. You expect to retire within the next two years, while Kim intends to continue working until she reaches 66, at which point she plans to retire fully.
+- Your current household expenditure is approximately £1,700 per month, covering rent, utilities, food, transport, entertainment, and insurance. You hold savings of around £6,000 and have no outstanding liabilities, providing a secure financial base. You also hold several pension arrangements with a combined value of approximately £110,000, which form the basis of your retirement provision. You have contacted me to review your position for retirement, seeking guidance on consolidating your pensions and ensuring your income and assets meet your future needs.
+- **You have confirmed that you retain sufficient liquid capital to cover any unexpected emergencies, giving you reassurance as you progress with your retirement planning.:** [blank]
 
 ## Assets &amp; Liabilities
 
@@ -81,25 +63,22 @@ You have confirmed that you retain sufficient liquid capital to cover any unexpe
 
 ## Inheritance Tax Summary
 
-We each have a Nil Rate Band (NRB) of £325,000 and, if your property is passed to direct descendants, a Main Residence Nil Rate Band (RNRB) of £175,000. Any unused NRB can be transferred to a surviving spouse or civil partner, meaning up to £1 million can be passed on tax-free on second death.
-
-Historically, pensions have not formed part of your estate for IHT purposes, making them a valuable estate planning tool. However, legislation has now been passed to change this.
-
-From 6 April 2027, most unused defined contribution pensions and death benefits (such as drawdown funds and uncrystallised pots) will be included in your taxable estate for IHT. Exceptions include pensions paid to a surviving spouse or civil partner, dependents' scheme pensions, and death-in-service benefits. Executors will be responsible for declaring pension values as part of the IHT return and may use new options for settling any tax due directly from pension funds.
-
-Currently, your Inheritance Tax liability will be £0. We will continue to monitor your IHT position at our future reviews.
+- We each have a Nil Rate Band (NRB) of £325,000 and, if your property is passed to direct descendants, a Main Residence Nil Rate Band (RNRB) of £175,000. Any unused NRB can be transferred to a surviving spouse or civil partner, meaning up to £1 million can be passed on tax-free on second death.
+- Historically, pensions have not formed part of your estate for IHT purposes, making them a valuable estate planning tool. However, legislation has now been passed to change this.
+- From 6 April 2027, most unused defined contribution pensions and death benefits (such as drawdown funds and uncrystallised pots) will be included in your taxable estate for IHT. Exceptions include pensions paid to a surviving spouse or civil partner, dependents' scheme pensions, and death-in-service benefits. Executors will be responsible for declaring pension values as part of the IHT return and may use new options for settling any tax due directly from pension funds.
+- **Currently, your Inheritance Tax liability will be £0. We will continue to monitor your IHT position at our future reviews.:** [blank]
 
 ## Your Objectives
 
-We reviewed your needs, objectives and time horizons and agreed the following:
+- **We reviewed your needs, objectives and time horizons and agreed the following::** [blank]
 
 -  You want to ensure you can continue to afford your lifestyle through your lifetime.
 -  You want to retire in 2 years time with a household income of £1,700 net per month.
 -  You would like a clearer understanding of your pension arrangements and to ensure they are appropriately structured for your retirement. You also prefer a more streamlined approach to managing your pensions, rather than maintaining five separate plans with different providers.
 
-<!-- page: 4 -->
-
 ## Attitude to Risk &amp; Capacity for loss
+
+[No details]
 
 ## Your attitude to risk
 
@@ -119,8 +98,6 @@ John, you are aware that investment values can rise as well as fall, and althoug
 
 You confirmed that you have previously taken out cash savings products but have not taken out a stocks &amp; shares investment by yourself. You have however held your group pensions for some time and feel that you are comfortable with how investments work and have a reasonable understanding of potential risks &amp; rewards.
 
-<!-- page: 5 -->
-
 ## Existing Arrangements
 
 | Provider/Scheme                         | People's Pension - 6197175/PP                                      | Scottish Widows - ZU4225575                                        | Aviva - SP50163762                                                 | Zurich - P10026-719- 001/DL                                        | Standard Life - D2301334000                                        |
@@ -137,8 +114,6 @@ You confirmed that you have previously taken out cash savings products but have 
 | Number of funds available 7             |                                                                    | 29                                                                 | 80+                                                                | 60+                                                                | 300                                                                |
 | Allows Servicing Adviser No             |                                                                    | No                                                                 | No                                                                 | No                                                                 | Yes                                                                |
 | Other Considerations                    | Current workplace scheme                                           | Retain and Encash                                                  |                                                                    |                                                                    |                                                                    |
-
-<!-- page: 6 -->
 
 ## My Recommendation
 
@@ -168,8 +143,6 @@ When carrying out this review I conducted a full review of your existing pension
 |-----------------------------|----------|
 | Scottish Widows - ZU4225575 | Encash   |
 
-<!-- page: 7 -->
-
 | EXISTING SCHEME    | ADVICE                   |
 |--------------------|--------------------------|
 | Aviva - SP50163762 | Switch to Aviva Platform |
@@ -196,8 +169,6 @@ Following a detailed review of your current pension arrangement, I recommend swi
 -  Adviser Charging Facilitation - The new scheme allows adviser charges to be deducted directly, ensuring ongoing financial planning support without the need for separate payments. This makes it easier to manage your retirement strategy effectively.
 -  Ongoing Monitoring and Adjustments - By moving to the recommended scheme, I will have the ability to actively monitor and adjust your investments as required, helping to ensure they remain aligned with your changing needs and market conditions.
 
-<!-- page: 8 -->
-
 By switching to this scheme, you will benefit from, greater investment flexibility, improved retirement options, and continued professional oversight, ensuring your pension remains on track to support your long-term financial goals.
 
 | EXISTING SCHEME             | ADVICE                   |
@@ -217,15 +188,13 @@ By switching to this scheme, you will benefit from lower costs, greater investme
 
 ## Other Considerations of Switching
 
-You should note that whilst the transactions are pending, there could be movements within the stock-market; that is to say that the stock-market could rise or fall in value. If the market rises in value between the date of realising your existing funds and the purchase of your new (funds), you could be financially disadvantaged insofar as the cost of buying your new fund could be greater. Conversely, if there is a fall in the market between the date of realising your existing funds and the purchase of your new funds, you could be financially advantaged insofar as the cost of buying your new funds could be lower.
-
-Should  you  require  access  to  these  funds  in  the  future  it  will  usually  take  10-15  working  days  for  administration, disinvestment and banking processes to complete. You are comfortable with the concept as you have liquid cash should you require instance access funds.
-
-There is no guarantee the return on the new investment will be greater than that of your existing arrangement for these funds.
-
-All other risks associated with this investment are detailed in the product literature provided to you. You should read this document carefully.
-
-<!-- page: 9 -->
+- By switching to this scheme, you will benefit from, greater investment flexibility, improved retirement options, and continued professional oversight, ensuring your pension remains on track to support your long-term financial goals.
+- Following a detailed review of your current pension arrangement, I recommend switching to a new scheme that better aligns with your financial objectives and long-term retirement planning. This switch is in your best interests for the following reasons:
+- By switching to this scheme, you will benefit from lower costs, greater investment flexibility, improved retirement options, and continued professional oversight, ensuring your pension remains on track to support your long-term financial goals.
+- You should note that whilst the transactions are pending, there could be movements within the stock-market; that is to say that the stock-market could rise or fall in value. If the market rises in value between the date of realising your existing funds and the purchase of your new (funds), you could be financially disadvantaged insofar as the cost of buying your new fund could be greater. Conversely, if there is a fall in the market between the date of realising your existing funds and the purchase of your new funds, you could be financially advantaged insofar as the cost of buying your new funds could be lower.
+- Should  you  require  access  to  these  funds  in  the  future  it  will  usually  take  10-15  working  days  for  administration, disinvestment and banking processes to complete. You are comfortable with the concept as you have liquid cash should you require instance access funds.
+- **There is no guarantee the return on the new investment will be greater than that of your existing arrangement for these funds.:** [blank]
+- **All other risks associated with this investment are detailed in the product literature provided to you. You should read this document carefully.:** [blank]
 
 ## Recommended Solution
 
@@ -243,8 +212,6 @@ I have recommended a Personal Pension for the following reasons:
 -  You understand the pension freedoms and prefer the flexibility of entering Flexi Access Drawdown when you access your pension, allowing you control over how and when benefits are taken. The pension provider will be selected to ensure seamless conversion to Flexi Access Drawdown when you decide to draw benefits.
 -  Should you die before age 75, the nominated beneficiaries can receive a lump sum, drawdown an income or purchase a dependents annuity.  All these options are paid free of tax. Where you die after the age of 75, the same options are available, but tax is paid at the beneficiary's marginal rate of tax.
 -  Pensions are currently outside of your estate for IHT purposes, however from 6 April 2027, most unused defined contribution pensions and death benefits (such as drawdown funds and uncrystallised pots) will be included  in  your  taxable  estate  for  IHT.  Exceptions  include  pensions  paid  to  a  surviving  spouse  or  civil partner, dependents' scheme pensions, and death-in-service benefits.
-
-<!-- page: 10 -->
 
 ## Why this provider has been recommended
 
@@ -264,6 +231,8 @@ I have recommended Aviva platform because it offers these benefits alongside fin
 
 ## Summary of Plan Charges
 
+[No details]
+
 ## Annual recurring charges
 
 | Plan                    | Platform   | Investment Management   | Total Charge   |
@@ -276,8 +245,6 @@ Your personal illustration contains further information regarding the cumulative
 The charge in monetary terms is an estimate based on the amount being invested into the plan, plus one year of contributions. The annual recurring charges assume no investment growth. In reality, the underlying investments will fluctuate daily, and this makes it impossible to accurately predict the actual monetary charges that will be incurred in the future.
 
 The charges quoted in this report exclude the transaction costs of the underlying funds, as these are variable and subject to change based on factors such as market conditions and trading activity. Transaction costs are not fees paid to the asset manager; instead, they include expenses like broker commissions, taxes, and the cost of executing trades. Despite their variability, these costs are already accounted for in the fund's performance figures, which are presented net of all charges. This provides a clear and accurate reflection of the investment's returns after all costs have been considered.
-
-<!-- page: 11 -->
 
 ## Pension Switch Charges Only Assessment
 
@@ -301,11 +268,13 @@ I have also assessed the impact of our charges upon transferring and over time. 
 
 Based on a mid-growth rate of 2.94%, including our advice fees, the recommended plan would need to grow by 4.8% per year up to age 75 in order to meet the same value as your current plan. Based on the past performance of your recommended funds, I do believe that this is achievable.
 
-<!-- page: 12 -->
-
 ## Fund recommendation
 
-In addition to your attitude to investment risk and capacity for loss, I have also considered your investment objectives as well as your knowledge and experience, and the length of time you wish to invest for. Having taken account of all these factors, I have recommended the following investment strategy.
+- In addition to your attitude to investment risk and capacity for loss, I have also considered your investment objectives as well as your knowledge and experience, and the length of time you wish to invest for. Having taken account of all these factors, I have recommended the following investment strategy.
+- **Please refer to the enclosed illustration for a full breakdown of the recommended portfolio.:** [blank]
+- This will  ensure you have a diversified investment portfolio based on your retirement objectives in isolation as you requested and one which is in line with your stated attitude to investment risk. Details of these funds are contained in the product literature.
+- You should remember that unit prices and the value of your pension fund can fall as well as rise and there is no guarantee you will receive a return of your original capital, especially in the early years or if you choose to take an income from it. Past performance is no guarantee of future returns.
+- A switch between pension providers does not guarantee a greater pension fund at retirement and there is no guarantee that the new provider's funds will outperform those of your existing provider.
 
 | Investment Fund                               | Allocation   |   Risk Rating | Annual Charge   |
 |-----------------------------------------------|--------------|---------------|-----------------|
@@ -330,15 +299,118 @@ You should remember that unit prices and the value of your pension fund can fall
 
 A switch between pension providers does not guarantee a greater pension fund at retirement and there is no guarantee that the new provider's funds will outperform those of your existing provider.
 
-<!-- page: 13 -->
-
 ## Performance Assessment
 
-The below chart and table show a performance analysis of your existing plans (A - Aviva / D - Zurich) against the recommended funds (B - Aviva) over a 5-year period. I have also included the benchmark for your risk profile (C).
-
-<!-- image -->
-
-50.0% | 40.0% | B | 30.0% | 20.0% | A | 10.0% | 0.0% | -10.0% | Oct 20 | Feb 21 | May Jul Sep | Dec | Mar 22 | Jun Aug Oct Jan 23 | Apr Jun Aug Oct Jan 24 | Apr Jun Aug Oct Jan 25 | Apr Jun Aug Oct | 13/10/2020-13/10/2025
+- **Performance:** 32.0
+- **Ann. Volatility:** 6.5
+- **Zurich - Managed Pn AP GTR in GB:** 46.14
+- **Aviva Risk 5 portfolio TR in GB:** 42.40
+- **IA Mixed Investment 20-60% Shares TR in GB:** 25.66
+- **Aviva Pension - My Future Focus Consolidation (Pre-2024) Pn S2 GTR in GB:** 15.85
+- **Since:** Year to
+- **Fd:** 46.58
+- **Apr Jun Aug Oct:** 13/10/2020-13/10/2025
+- **%:** 52.0
+- **% (additional):** 50.0
+- **% (additional):** 46.0
+- **% (additional):** 42.0
+- **% (additional):** 40.0
+- **% (additional):** 36.0
+- **A:** B
+- **Key:** A
+- **Volatility:** 7.89
+- **Key (additional):** B
+- **Volatility (additional):** 7.56
+- **Key (additional):** C
+- **Volatility (additional):** 6.43
+- **Key (additional):** D
+- **Volatility (additional):** 4.15
+- **Fundname:** SL At Retirement Universal (PP 10 Year) Pension
+- The below chart and table show a performance analysis of your existing plans (A - Aviva / D - Zurich) against the recommended funds (B - Aviva) over a 5-year period. I have also included the benchmark for your risk profile (C).
+- 50.0%
+- 40.0%
+- **B:** [blank]
+- 30.0%
+- 20.0%
+- **A:** [blank]
+- 10.0%
+- 0.0%
+- **-10.0%:** [blank]
+- **Oct 20:** [blank]
+- **Feb 21:** [blank]
+- **May Jul Sep:** [blank]
+- **Dec:** [blank]
+- **Mar 22:** [blank]
+- **Jun Aug Oct Jan 23:** [blank]
+- **Apr Jun Aug Oct Jan 24:** [blank]
+- **Apr Jun Aug Oct Jan 25:** [blank]
+- The below chart and table show a volatility analysis of your existing plans (D - Aviva / A - Zurich) against the recommended funds (B - Aviva) over a 5-year period. I have also included the benchmark for your risk profile (C).
+- **Pricing Spread: Bid-Bid • Currency: Pounds Sterling:** [blank]
+- 54.0
+- **Mean Ann. Volatility of 6.51:** [blank]
+- 48.0
+- 44.0
+- 38.0
+- 34.0
+- **Mean Performance of 32.51:** [blank]
+- 30.0
+- 28.0
+- 26.0
+- 24.0
+- **C:** [blank]
+- 22.0
+- 20.0
+- 18.0
+- 16.0
+- **D:** [blank]
+- 14.0
+- 12.0
+- 10.0
+- 8.0
+- 0.0
+- 0.5
+- 1.0
+- 1.5
+- 2.0
+- 2.5
+- 3.0
+- 3.5
+- 4.0
+- 4.5
+- 5.0
+- 5.5
+- 6.0
+- 7.0
+- 7.5
+- 8.0
+- 8.5
+- 0.0
+- 9.5
+- 10.0
+- 10.5
+- 11.0
+- 11.5
+- 12.0
+- 12.5
+- 13.0
+- **30/09/2020 - 30/09/2025 © FE fundinfo 2025:** [blank]
+- **Name:** [blank]
+- **Performance:** [blank]
+- The recommended Aviva advised funds have demonstrated stronger performance compared to your existing Aviva holdings. However, they have not outperformed your current Zurich funds. It's important to note that your Zurich investments are allocated to higher-risk funds, which are more susceptible to market volatility, resulting in greater fluctuations in value. In contrast, the Aviva platform funds selected for you align with your agreed risk tolerance and have delivered comparable performance with reduced volatility.
+- Unfortunately, we are unable to provide performance data for your Standard Life funds, as this information is not available within our system. For reference, a screenshot of their performance has been included below, taken directly from there systems.
+- **Cumulative Performance (%):** [blank]
+- **Launch:** [blank]
+- **Date:** [blank]
+- **1 Yr:** [blank]
+- **人ε:** [blank]
+- **5Yr:** [blank]
+- **10 Yr:** [blank]
+- 7.84
+- 8.62
+- 30.67
+- 24.56
+- 45.62
+- **Past performance is not a guarantee of future returns.:** [blank]
 
 | Cumulative Performance (%)                                                 | Cumulative Performance as at 13/10/2025*   | Cumulative Performance as at 13/10/2025*   | Cumulative Performance as at 13/10/2025*   | Cumulative Performance as at 13/10/2025*   | Cumulative Performance as at 13/10/2025*   | Cumulative Performance as at 13/10/2025*   | Cumulative Performance as at 13/10/2025*   |
 |----------------------------------------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|
@@ -352,7 +424,7 @@ The below chart and table show a volatility analysis of your existing plans (D -
 
 <!-- image -->
 
-Pricing Spread: Bid-Bid • Currency: Pounds Sterling | 52.0 | 54.0 | % | Mean Ann. Volatility of 6.51 | 50.0 | 48.0 | 46.0 | A | 44.0 | 42.0 | B | 40.0 | 38.0 | 36.0 | Performance | 34.0 | 32.0 | Mean Performance of 32.51 | 30.0 | 28.0 | 26.0 | C | 24.0 | 22.0 | 20.0 | 18.0 | 16.0 | D | 14.0 | 12.0 | 10.0 | 8.0 | 0.0 | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 | 3.0 | 3.5 | 4.0 | 4.5 | 5.0 | 5.5 | 6.0 | Ann. Volatility | 6.5 | 7.0 | 7.5 | 8.0 | 8.5 | 0.0 | 9.5 | 10.0 | 10.5 | 11.0 | 11.5 | 12.0 | 12.5 | 13.0 | 30/09/2020 - 30/09/2025 © FE fundinfo 2025 | Key | Name | Performance | Volatility | A | Zurich - Managed Pn AP GTR in GB | 46.14 | 7.89 | B | Aviva Risk 5 portfolio TR in GB | 42.40 | 7.56 | C | IA Mixed Investment 20-60% Shares TR in GB | 25.66 | 6.43 | D | Aviva Pension - My Future Focus Consolidation (Pre-2024) Pn S2 GTR in GB | 15.85 | 4.15
+Scatter plot
 
 The recommended Aviva advised funds have demonstrated stronger performance compared to your existing Aviva holdings. However, they have not outperformed your current Zurich funds. It's important to note that your Zurich investments are allocated to higher-risk funds, which are more susceptible to market volatility, resulting in greater fluctuations in value. In contrast, the Aviva platform funds selected for you align with your agreed risk tolerance and have delivered comparable performance with reduced volatility.
 
@@ -360,17 +432,15 @@ Unfortunately, we are unable to provide performance data for your Standard Life 
 
 <!-- image -->
 
-Cumulative Performance (%) | Since | Year to | Fundname | Launch | Date | 1 Yr | 人ε | 5Yr | 10 Yr | SL At Retirement Universal (PP 10 Year) Pension | Fd | 46.58 | 7.84 | 8.62 | 30.67 | 24.56 | 45.62
+Table
 
 Past performance is not a guarantee of future returns.
 
-<!-- page: 14 -->
-
 ## Cashflow Analysis
 
-I have used a cashflow modeller to create a graphical representation of your assets, investments, debts, income and expenditure. I have projected these forward, year-on-year, to assess the likelihood of you being able to achieve your objectives. A summary of the key scenarios I have modelled to help develop my recommendations are included below.
-
-We have input the following information into the cashflow modeller to generate the charts below:
+- I have used a cashflow modeller to create a graphical representation of your assets, investments, debts, income and expenditure. I have projected these forward, year-on-year, to assess the likelihood of you being able to achieve your objectives. A summary of the key scenarios I have modelled to help develop my recommendations are included below.
+- **We have input the following information into the cashflow modeller to generate the charts below::** [blank]
+- **Any input information is based on the assumptions detailed at the end of this report.:** [blank]
 
 -  You receive £300 per week as an HGV driver
 -  You receive £20 per week helping out the sea cadets on a weekend
@@ -389,27 +459,68 @@ Any input information is based on the assumptions detailed at the end of this re
 
 ## Income and expenditure
 
-<!-- image -->
-
-£45K | £40k | £35k | £30K | £25k | £20k | £15k | £10K | £5K | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69/65 | 74/70 | 79/75 | 84/80 | 89/85 | 94 /90 | 99/95 | 104/100 | Required Withdrawal (Pensions) | Required Withdrawal(Investments) | Employment Income | State Pension | Total Expenses Inc Tax | Essential Expenses IncTax
-
-The chart above displays a bar for each year of your life, up to age 100, showing your household income. Each income source is represented by a different colour. Your total expenditure, including tax and National Insurance, is shown by the solid black line running across the bars.
-
-Where income is insufficient to cover your expenditure, the modeller assumes that you will draw from your liquid assets. This is represented by the blue shading in the chart.
-
-If at any point there were insufficient liquid assets or accessible pensions to meet your expenditure, this would be shown by red bars on the chart. In this case, based on the current assumptions, no shortfall is projected throughout your lifetime.
-
-There are no issues with your cash flow forecast.
-
-<!-- page: 15 -->
+- **94 /90:** 99/95
+- **Required Withdrawal (Pensions):** State Pension
+- **Required Withdrawal(Investments):** Total Expenses Inc Tax
+- **Employment Income:** Essential Expenses IncTax
+- **£45K:** [blank]
+- **£40k:** [blank]
+- **£35k:** [blank]
+- **£30K:** [blank]
+- **£25k:** [blank]
+- **£20k:** [blank]
+- **£15k:** [blank]
+- **£10K:** [blank]
+- **£5K:** [blank]
+- £0
+- 2025
+- 2030
+- 2035
+- 2040
+- 2045
+- 2050
+- 2055
+- 2060
+- 69/65
+- 74/70
+- 79/75
+- 84/80
+- 89/85
+- 104/100
+- The chart above displays a bar for each year of your life, up to age 100, showing your household income. Each income source is represented by a different colour. Your total expenditure, including tax and National Insurance, is shown by the solid black line running across the bars.
+- Where income is insufficient to cover your expenditure, the modeller assumes that you will draw from your liquid assets. This is represented by the blue shading in the chart.
+- If at any point there were insufficient liquid assets or accessible pensions to meet your expenditure, this would be shown by red bars on the chart. In this case, based on the current assumptions, no shortfall is projected throughout your lifetime.
+- **There are no issues with your cash flow forecast.:** [blank]
 
 ## Current Total Assets
 
-<!-- image -->
-
-£200k | £175k | £150k | £125k | £100k | £75k | £50k | £25k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69/65 | 74170 | 79/75 | 84/80 | 89/85 | 94/90 | 99/95 | 104/10 | Pensions (Accessible) | Liquid Assets
-
-Your state pension income will cover your bills in retirement. Meaning your pension will be allowed to keep growing for large ad hoc spends.
+- **Pensions (Accessible):** Liquid Assets
+- **£200k:** [blank]
+- **£175k:** [blank]
+- **£150k:** [blank]
+- **£125k:** [blank]
+- **£100k:** [blank]
+- **£75k:** [blank]
+- **£50k:** [blank]
+- **£25k:** [blank]
+- £0
+- 2025
+- 2030
+- 2035
+- 2040
+- 2045
+- 2050
+- 2055
+- 2060
+- 69/65
+- 74170
+- 79/75
+- 84/80
+- 89/85
+- 94/90
+- 99/95
+- 104/10
+- **Your state pension income will cover your bills in retirement. Meaning your pension will be allowed to keep growing for large ad hoc spends.:** [blank]
 
 ## Alternative Scenarios &amp; Stress Tests
 
@@ -420,8 +531,6 @@ Your state pension income will cover your bills in retirement. Meaning your pens
 
 It is important to understand that the above charts are projections based on certain assumptions, and even a small variance between the assumptions used and actual experience can result in a marked difference in the outcome when compounded over a long period of time. Please also note that the chart does not consider any potential long-term care costs which could occur in later life.
 
-<!-- page: 16 -->
-
 ## Alternative Solutions
 
 Stakeholder pensions have been designed to offer low charges (i.e. a maximum total charge of 1.5% per annum for the first 10 years then 1% thereafter). These have a low minimum contribution level and do not penalise policyholders if they need to stop payment contributions or move their funds to another provider.
@@ -430,17 +539,14 @@ In your case however, I am recommending a plan which is not a stakeholder pensio
 
 ## Nominations and death benefits
 
-I recommend that you complete the nomination of beneficiaries' form that will be provided to you after the transfer process is begun.
-
-This will allow you nominate who you wish to benefit from your funds on passing. It will also allow you to designate an amount of your funds to several people.
-
-All payments will be subject to Aviva's discretion.  Where your nominees withdraw from the proceeds it will be tax free should you die before age 75. Where your death occurs on or after age 75 those payments will be subject to the nominee's marginal rate of tax.
+- **I recommend that you complete the nomination of beneficiaries' form that will be provided to you after the transfer process is begun.:** [blank]
+- This will allow you nominate who you wish to benefit from your funds on passing. It will also allow you to designate an amount of your funds to several people.
+- All payments will be subject to Aviva's discretion.  Where your nominees withdraw from the proceeds it will be tax free should you die before age 75. Where your death occurs on or after age 75 those payments will be subject to the nominee's marginal rate of tax.
 
 ## Cancellation notice
 
-You have a legal right to change your mind and cancel your plan. Once your plan is set up you will be sent a cancellation notice. You have 30 days to review and consider your options. You should check the provider literature to confirm the date this period commences as well as any charges that may apply following cancellation. If your investment falls in value before your cancellation notice is received, an amount equal to the fall in value will be deducted.
-
-However, please be aware the cancellation notice includes a provision that any previous provider is not obliged to take the plan back.
+- You have a legal right to change your mind and cancel your plan. Once your plan is set up you will be sent a cancellation notice. You have 30 days to review and consider your options. You should check the provider literature to confirm the date this period commences as well as any charges that may apply following cancellation. If your investment falls in value before your cancellation notice is received, an amount equal to the fall in value will be deducted.
+- **However, please be aware the cancellation notice includes a provision that any previous provider is not obliged to take the plan back.:** [blank]
 
 ## Tax Treatment and Law
 
@@ -449,8 +555,6 @@ All statements concerning the tax treatment of products and their benefits are b
 ## Product literature
 
 This documentation is important and contains information regarding the products which I have recommended, particularly with regards to how the product works, its aims, risks and charges, together with its legal status, tax treatment and your cancellation rights. Therefore, please ensure you have read these documents carefully. If there are any points on which you are unsure, or require further clarification, please contact me and I will be pleased to explain these in greater detail.
-
-<!-- page: 17 -->
 
 ## Our charges
 
@@ -478,31 +582,25 @@ It would also be prudent to set up and register Power of Attorney for your finan
 
 ## Conclusion
 
-I trust that this letter provides an accurate summary of our discussions, however, should you have any concerns or wish to discuss any of the issues raised in more detail please do not hesitate to contact me.
-
-We strive to provide you with a first-class professional service and hope that we can continue to be of service to you for many years to come. Should you require advice at any time with regard to any aspect of your financial planning, please do not hesitate to contact me and I shall be pleased to assist.
-
-Yours sincerely
-
-<!-- image -->
-
-Yours sincerely | Thomas Redmond BSc (Hons) DipPFS Cert CII | Financial Adviser | TFAS Wealth LTD
-
-<!-- page: 18 -->
+- I trust that this letter provides an accurate summary of our discussions, however, should you have any concerns or wish to discuss any of the issues raised in more detail please do not hesitate to contact me.
+- We strive to provide you with a first-class professional service and hope that we can continue to be of service to you for many years to come. Should you require advice at any time with regard to any aspect of your financial planning, please do not hesitate to contact me and I shall be pleased to assist.
+- **Financial Adviser:** [blank]
+- **TFAS Wealth LTD:** [blank]
 
 ## Appendix
 
+[No details]
+
 ## Critical Yield
 
-Initial adviser charge of £3,305 which is taken from the new solution, reducing the initial investment accordingly.
-
-An ongoing annual adviser charge of 1.00% which has been considered as part of the new solution projections below.
-
-The following comparison considers the effect of any adviser charges currently being paid on the existing pensions being switched out of and the adviser charges that would become payable on the new solution.
-
-Values shown are in real terms which mean that they have been adjusted to take into account the effect of inflation.
-
-The retirement age used is 75.
+- **Initial adviser charge of £3,305 which is taken from the new solution, reducing the initial investment accordingly.:** [blank]
+- **An ongoing annual adviser charge of 1.00% which has been considered as part of the new solution projections below.:** [blank]
+- The following comparison considers the effect of any adviser charges currently being paid on the existing pensions being switched out of and the adviser charges that would become payable on the new solution.
+- **Values shown are in real terms which mean that they have been adjusted to take into account the effect of inflation.:** [blank]
+- **The retirement age used is 75.:** [blank]
+- [1] Reduction in Yield is the impact of product, platform and fund charges on the investment growth rate. For example, if the fund grows due to investment growth by 4% in a year and the reduction in yield is 2.5% the fund growth experienced will be 1.5%.
+- **[2] Critical Yield is the growth rate required from the new solution to match the projected maturity value of the pension solution.:** [blank]
+- **[3] Effect of switching is the change in the maturity value of the new solution assuming the fund experiences the same investment growth.:** [blank]
 
 |                            | Existing pension   | New solution              |
 |----------------------------|--------------------|---------------------------|
@@ -528,19 +626,18 @@ The retirement age used is 75.
 
 [3] Effect of switching is the change in the maturity value of the new solution assuming the fund experiences the same investment growth.
 
-<!-- page: 19 -->
-
 ## Cashflow Assumptions
+
+[No details]
 
 ## Surplus Income Percentage Saved
 
-0% of any in-year surplus will be saved within the plan - all surplus income is spent.
+- **0% of any in-year surplus will be saved within the plan - all surplus income is spent.:** [blank]
 
 ## Inflation Assumptions
 
-The following inflation assumptions are the rates used as standard within the cashflow modeller:
-
-General expenditure 2 % Savings 2 % State pensions 2.5 % Aviva personal pensions 5 %
+- **The following inflation assumptions are the rates used as standard within the cashflow modeller::** [blank]
+- **General expenditure 2 % Savings 2 % State pensions 2.5 % Aviva personal pensions 5 %:** [blank]
 
 ## Personal Pension Plan
 
@@ -556,29 +653,21 @@ Flexi-access drawdown also provides a tax-efficient way of passing wealth down t
 
 ## Lifetime Allowance
 
-The lifetime allowance 'charge' was removed from 6 April 2023 - the legislation for this was included in the Finance (No.2) Act 2023.
-
-From 6 April 2024, the lifetime allowance has been removed. This doesn't mean there are no limits on the amount of pension savings people can take without a tax charge; the lifetime allowance is being replaced by new allowances.
-
-The lifetime allowance is being replaced with three different allowances:
-
-the lump sum allowance - £268,275 the lump sum and death benefit allowance - £1,073,100
-
-Both of these allowances limit the amount of tax-free benefits that can be paid.
-
-There is also:
-
-<!-- page: 20 -->
-
-A check is made against these allowances when benefits are paid. These allowances may be higher if the individual has lifetime allowance protection. These allowances are reduced if benefits were taken between 6 April 2006 and 5 April 2024. There is no longer any additional test against the investment returns at age 75, as previously.
+- **The lifetime allowance 'charge' was removed from 6 April 2023 - the legislation for this was included in the Finance (No.2) Act 2023.:** [blank]
+- From 6 April 2024, the lifetime allowance has been removed. This doesn't mean there are no limits on the amount of pension savings people can take without a tax charge; the lifetime allowance is being replaced by new allowances.
+- **The lifetime allowance is being replaced with three different allowances::** [blank]
+- **the lump sum allowance - £268,275 the lump sum and death benefit allowance - £1,073,100:** [blank]
+- **Both of these allowances limit the amount of tax-free benefits that can be paid.:** [blank]
+- **There is also::** [blank]
 
 ## Annual Allowance
 
-Contributions into the scheme are limited by the annual allowance. The Annual Allowance is currently a maximum of £60,000 per annum 2024/2025. High earners may have a lower annual allowance. There is also the facility to potentially carry forward up to 3 years' worth of unused allowances.  You should note that if an individual has flexibly accessed other pension benefits though, their Money Purchase Annual Allowance may be restricted to £10,000 with no Carry Forward allowed. Contributions exceeding the annual allowance would trigger a tailored tax charge of up to 45%. Tax relief on any personal contributions made is limited to £3,600 per annum or 100% of salary if higher.
-
-You have not yet triggered the MPAA, and you do not have a lower annual allowance.
+- Contributions into the scheme are limited by the annual allowance. The Annual Allowance is currently a maximum of £60,000 per annum 2024/2025. High earners may have a lower annual allowance. There is also the facility to potentially carry forward up to 3 years' worth of unused allowances.  You should note that if an individual has flexibly accessed other pension benefits though, their Money Purchase Annual Allowance may be restricted to £10,000 with no Carry Forward allowed. Contributions exceeding the annual allowance would trigger a tailored tax charge of up to 45%. Tax relief on any personal contributions made is limited to £3,600 per annum or 100% of salary if higher.
+- **You have not yet triggered the MPAA, and you do not have a lower annual allowance.:** [blank]
 
 ## Key Benefits of the CIP Approach
+
+[No details]
 
 ## 1. Diversification and Risk Management
 
@@ -599,14 +688,12 @@ The CIP aligns with your long-term goals and offers a more robust and flexible f
 
 ## Investment pathways
 
-Investment pathways were introduced in February 2021 by government legislation. The legislation is designed to ensure that individuals who take benefits from their pension fund via drawdown without taking advice still have access to appropriate investments for their needs and objectives.
-
-There are four investment pathways to cater for four retirement scenarios. The four pathways are:
+- A check is made against these allowances when benefits are paid. These allowances may be higher if the individual has lifetime allowance protection. These allowances are reduced if benefits were taken between 6 April 2006 and 5 April 2024. There is no longer any additional test against the investment returns at age 75, as previously.
+- Investment pathways were introduced in February 2021 by government legislation. The legislation is designed to ensure that individuals who take benefits from their pension fund via drawdown without taking advice still have access to appropriate investments for their needs and objectives.
+- **There are four investment pathways to cater for four retirement scenarios. The four pathways are::** [blank]
 
 -  Option 1 - I have no plans to touch my money in the next 5 years.
 -  Option 2 - I plan to use my money to set up a guaranteed income (annuity) within the next 5 years.
-
-<!-- page: 21 -->
 
 -  Option 3 - I plan to start taking my money as a long-term income within the next 5 years.
 -  Option 4 - I plan to take out all my money within the next 5 years.
@@ -619,9 +706,24 @@ The provider will offer a single investment solution designed to meet each optio
 
 ## Why are investment pathways not appropriate for you?
 
-I  have considered the investment pathway solution offered by the recommended provider that is most relevant to you. However, I have discounted it because:
+- The provider will offer a single investment solution designed to meet each option. Although investment pathways are aimed at individuals that do not have an adviser, they may still be a valid consideration for you because they may have:
+- **I  have considered the investment pathway solution offered by the recommended provider that is most relevant to you. However, I have discounted it because::** [blank]
 
 -  You require a more tailored solution than any of the four generic solutions offered by the provider.
 -  It does not reflect your individual circumstances, withdrawal requirements and risk profile as accurately as the recommended investment strategy.
 -  You require an investment solution that will be regularly reviewed and adjusted to reflect any changes in your needs and circumstances as part of our ongoing advice service.
 -  It has not performed as well as the recommended investment strategy.
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- Yours sincerely
+- Thomas Redmond BSc (Hons) DipPFS Cert CII
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 4: [line_chart, 100 % confidence]
+- Image 6: [table, 89 % confidence]
+- Image 7: [bar_chart, 87 % confidence]
+- Image 8: [bar_chart, 100 % confidence]
+- Image 9: [signature, 93 % confidence]

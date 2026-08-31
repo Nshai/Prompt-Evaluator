@@ -1,3 +1,9 @@
+---
+source: Nest Higher Risk fund.pdf
+converted: 2026-08-31T00:55:00Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Nest quarterly investment report
 
 -
@@ -8,11 +14,15 @@ This information is designed for professional investors. To help other readers u
 
 <!-- image -->
 
+Logo
+
 Introduction Underlying funds Key metrics Nest retirement funds Nest growth funds
 
 ## Market commentary
 
 <!-- image -->
+
+Icon
 
 Following a strong first half of the year, the third quarter has been a challenging one for investors.
 
@@ -44,6 +54,8 @@ Investors entered the third quarter on a relatively optimistic note. There were 
 
 <!-- image -->
 
+Logo
+
 Total Nest assets under management
 
 ## Comparative risk*
@@ -54,9 +66,13 @@ This chart compares the realised risk and the return of Nest's funds (net of AMC
 
 <!-- image -->
 
+Scatter plot
+
 Nest retirement funds
 
 <!-- image -->
+
+Logo
 
 Nest members Underlying funds Glossary
 
@@ -66,9 +82,13 @@ Nest members Underlying funds Glossary
 
 <!-- image -->
 
+Line chart
+
 ## Nest's developed equities carbon intensity trajectory
 
 <!-- image -->
+
+Line chart
 
 ## Nest growth funds
 
@@ -88,6 +108,8 @@ Nest's flagship default strategy provides a fund for each year in which we expe
 
 <!-- image -->
 
+Bar chart
+
 ## Fund objectives
 
 - target investment returns equivalent to CPI plus 3% and cover all scheme charges over the long term
@@ -100,6 +122,8 @@ Glossary
 ## Asset allocation
 
 <!-- image -->
+
+Pie chart
 
 A proportion of the foreign currency exposure is hedged in our developed market credit funds, global developed equity fund and our private market funds.
 
@@ -161,6 +185,8 @@ The Nest Ethical Fund is for people who want to invest in line with specific eth
 
 <!-- image -->
 
+Bar chart
+
 ## Fund objectives
 
 - provide a fund choice for members who want to invest in a portfolio that reflects their ethical concerns
@@ -171,6 +197,8 @@ The Nest Ethical Fund is for people who want to invest in line with specific eth
 Underlying funds Glossary
 
 <!-- image -->
+
+Pie chart
 
 ## Top 10 shareholdings
 
@@ -217,17 +245,25 @@ Underlying funds Glossary
 
 <!-- image -->
 
+Bar chart
+
 - Annualised total return net of Nest annual management charge
 
 Performance information reflects all the money in this fund rather than your individual pension pot.
 
 <!-- image -->
 
+Pie chart
+
 A proportion of the foreign currency exposure is hedged in our developed market credit funds, global developed equity fund and our private market funds.
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
 
 | 52.9%   | Climate aware global developed equities       |
 |---------|-----------------------------------------------|
@@ -283,11 +319,15 @@ Underlying funds Glossary
 
 <!-- image -->
 
+Bar chart
+
 - Annualised total return net of Nest annual management charge
 
 Performance information reflects all the money in this fund rather than your individual pension pot.
 
 <!-- image -->
+
+Pie chart
 
 - 100% Sharia compliant equities
 
@@ -326,6 +366,8 @@ This fund is provided for members who are very cautious about investing and are
 
 <!-- image -->
 
+Bar chart
+
 ## Fund objectives
 
 - preserve the nominal value of contributions after all scheme charges over the long term and grow the fund in line with low-risk money market investments
@@ -336,6 +378,8 @@ Glossary
 ## Asset allocation
 
 <!-- image -->
+
+Pie chart
 
 95.0%
 
@@ -393,9 +437,9 @@ For more details on how each part of the fund works, download this NGRF factshee
 
 ## Vault risk measures
 
-| 5 year annualised volatility   |
-|--------------------------------|
-| 8.3% ∆                         |
+| 5 year   |
+|----------|
+| 8.3% ∆   |
 
 ## Asset allocation
 
@@ -405,19 +449,33 @@ Members who are in Nest's default Retirement Date Funds (RDF) and meet the crite
 
 <!-- image -->
 
+Pie chart
+
 A proportion of the foreign currency exposure is hedged in our developed market credit funds, global developed equity fund and our private market funds.
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
 
 | 20.0%   | Climate aware global developed equities   |
 |---------|-------------------------------------------|
@@ -430,6 +488,8 @@ A proportion of the foreign currency exposure is hedged in our developed market 
 | 15.0%   | Global investment grade bonds             |
 
 <!-- image -->
+
+Pie chart
 
 | Company    | Percentage within equities   |
 |------------|------------------------------|
@@ -445,6 +505,8 @@ A proportion of the foreign currency exposure is hedged in our developed market 
 
 <!-- image -->
 
+Bar chart
+
 Glossary Introduction Underlying funds Glossary Key metrics Nest retirement funds Nest growth funds
 
 ## Post Retirement Date Fund - Series 2
@@ -455,19 +517,23 @@ This fund is for those members who have not chosen to withdraw all their savings
 
 ## Fund objectives
 
-| -   | preserve the real value of contributions after all scheme charges over   |
-|-----|--------------------------------------------------------------------------|
-|     | the long term                                                            |
-|     | expect a long-term volatility average of 6%                              |
-| -   |                                                                          |
+| -   | preserve the real value of contributions after all scheme charges over the long term   |
+|-----|----------------------------------------------------------------------------------------|
+| -   | expect a long-term volatility average of 6%                                            |
 
 ## Investment performance
 
 <!-- image -->
 
-<!-- image -->
+Bar chart
 
 <!-- image -->
+
+Other
+
+<!-- image -->
+
+Pie chart
 
 ## Top 10 shareholdings
 
@@ -706,3 +772,23 @@ _The following details were present in Docling's structured JSON output but omit
 - 10.1%
 - Property Inome
 - *Derivative fund at 0.0025%
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 4: [scatter_plot, 98 % confidence]
+- Image 6: [line_chart, 100 % confidence]
+- Image 7: [line_chart, 99 % confidence]
+- Image 8: [bar_chart, 100 % confidence]
+- Image 9: [pie_chart, 100 % confidence]
+- Image 10: [bar_chart, 100 % confidence]
+- Image 11: [pie_chart, 99 % confidence]
+- Image 12: [bar_chart, 100 % confidence]
+- Image 13: [pie_chart, 100 % confidence]
+- Image 16: [bar_chart, 100 % confidence]
+- Image 17: [pie_chart, 87 % confidence]
+- Image 18: [bar_chart, 100 % confidence]
+- Image 19: [pie_chart, 100 % confidence]
+- Image 20: [pie_chart, 100 % confidence]
+- Image 27: [pie_chart, 94 % confidence]
+- Image 28: [bar_chart, 100 % confidence]
+- Image 29: [bar_chart, 100 % confidence]
+- Image 31: [pie_chart, 85 % confidence]

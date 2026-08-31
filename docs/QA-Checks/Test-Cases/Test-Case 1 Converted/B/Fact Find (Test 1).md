@@ -1,38 +1,21 @@
 ---
-source_path: "B/Fact Find (Test 1).pdf"
-file_name: "Fact Find (Test 1).pdf"
-category_code: B
-pages: 15
-characters: 40735
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: Fact Find (Test 1).pdf
+converted: 2026-08-31T00:25:06Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 ## Your Information
 
+[No details]
+
 ## Private and Confidential
 
-Client One:
-
-Alan
-
-<!-- image -->
-
-Adviser:
-
-Date Completed: 19/09/2025
-
-My advice is based on the information contained within this document. Unanswered questions or blank responses will be excluded from any advice given. If any details are incorrect or omitted, please let me know as this may impact on the suitability of the advice.
-
-JTFAS
-
-<!-- image -->
-
-WEALTH
-
-<!-- page: 2 -->
+- **Client One::** Alan
+- **JTFAS:** [blank]
+- **WEALTH:** [blank]
+- **Adviser::** [blank]
+- **Date Completed: 19/09/2025:** [blank]
+- My advice is based on the information contained within this document. Unanswered questions or blank responses will be excluded from any advice given. If any details are incorrect or omitted, please let me know as this may impact on the suitability of the advice.
 
 ## Advice Areas
 
@@ -62,8 +45,6 @@ WEALTH
 |                    | Yes                                                                                                                                                                                                                                                            | Statement 4 Answer |
 | Statement 5        | You have rights under data protection law, including access, correction, deletion, and objection. Our full privacy policy is available on request or via our website. Are you happy to proceed on this basis?                                                  |                    |
 | Statement 5 Answer | Yes                                                                                                                                                                                                                                                            |                    |
-
-<!-- page: 3 -->
 
 ## Personal Details
 
@@ -101,9 +82,11 @@ WEALTH
 
 <!-- image -->
 
+Other
+
 <!-- image -->
 
-<!-- page: 4 -->
+Icon
 
 ## Contact Address
 
@@ -127,107 +110,68 @@ WEALTH
 
 ## Contact Details
 
-Name Contact Type Mobile E-Mail
+- **Mobile:** 07707054244
+- **E-Mail:** Yes
+- **Preferred Contact:** Yes
+- **Name:** [blank]
+- **Contact Type:** [blank]
+- **Value:** [blank]
+- **Note:** [blank]
 
 ## Family And Dependants
 
-Full Name Date of Birth
-
-07/05/1960
-
-Age
-
-65
-
-Value
-
-07707054244
-
-Relationship
-
-Spouse Related To Note Financially Dependent?
-
-No Period Preferred Contact Yes Yes Dependant Living with Client(s)
-
-Yes
-
-<!-- page: 5 -->
+- **Dependent?:** Living with
+- **Spouse:** No
+- **Full Name:** [blank]
+- **Date of Birth:** [blank]
+- **Age:** [blank]
+- **Relationship:** [blank]
+- **Related To:** [blank]
+- **Financially:** [blank]
+- **Period:** [blank]
+- **Dependant:** [blank]
+- **Client(s):** [blank]
+- 07/05/1960
+- 65
+- Yes
 
 ## ID Verification
 
-Original Driving Licence Seen
-
-08/12/2025
-
-Driving Licence Ref
-
-SULLI506076JA9SL
-
-Driving Licence Expiry Date
-
-10/06/2026
-
-Original Passport Seen
-
-Country of Origin
-
-Passport ref
-
-Passport Expiry Date
-
-Mother's Maiden Name
-
-Electricity Bill Ref
-
-Inland Revenue Tax Notification
-
-08/12/2025
-
-Home Visit
-
-Premises Entered
-
-Bank Statement Seen
-
-Mortgage Statement Seen
-
-Council Tax Bill Seen
-
-Utilities Bill Seen
-
-Original Firearm/Shotgun Certificate Seen
-
-Firearm/Shotgun Certificate Ref
-
-Firearm/Shotgun Certificate Expiry Date
-
-Microfiche Issue Date
-
-Microfiche number
+- **Original Driving Licence Seen:** 08/12/2025
+- **Driving Licence Ref:** SULLI506076JA9SL
+- **Driving Licence Expiry Date:** 10/06/2026
+- **Inland Revenue Tax Notification:** 08/12/2025
+- **Original Passport Seen:** [blank]
+- **Country of Origin:** [blank]
+- **Passport ref:** [blank]
+- **Passport Expiry Date:** [blank]
+- **Mother's Maiden Name:** [blank]
+- **Electricity Bill Ref:** [blank]
+- **Home Visit:** [blank]
+- **Premises Entered:** [blank]
+- **Bank Statement Seen:** [blank]
+- **Mortgage Statement Seen:** [blank]
+- **Council Tax Bill Seen:** [blank]
+- **Utilities Bill Seen:** [blank]
+- **Original Firearm/Shotgun Certificate Seen:** [blank]
+- **Firearm/Shotgun Certificate Ref:** [blank]
+- **Firearm/Shotgun Certificate Expiry Date:** [blank]
+- **Microfiche Issue Date:** [blank]
+- **Microfiche number:** [blank]
 
 ## Electronic ID Verification
 
-ID Check Completed Date
-
-08/12/2025
-
-ID Check Expiry Date
-
-01/06/2026
+- **ID Check Completed Date:** 08/12/2025
+- **ID Check Expiry Date:** 01/06/2026
 
 ## Profile Notes
 
+[No details]
+
 ## Current Employment Details
 
-Total annual self-employed Gross Profit, Dividend, and Salary / employed gross basic, guaranteed and regular overtime and bonus incomes
-
-£ 0.00
-
-Highest rate of income tax paid (%)
-
-0
-
-<!-- page: 6 -->
+- **Total annual self-employed Gross Profit, Dividend, and Salary / employed gross basic, guaranteed and regular overtime and bonus incomes:** £ 0.00
+- **Highest rate of income tax paid (%):** 0
 
 |                                                     |                 | Owner                             |
 |-----------------------------------------------------|-----------------|-----------------------------------|
@@ -272,8 +216,6 @@ Highest rate of income tax paid (%)
 | Year 3 Annual Accounts Share of Company Profit      |                 |                                   |
 | Year 3 Year                                         |                 | End                               |
 
-<!-- page: 7 -->
-
 | Gross Basic Annual Income        |            |          |
 |----------------------------------|------------|----------|
 | Net Basic Monthly Income         | £ 1,200.00 |          |
@@ -296,11 +238,13 @@ Highest rate of income tax paid (%)
 
 ## Employment Notes
 
+[No details]
+
 ## Assets
 
-Do you have any assets?
-
-Client did not disclose Yes No Total
+- **Do you have any assets?:** Yes
+- **Client did not disclose:** No
+- **Total:** £6,000.00
 
 | Owner   | Category   | Related to Address   | Description   | Owner 1 %   | Owner 2 %   | Cur.   | Original Value   | Purchased On   | Value      | Valuation Date   | Net Monthly Income   |
 |---------|------------|----------------------|---------------|-------------|-------------|--------|------------------|----------------|------------|------------------|----------------------|
@@ -308,31 +252,26 @@ Client did not disclose Yes No Total
 
 £6,000.00
 
-<!-- page: 8 -->
-
 ## Liabilities
 
-It is desirable that a greater priority be given to the repayment / reduction of the levels of your debt prior to making an investment or committing to a regular premium.
-
-Do you have any liabilities?
+- **Do you have any liabilities?:** No
+- It is desirable that a greater priority be given to the repayment / reduction of the levels of your debt prior to making an investment or committing to a regular premium.
 
 ## Credit History
 
-Have you ever been refused a mortgage / credit?
-
-Do you have an adverse Credit History?
+- **Have you ever been refused a mortgage / credit?:** No
+- **Do you have an adverse Credit History?:** No
 
 ## Asset &amp; Liability Notes
 
+[No details]
+
 ## Income
 
-Total annual self-employed Gross Profit, Dividend, and Salary / employed gross basic, guaranteed and regular overtime and bonus incomes
-
-Total Gross Annual Earnings or Net Relevant Earnings
-
-<!-- image -->
-
-<!-- image -->
+- **Total annual self-employed Gross Profit, Dividend, and Salary / employed gross basic, guaranteed and regular overtime and bonus incomes:** £ 0.00
+- **Total:** £0.00
+- **Total Gross Annual Earnings or Net Relevant Earnings:** [blank]
+- £1,430.00
 
 | Owner   | Category      | Descriptio n               | Frequency   | Gross Amount   | Net Amount   | Start Date   | End Date   | Last Updated   | Occupatio n   | Descriptio n   |
 |---------|---------------|----------------------------|-------------|----------------|--------------|--------------|------------|----------------|---------------|----------------|
@@ -341,31 +280,11 @@ Total Gross Annual Earnings or Net Relevant Earnings
 
 ## Income Changes
 
-Do you expect any changes in your income in the foreseeable future?
-
-No
-
-No
-
-No
-
-£ 0.00
-
-£1,430.00
-
-No
-
-Total
-
-£0.00
-
-<!-- page: 9 -->
+- **Do you expect any changes in your income in the foreseeable future?:** No
 
 ## Expenditure
 
-Do you wish to carry out a detailed expenditure analysis? If 'no' then please enter a value into the Total Monthly Expenditure field
-
-Yes
+- **Do you wish to carry out a detailed expenditure analysis? If 'no' then please enter a value into the Total Monthly Expenditure field:** Yes
 
 | Category                               | Owner                       | Description      | Net Amount   | Frequency   |
 |----------------------------------------|-----------------------------|------------------|--------------|-------------|
@@ -402,8 +321,6 @@ Yes
 | Calculated Total Monthly Household Expenditure                           | £ 1,718.00   |
 |--------------------------------------------------------------------------|--------------|
 | Do you expect any changes in your expenditure in the foreseeable future? | No           |
-
-<!-- page: 10 -->
 
 ## Current Monthly Cash Flow
 
@@ -448,8 +365,6 @@ Yes
 
 Budget Notes
 
-<!-- page: 12 -->
-
 ## Retirement Goals &amp; Objectives
 
 |                                                           |                                                                                                                                                                                                                                                        | Owner     |
@@ -473,17 +388,12 @@ Budget Notes
 
 Just needs advice helping him organise his pensions in the best place. Wants to consolidate to help him get his head around what he has. Thinks he'll probably retire in the next 2 years and needs a household income of £1,700 net per month. ATR 5.
 
-<!-- page: 13 -->
-
 ## Existing Pension Provision
 
-Does your employer currently operate a pension scheme?
-
-Yes
-
-Are you a member?
-
-Yes
+- **Does your employer currently operate a pension scheme?:** Yes
+- **Are you a member?:** Yes
+- **Are you a member?:** [blank]
+- Yes
 
 | Owner                         |                                   |                       |     |
 |-------------------------------|-----------------------------------|-----------------------|-----|
@@ -513,117 +423,54 @@ Yes
 
 ## State Pension Entitlement
 
-State Pension Retirement Age:
-
-Basic State Pension
-
-Additional State Pension
-
-Pension Credit
-
-Spouses Pension
-
-BR19 Projection
-
-Notes
+- **State Pension Retirement Age::** [blank]
+- **Basic State Pension:** [blank]
+- **Additional State Pension:** [blank]
+- **Pension Credit:** [blank]
+- **Spouses Pension:** [blank]
+- **BR19 Projection:** [blank]
+- **Notes:** [blank]
 
 ## Final Salary Pension Schemes
 
-Do you have any existing final salary schemes?
-
-No
+- **Do you have any existing final salary schemes?:** No
 
 ## Money Purchase Pension Schemes
 
-Do you have any existing money purchase schemes?
-
-No
+- **Do you have any existing money purchase schemes?:** No
 
 ## Personal Pensions
 
-Do you have any existing Personal Pension arrangements?
-
-Yes
-
-Client did not disclose
-
-No
-
-Owner
-
-Contract Type
-
-Personal Pension Plan
-
-Personal Pension Plan
-
-Product Name
-
-Personal Pension (Uncrystallised)
-
-Provider
-
-Aviva Platform
-
-The Peoples Pension
-
-Linked To (Policy Number)
-
-AV2936864
-
-Linked To (PlanType/Provider)
-
-Wrap/Aviva Platform
-
-Policy No
-
-AV2936864-001
-
-6197175/PP
-
-Agency Status
-
-Under Agency - Servicing Agent
-
-Not Under Agency
-
-Currency
-
-GBP
-
-GBP
-
-Policy Start Date
-
-09/12/2025
-
-Ret. Age
-
-Your Cont. (reg)
-
-Emp. Cont. (reg)
-
-Freq.
-
-Transfer Cont.
-
-Lump Sum Cont.
-
-Value
-
-£
-
-116,555.45
-
-Valuation Date
-
-23/07/2026
-
-Pension Arrangement
-
-Crystallisation Status
-
-<!-- page: 14 -->
+- **Do you have any existing Personal Pension arrangements?:** Yes
+- **Client did not disclose:** No
+- **Product Name:** Personal Pension (Uncrystallised)
+- **Linked To (Policy Number):** AV2936864
+- **Linked To (PlanType/Provider):** Wrap/Aviva Platform
+- **Policy Start Date:** 09/12/2025
+- **£:** 116,555.45
+- **Valuation Date:** 23/07/2026
+- **Policy No:** Agency Status
+- **AV2936864-001:** Under Agency - Servicing Agent
+- **6197175/PP:** Not Under Agency
+- **Policy No (additional):** Currency
+- **AV2936864-001 (additional):** GBP
+- **6197175/PP (additional):** GBP
+- **Owner:** [blank]
+- **Contract Type:** [blank]
+- **Personal Pension Plan:** [blank]
+- **Personal Pension Plan:** [blank]
+- **Provider:** [blank]
+- **Aviva Platform:** [blank]
+- **The Peoples Pension:** [blank]
+- **Ret. Age:** [blank]
+- **Your Cont. (reg):** [blank]
+- **Emp. Cont. (reg):** [blank]
+- **Freq.:** [blank]
+- **Transfer Cont.:** [blank]
+- **Lump Sum Cont.:** [blank]
+- **Value:** [blank]
+- **Pension Arrangement:** [blank]
+- **Crystallisation Status:** [blank]
 
 | Crystallised Percentage - Pre 6th April 2024   |          |          |           |
 |------------------------------------------------|----------|----------|-----------|
@@ -660,106 +507,58 @@ Crystallisation Status
 
 ## Annuities
 
-Do you have any existing Annuity plans?
-
-## Retirement Risk Profile
-
-No
-
-<!-- page: 15 -->
+- **Do you have any existing Annuity plans?:** No
 
 ## Retirement Risk Replay
 
-Generated Risk Profile
-
-Do you agree with the generated Risk Profile?
-
-Notes
-
-Date Completed
-
-//
+- **Date Completed:** //
+- **Generated Risk Profile:** [blank]
+- **Do you agree with the generated Risk Profile?:** [blank]
+- **Notes:** [blank]
 
 ## Notes
 
+[No details]
+
 ## Marketing
 
-Do you wish to be contacted for marketing purposes?
-
-Related Products/Services Only
-
-Consent Date
-
-01/09/2025
-
-Please contact me by phone for marketing purposes
-
-Please send me marketing information by mail
-
-- [x] Please send me marketing information by e-mail
-
-- [ ] Please send me marketing information by SMS text, picture messaging or by any other personal means of contact apart from mail, telephone or email
-
-- [ ] Please send me marketing information or contact me through Social Media
-
-- [ ] Please contact me by automated calls for marketing purposes
-
-- [ ] Please send me marketing information by PFP
-
-Accessible format requirement
-
-No Requirement
-
-Preferred delivery method
-
-No Preference
+- **☑:** [ ]
+- **Please send me marketing information by e-mail:** [x]
+- **Please send me marketing information by SMS text, picture messaging or by any other personal means of contact apart from mail, telephone or email:** [ ]
+- **□:** [ ]
+- **Please send me marketing information or contact me through Social Media:** [ ]
+- **Please contact me by automated calls for marketing purposes:** [ ]
+- **Please send me marketing information by PFP:** [ ]
+- **Do you wish to be contacted for marketing purposes?:** Related Products/Services Only
+- **Consent Date:** 01/09/2025
+- **Accessible format requirement:** No Requirement
+- **Preferred delivery method:** No Preference
+- **Please contact me by phone for marketing purposes:** [blank]
+- **Please send me marketing information by mail:** [blank]
 
 ## Declaration
 
-Date Fact Find Completed
-
-19/09/2025
-
-Date ID/AML Checked
-
-Date Declaration Signed
-
-- [ ] ☑
-
-- [ ] □
+- **Date Fact Find Completed:** 19/09/2025
+- **Date ID/AML Checked:** [blank]
+- **Date Declaration Signed:** [blank]
 
 ## Additional Notes
 
-<!-- page: 17 -->
+[No details]
 
 ## Our Acknowledgements
 
-Subject to the marketing preferences selected, any member of The Financial Advice Service Ltd may contact you by post, phone or e-mail, or in any other way a member feels is appropriate. Copies of the proposal forms and other documentation may also be held. These may contain sensitive personal data as defined by legislation e.g. health details.
-
-Sensitive personal data will only be used to provide and administer the services or products applied for. By signing below you explicitly consent to The Financial Advice Service Ltd processing your sensitive personal data as described above and below. Please inform us by writing to the address below if you do not wish for such information to be retained.
-
-Second Floor St. Andrew House, 119-121 The Headrow, Leeds, West Yorkshire, United Kingdom, LS1 5JW
+- Subject to the marketing preferences selected, any member of The Financial Advice Service Ltd may contact you by post, phone or e-mail, or in any other way a member feels is appropriate. Copies of the proposal forms and other documentation may also be held. These may contain sensitive personal data as defined by legislation e.g. health details.
+- Sensitive personal data will only be used to provide and administer the services or products applied for. By signing below you explicitly consent to The Financial Advice Service Ltd processing your sensitive personal data as described above and below. Please inform us by writing to the address below if you do not wish for such information to be retained.
+- **Second Floor St. Andrew House, 119-121 The Headrow, Leeds, West Yorkshire, United Kingdom, LS1 5JW:** [blank]
 
 ## Client Declaration
 
-I/We the undersigned confirm a copy of the Client Agreement and the Financial Planner's Business Card have been handed to me/us.
+- **Signed:** Date
+- **...............................................:** ...............................................
+- **Signed:** Date
+- **...............................................:** ...............................................
+- **I/We the undersigned confirm a copy of the Client Agreement and the Financial Planner's Business Card have been handed to me/us.:** [blank]
+- I/We the undersigned confirm that the information provided in this review is correct and is given on the understanding that it does not place me/us under any obligation to buy or take up any recommendation which may be made and that a copy of this form is available on request. I/We the undersigned confirm my/our financial planning objectives are those identified and prioritised in this document.
+- **I/We the undersigned authorise The Financial Advice Service Ltd to obtain quotations/details of existing Pension policies and make recommendations for my/our consideration.:** [blank]
 
-I/We the undersigned confirm that the information provided in this review is correct and is given on the understanding that it does not place me/us under any obligation to buy or take up any recommendation which may be made and that a copy of this form is available on request. I/We the undersigned confirm my/our financial planning objectives are those identified and prioritised in this document.
-
-I/We the undersigned authorise The Financial Advice Service Ltd to obtain quotations/details of existing Pension policies and make recommendations for my/our consideration.
-
-Signed
-
-...............................................
-
-Signed
-
-...............................................
-
-Date
-
-...............................................
-
-Date
-
-...............................................

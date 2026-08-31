@@ -1,6 +1,14 @@
+---
+source: Vanguard& HSBC KIIDS.pdf
+converted: 2026-08-31T01:08:01Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Non-UCITS Retail Scheme Key Investor Information
 
 <!-- image -->
+
+Logo
 
 This document provides you with key investor information about this fund. It is not marketing material. The information is required by law to help you understand the nature and the risks of investing in this fund. You are advised to read it so you can make an informed decision about whether to invest.
 
@@ -79,14 +87,15 @@ For further information about charges please see the sections entitled 'Buying  
 -  This share class was launched in 2014.
 -  Performance was achieved under circumstances that no longer apply. The Fund has changed to a non-UCITS retail scheme (NURS) with effect from 07  January  2026.  Past  performance  data  for  each  year  prior  to  2025 shown in the past performance chart therefore relates to performance of the Fund when an UK UCITS fund structure.
 
-| One-off charges taken before or after you invest Entry charge                                                                       | None   |
-|-------------------------------------------------------------------------------------------------------------------------------------|--------|
-| Exit charge                                                                                                                         | None   |
-| This is the maximum that might be taken out of your money before it invested / before the proceeds of your investment are paid out. | is     |
-| Charges taken from the Fund over a year                                                                                             |        |
-| Ongoing charges                                                                                                                     | 0.20%  |
-| Charges taken from the Fund under certain specific conditions                                                                       |        |
-| Performance fee                                                                                                                     | None   |
+| One-off charges taken before or after you invest                                                                                       | One-off charges taken before or after you invest                                                                                       |
+|----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| Entry charge                                                                                                                           | None                                                                                                                                   |
+| Exit charge                                                                                                                            | None                                                                                                                                   |
+| This is the maximum that might be taken out of your money before it is invested / before the proceeds of your investment are paid out. | This is the maximum that might be taken out of your money before it is invested / before the proceeds of your investment are paid out. |
+| Charges taken from the Fund over a year                                                                                                | Charges taken from the Fund over a year                                                                                                |
+| Ongoing charges                                                                                                                        | 0.20%                                                                                                                                  |
+| Charges taken from the Fund under certain specific conditions                                                                          | Charges taken from the Fund under certain specific conditions                                                                          |
+| Performance fee                                                                                                                        | None                                                                                                                                   |
 
 ## Past performance
 
@@ -212,11 +221,14 @@ For further information about charges please see the sections entitled 'Buying  
 - The charges you pay are used to pay the running costs of the Fund, including the marketing and distribution costs. These charges reduce the potential growth of the investment.
 - **Further information on Charges can be found in the 'Fees and Expenses' section of the Fund's Prospectus.:** [blank]
 
-| One-off charges taken before or after you invest Entry charge                                                                                                                               | 0.00%    |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| Exit charge                                                                                                                                                                                 | 0.00%    |
-| This is the maximum that might be taken out of your money before is invested or before the proceeds of your investment are paid out. Charges taken from the Fund over a year Ongoing charge | it 0.19% |
-| Charges taken from the Fund under certain specific conditions Performance fee                                                                                                               | None     |
+| One-off charges taken before or after you invest                                                                                        |                                                                                                                                         |
+|-----------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| Entry charge                                                                                                                            | 0.00%                                                                                                                                   |
+| Exit charge                                                                                                                             | 0.00%                                                                                                                                   |
+| This is the maximum that might be taken out of your money before it is invested or before the proceeds of your investment are paid out. | This is the maximum that might be taken out of your money before it is invested or before the proceeds of your investment are paid out. |
+| Charges taken from the Fund over a year Ongoing charge                                                                                  | 0.19%                                                                                                                                   |
+| Charges taken from the Fund under certain specific conditions                                                                           | Charges taken from the Fund under certain specific conditions                                                                           |
+| Performance fee                                                                                                                         | None                                                                                                                                    |
 
 ## Past Performance
 
@@ -287,3 +299,10 @@ Further information on Charges can be found in the 'Fees and Expenses' section o
 UK tax legislation may have an impact on your personal position. Segregated liability
 
 The OEIC is an umbrella investment company with segregated liability between Funds.This means that the holdings of one Fund are kept separate from the holdings of the other Funds and your investment in the Fund cannot be used to pay the liabilities of any other Fund.
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 2: [bar_chart, 98 % confidence]
+- Image 5: [bar_chart, 100 % confidence]

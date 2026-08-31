@@ -1,4 +1,12 @@
+---
+source: Pension projection age 75.PDF
+converted: 2026-08-31T00:47:25Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 24 November 2025
 
@@ -38,6 +46,8 @@ Aviva Wrap UK Limited. Registered in England No. 4470008. Aviva, Wellington Row,
 Bond provided by Aviva Life &amp; Pensions UK Limited. Registered in England No. 3253947. Aviva, Wellington Row, York, YO90 1WR. Authorised by the Prudential Regulation Authority and regulated by the Financial Conduct Authority and the Prudential Regulation Authority. Firm Reference Number 185896.
 
 <!-- image -->
+
+Logo
 
 ## Staying informed
 

@@ -1,4 +1,12 @@
+---
+source: Aviva - GIA - Key Features.pdf
+converted: 2026-08-31T00:47:51Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 ## I N V E S T M E N T   P O R T F O L I O KEY FEATURES
 
@@ -289,3 +297,5 @@ For further details of the services we've provided your adviser, or if you have
 - MyAviva.co.uk
 
 <!-- image -->
+
+Logo

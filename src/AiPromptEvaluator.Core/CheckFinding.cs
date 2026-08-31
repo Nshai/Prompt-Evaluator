@@ -271,12 +271,19 @@ public sealed record GroupFinding
     {
         get
         {
-            if (!ComparisonPerformed && !ComparedSomething)
+            var stated = CheckFinding.ParseOutcome(Outcome);
+
+            // The rule is that the deterministic checks can only ever move an outcome away from a
+            // pass, and Error is already further from one than Indeterminate is. A group that
+            // never produced an assessment at all sets Error and ComparisonPerformed false — the
+            // two facts are the same fact — and demoting it here would turn "this requirement did
+            // not run" into "the assessor read it and could not decide", which is the confusion
+            // the Error outcome exists to prevent. Nothing else in the pipeline states Error on a
+            // group: it is the app's word, not the model's, and it is not to be softened.
+            if (stated is not CheckOutcome.Error && !ComparisonPerformed && !ComparedSomething)
             {
                 return CheckOutcome.Indeterminate;
             }
-
-            var stated = CheckFinding.ParseOutcome(Outcome);
 
             return UnverifiedQuotes.Count > 0
                    && stated is CheckOutcome.NoIssue or CheckOutcome.NotApplicable

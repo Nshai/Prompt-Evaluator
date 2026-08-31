@@ -45,6 +45,12 @@ public static class ModelPricing
             ["text-embedding-3-small"] = new("text-embedding-3-small", 0.02m, 0m),
             ["text-embedding-3-large"] = new("text-embedding-3-large", 0.13m, 0m),
 
+            // Bedrock embeddings. Titan bills input only and reports the count on every
+            // response, so a run priced with these is priced from what the provider said
+            // rather than from an estimate.
+            ["amazon.titan-embed-text-v2:0"] = new("amazon.titan-embed-text-v2:0", 0.02m, 0m),
+            ["cohere.embed-v4:0"] = new("cohere.embed-v4:0", 0.12m, 0m),
+
             // Anthropic. Claude Sonnet 5 carries introductory pricing of $2/$10 until
             // 2026-08-31; list rates are used here so the figure doesn't silently
             // under-report once the introduction ends.

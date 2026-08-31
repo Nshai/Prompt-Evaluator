@@ -1,3 +1,9 @@
+---
+source: Annes M SAP no charges ex existing OAC  24.3.26.pdf
+converted: 2026-08-31T01:04:59Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Pension Switch Report
 
 [No details]
@@ -59,35 +65,39 @@ Projections have been provided to indicate the possible fund value at retirement
 
 ## True Potential Personal Pension
 
-| Type of Pension                  | Personal Pension   |          |
-|----------------------------------|--------------------|----------|
-| Provider Name                    | True Potential     |          |
-| Product Name                     | Personal Pension   |          |
-| Valuation Date                   | 10/02/2026         |          |
-| Term of Pension                  | Proposed Age 87    |          |
-| Fund Value at valuation date     | £46,672.80         |          |
-| Transfer Value at valuation date | £46,672.80         |          |
-| Projections                      |                    |          |
-| Growth rates                     | 0% 2.94%           | 5.88%    |
-| Paid Up at age 87                | £34,162 £85,961    | £210,749 |
+| Type of Pension                  | Type of Pension                  | Personal Pension   | Personal Pension   |
+|----------------------------------|----------------------------------|--------------------|--------------------|
+| Provider Name                    | Provider Name                    | True Potential     | True Potential     |
+| Product Name                     | Product Name                     | Personal Pension   | Personal Pension   |
+| Valuation Date                   | Valuation Date                   | 10/02/2026         | 10/02/2026         |
+| Term of Pension                  | Term of Pension                  | Proposed Age 87    | Proposed Age 87    |
+| Fund Value at valuation date     | Fund Value at valuation date     | £46,672.80         | £46,672.80         |
+| Transfer Value at valuation date | Transfer Value at valuation date | £46,672.80         | £46,672.80         |
+| Projections                      | Projections                      |                    |                    |
+| Growth rates                     | 0%                               | 2.94%              | 5.88%              |
+| Paid Up at age 87                | £34,162                          | £85,961            | £210,749           |
 
 <!-- image -->
+
+Logo
 
 ## nest Personal Pension
 
-| Type of Pension                  | Personal Pension   |          |
-|----------------------------------|--------------------|----------|
-| Provider Name                    | nest               |          |
-| Product Name                     | Personal Pension   |          |
-| Valuation Date                   | 20/02/2026         |          |
-| Term of Pension                  | Proposed Age 87    |          |
-| Fund Value at valuation date     | £21,272.64         |          |
-| Transfer Value at valuation date | £21,272.64         |          |
-| Projections                      |                    |          |
-| Growth rates                     | 0% 2.94%           | 5.88%    |
-| Paid Up at age 87                | £19,334 £48,651    | £119,277 |
+| Type of Pension                  | Type of Pension                  | Personal Pension   | Personal Pension   |
+|----------------------------------|----------------------------------|--------------------|--------------------|
+| Provider Name                    | Provider Name                    | nest               | nest               |
+| Product Name                     | Product Name                     | Personal Pension   | Personal Pension   |
+| Valuation Date                   | Valuation Date                   | 20/02/2026         | 20/02/2026         |
+| Term of Pension                  | Term of Pension                  | Proposed Age 87    | Proposed Age 87    |
+| Fund Value at valuation date     | Fund Value at valuation date     | £21,272.64         | £21,272.64         |
+| Transfer Value at valuation date | Transfer Value at valuation date | £21,272.64         | £21,272.64         |
+| Projections                      | Projections                      |                    |                    |
+| Growth rates                     | 0%                               | 2.94%              | 5.88%              |
+| Paid Up at age 87                | £19,334                          | £48,651            | £119,277           |
 
 <!-- image -->
+
+Logo
 
 ## Accumulative Comparison
 
@@ -97,8 +107,8 @@ Projections have been provided to indicate the possible fund value at retirement
 
 |                                                         | Assumed Growth Rates (Average)   | Assumed Growth Rates (Average)   | Assumed Growth Rates (Average)   |
 |---------------------------------------------------------|----------------------------------|----------------------------------|----------------------------------|
-|                                                         | 0%                               | 2.94%                            | 5.88%                            |
-| Existing Schemes*                                       | £53,497                          | £134,612                         | £330,027                         |
+| Existing Schemes*                                       | 0%                               | 2.94%                            | 5.88%                            |
+|                                                         | £53,497                          | £134,612                         | £330,027                         |
 | Aviva Pension Portfolio (Choice)                        | £60,100                          | £151,000                         | £370,000                         |
 | Rate of Return Required from Aviva                      | -0.36% (-0.36%)                  | 2.56% (-0.38%)                   | 5.49% (-0.39%)                   |
 | The effect this will have on the fund if moved to Aviva | +12.34%                          | +12.34%                          | +12.34%                          |
@@ -114,7 +124,11 @@ Results have been adjusted for inflation, adjusted growth rates shown are after 
 
 <!-- image -->
 
+Bar chart
+
 <!-- image -->
+
+Logo
 
 ## True Potential Personal Pension
 
@@ -129,8 +143,7 @@ Results have been adjusted for inflation, adjusted growth rates shown are after 
 
 |                                                         | Assumed Growth Rates   | Assumed Growth Rates   |                |
 |---------------------------------------------------------|------------------------|------------------------|----------------|
-|                                                         | 0%                     | 2.94%                  | 5.88%          |
-| Existing Scheme*                                        | £34,162                | £85,961                | £210,749       |
+| Existing Scheme*                                        | 0% £34,162             | 2.94% £85,961          | 5.88% £210,749 |
 | Reduction in Yield                                      | 1%                     | 1%                     | 1.1%           |
 | Aviva Pension Portfolio (Choice)                        | £41,200                | £103,000               | £254,000       |
 | Rate of Return Required from Aviva                      | -0.6% (-0.6%)          | 2.33% (-0.61%)         | 5.25% (-0.63%) |
@@ -165,6 +178,8 @@ Results have been adjusted for inflation, adjusted growth rates shown are after 
 
 <!-- image -->
 
+Logo
+
 ## nest Personal Pension
 
 [No details]
@@ -178,8 +193,7 @@ Results have been adjusted for inflation, adjusted growth rates shown are after 
 
 |                                                         | Assumed Growth Rates   | Assumed Growth Rates   |                |
 |---------------------------------------------------------|------------------------|------------------------|----------------|
-|                                                         | 0%                     | 2.94%                  | 5.88%          |
-| Existing Scheme*                                        | £19,334                | £48,651                | £119,277       |
+| Existing Scheme*                                        | 0% £19,334             | 2.94% £48,651          | 5.88% £119,277 |
 | Reduction in Yield                                      | 0.3%                   | 0.3%                   | 0.3%           |
 | Aviva Pension Portfolio (Choice)                        | £18,800                | £47,300                | £116,000       |
 | Rate of Return Required from Aviva                      | 0.09% (+0.09%)         | 3.03% (+0.09%)         | 5.97% (+0.09%) |
@@ -214,6 +228,8 @@ Results have been adjusted for inflation, adjusted growth rates shown are after 
 
 <!-- image -->
 
+Logo
+
 ## Proposed Pension Plan
 
 - The below charges are based on day one of transfer, any changes to the fund value could potentially alter the charges which apply and this will be taken into account.
@@ -230,14 +246,16 @@ Results have been adjusted for inflation, adjusted growth rates shown are after 
 - **Funds & Sectors:** [blank]
 - **SELECTAPENSION:** [blank]
 
-| Fund Name                                             | Split %   | Initial %   | Ongoing Cost % *   |
-|-------------------------------------------------------|-----------|-------------|--------------------|
-| HSBC Global Strategy Dynamic Portfolio Accumulation C | 50.00%    | 0.0000%     | 0.2100%            |
-| Vanguard LifeStrategy 80% Equity Fund A Acc           | 50.00%    | 0.0000%     | 0.2207%            |
-| Weighted Average                                      |           | 0.0000%     | 0.2154%            |
-| Default Fund                                          |           | 0           | 0                  |
+| Fund Name                                   | Split %   | Initial %   | Ongoing Cost % *   |
+|---------------------------------------------|-----------|-------------|--------------------|
+| HSBC Global Strategy Dynamic Portfolio      | 50.00%    | 0.0000%     | 0.2100%            |
+| Vanguard LifeStrategy 80% Equity Fund A Acc | 50.00%    | 0.0000%     | 0.2207%            |
+| Weighted Average                            |           | 0.0000%     | 0.2154%            |
+| Default Fund                                |           | 0           | 0                  |
 
 <!-- image -->
+
+Logo
 
 ## Investment Performance Report
 
@@ -262,39 +280,35 @@ Results have been adjusted for inflation, adjusted growth rates shown are after 
 - **Month:** [blank]
 - **SELECTAPENSION:** [blank]
 
-| Receiving Scheme      | Mar   | Apr   | May   | Jun   | Jul   | Aug   | Sep   | Oct   | Nov   | Dec   |   Jan '26 | Feb   |
-|-----------------------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-----------|-------|
-| Fund Name             | '25   | '25   | '25   | '25   | '25   | '25   | '25   | '25   | '25   | '25   |           | '26   |
-| HSBC Global Strategy  | -4.72 | -1.54 | 3.57  | 2.08  | 4.04  | 0.85  | 2.64  | 3.98  | -0.60 | -0.02 |      1.04 | 3.66  |
-| Dynamic Portfolio     |       |       |       |       |       |       |       |       |       |       |           |       |
-| Accumulation C        |       |       |       |       |       |       |       |       |       |       |           |       |
-| Vanguard LifeStrategy | -4.44 | -1.17 | 3.55  | 1.96  | 3.76  | 0.52  | 2.80  | 3.90  | -0.46 | 0.06  |      1.42 | 3.64  |
-| 80% Equity Fund A     |       |       |       |       |       |       |       |       |       |       |           |       |
-| Acc                   |       |       |       |       |       |       |       |       |       |       |           |       |
-| Weighted Average for  | -4.58 | -1.36 | 3.56  | 2.02  | 3.90  | 0.68  | 2.72  | 3.94  | -0.53 | 0.02  |      1.23 | 3.65  |
-| the Proposed Plan     |       |       |       |       |       |       |       |       |       |       |           |       |
+| Receiving Scheme Fund Name                                                   |   Mar '25 |   Apr '25 |   May '25 |   Jun '25 |   Jul '25 |   Aug '25 |   Sep '25 |   Oct '25 |   Nov '25 |   Dec '25 |   Jan '26 |   Feb '26 |
+|------------------------------------------------------------------------------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+| HSBC Global Strategy                                                         |     -4.72 |     -1.54 |      3.57 |      2.08 |      4.04 |      0.85 |      2.64 |      3.98 |     -0.60 |     -0.02 |      1.04 |      3.66 |
+| Dynamic Portfolio Accumulation C Vanguard LifeStrategy 80% Equity Fund A Acc |     -4.44 |     -1.17 |      3.55 |      1.96 |      3.76 |      0.52 |      2.80 |      3.90 |     -0.46 |      0.06 |      1.42 |      3.64 |
+| Weighted Average for the Proposed Plan                                       |     -4.58 |     -1.36 |      3.56 |      2.02 |      3.90 |      0.68 |      2.72 |      3.94 |     -0.53 |      0.02 |      1.23 |      3.65 |
 
 <!-- image -->
 
+Logo
+
 <!-- image -->
+
+Line chart
 
 Past 12 Months Cumulative Performance Information
 
-| Receiving Scheme      | Mar   | Apr   | May   | Jun   | Jul   | Aug   | Sep   | Oct   | Nov   | Dec   | Jan   | Feb   |
-|-----------------------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
-| Fund Name             | '25   | '25   | '25   | '25   | '25   | '25   | '25   | '25   | '25   | '25   | '26   | '26   |
-| HSBC Global Strategy  | -4.72 | -6.19 | -2.84 | -0.82 | 3.19  | 4.07  | 6.81  | 11.07 | 10.40 | 10.38 | 11.52 | 15.61 |
-| Dynamic Portfolio     |       |       |       |       |       |       |       |       |       |       |       |       |
-| Accumulation C        |       |       |       |       |       |       |       |       |       |       |       |       |
-| Vanguard LifeStrategy | -4.44 | -5.56 | -2.21 | -0.29 | 3.46  | 4.00  | 6.91  | 11.08 | 10.57 | 10.64 | 12.21 | 16.29 |
-| 80% Equity Fund A     |       |       |       |       |       |       |       |       |       |       |       |       |
-| Acc                   |       |       |       |       |       |       |       |       |       |       |       |       |
-| Weighted Average for  | -4.58 | -5.88 | -2.53 | -0.56 | 3.32  | 4.02  | 6.85  | 11.06 | 10.47 | 10.50 | 11.85 | 15.94 |
-| the Proposed Plan     |       |       |       |       |       |       |       |       |       |       |       |       |
+| Receiving Scheme Fund Name                             |   Mar '25 |   Apr '25 |   May '25 |   Jun '25 |   Jul '25 |   Aug '25 |   Sep '25 |   Oct '25 |   Nov '25 |   Dec '25 |   Jan '26 |   Feb '26 |
+|--------------------------------------------------------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+| HSBC Global Strategy                                   |     -4.72 |     -6.19 |     -2.84 |     -0.82 |      3.19 |      4.07 |      6.81 |     11.07 |     10.40 |     10.38 |     11.52 |     15.61 |
+| Dynamic Portfolio Accumulation C Vanguard LifeStrategy |     -4.44 |     -5.56 |     -2.21 |     -0.29 |      3.46 |      4.00 |      6.91 |     11.08 |     10.57 |     10.64 |     12.21 |     16.29 |
+| Weighted Average for the Proposed Plan                 |     -4.58 |     -5.88 |     -2.53 |     -0.56 |      3.32 |      4.02 |      6.85 |     11.06 |     10.47 |     10.50 |     11.85 |     15.94 |
 
 <!-- image -->
 
+Logo
+
 <!-- image -->
+
+Line chart
 
 ## Standardised Performance: 1 year to the end of February
 
@@ -308,7 +322,11 @@ Past 12 Months Cumulative Performance Information
 
 <!-- image -->
 
+Logo
+
 <!-- image -->
+
+Line chart
 
 ## Cumulative Performance: Year to the end of February
 
@@ -325,6 +343,8 @@ Please note that past performance cannot be a guide to the future and investment
 Information produced by Selectapension Ltd in conjunction with data supplied by Morningstar and other external sources.
 
 <!-- image -->
+
+Logo
 
 ## HSBC Global Strategy Dynamic Portfolio Accumulation C
 
@@ -397,6 +417,8 @@ Used throughout report
 
 <!-- image -->
 
+Pie chart
+
 | Top 10 Holdings                | Sector   |   % Port. |
 |--------------------------------|----------|-----------|
 | HSBC American Index...         | -        |     33.69 |
@@ -427,6 +449,8 @@ Used throughout report
 
 <!-- image -->
 
+Table
+
 ## Fund Benchmark
 
 [No details]
@@ -434,6 +458,8 @@ Used throughout report
 ## Morningstar Rating™
 
 <!-- image -->
+
+Icon
 
 Morningstar Alloc 60-80%
 
@@ -443,11 +469,15 @@ QQQQQ
 
 <!-- image -->
 
+Logo
+
 ## IMA Sector
 
 Volatility Managed
 
 <!-- image -->
+
+Line chart
 
 | Trailing Returns   |   Return % |   +/-Idx |   +/-Cat |
 |--------------------|------------|----------|----------|
@@ -561,6 +591,8 @@ Minimum Additional Purchase
 
 <!-- image -->
 
+Logo
+
 ?
 
 ## Morningstar® Category
@@ -568,6 +600,8 @@ Minimum Additional Purchase
 ## Vanguard LifeStrategy 80% Equity Fund A Acc
 
 <!-- image -->
+
+Logo
 
 ## Morningstar Medalist Rating™
 
@@ -627,6 +661,8 @@ The Fund seeks to provide a return on your investment (through an increase in th
 
 <!-- image -->
 
+Pie chart
+
 | Top 10 Holdings                   | Sector   |   % Port. |
 |-----------------------------------|----------|-----------|
 | Vanguard FTSE UK All Shr Idx...   | -        |     19.76 |
@@ -647,7 +683,11 @@ The Fund seeks to provide a return on your investment (through an increase in th
 
 <!-- image -->
 
+Table
+
 <!-- image -->
+
+Line chart
 
 | Trailing Returns   |   Return % |   +/-Idx |   +/-Cat |
 |--------------------|------------|----------|----------|
@@ -664,31 +704,59 @@ Equity Style
 
 <!-- image -->
 
-<!-- image -->
+Table
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
 
 |   Quarterly Returns |   1st qtr |   2nd qtr |   3rd qtr |   4th qtr |
 |---------------------|-----------|-----------|-----------|-----------|
@@ -700,7 +768,6 @@ Equity Style
 
 | Risk Profile      |       |                   |         |
 |-------------------|-------|-------------------|---------|
-| Risk Measures     |       |                   |         |
 | 3-Yr Alpha        |  0.18 | 3-Yr Sharpe Ratio | 1.15    |
 | 3-Yr Beta         |  1.13 | 3-Yr Std Dev      | 7.36    |
 | R-Squared         | 98.43 | 3-Yr Risk         | abv avg |
@@ -758,17 +825,25 @@ Equity Style
 
 <!-- image -->
 
+Logo
+
 ?
 
 <!-- image -->
+
+Logo
 
 ## Morningstar® Portfolio X-Ray
 
 <!-- image -->
 
+Pie chart
+
 ## World Regions %
 
 <!-- image -->
+
+Geographical map
 
 Port 16.06
 
@@ -782,31 +857,41 @@ Not Classified
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
 
 ## Investment Style
 
 <!-- image -->
 
-|                       |   Port |   Bmark |
-|-----------------------|--------|---------|
-| Greater Europe        |  21.01 |   95.85 |
-| United Kingdom        |  10.78 |   94.86 |
-| Western Europe -      |   6.18 |    0.32 |
-| Euro Western Europe - |   2.94 |    0.41 |
-| Non Euro              |        |         |
-| Emerging Europe       |   0.25 |    0.02 |
-| Middle East / Africa  |   0.86 |    0.23 |
+Table
+
+| Greater Europe           |   Port 21.01 |   Bmark 95.85 |
+|--------------------------|--------------|---------------|
+| United Kingdom           |        10.78 |         94.86 |
+| Western Europe -         |         6.18 |          0.32 |
+| Euro Western Europe -    |         2.94 |          0.41 |
+| Non Euro Emerging Europe |         0.25 |          0.02 |
+| Middle East / Africa     |         0.86 |          0.23 |
 
 Port
 
 <!-- image -->
 
+Icon
+
 h
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
 
 Cyclical
 
@@ -818,11 +903,15 @@ Cyclical
 
 <!-- image -->
 
+Icon
+
 Financial
 
 Services
 
 <!-- image -->
+
+Icon
 
 Real Estate
 
@@ -846,53 +935,73 @@ Bmark
 | Price/Earnings   |  18.38 |   13.93 |
 | Ratio            |        |         |
 | Price/Cashflow   |  12.74 |    9.74 |
+| Ratio            |        |         |
 
 <!-- image -->
 
-| Country Exposure %   |       |       |             |      |       |
-|----------------------|-------|-------|-------------|------|-------|
-| Country              | Port  | Bmark | Country     | Port | Bmark |
-| United States        | 47.72 | 0.29  | Switzerland | 1.82 | 0.41  |
-| United Kingdom       | 10.78 | 94.86 | Taiwan      | 1.74 | 0.00  |
-| Japan                | 4.32  | 0.00  | Germany     | 1.70 | 0.06  |
-| China                | 2.37  | 0.04  | France      | 1.69 | 0.08  |
-|                      |       |       | Australia   | 1.43 | 0.00  |
+Logo
+
+| Country Exposure %    |   Port |   Bmark | Country     |   Port |   Bmark |
+|-----------------------|--------|---------|-------------|--------|---------|
+| Country United States |  47.72 |    0.29 | Switzerland |   1.82 |    0.41 |
+| United Kingdom        |  10.78 |   94.86 | Taiwan      |   1.74 |    0.00 |
+| Japan                 |   4.32 |    0.00 | Germany     |   1.70 |    0.06 |
+| China                 |   2.37 |    0.04 | France      |   1.69 |    0.08 |
+|                       |        |         | Australia   |   1.43 |    0.00 |
 
 | Americas        |   Port 48.88 |   Bmark 0.66 |
 |-----------------|--------------|--------------|
 | United States   |        47.72 |         0.29 |
 | Canada          |         0.46 |         0.09 |
 | Central & Latin |         0.70 |         0.28 |
+| America         |              |              |
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-| j Sensitive         |   Port 38.69 |   Bmark 27.34 |
-|---------------------|--------------|---------------|
-| i Communicatio      |         6.69 |          2.82 |
-| n Services o Energy |         3.13 |          9.24 |
-| p Industrials       |         8.92 |         14.51 |
-| a Technology        |        19.94 |          0.76 |
+Icon
 
 <!-- image -->
 
-| Greater Asia       |   Port 14.05 |   Bmark 1.86 |
-|--------------------|--------------|--------------|
-| Japan              |         4.32 |         0.00 |
-| Australasia        |         1.47 |         0.00 |
-| Emerging 4 Tigers  |         4.29 |         1.83 |
-| Emerging Asia - Ex |         3.97 |         0.04 |
+Icon
+
+<!-- image -->
+
+Icon
+
+| j Sensitive    |   Port 38.69 |   Bmark 27.34 |
+|----------------|--------------|---------------|
+| i Communicatio |         6.69 |          2.82 |
+| n Services     |              |               |
+| o Energy       |         3.13 |          9.24 |
+| p Industrials  |         8.92 |         14.51 |
+| a Technology   |        19.94 |          0.76 |
+
+<!-- image -->
+
+Table
+
+|                    |   Port |   Bmark |
+|--------------------|--------|---------|
+| Greater Asia       |  14.05 |    1.86 |
+| Japan              |   4.32 |    0.00 |
+| Australasia        |   1.47 |    0.00 |
+| Emerging 4 Tigers  |   4.29 |    1.83 |
+| Emerging Asia - Ex |   3.97 |    0.04 |
+| 4 Tigers           |        |         |
 
 Port
 
 <!-- image -->
+
+Icon
 
 k
 
@@ -900,15 +1009,21 @@ Defensive
 
 <!-- image -->
 
+Icon
+
 Consumer
 
 Defensive
 
 <!-- image -->
 
+Icon
+
 Healthcare
 
 <!-- image -->
+
+Icon
 
 14.67
 
@@ -936,21 +1051,23 @@ Utilities
 | Effective Maturity (Y) | 9.15   |
 | Average Credit Quality | A      |
 
-| Top 10 Underlying Holdings   | Top 10 Underlying Holdings               | Top 10 Underlying Holdings   | Top 10 Underlying Holdings   | Top 10 Underlying Holdings   |
-|------------------------------|------------------------------------------|------------------------------|------------------------------|------------------------------|
-| Assets %                     | Name                                     | Type                         | Sector                       | Country                      |
-| 16.85                        | HSBC American Index Institutional Acc    | Fund                         | Not Classified               | United Kingdom               |
-| 9.88                         | Vanguard FTSE UK All Shr Idx Unit Tr£Acc | Fund                         | Not Classified               | United Kingdom               |
-| 9.49                         | Vanguard FTSE Dev Wld ex-UK Eq Idx £ Acc | Fund                         | Not Classified               | United Kingdom               |
-| 9.43                         | Vanguard U.S. Eq Idx £ Acc               | Fund                         | Not Classified               | United Kingdom               |
-| 7.04                         | Vanguard Glb Bd Idx £ H Acc              | Fund                         | Not Classified               | Ireland                      |
-| 6.93                         | HSBC S&P 500 ETF                         | Mutual Fund - ETF            | Not Classified               | Ireland                      |
-| 4.78                         | HSBC European Index Institutional Acc    | Fund                         | Not Classified               | United Kingdom               |
-| 3.90                         | HSBC MSCI Emerg Mkts ETF                 | Mutual Fund - ETF            | Not Classified               | Ireland                      |
-| 3.58                         | HSBC FTSE EPRA/NAREIT Developed ETF      | Mutual Fund - ETF            | Not Classified               | Ireland                      |
-| 3.36                         | Vanguard Em Mkts Stk Idx £ Acc           | Fund                         | Not Classified               | Ireland                      |
+| Top 10 Underlying Holdings   | Top 10 Underlying Holdings               |                   |                |                |
+|------------------------------|------------------------------------------|-------------------|----------------|----------------|
+| Assets %                     | Name                                     | Type              | Sector         | Country        |
+| 16.85                        | HSBC American Index Institutional Acc    | Fund              | Not Classified | United Kingdom |
+| 9.88                         | Vanguard FTSE UK All Shr Idx Unit Tr£Acc | Fund              | Not Classified | United Kingdom |
+| 9.49                         | Vanguard FTSE Dev Wld ex-UK Eq Idx £ Acc | Fund              | Not Classified | United Kingdom |
+| 9.43                         | Vanguard U.S. Eq Idx £ Acc               | Fund              | Not Classified | United Kingdom |
+| 7.04                         | Vanguard Glb Bd Idx £ H Acc              | Fund              | Not Classified | Ireland        |
+| 6.93                         | HSBC S&P 500 ETF                         | Mutual Fund - ETF | Not Classified | Ireland        |
+| 4.78                         | HSBC European Index Institutional Acc    | Fund              | Not Classified | United Kingdom |
+| 3.90                         | HSBC MSCI Emerg Mkts ETF                 | Mutual Fund - ETF | Not Classified | Ireland        |
+| 3.58                         | HSBC FTSE EPRA/NAREIT Developed ETF      | Mutual Fund - ETF | Not Classified | Ireland        |
+| 3.36                         | Vanguard Em Mkts Stk Idx £ Acc           | Fund              | Not Classified | Ireland        |
 
 <!-- image -->
+
+Logo
 
 ?
 
@@ -974,6 +1091,8 @@ Morningstar UK GR GBP
 
 <!-- image -->
 
+Line chart
+
 | Trailing Returns %   |   Port |   Bmark |
 |----------------------|--------|---------|
 | 3 Months             |   4.97 |   12.57 |
@@ -985,11 +1104,12 @@ Morningstar UK GR GBP
 
 <!-- image -->
 
-|                                                         | Top 10 Portfolio Holdings   | Top 10 Portfolio Holdings   | Top 10 Portfolio Holdings   |
-|---------------------------------------------------------|-----------------------------|-----------------------------|-----------------------------|
-| Name                                                    | Weight (%)                  | Mean                        | Std Dev                     |
-| 1 HSBC Global Strategy Dynamic Portfolio Accumulation C | 50.00                       | 13.09                       | 7.76                        |
-| 2 Vanguard LifeStrategy 80% Equity Fund A Acc           | 50.00                       | 13.07                       | 7.36                        |
+Line chart
+
+| Top 10 Portfolio Holdings Name                |   Weight (%) |   Mean |   Std Dev |
+|-----------------------------------------------|--------------|--------|-----------|
+| 1 HSBC Global Strategy Dynamic Portfolio      |        50.00 |  13.09 |      7.76 |
+| 2 Vanguard LifeStrategy 80% Equity Fund A Acc |        50.00 |  13.07 |      7.36 |
 
 | Time Period Return %   | Best                  | Worst                  |
 |------------------------|-----------------------|------------------------|
@@ -1001,46 +1121,54 @@ Morningstar UK GR GBP
 
 <!-- image -->
 
-| Statistics Risk And Return Statistics   | 3 Years   | 5 Years   |
-|-----------------------------------------|-----------|-----------|
-| Standard Deviation                      | 7.47      | 8.62      |
-| Arithmetic Mean                         | 13.20     | 9.85      |
-| Sharpe Ratio                            | 1.13      | 0.77      |
-| MPT Statistics                          | 3 Years   | 5 Years   |
-| Alpha                                   | 3.51      | 0.44      |
-| Beta                                    | 0.49      | 0.59      |
-| R-Squared                               | 0.40      | 0.48      |
-| Information Ratio                       | -0.22     | -0.56     |
-| Tracking Error                          | 7.57      | 7.45      |
+Table
+
+| Statistics                                    |              | 5 Years   |
+|-----------------------------------------------|--------------|-----------|
+| Risk And Return Statistics Standard Deviation | 3 Years 7.47 | 8.62      |
+| Arithmetic Mean                               | 13.20        | 9.85      |
+| Sharpe Ratio                                  | 1.13         | 0.77      |
+| MPT Statistics                                | 3 Years      | 5 Years   |
+| Alpha                                         | 3.51         | 0.44      |
+| Beta                                          | 0.49         | 0.59      |
+| R-Squared                                     | 0.40         | 0.48      |
+| Information Ratio                             | -0.22        | -0.56     |
+| Tracking Error                                | 7.57         | 7.45      |
 
 <!-- image -->
+
+Logo
 
 ?
 
 <!-- image -->
+
+Logo
 
 ## Holding Overlap
 
-| Holding Overlap                                                                |                   |               |                                                                |                |
-|--------------------------------------------------------------------------------|-------------------|---------------|----------------------------------------------------------------|----------------|
-| date is the most recent available for full holdings disclosure in the details. | database. It ISIN | The portfolio | two funds have portfolio date. Please see disclosure pages for |                |
-| Weight in Name                                                                 |                   |               | Weight in                                                      | Portfolio Date |
-| Portfolio (%)                                                                  |                   |               | Holding (%)                                                    |                |
+| Holding Overlap                       | Holding Overlap   | Holding Overlap                             | Holding Overlap                     |
+|---------------------------------------|-------------------|---------------------------------------------|-------------------------------------|
+| The portfolio date details. Weight in | database. ISIN    | two funds have a different Weight in Sector | disclosure pages for Portfolio Date |
+| Portfolio (%)                         |                   | Holding (%)                                 |                                     |
 
 ## Portfolio Holdings
 
-| Portfolio Holdings                                  |      |                        |                        |                       |                       |                       |                       |
-|-----------------------------------------------------|------|------------------------|------------------------|-----------------------|-----------------------|-----------------------|-----------------------|
-| Name                                                | Type | Holding                | Morningstar            | 1 Year                | 3 Years               | 5 Years Weight (%)    |                       |
-|                                                     |      | Portfolio Date Rating™ | Portfolio Date Rating™ | Annualised Annualised | Annualised Annualised | Annualised Annualised | Annualised Annualised |
-| HSBC Global Strategy Dynamic Portfolio Accumulation | Fund | 30 Nov 2025            | QQQQQ                  | 15.61                 | 13.58                 | 9.79 50.00            |                       |
-| Vanguard LifeStrategy 80% Equity Fund A Acc         | Fund | 31 Jan 2026            | QQQQQ                  | 16.28                 | 13.59                 | 9.72 50.00            |                       |
+| Portfolio Holdings Name                               | Type   | Holding                | Morningstar            | 1 Year                | 3 Years               | Years                 | Weight (%)            |
+|-------------------------------------------------------|--------|------------------------|------------------------|-----------------------|-----------------------|-----------------------|-----------------------|
+|                                                       |        | Portfolio Date Rating™ | Portfolio Date Rating™ | Annualised Annualised | Annualised Annualised | Annualised Annualised | Annualised Annualised |
+| HSBC Global Strategy Dynamic Portfolio Accumulation C | Fund   | 30 Nov 2025            | QQQQQ                  | 15.61                 | 13.58                 | 9.79                  | 50.00                 |
+| Vanguard LifeStrategy 80% Equity Fund A Acc           | Fund   | 31 Jan 2026            | QQQQQ                  | 16.28                 | 13.59                 | 9.72                  | 50.00                 |
 
 <!-- image -->
+
+Logo
 
 ?
 
 <!-- image -->
+
+Logo
 
 ## Early Transfer Analysis
 
@@ -1048,43 +1176,43 @@ This table shows the estimated transfer value away from the proposed pension pro
 
 The colour of each cell provides a quartile indication of how it compares to the other analysed products:
 
-| (1) 1st Quartile (Best)   | (2) 2nd Quartile    | (3) 3rd   | Quartile         | (4)               | 4th Quartile (Worst)   |
-|---------------------------|---------------------|-----------|------------------|-------------------|------------------------|
-| Year                      | 0%                  | 0%        | 2.94% 5.88%      | 2.94% 5.88%       | 2.94% 5.88%            |
-| 1                         | £67,684 (1)         | £69,674   | (1)              | £71,665           | (1)                    |
-| 2                         | £67,423             | (1)       | £71,448 (1)      | £75,589           | (1)                    |
-| 3                         | £67,164             | (1)       | £73,266 (1)      | £79,727           | (1)                    |
-| 4                         | £66,905 (1)         | £75,131   | (1)              | £84,092           | (1)                    |
-| 5                         | £66,648 (1)         | £77,043   | (1)              | £88,697           | (1)                    |
-| 6                         | £66,392 (1)         | £79,004   | (1)              | £93,553           | (1)                    |
-| 7                         | £66,136             | (1)       | £81,015 (1)      | £98,675           | (1)                    |
-| 8                         | £65,882             | (1)       | £83,077 (1)      | £104,077          | (1)                    |
-|                           | £65,629             | (1)       | £85,191 (1)      | £109,776          | (1)                    |
-| 9                         | £65,376             | (1)       | £87,360 (1)      | £115,786          | (1)                    |
-| 10                        | £65,125             | (1)       | £89,583 (1)      | £122,125          | (1)                    |
-| 11 12                     | £64,874             | (1)       | £91,863 (1)      | £128,812          | (1)                    |
-| 13                        | £64,625             | (1)       | £94,201 (1)      | £135,864          | (1)                    |
-| 14                        | £64,376             | (1)       | £96,599 (1)      | £143,303          | (1)                    |
-| 15                        | £64,128             | (1)       | £99,058 (1)      | £151,149          | (1)                    |
-| 16                        | £63,882 (1)         | £101,579  | (1)              | £159,425          | (1)                    |
-| 17                        | £63,636             | (1)       | £104,164 (1)     | £168,153          | (1)                    |
-| 18                        | £63,391 (1)         | £106,815  | (1)              | £177,360          | (1)                    |
-| 19                        | £63,147             | (1)       | £109,534 (1)     | £187,070          | (1)                    |
-| 20                        | £62,904             | (1)       | £112,322 (1)     | £197,312          | (1)                    |
-| 21                        | £62,662             | (1)       | (1)              |                   |                        |
-|                           | £62,421 (1)         | £115,181  | £118,112         | £208,115          | (1)                    |
-| 22 23                     | £62,181             | (1)       | (1) £121,118     | £219,510 £231,528 | (1) (1)                |
-| 24                        | £61,942             | (1)       | (1) £124,201 (1) |                   | (1)                    |
-| 25                        | £61,704             |           |                  | £244,204          |                        |
-|                           |                     | (1)       | £127,362 (1)     | £257,575          | (1)                    |
-| 26 27                     | £61,466 £61,230 (1) | (1)       | £130,604 (1)     | £271,677          | (1)                    |
-|                           | £60,994             | £133,928  | (1) £137,337     | £286,552          | (1)                    |
-| 28 29                     | £60,760 (1)         | (1)       | (1) £140,832 (1) | £302,241 £318,788 | (1) (1)                |
-| 30                        | £60,526             | (1)       | £144,417 (1)     | £336,242          | (1)                    |
-|                           | £60,293             |           |                  |                   |                        |
-| 31                        | 31                  | (1)       | £148,093 (1)     | £354,652          | (1)                    |
+| (1)   | 1st Quartile (Best)   | (2)                     | 2nd Quartile            |              | 3rd Quartile   | (4) 4th Quartile (Worst)   |
+|-------|-----------------------|-------------------------|-------------------------|--------------|----------------|----------------------------|
+| Year  | Year                  | 0%                      | 0%                      | 2.94%        | 2.94%          | 5.88%                      |
+| 1     | 1                     | £67,684 (1)             | £67,684 (1)             | £69,674 (1)  | £69,674 (1)    | £71,665 (1)                |
+| 2     | 2                     | £67,423 (1)             | £67,423 (1)             | £71,448 (1)  | £71,448 (1)    | £75,589 (1)                |
+| 3     | 3                     | £67,164 (1)             | £67,164 (1)             | £73,266 (1)  | £73,266 (1)    | £79,727 (1)                |
+| 4     | 4                     | £66,905 (1)             | £66,905 (1)             | £75,131 (1)  | £75,131 (1)    | £84,092 (1)                |
+| 5     | 5                     | £66,648 (1)             | £66,648 (1)             | £77,043 (1)  | £77,043 (1)    | £88,697 (1)                |
+| 6     | 6                     | £66,392 (1)             | £66,392 (1)             | £79,004 (1)  | £79,004 (1)    | £93,553 (1)                |
+| 7     | 7                     | £66,136 (1)             | £66,136 (1)             | £81,015 (1)  | £81,015 (1)    | £98,675 (1)                |
+| 8     | 8                     | £65,882 (1)             | £65,882 (1)             | £83,077 (1)  | £83,077 (1)    | £104,077 (1)               |
+| 9     | 9                     | £65,629 (1)             | £65,629 (1)             | £85,191 (1)  | £85,191 (1)    | £109,776 (1)               |
+| 10    | 10                    | £65,376 (1)             | £65,376 (1)             | £87,360 (1)  | £87,360 (1)    | £115,786 (1)               |
+| 11    | 11                    | £65,125 (1)             | £65,125 (1)             | £89,583 (1)  | £89,583 (1)    | £122,125 (1)               |
+| 12    | 12                    | £64,874 (1)             | £64,874 (1)             | £91,863 (1)  | £91,863 (1)    | £128,812 (1)               |
+| 13    | 13                    | £64,625 (1)             | £64,625 (1)             | £94,201 (1)  | £94,201 (1)    | £135,864 (1)               |
+| 14    | 14                    | £64,376 (1)             | £64,376 (1)             | £96,599 (1)  | £96,599 (1)    | £143,303 (1)               |
+| 15    | 15                    | £64,128 (1)             | £64,128 (1)             | £99,058 (1)  | £99,058 (1)    | £151,149 (1)               |
+| 16    | 16                    | £63,882 (1)             | £63,882 (1)             | £101,579 (1) | £101,579 (1)   | £159,425 (1)               |
+| 17    | 17                    | £63,636 (1)             | £63,636 (1)             | £104,164 (1) | £104,164 (1)   | £168,153 (1)               |
+| 18    | 18                    | £63,391 (1)             | £63,391 (1)             | £106,815 (1) | £106,815 (1)   | £177,360 (1)               |
+| 19    | 19                    | £63,147 (1)             | £63,147 (1)             | £109,534 (1) | £109,534 (1)   | £187,070 (1)               |
+| 20    | 20                    | £62,904 (1)             | £62,904 (1)             | £112,322 (1) | £112,322 (1)   | £197,312 (1)               |
+| 21    | 21                    | £62,662 (1)             | £62,662 (1)             | £115,181 (1) | £115,181 (1)   | £208,115 (1)               |
+| 22    | 22                    | £62,421 (1)             | £62,421 (1)             | £118,112 (1) | £118,112 (1)   | £219,510 (1)               |
+| 23    | 23                    | £62,181 (1)             | £62,181 (1)             | £121,118 (1) | £121,118 (1)   | £231,528 (1)               |
+| 24    | 24                    | £61,942 (1)             | £61,942 (1)             | £124,201 (1) | £124,201 (1)   | £244,204 (1)               |
+| 25    | 25                    | £61,704 (1)             | £61,704 (1)             | £127,362 (1) | £127,362 (1)   | £257,575 (1)               |
+| 26    | 26                    | £61,466 (1)             | £61,466 (1)             | £130,604 (1) | £130,604 (1)   | £271,677 (1)               |
+| 27    | 27                    | £61,230 (1)             | £61,230 (1)             | £133,928 (1) | £133,928 (1)   | £286,552 (1)               |
+| 28    | 28                    | £60,994 (1)             | £60,994 (1)             | £137,337 (1) | £137,337 (1)   | £302,241 (1)               |
+| 29    | 29                    | £60,760 (1) £60,526 (1) | £60,760 (1) £60,526 (1) | £140,832 (1) | £140,832 (1)   | £318,788 (1)               |
+| 31    | 31                    | £60,293 (1)             | £60,293 (1)             | £148,093 (1) | £148,093 (1)   | £354,652 (1)               |
 
 <!-- image -->
+
+Logo
 
 ## Lump Sum At Proposed Retirement Age 87
 
@@ -1096,12 +1224,16 @@ Set out below is a comparison of the estimated PCLS that may be provided at prop
 
 <!-- image -->
 
+Bar chart
+
 ## Assumptions
 
 1. The value of the investments in the Aviva Pension Portfolio (Choice) are based on medium level growth rate before charges are deducted.
 2. As of 6th April 2006 (known as A-Day) every individual will be taxed on the amount by which they exceed their allowance. The allowance in the tax year 2021/22 for most individuals is £1.0731m. The allowance will index annually in line with Consumer Prices Index (CPI) from April 2026. Some individuals may have a higher allowance if they have registered for Protection (This is only relevant if you have a 'Protected Pension Commencement Lump Sum' in respect of the benefits accrued by the scheme before 6th April 2006).
 
 <!-- image -->
+
+Logo
 
 ## Death Benefit Comparison
 
@@ -1121,7 +1253,11 @@ After transfer - the proposed Aviva Pension Portfolio (Choice) will provide 100%
 
 <!-- image -->
 
+Bar chart
+
 <!-- image -->
+
+Logo
 
 ## Results Summary
 
@@ -1133,6 +1269,8 @@ After transfer - the proposed Aviva Pension Portfolio (Choice) will provide 100%
 | Existing Plan |                            | £53,497.38 | £134,612.81 | £330,027.33 |       |
 
 <!-- image -->
+
+Logo
 
 ## Notes &amp; Assumptions
 
@@ -1151,6 +1289,8 @@ For inflation adjusted illustrations, inflation is assumed to be 2% p.a.
 The illustration is based on standard plan charges, the level and style of commission varies according to the provider.
 
 <!-- image -->
+
+Logo
 
 ## Record of Input Data
 
@@ -1280,33 +1420,38 @@ High
 
 <!-- image -->
 
-| Projections at age 87. Projections Fund - Paid Up     | £34,162.52                                            | £85,961.45            | £210,749.84           |
-|-------------------------------------------------------|-------------------------------------------------------|-----------------------|-----------------------|
-| Scheme Name                                           |                                                       | nest Personal Pension | nest Personal Pension |
-| Type                                                  |                                                       | Personal Pension      |                       |
-| Fund Valuation Date                                   |                                                       | 20/02/2026            |                       |
-| Fund Value                                            |                                                       | £21,272.64            |                       |
-| Fund Value Transfer                                   |                                                       | £21,272.64            |                       |
-| Pre 97 Protected Rights TV                            |                                                       | £0.00                 |                       |
-| Post 97 Protected Rights                              |                                                       | £0.00                 |                       |
-| TV                                                    |                                                       |                       |                       |
-| Protected Pension Commencement Lump Sum as at A-Day   |                                                       | £0.00                 |                       |
-| Fund Value as at A-Day Current Death Benefits Value   |                                                       | £0.00 £21,272.64      |                       |
-| Proposed Retirement Age                               |                                                       | 87                    |                       |
-| Monetary Values / Inflation Adjusted                  |                                                       | Inflation Adjusted    |                       |
-| Growth Rate Term                                      |                                                       | Adjusted Rates        |                       |
-| Growth Rates                                          | Low                                                   | Med                   | High                  |
-|                                                       | 0%                                                    | 2.94%                 | 5.88%                 |
-| Projections at age 87.                                |                                                       |                       |                       |
-| Projections Fund - Paid Up                            | £19,334.86                                            | £48,651.36            | £119,277.49           |
-| Fund Selections                                       |                                                       |                       |                       |
-| Fund                                                  |                                                       |                       | Ratio %               |
-| HSBC Global Strategy Dynamic Portfolio Accumulation C | HSBC Global Strategy Dynamic Portfolio Accumulation C |                       | 50.00%                |
-| Vanguard LifeStrategy 80% Equity Fund A Acc           | Vanguard LifeStrategy 80% Equity Fund A Acc           |                       | 50.00%                |
-| Provider Selection Selected                           |                                                       |                       |                       |
-| Aviva Pension Portfolio (Choice) YES                  |                                                       |                       |                       |
+Logo
+
+| Projections at age 87. Projections Fund - Paid Up     | Projections at age 87. Projections Fund - Paid Up     | £34,162.52                                            | £34,162.52                                            | £85,961.45                                            | £210,749.84                   |
+|-------------------------------------------------------|-------------------------------------------------------|-------------------------------------------------------|-------------------------------------------------------|-------------------------------------------------------|-------------------------------|
+| Scheme Name                                           | Scheme Name                                           | Scheme Name                                           | Scheme Name                                           | nest Personal Pension                                 | nest Personal Pension         |
+| Type                                                  | Type                                                  | Type                                                  | Type                                                  | Personal Pension                                      | Personal Pension              |
+| Fund Valuation Date                                   | Fund Valuation Date                                   | Fund Valuation Date                                   | Fund Valuation Date                                   | 20/02/2026                                            | 20/02/2026                    |
+| Fund Value                                            | Fund Value                                            | Fund Value                                            | Fund Value                                            | £21,272.64                                            | £21,272.64                    |
+| Fund Value Transfer                                   | Fund Value Transfer                                   | Fund Value Transfer                                   | Fund Value Transfer                                   | £21,272.64                                            | £21,272.64                    |
+| Pre 97 Protected Rights TV                            | Pre 97 Protected Rights TV                            | Pre 97 Protected Rights TV                            | Pre 97 Protected Rights TV                            | £0.00                                                 | £0.00                         |
+| Post 97 Protected Rights TV                           | Post 97 Protected Rights TV                           | Post 97 Protected Rights TV                           | Post 97 Protected Rights TV                           | £0.00                                                 | £0.00                         |
+| Protected Pension Commencement Lump Sum as at A-Day   | Protected Pension Commencement Lump Sum as at A-Day   | Protected Pension Commencement Lump Sum as at A-Day   | Protected Pension Commencement Lump Sum as at A-Day   | £0.00                                                 | £0.00                         |
+| Fund Value as at A-Day                                | Fund Value as at A-Day                                | Fund Value as at A-Day                                | Fund Value as at A-Day                                | £0.00                                                 | £0.00                         |
+| Current Death Benefits Value                          | Current Death Benefits Value                          | Current Death Benefits Value                          | Current Death Benefits Value                          | £21,272.64                                            | £21,272.64                    |
+| Proposed Retirement Age                               | Proposed Retirement Age                               | Proposed Retirement Age                               | Proposed Retirement Age                               | 87                                                    | 87                            |
+| Monetary Values / Inflation Adjusted                  | Monetary Values / Inflation Adjusted                  | Monetary Values / Inflation Adjusted                  | Monetary Values / Inflation Adjusted                  | Inflation Adjusted                                    | Inflation Adjusted            |
+| Growth Rate Term                                      | Growth Rate Term                                      | Growth Rate Term                                      | Growth Rate Term                                      | Adjusted Rates                                        | Adjusted Rates                |
+| Growth Rates Low                                      | Growth Rates Low                                      | Growth Rates Low                                      | Growth Rates Low                                      | Med High                                              | Med High                      |
+|                                                       |                                                       |                                                       | 0%                                                    | 2.94%                                                 | 5.88%                         |
+| Projections at age 87.                                | Projections at age 87.                                | Projections at age 87.                                | Projections at age 87.                                | Projections at age 87.                                | Projections at age 87.        |
+| Projections Fund - Paid Up £19,334.86                 | Projections Fund - Paid Up £19,334.86                 | Projections Fund - Paid Up £19,334.86                 | Projections Fund - Paid Up £19,334.86                 | £48,651.36 £119,277.49                                | £48,651.36 £119,277.49        |
+| Fund Selections                                       | Fund Selections                                       | Fund Selections                                       | Fund Selections                                       | Fund Selections                                       | Fund Selections               |
+| Fund                                                  | Fund                                                  | Fund                                                  | Fund                                                  | Fund                                                  | Ratio %                       |
+| HSBC Global Strategy Dynamic Portfolio Accumulation C | HSBC Global Strategy Dynamic Portfolio Accumulation C | HSBC Global Strategy Dynamic Portfolio Accumulation C | HSBC Global Strategy Dynamic Portfolio Accumulation C | HSBC Global Strategy Dynamic Portfolio Accumulation C | 50.00%                        |
+| Vanguard LifeStrategy 80% Equity Fund A Acc           | Vanguard LifeStrategy 80% Equity Fund A Acc           | Vanguard LifeStrategy 80% Equity Fund A Acc           | Vanguard LifeStrategy 80% Equity Fund A Acc           | Vanguard LifeStrategy 80% Equity Fund A Acc           | 50.00%                        |
+| Plans Selected For Comparison                         | Plans Selected For Comparison                         | Plans Selected For Comparison                         | Plans Selected For Comparison                         | Plans Selected For Comparison                         | Plans Selected For Comparison |
+| Provider Selection                                    | Selected                                              | Selected                                              | Selected                                              | Selected                                              | Selected                      |
+| Aviva Pension Portfolio (Choice)                      | YES                                                   | YES                                                   | YES                                                   | YES                                                   | YES                           |
 
 <!-- image -->
+
+Logo
 
 ## Backfilled content (recovered from structured JSON export)
 _The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
@@ -1387,3 +1532,27 @@ _The following details were present in Docling's structured JSON output but omit
 - £10,000.00
 - £80,000.00
 - £60,000.00
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 6: [bar_chart, 100 % confidence]
+- Image 11: [line_chart, 100 % confidence]
+- Image 13: [line_chart, 99 % confidence]
+- Image 15: [line_chart, 100 % confidence]
+- Image 17: [line_chart, 100 % confidence]
+- Image 19: [pie_chart, 95 % confidence]
+- Image 20: [table, 84 % confidence]
+- Image 23: [line_chart, 98 % confidence]
+- Image 24: [table, 67 % confidence]
+- Image 40: [pie_chart, 94 % confidence]
+- Image 41: [table, 72 % confidence]
+- Image 42: [line_chart, 98 % confidence]
+- Image 43: [table, 73 % confidence]
+- Image 59: [pie_chart, 63 % confidence]
+- Image 60: [geographical_map, 90 % confidence]
+- Image 63: [table, 77 % confidence]
+- Image 75: [table, 87 % confidence]
+- Image 81: [line_chart, 82 % confidence]
+- Image 82: [line_chart, 52 % confidence]
+- Image 83: [table, 86 % confidence]
+- Image 89: [bar_chart, 100 % confidence]
+- Image 91: [bar_chart, 100 % confidence]

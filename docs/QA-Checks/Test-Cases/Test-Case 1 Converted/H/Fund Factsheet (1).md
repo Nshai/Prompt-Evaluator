@@ -1,28 +1,22 @@
 ---
-source_path: "H/Fund Factsheet (1).pdf"
-file_name: "Fund Factsheet (1).pdf"
-category_code: H
-pages: 11
-characters: 32746
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: Fund Factsheet (1).pdf
+converted: 2026-08-31T00:35:58Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 <!-- image -->
 
-HSBC | Asset
+Logo
 
 t Management
 
 ## HSBC OpenFunds
 
+[No details]
+
 ## Global Strategy Balanced Portfolio
 
-Marketing communication | Monthly report 31 August 2025 | Share class Acc C
-
-<!-- image -->
+- **Marketing communication | Monthly report 31 August 2025 | Share class Acc C:** [blank]
 
 ## Investment objective
 
@@ -32,11 +26,15 @@ The Fund aims to provide growth in line with its risk profile in the long term, 
 
 <!-- image -->
 
+Icon
+
 ## Investment strategy
 
 This is one of a range of actively managed Global Strategy Portfolios offered at different risk levels. The asset allocation of each fund in the range reflects the risk level. The Fund is managed with the aim of maximising returns in line with its agreed long term risk profile therefore any potential returns are likely to be limited by the risk profile of the Fund.  The exposure to each asset class may be achieved by investing in collective investment schemes, investing directly in asset classes and investing in derivatives. The Fund aims to meet its objective with a focus on lower ongoing charges. This is taken into consideration when deciding which asset classes the Fund will invest in and how the Fund achieves exposure to those asset classes.  The Fund is not managed with reference to a benchmark.
 
 <!-- image -->
+
+Icon
 
 ## Main risks
 
@@ -74,11 +72,9 @@ This is one of a range of actively managed Global Strategy Portfolios offered at
 
 ¹Please note that initial minimum subscription may vary across different distributors ²Ongoing Charges Figure is based on expenses over a year. The figure includes annual management charge but not the transaction costs. Such figures may vary from time to time.
 
-<!-- page: 2 -->
-
 <!-- image -->
 
-Performance | Fund | 08/15 | 08/17 | 08/19 | 08/21 | 08/23 | 08/25 | 100 | 120 | 140 | 160 | 180 | 200 | 220 | Return index rebased to | 100 on starting date
+Line chart
 
 | Performance (%)         | YTD                | 1 month            | 3 months           | 6 months           | 1 year             | 3 years            | ann                | 5 years ann             | 10 years           | ann                |
 |-------------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|-------------------------|--------------------|--------------------|
@@ -90,7 +86,7 @@ Performance | Fund | 08/15 | 08/17 | 08/19 | 08/21 | 08/23 | 08/25 | 100 | 120 |
 
 <!-- image -->
 
-Other Currencies | Canadian Dollar | Indian rupee | Norwegian Krone | New Taiwan Dollar | Hong Kong Dollar | Swiss Franc | Japanese Yen | Euro | US Dollar | Pound Sterling | 0.24 | 0.82 | 0.94 | 1.09 | 1.15 | 1.78 | 2.77 | 5.58 | 6.04 | 33.90 | 45.70 | Fund | Other Currencies | Canadian Dollar | Indian rupee | Norwegian Krone | New Taiwan Dollar | Hong Kong Dollar | Swiss Franc | Japanese Yen | Euro | US Dollar | Pound Sterling | 0.24 | 0.82 | 0.94 | 1.09 | 1.15 | 1.78 | 2.77 | 5.58 | 6.04 | 33.90 | 45.70 | Fund
+Bar chart
 
 | Top 10 holdings                        |   Weight (%) |
 |----------------------------------------|--------------|
@@ -115,8 +111,6 @@ Other Currencies | Canadian Dollar | Indian rupee | Norwegian Krone | New Taiwan
 
 The stated cash position can include Money Market Funds/ instruments and collateralised cash used to underwrite derivatives positions.  The cash position for investment purposes is lower and is managed in accordance with our active investment views
 
-<!-- page: 3 -->
-
 | Equity top 10 holdings      | Location      | Sector                 |   Weight (%) |
 |-----------------------------|---------------|------------------------|--------------|
 | NVIDIA Corp                 | United States | Information Technology |         2.71 |
@@ -140,27 +134,23 @@ The stated cash position can include Money Market Funds/ instruments and collate
 
 <!-- image -->
 
-Real Estate | Utilities | Energy | Materials | Consumer Staples | Communication Services | Health Care | Consumer Discretionary | Industrials | Financials | Information Technology | 1.13 | 1.46 | 1.76 | 1.86 | 3.15 | 4.75 | 4.88 | 5.90 | 5.93 | 9.74 | 14.31 | Fund | Real Estate | Utilities | Energy | Materials | Consumer Staples | Communication Services | Health Care | Consumer Discretionary | Industrials | Financials | Information Technology | 1.13 | 1.46 | 1.76 | 1.86 | 3.15 | 4.75 | 4.88 | 5.90 | 5.93 | 9.74 | 14.31 | Fund
+Bar chart
 
 ## Market cap allocation (GBP Mil %)
 
 <!-- image -->
 
-250,000+ | 100,000-250,000 | 50,000-100,000 | 10,000-50,000 | 0-10,000 | 18.89 | 11.12 | 7.80 | 13.33 | 3.75 | Fund | 250,000+ | 100,000-250,000 | 50,000-100,000 | 10,000-50,000 | 0-10,000 | 18.89 | 11.12 | 7.80 | 13.33 | 3.75 | Fund
-
-<!-- page: 4 -->
+Bar chart
 
 ## Equity geographical allocation (%)
 
 <!-- image -->
 
-Other Locations | Switzerland | India | Australia | Taiwan | France | Germany | United Kingdom | Mainland China | Japan | USA | 5.52 | 0.71 | 0.99 | 1.10 | 1.15 | 1.21 | 1.30 | 1.57 | 1.92 | 2.97 | 36.43 36.43 | Other Locations | Switzerland | India | Australia | Taiwan | France | Germany | United Kingdom | Mainland China | Japan | USA | 5.52 | 0.71 | 0.99 | 1.10 | 1.15 | 1.21 | 1.30 | 1.57 | 1.92 | 2.97
+Bar chart
 
 Fund
 
 Fund
-
-<!-- page: 5 -->
 
 | Fixed Income Characteristics   | Fund   | Reference Benchmark   | Relative   |
 |--------------------------------|--------|-----------------------|------------|
@@ -196,9 +186,7 @@ Fund
 
 <!-- image -->
 
-Cash | Other Locations | Belgium | Netherlands | Spain | Italy | Germany | United Kingdom | France | Japan | Mainland China | United States | 0.04 | 1.66 | 0.33 | 0.35 | 0.90 | 1.27 | 1.29 | 1.57 | 1.70 | 1.99 | 2.29 | 14.90 14.90 | Fund | Cash | Other Locations | Belgium | Netherlands | Spain | Italy | Germany | United Kingdom | France | Japan | Mainland China | United States | 0.04 | 1.66 | 0.33 | 0.35 | 0.90 | 1.27 | 1.29 | 1.57 | 1.70 | 1.99 | 2.29 | Fund
-
-<!-- page: 6 -->
+Bar chart
 
 | Geographical allocation (Option adjusted duration)   |   Fund | Reference Benchmark   | Relative   |
 |------------------------------------------------------|--------|-----------------------|------------|
@@ -219,9 +207,7 @@ Cash | Other Locations | Belgium | Netherlands | Spain | Italy | Germany | Unite
 
 <!-- image -->
 
-Cash | Other Sectors | CMBS | ABS | Local Authorities | Supranational | Utilities | Agencies | Financial Institutions | Industrial | Treasuries (US) | Treasuries (Non-US) | 0.04 | 0.00 | 0.00 | 0.00 | 0.01 | 0.03 | 0.73 | 0.76 | 2.84 | 4.17 | 9.63 | 10.08 | Fund | Cash | Other Sectors | CMBS | ABS | Local Authorities | Supranational | Utilities | Agencies | Financial Institutions | Industrial | Treasuries (US) | Treasuries (Non-US) | 0.04 | 0.00 | 0.00 | 0.00 | 0.01 | 0.03 | 0.73 | 0.76 | 2.84 | 4.17 | 9.63 | 10.08 | Fund
-
-<!-- page: 7 -->
+Bar chart
 
 |                                                       | Amount based on GBP     | Amount based on GBP   | 3 Year Volatility   |
 |-------------------------------------------------------|-------------------------|-----------------------|---------------------|
@@ -241,8 +227,6 @@ The table above shows the Portfolio's return (for the primary share class or hed
 An example of a good outcome would be that the HSBC Portfolio return is higher than the peer group's average return and the volatility (risk taken) is lower. However investors should consider their own priorities when it comes to returns and the risk taken to achieve them.
 
 *Morningstar Categories are used to define the peer group comprising funds they deem similar based on fund objectives and holdings. The average is a median.
-
-<!-- page: 8 -->
 
 ## Risk disclosures
 
@@ -277,7 +261,7 @@ Source: HSBC Asset Management, data as at 31 August 2025
 
 <!-- image -->
 
-HSBC Asset Management | in
+Icon
 
 For more information please contact us at E-mail:
 
@@ -285,11 +269,9 @@ Wholesale.clientservices@hsbc.com. www.assetmanagement.hsbc.com/uk To help impro
 
 <!-- image -->
 
-Glossary
+Qr code
 
 [www.assetmanagement.hsbc.co.uk/en/ api/v1/download/document/ gb00b80qg615/gb/en/glossary](https://www.assetmanagement.hsbc.co.uk/en/api/v1/download/document/gb00b80qg615/gb/en/glossary)
-
-<!-- page: 9 -->
 
 ## CT Universal MAP Balanced Fund
 
@@ -299,7 +281,7 @@ Fund manager Paul Niven
 
 <!-- image -->
 
-Fund manager Paul Niven
+Photograph
 
 ## Fund objective and policy
 
@@ -322,7 +304,7 @@ The value of investments and any income derived from them can go down as well as
 
 <!-- image -->
 
-Fund performance | 0 | 10 | 20 | 30 | 40 | 50 | 1 month | 3 months | 6 months | YTD | 1 year | 3 years | 5 years | % | Fund | _
+Bar chart
 
 ## Cumulative performance as at 31-Aug-25
 
@@ -332,7 +314,7 @@ Fund performance | 0 | 10 | 20 | 30 | 40 | 50 | 1 month | 3 months | 6 months | 
 
 <!-- image -->
 
-COLUMBIA | INVESTMENTS®
+Logo
 
 ## 31-Aug-25 | For professional investors only
 
@@ -340,9 +322,7 @@ COLUMBIA | INVESTMENTS®
 
 <!-- image -->
 
-MORNINGSTAR | ★★★★
-
-<!-- page: 10 -->
+Logo
 
 ## Discrete performance as at 31-Aug-25
 
@@ -412,8 +392,109 @@ www.columbiathreadneedle.com/glossary. Financial promotions are issued for marke
 
 <!-- image -->
 
-COLUMBIA | THREADNEEDLE | INVESTMENTS*
-
-<!-- page: 11 -->
+Logo
 
 † © 2025 Morningstar. All Rights Reserved. Ratings are latest available at time of publication and may be lagged 1 month. The information contained herein: (1) is proprietary to Morningstar and/or its content providers; (2) may not be copied or distributed; and (3) is not warranted to be accurate, complete or timely. Neither Morningstar nor its content providers are responsible for any damages or losses arising from any use of this information. Past performance is no guarantee of future results. For more detailed information about Morningstar Rating, including its methodology, please click here.
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- Return index rebased to
+- 100 on starting date
+- Other Currencies
+- Canadian Dollar
+- Indian rupee
+- Norwegian Krone
+- New Taiwan Dollar
+- Hong Kong Dollar
+- Swiss Franc
+- Japanese Yen
+- US Dollar
+- Pound Sterling
+- 0.24
+- 0.94
+- 1.09
+- 1.15
+- 1.78
+- 2.77
+- 5.58
+- 6.04
+- 33.90
+- 45.70
+- Utilities
+- Energy
+- Materials
+- Consumer Staples
+- Health Care
+- Industrials
+- 1.13
+- 1.46
+- 1.76
+- 1.86
+- 3.15
+- 4.75
+- 5.90
+- 5.93
+- 9.74
+- 14.31
+- 250,000+
+- 100,000-250,000
+- 50,000-100,000
+- 10,000-50,000
+- 0-10,000
+- 18.89
+- 11.12
+- 7.80
+- 13.33
+- 3.75
+- Switzerland
+- India
+- Australia
+- 5.52
+- 0.71
+- 0.99
+- 1.10
+- 1.30
+- 1.57
+- 1.92
+- 36.43 36.43
+- 1.66
+- 0.33
+- 0.90
+- 1.27
+- 1.29
+- 1.99
+- 2.29
+- 14.90 14.90
+- Other Sectors
+- CMBS
+- Local Authorities
+- Supranational
+- Agencies
+- Industrial
+- Treasuries (US)
+- Treasuries (Non-US)
+- 0.01
+- 0.03
+- 0.73
+- 0.76
+- 2.84
+- 4.17
+- 9.63
+- 10.08
+- INVESTMENTS®
+- ★★★★
+- INVESTMENTS*
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 5: [line_chart, 100 % confidence]
+- Image 6: [bar_chart, 99 % confidence]
+- Image 7: [bar_chart, 100 % confidence]
+- Image 8: [bar_chart, 100 % confidence]
+- Image 9: [bar_chart, 100 % confidence]
+- Image 10: [bar_chart, 100 % confidence]
+- Image 11: [bar_chart, 100 % confidence]
+- Image 13: [qr_code, 100 % confidence]
+- Image 14: [photograph, 100 % confidence]
+- Image 15: [bar_chart, 100 % confidence]

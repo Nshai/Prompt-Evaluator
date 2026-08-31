@@ -1,4 +1,12 @@
+---
+source: GIA research report 03-12-2025 15-40.docx
+converted: 2026-08-31T00:46:54Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 ########### 
 
@@ -13,6 +21,8 @@
 03 December 2025
 
 <!-- image -->
+
+Logo
 
 ########### Recommendation
 
@@ -63,6 +73,8 @@ The chart shows an investment’s performance, calculated as NAV to NAV/Bid to B
 
 <!-- image -->
 
+Line chart
+
 | ━━      | CT Universal MAP Cautious Fund C Acc (GBP)   |    |    |
 |---------|----------------------------------------------|----|----|
 
@@ -90,6 +102,8 @@ The table shows an investments performance, calculated as NAV to NAV/Bid to Bid/
 
 <!-- image -->
 
+Logo
+
 ########### 
 
 ########### 
@@ -103,6 +117,8 @@ The table shows an investments performance, calculated as NAV to NAV/Bid to Bid/
 03 December 2025
 
 <!-- image -->
+
+Logo
 
 **Contents**
 
@@ -259,6 +275,8 @@ The chart shows the combined investments performance, calculated as NAV to NAV/B
 
 <!-- image -->
 
+Line chart
+
 | ━━      | Combined   | ---      | Benchmark : Risk Level 4 Benchmark (GBP)   |
 |---------|------------|----------|--------------------------------------------|
 
@@ -276,6 +294,8 @@ The chart shows an investment’s performance, calculated as NAV to NAV/Bid to B
 
 <!-- image -->
 
+Line chart
+
 | ━━      | CT Universal MAP Cautious Fund C Acc (GBP)   |    |    |
 |---------|----------------------------------------------|----|----|
 
@@ -292,6 +312,8 @@ The table shows an investment’s performance, calculated as NAV to NAV/Bid to B
 The chart shows the combined investments performance, calculated as NAV to NAV/Bid to Bid/Closing Price to Closing Price, with dividends/distributions reinvested, including the effect of ongoing costs and charges. These figures are calculated for calendar years and/or the period within the current year specified.
 
 <!-- image -->
+
+Bar chart
 
 #### Combined discrete investment performance table
 
@@ -466,3 +488,9 @@ _The following details were present in Docling's structured JSON output but omit
 
 ### Additional extracted text (not present in the base markdown export)
 - This report was prepared with data sourced from Defaqto Engage. Whilst every attempt has been made to ensure the accuracy of the data used in this report, items can change and we advise that you check the issues most important to you if you proceed with the purchase of the selected contract.
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 3: [line_chart, 100 % confidence]
+- Image 6: [line_chart, 100 % confidence]
+- Image 7: [line_chart, 100 % confidence]
+- Image 8: [bar_chart, 98 % confidence]

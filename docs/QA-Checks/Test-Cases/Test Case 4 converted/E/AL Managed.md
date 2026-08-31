@@ -1,3 +1,9 @@
+---
+source: AL Managed.pdf
+converted: 2026-08-31T01:10:40Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## PHOENIX AL PENSIONS MANAGED ACCUMULATOR
 
 [No details]
@@ -67,6 +73,8 @@ Data as of: 31 Mar 2026
 
 <!-- image -->
 
+Logo
+
 PHOENIX LIFE
 
 ## PHOENIX AL PENSIONS MANAGED ACCUMULATOR
@@ -104,9 +112,9 @@ PHOENIX LIFE
 - 10.00
 - 0.00
 
-| Mar                                          | Mar                                          | Mar 2024   | Mar 2024   | Mar        | Mar        | Mar 2026   |
+| Mar                                          | Mar                                          | Mar        | Mar        | Mar        | Mar        | Mar        |
 |----------------------------------------------|----------------------------------------------|------------|------------|------------|------------|------------|
-| 2022                                         | 2023                                         |            |            | 2025       | 2025       |            |
+| 2022                                         | 2023                                         |            | 2024       | 2025       |            | 2026       |
 |                                              |                                              | 31 Mar     | 31 Mar     | 31 Mar     | 31 Mar     | 31 Mar     |
 |                                              |                                              | 2021 to 31 | 2022 to 31 | 2023 to 31 | 2024 to 31 | 2025 to 31 |
 |                                              |                                              | Mar 2022   | Mar 2023   | Mar 2024   | Mar 2025   | Mar 2026   |
@@ -114,6 +122,8 @@ PHOENIX LIFE
 | ABI UK ­ Mixed Investment 40%­85% Shares­Pen | ABI UK ­ Mixed Investment 40%­85% Shares­Pen | 5.09       | ­4.14      | 9.85       | 3.07       | 11.08      |
 
 <!-- image -->
+
+Bar chart
 
 ## Source:Lipper
 
@@ -132,3 +142,10 @@ Charges are made on your policy to meet our costs and allow us to 
 ## Some important notes
 
 Past performance is not a guide to future performance. The value of investments is not guaranteed and can go down as well as up. Investment management for Phoenix Life products is supplied by Aberdeen Asset Investments Limited (AAIL). AAIL is authorised and regulated by the Financial Conduct Authority.
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [line_chart, 99 % confidence]
+- Image 3: [bar_chart, 94 % confidence]

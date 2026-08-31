@@ -1,3 +1,9 @@
+---
+source: Cashflow - Tony Predeceases in 2040.pdf
+converted: 2026-08-31T00:44:52Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## SINGLE SCENARIO REPORT
 
 ## Barnes; Anthony
@@ -58,6 +64,8 @@
 
 <!-- image -->
 
+Table
+
 ## Heads of Household
 
 ## Anthony
@@ -103,7 +111,11 @@ MINIMUM PENSION AGE
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
 
 ## Properties
 
@@ -174,13 +186,23 @@ LIQUIDATED 7TH
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
 
 ## Cash Emergency Fund £10,000
 
@@ -193,6 +215,8 @@ LIQUIDATED 8TH
 
 <!-- image -->
 
+Icon
+
 ## Income
 
 Yvette Salary
@@ -200,6 +224,8 @@ Yvette Salary
 £16,800 p/a salary income until 2030 "retire in 2030" (inflated by 2% p/a)
 
 <!-- image -->
+
+Icon
 
 ## Pensions
 
@@ -248,11 +274,19 @@ Benefits
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
 
 ## Expenses
 
@@ -272,6 +306,8 @@ TOTAL REGULAR EXPENSES
 
 <!-- image -->
 
+Icon
+
 - Currently £9,600 p/a (discretionary) increasing by 2% p/a
 - Currently £8,760 p/a (essential) increasing by 2% p/a
 - Currently £5,000 p/a (discretionary) increasing by 2% p/a
@@ -284,31 +320,31 @@ TOTAL REGULAR EXPENSES
 
 This table shows the opening value of your assets for each year of the plan, after any deductions have been made for a shortfall in the previous plan year. The values displayed are in 'real' terms.
 
-|   Year | Age     |   Liquid Assets (£) |   Pensions - Accessible (£) |   Accessible (£) |   Property (£) |   Business (£) |   Possessions (£) |   Total (£) |
-|--------|---------|---------------------|-----------------------------|------------------|----------------|----------------|-------------------|-------------|
-|   2025 | 55 / 59 |             142,326 |                      82,692 |                0 |              0 |              0 |                 0 |     225,018 |
-|   2026 | 56 / 60 |             144,403 |                      83,366 |                0 |              0 |              0 |                 0 |     227,770 |
-|   2027 | 57 / 61 |             146,524 |                      84,046 |                0 |              0 |              0 |                 0 |     230,570 |
-|   2028 | 58 / 62 |             148,689 |                      84,731 |                0 |              0 |              0 |                 0 |     233,420 |
-|   2029 | 59 / 63 |             150,898 |                      85,421 |                0 |              0 |              0 |                 0 |     236,320 |
-|   2030 | 60 / 64 |             153,154 |                      86,117 |                0 |              0 |              0 |                 0 |     239,271 |
-|   2031 | 61 / 65 |             148,495 |                      86,819 |                0 |              0 |              0 |                 0 |     235,314 |
-|   2032 | 62 / 66 |             143,761 |                      87,527 |                0 |              0 |              0 |                 0 |     231,288 |
-|   2033 | 63 / 67 |             138,951 |                      88,240 |                0 |              0 |              0 |                 0 |     227,191 |
-|   2034 | 64 / 68 |             140,879 |                      88,959 |                0 |              0 |              0 |                 0 |     229,839 |
-|   2035 | 65 / 69 |             142,846 |                      89,684 |                0 |              0 |              0 |                 0 |     232,530 |
-|   2036 | 66 / 70 |             144,852 |                      90,415 |                0 |              0 |              0 |                 0 |     235,267 |
-|   2037 | 67 / 71 |             146,898 |                      91,152 |                0 |              0 |              0 |                 0 |     238,050 |
-|   2038 | 68 / 72 |             148,985 |                      91,895 |                0 |              0 |              0 |                 0 |     240,880 |
-|   2039 | 69 / 73 |             151,114 |                      92,644 |                0 |              0 |              0 |                 0 |     243,758 |
-|   2040 | 70 / 74 |             153,285 |                      93,399 |                0 |              0 |              0 |                 0 |     246,684 |
-|   2041 | 71 / 75 |             155,240 |                      94,160 |                0 |              0 |              0 |                 0 |     249,400 |
-|   2042 | 72 / 76 |             157,267 |                      94,928 |                0 |              0 |              0 |                 0 |     252,195 |
-|   2043 | 73 / 77 |             159,368 |                      95,701 |                0 |              0 |              0 |                 0 |     255,070 |
-|   2044 | 74 / 78 |             161,545 |                      96,481 |                0 |              0 |              0 |                 0 |     258,026 |
-|   2045 | 75 / 79 |             163,799 |                      97,268 |                0 |              0 |              0 |                 0 |     261,066 |
-|   2046 | 76 / 80 |             166,131 |                      98,060 |                0 |              0 |              0 |                 0 |     264,191 |
-|   2047 | 77 / 81 |             168,542 |                      98,860 |                0 |              0 |              0 |                 0 |     267,402 |
+|   Year | Age     |   Liquid Assets (£) |   Pensions - Accessible (£) |   Pensions - Non Accessible (£) |   Property (£) |   Business (£) |   Possessions (£) |   Total (£) |
+|--------|---------|---------------------|-----------------------------|---------------------------------|----------------|----------------|-------------------|-------------|
+|   2025 | 55 / 59 |             142,326 |                      82,692 |                               0 |              0 |              0 |                 0 |     225,018 |
+|   2026 | 56 / 60 |             144,403 |                      83,366 |                               0 |              0 |              0 |                 0 |     227,770 |
+|   2027 | 57 / 61 |             146,524 |                      84,046 |                               0 |              0 |              0 |                 0 |     230,570 |
+|   2028 | 58 / 62 |             148,689 |                      84,731 |                               0 |              0 |              0 |                 0 |     233,420 |
+|   2029 | 59 / 63 |             150,898 |                      85,421 |                               0 |              0 |              0 |                 0 |     236,320 |
+|   2030 | 60 / 64 |             153,154 |                      86,117 |                               0 |              0 |              0 |                 0 |     239,271 |
+|   2031 | 61 / 65 |             148,495 |                      86,819 |                               0 |              0 |              0 |                 0 |     235,314 |
+|   2032 | 62 / 66 |             143,761 |                      87,527 |                               0 |              0 |              0 |                 0 |     231,288 |
+|   2033 | 63 / 67 |             138,951 |                      88,240 |                               0 |              0 |              0 |                 0 |     227,191 |
+|   2034 | 64 / 68 |             140,879 |                      88,959 |                               0 |              0 |              0 |                 0 |     229,839 |
+|   2035 | 65 / 69 |             142,846 |                      89,684 |                               0 |              0 |              0 |                 0 |     232,530 |
+|   2036 | 66 / 70 |             144,852 |                      90,415 |                               0 |              0 |              0 |                 0 |     235,267 |
+|   2037 | 67 / 71 |             146,898 |                      91,152 |                               0 |              0 |              0 |                 0 |     238,050 |
+|   2038 | 68 / 72 |             148,985 |                      91,895 |                               0 |              0 |              0 |                 0 |     240,880 |
+|   2039 | 69 / 73 |             151,114 |                      92,644 |                               0 |              0 |              0 |                 0 |     243,758 |
+|   2040 | 70 / 74 |             153,285 |                      93,399 |                               0 |              0 |              0 |                 0 |     246,684 |
+|   2041 | 71 / 75 |             155,240 |                      94,160 |                               0 |              0 |              0 |                 0 |     249,400 |
+|   2042 | 72 / 76 |             157,267 |                      94,928 |                               0 |              0 |              0 |                 0 |     252,195 |
+|   2043 | 73 / 77 |             159,368 |                      95,701 |                               0 |              0 |              0 |                 0 |     255,070 |
+|   2044 | 74 / 78 |             161,545 |                      96,481 |                               0 |              0 |              0 |                 0 |     258,026 |
+|   2045 | 75 / 79 |             163,799 |                      97,268 |                               0 |              0 |              0 |                 0 |     261,066 |
+|   2046 | 76 / 80 |             166,131 |                      98,060 |                               0 |              0 |              0 |                 0 |     264,191 |
+|   2047 | 77 / 81 |             168,542 |                      98,860 |                               0 |              0 |              0 |                 0 |     267,402 |
 
 |   Year | Age       |   Liquid Assets (£) |   Pensions - Accessible (£) |   Pensions - Non Accessible (£) |   Property (£) |   Business (£) |   Possessions (£) |   Total (£) |
 |--------|-----------|---------------------|-----------------------------|---------------------------------|----------------|----------------|-------------------|-------------|
@@ -364,15 +400,15 @@ This section details the value of your cash and investments as well as pensions 
 
 ## Loan Trusts
 
-| Description   | Owner   |   Opening Value (£) |
-|---------------|---------|---------------------|
-| Total         |         |                   0 |
+| Description   |   Opening Value (£) |
+|---------------|---------------------|
+| Total         |                   0 |
 
 ## Liabilities
 
-| Description   | Owner   |   Opening Value (£) |
-|---------------|---------|---------------------|
-| Total         |         |                   0 |
+| Description   |   Opening Value (£) |
+|---------------|---------------------|
+| Total         |                   0 |
 
 ## Cashflow Statement
 
@@ -384,68 +420,68 @@ This table provides a summary cashflow statement for each year of your plan. The
 
 Where there is a deficit, a drawing from liquid assets and/or accessible pensions is made to meet the shortfall.
 
-|   Year | Age     |   Liquid Assets & Accessible Pensions (£) |   In (£) |   Total Money Out (£) | In Year Surplus / Deficit (£)   |
-|--------|---------|-------------------------------------------|----------|-----------------------|---------------------------------|
-|   2025 | 55 / 59 |                                   225,018 |   38,800 |                29,915 | 0                               |
-|   2026 | 56 / 60 |                                   227,770 |   38,800 |                30,051 | 0                               |
-|   2027 | 57 / 61 |                                   230,570 |   38,800 |                30,224 | 0                               |
-|   2028 | 58 / 62 |                                   233,420 |   38,800 |                30,357 | 0                               |
-|   2029 | 59 / 63 |                                   236,320 |   38,800 |                30,488 | 0                               |
-|   2030 | 60 / 64 |                                   239,271 |   22,000 |                29,101 | (7,101)                         |
-|   2031 | 61 / 65 |                                   235,314 |   22,000 |                29,052 | (7,052)                         |
-|   2032 | 62 / 66 |                                   231,288 |   22,000 |                29,002 | (7,002)                         |
-|   2033 | 63 / 67 |                                   227,191 |   34,451 |                29,165 | 0                               |
-|   2034 | 64 / 68 |                                   229,839 |   34,512 |                29,193 | 0                               |
-|   2035 | 65 / 69 |                                   232,530 |   34,573 |                29,222 | 0                               |
-|   2036 | 66 / 70 |                                   235,267 |   34,635 |                29,250 | 0                               |
-|   2037 | 67 / 71 |                                   238,050 |   47,393 |                31,819 | 0                               |
-|   2038 | 68 / 72 |                                   240,880 |   47,518 |                31,861 | 0                               |
-|   2039 | 69 / 73 |                                   243,758 |   47,643 |                31,903 | 0                               |
-|   2040 | 70 / 74 |                                   246,684 |   23,884 |                24,150 | (266)                           |
-|   2041 | 71 / 75 |                                   249,400 |   23,947 |                24,178 | (230)                           |
-|   2042 | 72 / 76 |                                   252,195 |   24,011 |                24,206 | (195)                           |
-|   2043 | 73 / 77 |                                   255,070 |   24,075 |                24,235 | (161)                           |
-|   2044 | 74 / 78 |                                   258,026 |   24,139 |                24,265 | (127)                           |
+|   Year | Age     |   Liquid Assets & Accessible Pensions (£) | Total Money In (£)   | Total Money Out (£)   | In Year Surplus / Deficit (£)   | In Year Surplus / Deficit (£)   |
+|--------|---------|-------------------------------------------|----------------------|-----------------------|---------------------------------|---------------------------------|
+|   2025 | 55 / 59 |                                   225,018 |                      | 38,800 29,915         |                                 | 0                               |
+|   2026 | 56 / 60 |                                   227,770 |                      | 38,800 30,051         |                                 | 0                               |
+|   2027 | 57 / 61 |                                   230,570 |                      | 38,800 30,224         |                                 | 0                               |
+|   2028 | 58 / 62 |                                   233,420 |                      | 38,800 30,357         |                                 | 0                               |
+|   2029 | 59 / 63 |                                   236,320 |                      | 38,800 30,488         |                                 | 0                               |
+|   2030 | 60 / 64 |                                   239,271 |                      | 22,000 29,101         |                                 | (7,101)                         |
+|   2031 | 61 / 65 |                                   235,314 |                      | 22,000 29,052         |                                 | (7,052)                         |
+|   2032 | 62 / 66 |                                   231,288 |                      | 22,000 29,002         |                                 | (7,002)                         |
+|   2033 | 63 / 67 |                                   227,191 |                      | 34,451 29,165         |                                 | 0                               |
+|   2034 | 64 / 68 |                                   229,839 |                      | 34,512 29,193         |                                 | 0                               |
+|   2035 | 65 / 69 |                                   232,530 |                      | 34,573 29,222         |                                 | 0                               |
+|   2036 | 66 / 70 |                                   235,267 |                      | 34,635 29,250         |                                 | 0                               |
+|   2037 | 67 / 71 |                                   238,050 |                      | 47,393 31,819         |                                 | 0                               |
+|   2038 | 68 / 72 |                                   240,880 |                      | 47,518 31,861         |                                 | 0                               |
+|   2039 | 69 / 73 |                                   243,758 |                      | 47,643 31,903         |                                 | 0                               |
+|   2040 | 70 / 74 |                                   246,684 |                      | 23,884 24,150         |                                 | (266)                           |
+|   2041 | 71 / 75 |                                   249,400 |                      | 23,947 24,178         |                                 | (230)                           |
+|   2042 | 72 / 76 |                                   252,195 |                      | 24,011 24,206         |                                 | (195)                           |
+|   2043 | 73 / 77 |                                   255,070 |                      | 24,075 24,235         |                                 | (161)                           |
+|   2044 | 74 / 78 |                                   258,026 |                      | 24,139 24,265         |                                 | (127)                           |
 
-|   Year | Age       |   Liquid Assets & Accessible Pensions (£) |   Money In (£) |   Total Money Out (£) | In Year Surplus / Deficit (£)   |
-|--------|-----------|-------------------------------------------|----------------|-----------------------|---------------------------------|
-|   2045 | 75 / 79   |                                   261,066 |         24,203 |                24,296 | (93)                            |
-|   2046 | 76 / 80   |                                   264,191 |         24,268 |                24,327 | (59)                            |
-|   2047 | 77 / 81   |                                   267,402 |         24,333 |                24,359 | (26)                            |
-|   2048 | 78 / 82   |                                   270,700 |         24,398 |                24,392 | 0                               |
-|   2049 | 79 / 83   |                                   274,081 |         24,464 |                24,425 | 0                               |
-|   2050 | 80 / 84   |                                   277,520 |         24,530 |                24,459 | 0                               |
-|   2051 | 81 / 85   |                                   281,020 |         24,596 |                24,493 | 0                               |
-|   2052 | 82 / 86   |                                   284,581 |         24,663 |                24,528 | 0                               |
-|   2053 | 83 / 87   |                                   288,204 |         24,730 |                24,563 | 0                               |
-|   2054 | 84 / 88   |                                   291,892 |         24,797 |                24,599 | 0                               |
-|   2055 | 85 / 89   |                                   295,644 |         24,865 |                24,635 | 0                               |
-|   2056 | 86 / 90   |                                   299,462 |         24,933 |                24,672 | 0                               |
-|   2057 | 87 / 91   |                                   303,349 |         25,001 |                24,709 | 0                               |
-|   2058 | 88 / 92   |                                   307,305 |         25,070 |                24,747 | 0                               |
-|   2059 | 89 / 93   |                                   311,331 |         25,139 |                24,786 | 0                               |
-|   2060 | 90 / 94   |                                   315,429 |         25,208 |                24,825 | 0                               |
-|   2061 | 91 / 95   |                                   319,601 |         25,278 |                24,864 | 0                               |
-|   2062 | 92 / 96   |                                   323,849 |         25,348 |                24,904 | 0                               |
-|   2063 | 93 / 97   |                                   328,172 |         25,418 |                24,945 | 0                               |
-|   2064 | 94 / 98   |                                   332,575 |         25,489 |                24,987 | 0                               |
-|   2065 | 95 / 99   |                                   337,057 |         25,560 |                25,029 | 0                               |
-|   2066 | 96 / 100  |                                   341,621 |         25,631 |                25,072 | 0                               |
-|   2067 | 97 / 101  |                                   346,268 |         25,703 |                25,115 | 0                               |
-|   2068 | 98 / 102  |                                   351,001 |         25,775 |                25,159 | 0                               |
-|   2069 | 99 / 103  |                                   355,820 |         25,847 |                25,204 | 0                               |
-|   2070 | 100 / 104 |                                   360,728 |         25,920 |                25,250 | 0                               |
-|   2071 | 101 / 105 |                                   365,727 |         25,993 |                25,296 | 0                               |
-|   2072 | 102 / 106 |                                   370,819 |         26,067 |                25,343 | 0                               |
-|   2073 | 103 / 107 |                                   376,005 |              0 |                     0 | 0                               |
+|   Year | Age       |   Liquid Assets & Accessible Pensions (£) |   Total Money In (£) |   Total Money Out (£) |      |
+|--------|-----------|-------------------------------------------|----------------------|-----------------------|------|
+|   2045 | 75 / 79   |                                   261,066 |               24,203 |                24,296 | (93) |
+|   2046 | 76 / 80   |                                   264,191 |               24,268 |                24,327 | (59) |
+|   2047 | 77 / 81   |                                   267,402 |               24,333 |                24,359 | (26) |
+|   2048 | 78 / 82   |                                   270,700 |               24,398 |                24,392 | 0    |
+|   2049 | 79 / 83   |                                   274,081 |               24,464 |                24,425 | 0    |
+|   2050 | 80 / 84   |                                   277,520 |               24,530 |                24,459 | 0    |
+|   2051 | 81 / 85   |                                   281,020 |               24,596 |                24,493 | 0    |
+|   2052 | 82 / 86   |                                   284,581 |               24,663 |                24,528 | 0    |
+|   2053 | 83 / 87   |                                   288,204 |               24,730 |                24,563 | 0    |
+|   2054 | 84 / 88   |                                   291,892 |               24,797 |                24,599 | 0    |
+|   2055 | 85 / 89   |                                   295,644 |               24,865 |                24,635 | 0    |
+|   2056 | 86 / 90   |                                   299,462 |               24,933 |                24,672 | 0    |
+|   2057 | 87 / 91   |                                   303,349 |               25,001 |                24,709 | 0    |
+|   2058 | 88 / 92   |                                   307,305 |               25,070 |                24,747 | 0    |
+|   2059 | 89 / 93   |                                   311,331 |               25,139 |                24,786 | 0    |
+|   2060 | 90 / 94   |                                   315,429 |               25,208 |                24,825 | 0    |
+|   2061 | 91 / 95   |                                   319,601 |               25,278 |                24,864 | 0    |
+|   2062 | 92 / 96   |                                   323,849 |               25,348 |                24,904 | 0    |
+|   2063 | 93 / 97   |                                   328,172 |               25,418 |                24,945 | 0    |
+|   2064 | 94 / 98   |                                   332,575 |               25,489 |                24,987 | 0    |
+|   2065 | 95 / 99   |                                   337,057 |               25,560 |                25,029 | 0    |
+|   2066 | 96 / 100  |                                   341,621 |               25,631 |                25,072 | 0    |
+|   2067 | 97 / 101  |                                   346,268 |               25,703 |                25,115 | 0    |
+|   2068 | 98 / 102  |                                   351,001 |               25,775 |                25,159 | 0    |
+|   2069 | 99 / 103  |                                   355,820 |               25,847 |                25,204 | 0    |
+|   2070 | 100 / 104 |                                   360,728 |               25,920 |                25,250 | 0    |
+|   2071 | 101 / 105 |                                   365,727 |               25,993 |                25,296 | 0    |
+|   2072 | 102 / 106 |                                   370,819 |               26,067 |                25,343 | 0    |
+|   2073 | 103 / 107 |                                   376,005 |                    0 |                     0 | 0    |
 
 ## Income Statement - First Year of Plan
 
-| Income               |   Anthony (£) |   Yvette (£) |   Combined (£) |
-|----------------------|---------------|--------------|----------------|
-| DB Pension           |        22,000 |            0 |         22,000 |
-| Employment           |             0 |       16,800 |         16,800 |
-| Total Regular Income |        22,000 |       16,800 |         38,800 |
+| Income               |   Anthony (£) |   Yvette (£) |   Combined (£) |   Combined (£) |
+|----------------------|---------------|--------------|----------------|----------------|
+| DB Pension           |        22,000 |            0 |                |         22,000 |
+| Employment           |             0 |              |         16,800 |         16,800 |
+| Total Regular Income |        22,000 |              |         16,800 |         38,800 |
 
 ## Regular Expenditure Statement - First Year of Plan
 
@@ -484,6 +520,8 @@ A required Withdrawal (Pensions) is made from accessible pensions when there is 
 
 <!-- image -->
 
+Bar chart
+
 ## Liquid Assets
 
 This graph shows your liquid assets, net of any liabilities
@@ -496,17 +534,23 @@ This graph shows a breakdown of your liquid assets. The black line represents an
 
 <!-- image -->
 
+Bar chart
+
 ## Liquid Assets &amp; Pensions
 
 This graph shows your liquid assets and accessible defined contribution pensions, net of any liabilities
 
 <!-- image -->
 
+Bar chart
+
 ## Liquid Assets &amp; Pensions Detail
 
 This graph shows a breakdown of your liquid assets and accessible defined contribution pensions. The black line represents any outstanding liabilities.
 
 <!-- image -->
+
+Bar chart
 
 ## Non Liquid Assets &amp; Pensions
 
@@ -518,11 +562,15 @@ This graph shows your total assets categorised as liquid assets, property, posse
 
 <!-- image -->
 
+Bar chart
+
 ## Total Assets Detail
 
 This graph shows a breakdown of your total assets. The black line represents any outstanding liabilities.
 
 <!-- image -->
+
+Bar chart
 
 ## Summary Cashflow
 
@@ -530,11 +578,15 @@ The black line on this graph reflects your expenditure (including tax &amp; NI) 
 
 <!-- image -->
 
+Line chart
+
 ## Regular Expenditure Detail
 
 This graph shows a breakdown of your regular expenditure throughout the plan as well as any custom expenses added as a one-off or periodically. It does not include oneoff items such as the purchase of property or possessions, gifts, or the repayment of interest only liabilities.
 
 <!-- image -->
+
+Bar chart
 
 ## Total Regular Expenditure
 
@@ -542,15 +594,21 @@ This graph shows your total regular expenditure throughout the plan as well as a
 
 <!-- image -->
 
+Bar chart
+
 Tax
 
 <!-- image -->
+
+Bar chart
 
 ## Cumulative Tax
 
 This graph shows the personal taxes and National Insurance may pay cumulatively over the plan.
 
 <!-- image -->
+
+Bar chart
 
 ## Beneficiaries Fund
 
@@ -562,17 +620,23 @@ This graph shows your estate on death position every year of the plan. The Inher
 
 <!-- image -->
 
+Bar chart
+
 ## Cumulative Estate on Death
 
 This graph shows your cumulative estate on death position every year of the plan. This reflects all assets given to beneficiaries, as well as the IHT liability due on first death. Gifts made during the life of the plan are included even if they are outside of your estate for IHT calculations
 
 <!-- image -->
 
+Bar chart
+
 ## Total Liabilities Detail
 
 This graph shows a breakdown of all mortgage and liabilities TFAS
 
 <!-- image -->
+
+Logo
 
 ## Backfilled content (recovered from structured JSON export)
 _The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
@@ -626,3 +690,18 @@ _The following details were present in Docling's structured JSON output but omit
 - Non-Savings Tax
 - £120k
 - £80k
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 18: [bar_chart, 100 % confidence]
+- Image 19: [bar_chart, 100 % confidence]
+- Image 20: [bar_chart, 100 % confidence]
+- Image 21: [bar_chart, 99 % confidence]
+- Image 22: [bar_chart, 100 % confidence]
+- Image 23: [bar_chart, 100 % confidence]
+- Image 24: [line_chart, 84 % confidence]
+- Image 25: [bar_chart, 100 % confidence]
+- Image 26: [bar_chart, 100 % confidence]
+- Image 27: [bar_chart, 100 % confidence]
+- Image 28: [bar_chart, 100 % confidence]
+- Image 29: [bar_chart, 100 % confidence]
+- Image 30: [bar_chart, 100 % confidence]

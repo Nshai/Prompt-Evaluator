@@ -1,14 +1,8 @@
 ---
-source_path: "E/Scottish Widows Policy Info.pdf"
-file_name: "Scottish Widows Policy Info.pdf"
-category_code: E
-pages: 11
-characters: 35684
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: Scottish Widows Policy Info.pdf
+converted: 2026-08-31T00:27:16Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 From:
 
@@ -24,9 +18,11 @@ Attachments:
 
 <!-- image -->
 
-SCOTTISHWIDOWS | MASTERTRUST
+Logo
 
 <!-- image -->
+
+Other
 
 OUR REFERENCE: RI-4206375
 
@@ -52,6 +48,8 @@ Please find aƩached the informaƟon requested with an illustraƟon of the proje
 
 ## AddiƟonal forms can be found via the links below:
 
+[No details]
+
 ## Scoƫsh Widows Master Trust
 
 -  Advisor Payment Form - (Pension Advice Allowance only) -
@@ -69,8 +67,6 @@ https://adviser.scottishwidows.co.uk/assets/literature/docs/wd1174sw.pdf
 -  The Pension Input Period is 6 April - 5 April.
 -  Transfers are supported by Origo and this is the preferred method of transfer, please provide an additional communication if you require transfer forms (there are no exit charges applicable).
 -  If you are intending to buy an annuity from another pension provider by using the open market option, please contact us and we will send you the relevant forms.
-
-<!-- page: 2 -->
 
 The aƩached documentaƟon should provide you with all the informaƟon you require, however if you do need anything further this can be obtained through our website, hƩps://www.scoƫshwidows.co.uk/save/mastertrust101
 
@@ -95,43 +91,27 @@ Follow us @scoƫshwidows or @SWidowsAdviser Like us on Facebook | Follow us on L
 
 <!-- image -->
 
-SCOTTISHWIDOWS | LIFL&PUNSIONS | SASIANS
+Logo
 
 LIFE FEELS BETTER WHEN YOU HAVE A PLAN
-
-<!-- page: 3 -->
 
 £211.32
 
 <!-- image -->
 
-SCOTTISHWIDOWS | MASTERTRUST
+Logo
 
 ## Plan Information Schedule
 
-The details below reflect the current data held on our system.
+- **The details below reflect the current data held on our system.:** [blank]
 
 ## Scheme details
 
-Plan number
-
-ZU4225575
-
-Scheme name
-
-SWMT - Scottish Widows Master Trust Section 101
-
-Scheme type
-
-Registration
-
-Group Occupational Money Purchase
-
-Chapter 2, Part 4 of the Finance Act 2004
-
-Pension Scheme Tax Reference (PSTR)
-
-00797091RQ
+- **Plan number:** ZU4225575
+- **Scheme name:** SWMT - Scottish Widows Master Trust Section 101
+- **Scheme type:** Group Occupational Money Purchase
+- **Registration:** Chapter 2, Part 4 of the Finance Act 2004
+- **Pension Scheme Tax Reference (PSTR):** 00797091RQ
 
 ## Personal details
 
@@ -142,31 +122,23 @@ Pension Scheme Tax Reference (PSTR)
 
 ## Fund details
 
-Current total fund / transfer value
-
-The current fund value as at the close of business on 23/09/2025. Please be aware that this value is not guaranteed and can go up and down on a daily basis.
-
-The member can invest in as many funds as they wish by logging into their online account using the details issued to them in their welcome pack. A full list of funds that the member can select can be found at https://www.scottishwidows.co.uk/save/mastertrust101
-
-You can also download Fund fact sheets (including SEDOL / ISIN codes) via the 'Investment choices', 'Pension Funds' option on the website.
+- **Current total fund / transfer value:** £211.32
+- The current fund value as at the close of business on 23/09/2025. Please be aware that this value is not guaranteed and can go up and down on a daily basis.
+- The member can invest in as many funds as they wish by logging into their online account using the details issued to them in their welcome pack. A full list of funds that the member can select can be found at https://www.scottishwidows.co.uk/save/mastertrust101
+- **You can also download Fund fact sheets (including SEDOL / ISIN codes) via the 'Investment choices', 'Pension Funds' option on the website.:** [blank]
 
 ## Charges information
 
-A full list of charges can be found via https://www.scottishwidows.co.uk/save/mastertrust101 and visiting the 'Library', followed by ' I nvestment choices and charges'.
-
-There is no charge for switches (fair use policy applied), transferring out, claiming benefits or upon being paid up.
-
-This plan does not facilitate adviser charging.
-
-<!-- page: 4 -->
+- **SCOTTISHWIDOWS:** [blank]
+- **MASTERTRUST:** [blank]
+- **A full list of charges can be found via https://www.scottishwidows.co.uk/save/mastertrust101 and visiting the 'Library', followed by ' I nvestment choices and charges'.:** [blank]
+- **There is no charge for switches (fair use policy applied), transferring out, claiming benefits or upon being paid up.:** [blank]
+- **This plan does not facilitate adviser charging.:** [blank]
 
 ## Current fund split
 
-Funds invested in Lifestyle Strategy:
-
-Yes:
-
-SWMT Balanced Targeting Flexible Access
+- **Funds invested in Lifestyle Strategy::** Yes:
+- **SWMT Balanced Targeting Flexible Access:** [blank]
 
 | DESCRIPTION                             |   QUANTITY |   PRICE | MARKET VALUE   | PORTFOLIO %   |
 |-----------------------------------------|------------|---------|----------------|---------------|
@@ -177,9 +149,8 @@ SWMT Balanced Targeting Flexible Access
 
 ## Current contributions rates
 
-Employer - N/A Employee - N/A Salary Exchange - N/A AVC - N/A
-
-Please note this member has no current regular contributions being made to their pension plan.
+- **Employer - N/A Employee - N/A Salary Exchange - N/A AVC - N/A:** [blank]
+- **Please note this member has no current regular contributions being made to their pension plan.:** [blank]
 
 ## Additional information
 
@@ -269,8 +240,6 @@ Money Purchase Annual Allowance triggered
 
 No
 
-<!-- page: 5 -->
-
 ## Transfer(s) in received
 
 | CEDING SCHEME   | DATE      | AMOUNT   |
@@ -291,17 +260,10 @@ Please note: A 'Direct Credit Payment' could refer to either an individual trans
 
 ## Withdrawals
 
-DATE
-
-N/A
-
-AMOUNT
-
-N/A
-
-NARRATIVE
-
-N/A
+- **N/A:** N/A
+- **NARRATIVE:** N/A
+- **DATE:** [blank]
+- **AMOUNT:** [blank]
 
 ## Notes
 
@@ -312,33 +274,24 @@ N/A
 - We do not offer annuity options directly. If the member would like to purchase an annuity, we have an independent annuity broking service which will be able to search the open market for them. If you would like more information on this, please let us know.
 - Please note we are only able to generate an up to date illustration based on the current data we hold for the member. By way of explanation, changes to the member's Selected Retirement Age could impact any present or future 'Lifestyle' arrangements, and changes to the member's contribution rates could affect their allocation of pension contributions when the scheme runs payroll. Should the member wish to change their Selected Retirement Age, we would require authorisation from them; any changes to contributions need to come from the employer.
 
-<!-- page: 7 -->
-
 ## Retirement Account
+
+[No details]
 
 ## Investment charges information
 
-This document shows the current charges that apply to the investments you have chosen. These charges may change in the future.
+- **This document shows the current charges that apply to the investments you have chosen. These charges may change in the future.:** [blank]
 
 ## Membership details
 
-Scheme name
-
-SWMT - Scottish Widows Master Trust Section 101
-
-Membership number
-
-ZU4225575
-
-Member
-
-Issue date
-
-24 September 2025
+- **Scheme name:** SWMT - Scottish Widows Master Trust Section 101
+- **Membership number:** ZU4225575
+- **Issue date:** 24 September 2025
+- **Member:** [blank]
 
 ## Cost of investment
 
-'Cost of investment' may also be referred to as 'Total Annual Fund Charge'.
+- **'Cost of investment' may also be referred to as 'Total Annual Fund Charge'.:** [blank]
 
 | Investment                      | Yearly Scottish Widows fund based charge   | Fund manager charges   | Fund manager charges   | Fund manager charges    |   Cost of investment (%) |
 |---------------------------------|--------------------------------------------|------------------------|------------------------|-------------------------|--------------------------|
@@ -352,7 +305,7 @@ These investments are part of a lifestyle option that will be rebalanced from ti
 
 <!-- image -->
 
-<!-- page: 8 -->
+Table
 
 ## Yearly Scottish Widows fund based charge
 
@@ -370,39 +323,26 @@ Fund expenses are not fixed. The figures shown are estimates based on what the f
 
 ## Total expense ratio
 
-This is the total of the fund expenses and the annual management charge less the annual management charge rebate.
+- **This is the total of the fund expenses and the annual management charge less the annual management charge rebate.:** [blank]
 
 ## Cost of investment
 
-This is the total of the yearly Scottish Widows fund based charge, Intermediary charges and total expense ratio.
-
-'Cost of investment' may also be referred to as 'Total Annual Fund Charge'.
+- **This is the total of the yearly Scottish Widows fund based charge, Intermediary charges and total expense ratio.:** [blank]
+- **'Cost of investment' may also be referred to as 'Total Annual Fund Charge'.:** [blank]
 
 ## Disinvestment strategy
 
 Although charges are calculated based on the value of individual investments, the actual charge is taken from your investments in a specified order. Charges will be taken from cash held in your account then, if there isn't enough cash to cover the charges, from the least volatile fund you are invested in.
 
-<!-- page: 9 -->
-
 ## Retirement Account
 
-Illustration for
-
-SWMT - Scottish Widows Master Trust Section 101
-
-Membership number: ZU4225575
-
-Plan start date:
-
-5 October 2021
-
-Date of illustration:
-
-24 September 2025
-
-Illustration reference: 341691457
-
-This is an illustration of what you might get back from your plan. The amounts shown are not guaranteed.
+- **Plan start date::** 5 October 2021
+- **Date of illustration::** 24 September 2025
+- **Illustration for:** [blank]
+- **SWMT - Scottish Widows Master Trust Section 101:** [blank]
+- **Membership number: ZU4225575:** [blank]
+- **Illustration reference: 341691457:** [blank]
+- **This is an illustration of what you might get back from your plan. The amounts shown are not guaranteed.:** [blank]
 
 ## Who does the plan cover?
 
@@ -414,9 +354,7 @@ This is an illustration of what you might get back from your plan. The amounts s
 
 ## What is the plan value?
 
-The value of your funds as at 24 September 2025 is £211.32.
-
-<!-- page: 10 -->
+- **The value of your funds as at 24 September 2025 is £211.32.:** [blank]
 
 ## What might you get back?
 
@@ -432,8 +370,6 @@ The following table shows the value of what you might get back at age 75 based o
 | You can normally take up to 25% as a tax-free cash lump sum, the tax-free cash lump sums stated above assume a rate of 25%. This does not take into account any protection you may have or your available Lump Sum Allowance (LSA) and Lump Sum and Death Benefit Allowance (LSDBA). For more information, please refer to 'A guide to pension tax' on your Scheme website. | You can normally take up to 25% as a tax-free cash lump sum, the tax-free cash lump sums stated above assume a rate of 25%. This does not take into account any protection you may have or your available Lump Sum Allowance (LSA) and Lump Sum and Death Benefit Allowance (LSDBA). For more information, please refer to 'A guide to pension tax' on your Scheme website. | You can normally take up to 25% as a tax-free cash lump sum, the tax-free cash lump sums stated above assume a rate of 25%. This does not take into account any protection you may have or your available Lump Sum Allowance (LSA) and Lump Sum and Death Benefit Allowance (LSDBA). For more information, please refer to 'A guide to pension tax' on your Scheme website. | You can normally take up to 25% as a tax-free cash lump sum, the tax-free cash lump sums stated above assume a rate of 25%. This does not take into account any protection you may have or your available Lump Sum Allowance (LSA) and Lump Sum and Death Benefit Allowance (LSDBA). For more information, please refer to 'A guide to pension tax' on your Scheme website. |
 | plus a smaller pension equivalent to a yearly income today of                                                                                                                                                                                                                                                                                                               | £12                                                                                                                                                                                                                                                                                                                                                                         | £16                                                                                                                                                                                                                                                                                                                                                                         | £22                                                                                                                                                                                                                                                                                                                                                                         |
 
-<!-- page: 11 -->
-
 ## We've assumed that:
 
 - your pension will be paid monthly in advance for your lifetime
@@ -446,25 +382,20 @@ The following table shows the value of what you might get back at age 75 based o
 - your pension income will depend on how your investment grows and annuity rates at the time that you retire.
 - To help keep track of your plan, we'll send you a statement each year.
 
-<!-- page: 12 -->
-
 ## What are the charges?
 
-The investment charges information document contains information about current charges that apply. Please note that any of the charges may change in the future.
+- **The investment charges information document contains information about current charges that apply. Please note that any of the charges may change in the future.:** [blank]
 
 ## How the charges reduce the growth of your pension fund
 
-All pension providers give this information to help you compare their charges.
-
-Below we show the effect of our charges on the assumed growth rate shown. The growth rate could turn out to be less than this and you may get back less than you paid in.
+- **All pension providers give this information to help you compare their charges.:** [blank]
+- Below we show the effect of our charges on the assumed growth rate shown. The growth rate could turn out to be less than this and you may get back less than you paid in.
 
 ## How charges reduce the value of your pension fund
 
-Because over time inflation will reduce what money can buy, we've illustrated the payments and value of your plan after taking account of inflation of 2.0% each year. In other words the amounts at the end of each year are equivalent to what they would be worth today.
-
-The fourth column shows how our charges can reduce the value of your fund and also illustrates what you could transfer to another pension plan.
-
-The projected values below include the current value of your fund which, at the date of illustration, was £211.32.
+- Because over time inflation will reduce what money can buy, we've illustrated the payments and value of your plan after taking account of inflation of 2.0% each year. In other words the amounts at the end of each year are equivalent to what they would be worth today.
+- **The fourth column shows how our charges can reduce the value of your fund and also illustrates what you could transfer to another pension plan.:** [blank]
+- **The projected values below include the current value of your fund which, at the date of illustration, was £211.32.:** [blank]
 
 ## If your funds grow by 2.7% after inflation
 
@@ -477,7 +408,14 @@ The projected values below include the current value of your fund which, at the 
 
 ## How charges can reduce the growth rate of your fund
 
-The reduction in the plan value from £246 before charges to:
+- **The reduction in the plan value from £246 before charges to::** [blank]
 
 - £242 means that after taking account of all charges, it reduces the growth rate down from 2.7% after inflation to 2.4% after inflation. This is a reduction in growth of 0.3% a year.
 - The information on the reduction in investment growth can be used to compare the effect of charges with similar products.
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- LIFL&PUNSIONS
+- SASIANS

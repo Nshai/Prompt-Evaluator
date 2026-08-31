@@ -1,4 +1,12 @@
+---
+source: Anness, M Aviva pension charges 24.3.26.pdf
+converted: 2026-08-31T01:06:25Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 Mrs Melanie Anness
 

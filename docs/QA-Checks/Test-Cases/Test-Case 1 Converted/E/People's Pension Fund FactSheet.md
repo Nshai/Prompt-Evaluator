@@ -1,16 +1,12 @@
 ---
-source_path: "E/People's Pension Fund FactSheet.pdf"
-file_name: "People's Pension Fund FactSheet.pdf"
-category_code: E
-pages: 2
-characters: 4690
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: People's Pension Fund FactSheet.pdf
+converted: 2026-08-31T00:25:46Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
 
-<!-- page: 1 -->
-
 ## Global Investments (up to 85% shares) 0.5% Pn
+
+[No details]
 
 ## 31/12/2023
 
@@ -22,15 +18,15 @@ The People's Pension Global Investments (up to 85% Shares) Fund aims to achieve 
 
 ## Cumulative performance (as at 31/12/2023)
 
-<!-- image -->
-
-0% | 25% | 50% | Dec 18 | Apr 20 | Aug 21 | Dec 22 | Jan 24
-
-31/12/2018 - 29/12/2023 Powered by data from FE fundinfo
-
-<!-- image -->
-
-<!-- image -->
+- **Apr 20:** 31/12/2018 - 29/12/2023 Powered by data from FE fundinfo
+- 50%
+- 25%
+- 0%
+- **Dec 18:** [blank]
+- **Aug 21:** [blank]
+- **Dec 22:** [blank]
+- **Jan 24:** [blank]
+- **Benchmark:** [blank]
 
 - Fund 0
 
@@ -54,7 +50,7 @@ Source: FE fundinfo. Fund, Sector and Index performance is shown in local curren
 
 <!-- image -->
 
-peopl | le's | Partnership
+Logo
 
 ## Fund facts
 
@@ -73,9 +69,7 @@ peopl | le's | Partnership
 
 <!-- image -->
 
-the people's pension
-
-<!-- page: 2 -->
+Logo
 
 ## Global Investments (up to 85% shares) 0.5% Pn
 
@@ -85,19 +79,19 @@ the people's pension
 
 <!-- image -->
 
-North America | 49.8% | Europe ex UK | 14.1% | UK | 13.0% | Japan | 8.0% | Global Emerging Markets | 5.9% | Asia Pacific ex Japan | 4.7% | Other | 4.6%
+Pie chart
 
 ## Asset breakdown
 
 <!-- image -->
 
-North American Equities | 39.6% | Europe ex UK Equities | 11.5% | Japanese Equities | 6.7% | North American Government Fixed | Interest | 6.3% | UK Equities | 6.3% | Global Emerging Market Equities | 4.6% | Asia Pacific ex Japan Equities | 4.2% | North American Corporate Fixed | Interest | 3.9% | UK Corporate Fixed Interest | 3.3% | Other | 13.6%
+Pie chart
 
 ## Sector breakdown
 
 <!-- image -->
 
-Financials | 27.5% | Technology | 15.5% | Industrials | 14.9% | Health Care | 10.5% | Consumer Services | 9.1% | Consumer Goods | 5.6% | Utilities | 4.9% | Telecommunications | 4.4% | Basic Materials | 4.1% | Oil & Gas | 3.6%
+Pie chart
 
 ## Current top 10 holdings
 
@@ -120,3 +114,65 @@ Contributions are currently invested on behalf of the Trustee by State Street Gl
 The People's Pension Trustee Limited Manor Royal, Crawley, West Sussex, RH10 9QP. Tel 0300 2000 555
 
 www.thepeoplespension.co.uk
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- Partnership
+- North America
+- 49.8%
+- Europe ex UK
+- 14.1%
+- 13.0%
+- Japan
+- 8.0%
+- Global Emerging Markets
+- 5.9%
+- Asia Pacific ex Japan
+- 4.7%
+- Other
+- 4.6%
+- North American Equities
+- 39.6%
+- Europe ex UK Equities
+- 11.5%
+- Japanese Equities
+- 6.7%
+- North American Government Fixed
+- Interest
+- 6.3%
+- Global Emerging Market Equities
+- Asia Pacific ex Japan Equities
+- 4.2%
+- North American Corporate Fixed
+- 3.9%
+- UK Corporate Fixed Interest
+- 3.3%
+- 13.6%
+- Financials
+- 27.5%
+- Technology
+- 15.5%
+- Industrials
+- 14.9%
+- Health Care
+- 10.5%
+- Consumer Services
+- 9.1%
+- Consumer Goods
+- 5.6%
+- Utilities
+- 4.9%
+- Telecommunications
+- 4.4%
+- Basic Materials
+- 4.1%
+- Oil & Gas
+- 3.6%
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [line_chart, 100 % confidence]
+- Image 6: [pie_chart, 97 % confidence]
+- Image 7: [pie_chart, 50 % confidence]
+- Image 8: [pie_chart, 55 % confidence]

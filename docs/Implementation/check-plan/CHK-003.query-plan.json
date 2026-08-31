@@ -157,6 +157,19 @@
           "ifAssertionAbsent": "Potential Concern: an investment recommendation with no stated risk profile.",
           "ifEvidenceAbsent": "Potential Concern: risk rating asserted with no questionnaire or risk assessment on file.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -268,6 +281,19 @@
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern: capacity for loss asserted with no assessment on file.",
           "ifAssertionAbsent": "Potential Concern: CFL is explicitly named by this check and by COBS 9.2."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -354,6 +380,19 @@
         },
         "sufficiency": {
           "ifBothAbsent": "Note as a gap — record that tolerance for loss was never quantified, which matters where a stress test models a large fall."
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -430,6 +469,19 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern where a long horizon is the stated justification for a higher risk profile."
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -558,6 +610,19 @@
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern: fund risk ratings asserted with no factsheet or research to support them.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -648,6 +713,18 @@
         "sufficiency": {
           "ifAssertionAbsent": "Only relevant if G3.1 found differing assessed and agreed codes; then Potential Concern — an unexplained override.",
           "ifEvidenceAbsent": "Potential Concern: the override is asserted in the report but nothing in the file records the conversation."
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Moderate",
+          "note": "Established by lookup. An absence is not a demonstrated contradiction, so it is held below the severities reserved for one.",
+          "requiresCitation": false,
+          "mode": "Deterministic"
         }
       }
     },
@@ -759,6 +836,19 @@
         },
         "sufficiency": {
           "ifAssertionAbsent": "Potential Concern: no explanation of how the strategy matches the risk profile — this is the explicit subject of the check."
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -863,6 +953,19 @@
           "ifAssertionAbsent": "Potential Concern: the report should state the risk profile it relied on.",
           "ifEvidenceAbsent": "Potential Concern: a risk profile asserted with no assessment on file.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -957,6 +1060,18 @@
           "ifAssertionAbsent": "Note as a gap; the report should link the portfolio to the risk profile it was chosen for.",
           "ifEvidenceAbsent": "Potential Concern: a portfolio recommended with no fund-level risk evidence to support the alignment claim.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -1069,6 +1184,18 @@
           "ifAssertionAbsent": "No issue on this requirement; nothing further was asserted.",
           "ifEvidenceAbsent": "Potential Concern: a risk statement the recommendation rests on has no support in the file.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "Only a reader can say whether two passages agree.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -1152,6 +1279,19 @@
           "ifAssertionAbsent": "Note as a gap: a plan is retained and the report does not say whether what it holds still suits the agreed profile.",
           "ifEvidenceAbsent": "Potential Concern: a plan is retained on advice with no fund-level risk evidence to support the alignment the report implies.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     }

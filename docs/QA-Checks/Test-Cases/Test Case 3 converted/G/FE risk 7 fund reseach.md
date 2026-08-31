@@ -1,6 +1,16 @@
-<!-- image -->
+---
+source: FE risk 7 fund reseach.pdf
+converted: 2026-08-31T01:06:05Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
 
 <!-- image -->
+
+Logo
+
+<!-- image -->
+
+Line chart
 
 ## Cumulative Performance (%)
 
@@ -55,3 +65,6 @@ _The following details were present in Docling's structured JSON output but omit
 - Mar 25
 - Jan 26
 - 19/03/2025-19/03/2026
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 2: [line_chart, 100 % confidence]

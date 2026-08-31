@@ -1,14 +1,8 @@
 ---
-source_path: "E/Zurich Policy Info.pdf"
-file_name: "Zurich Policy Info.pdf"
-category_code: E
-pages: 41
-characters: 153948
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: Zurich Policy Info.pdf
+converted: 2026-08-31T00:32:49Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 Zurich Assurance Ltd Unity Place, 1 Carfax Close Swindon SN1 1AP Telephone: 01793 514514 Fax: 01793 505572
 
@@ -26,29 +20,25 @@ The transfer pack is only designed to transfer benefits for investment with anot
 
 ## Pension Wise
 
-For free, impartial guidance about all your money and pension choices visitwww.moneyhelper.org.uk. Pension Wise is a service from MoneyHelper that offers free and impartial guidance about your defined contribution retirement options. We recommend you visit their website via www.moneyhelper.org.uk/pensionwise   or you can get in touch with them on 0800 138 3944.
-
-If you are aged 50 or over and are transferring your fund for the purpose of taking your retirement benefits, we are required to offer to book you an appointment with Pension Wise before you transfer. If you would like us to book a Pension Wise appointment for you, please call us. If you'd prefer to book your own Pension Wise appointment, you can contact them directly on 0800 138 3944.  We cannot proceed with your claim unless you let us know that you have either received Pension Wise guidance or opt out of receiving it.
-
-Visit www.zurich.co.uk/retirement   for more help and support with your retirement options.
-
-<!-- image -->
-
-Z | ZURICH
-
-Date: 24 September 2025
-
-Plan number: P10026-719-001/DL
-
-<!-- page: 2 -->
+- **Transferring pension benefits::** Plan number: P10026-719-001/DL
+- **Zurich Assurance Ltd Unity Place, 1 Carfax Close Swindon SN1 1AP Telephone: 01793 514514 Fax: 01793 505572:** [blank]
+- **Z:** [blank]
+- **ZURICH:** [blank]
+- **The Pension Lab The Dock 75 Exploration Drive Leicester LE4 5NU:** [blank]
+- **Date: 24 September 2025:** [blank]
+- **Dear Sir/Madam:** [blank]
+- **Thank you for your recent request.:** [blank]
+- I enclose a transfer claim form and all the plan information needed to transfer the existing pension benefits for investment with another pension provider. You may want to consider if you still need any of the options or additional benefits you currently have and how you may replace them if you decide to transfer out.  We'd encourage you to complete the enclosed Pension Transfer checklist and discuss anything you're not sure about with your adviser.
+- The transfer pack is only designed to transfer benefits for investment with another provider.  It is not designed to transfer benefits to another provider to exercise an Open Market Option (OMO) in order to take immediate retirement benefits.  If you want to take immediate retirement benefits, please ask for a retirement pack to ensure compliance with the current legislation.
+- For free, impartial guidance about all your money and pension choices visitwww.moneyhelper.org.uk. Pension Wise is a service from MoneyHelper that offers free and impartial guidance about your defined contribution retirement options. We recommend you visit their website via www.moneyhelper.org.uk/pensionwise   or you can get in touch with them on 0800 138 3944.
+- If you are aged 50 or over and are transferring your fund for the purpose of taking your retirement benefits, we are required to offer to book you an appointment with Pension Wise before you transfer. If you would like us to book a Pension Wise appointment for you, please call us. If you'd prefer to book your own Pension Wise appointment, you can contact them directly on 0800 138 3944.  We cannot proceed with your claim unless you let us know that you have either received Pension Wise guidance or opt out of receiving it.
+- **Visit www.zurich.co.uk/retirement   for more help and support with your retirement options.:** [blank]
 
 ## Pension Scams
 
-We want to make you aware that over the past few years pension customers have been targeted by fraudsters and some have lost all their pension savings.  This has happened either because customers have lost their pension because it's been stolen or they have transferred to schemes that appear legitimate but contain high risk investment strategies.  Scammers will often make false claims and design attractive offers to persuade you to transfer your pension to them.
-
-Both the Financial Conduct Authority and The Pensions Regulator provide warnings of typical examples of potential scams on their websites and we would encourage you to read the ScamSmart leaflet we have enclosed that they have produced to help protect pension customers.  This leaflet sets out some simple ways you can help protect yourself from pension scams, particularly if you are thinking about transferring your pension to another provider:
-
-Four simple steps to help protect yourself from pension scams are:
+- We want to make you aware that over the past few years pension customers have been targeted by fraudsters and some have lost all their pension savings.  This has happened either because customers have lost their pension because it's been stolen or they have transferred to schemes that appear legitimate but contain high risk investment strategies.  Scammers will often make false claims and design attractive offers to persuade you to transfer your pension to them.
+- Both the Financial Conduct Authority and The Pensions Regulator provide warnings of typical examples of potential scams on their websites and we would encourage you to read the ScamSmart leaflet we have enclosed that they have produced to help protect pension customers.  This leaflet sets out some simple ways you can help protect yourself from pension scams, particularly if you are thinking about transferring your pension to another provider:
+- **Four simple steps to help protect yourself from pension scams are::** [blank]
 
 - ® Reject unexpected offers
 - ® Always check who you're dealing with
@@ -65,29 +55,24 @@ Please be aware that when you transfer money from one pension provider to anothe
 
 It is not our policy to complete other providers' application forms.  I have enclosed all of the plan information and values needed.  The values will be updated and sent again when the benefits are transferred to the new pension provider.
 
-<!-- page: 3 -->
-
 ## What we need to transfer the pension benefits
 
-To transfer the pension benefits to another pension provider we need the enclosed transfer claim form to be fully completed, signed and returned to us at:
-
-Retirements and Transfers Payments Team
-
-Zurich Assurance Ltd Unity Place 1 Carfax Close Swindon
-
-SN1 1AP
-
-When returning the claim form, please mark any accompanying documentation "Retirements and Transfers Payments Team".
-
-Where the selected provider is also a member of 'Origo Options', we use this service to complete the transfer claim.
-
-We will return the form if it is not fully completed and signed when we receive it.
+- To transfer the pension benefits to another pension provider we need the enclosed transfer claim form to be fully completed, signed and returned to us at:
+- **Retirements and Transfers Payments Team:** [blank]
+- **Zurich Assurance Ltd Unity Place 1 Carfax Close Swindon:** [blank]
+- **SN1 1AP:** [blank]
+- **When returning the claim form, please mark any accompanying documentation "Retirements and Transfers Payments Team".:** [blank]
+- **Where the selected provider is also a member of 'Origo Options', we use this service to complete the transfer claim.:** [blank]
+- **We will return the form if it is not fully completed and signed when we receive it.:** [blank]
 
 ## What we will do when we receive all our requirements
 
-We will assess the transfer when we receive the fully completed claim form and all our requirements. As already confirmed, if your transfer does not meet one of the two conditions set out in the Department for Work and Pensions regulations, we may not be able to complete the transfer:
-
-If the conditions are fully met we will then send the following to the new provider:
+- We will assess the transfer when we receive the fully completed claim form and all our requirements. As already confirmed, if your transfer does not meet one of the two conditions set out in the Department for Work and Pensions regulations, we may not be able to complete the transfer:
+- **If the conditions are fully met we will then send the following to the new provider::** [blank]
+- **We will also send the customer::** [blank]
+- **As the client has passed age 65, please find enclosed an illustration to the next possible year.:** [blank]
+- **Guarantees, bonuses, guaranteed minimum pension, safeguarding, life styling, block/bulk transfers, market value reduction, protected or enhanced tax free cash do not apply to this plan.:** [blank]
+- **Drawdown options are not available on this plan; however, it can be transferred to another provider to do this.:** [blank]
 
 - the transfer payment
 - the plan information needed to complete the transfer.
@@ -102,13 +87,13 @@ Guarantees, bonuses, guaranteed minimum pension, safeguarding, life styling, blo
 
 Drawdown options are not available on this plan; however, it can be transferred to another provider to do this.
 
-<!-- page: 4 -->
-
 If you have any queries please contact us on 0370 2416996.  Our lines are open from 8.30am to 5.30pm Monday to Friday - we'll be happy to help.
 
 Yours faithfully
 
 ## Customer Services
+
+[No details]
 
 ## Enclosed
 
@@ -120,45 +105,23 @@ Yours faithfully
 
 Have you heard about Zurich My Plans portal? It's a great way to keep track of your Zurich pension and find out how much it's worth online. If you haven't already, signing up is quick and easy. Just have your plan number and National Insurance number to hand and head to www.zurich.co.uk/my-pension-plan .
 
-<!-- page: 5 -->
-
 ## Plan details
+
+[No details]
 
 ## Plan holder details
 
-Name :
-
-Address :
-
-42 Egmont Road Hove East Sussex BN3 7FP
-
-Date of birth :
-
-7 June 1956
-
-National Insurance number :
-
-YW 37 72 31 C
-
-Current salary :
-
-£5,980.00
+- **Address ::** 42 Egmont Road Hove East Sussex BN3 7FP
+- **Date of birth ::** 7 June 1956
+- **National Insurance number ::** YW 37 72 31 C
+- **Current salary ::** £5,980.00
+- **Name ::** [blank]
 
 ## HMRCplan approval details
 
-Zurich - Inland Revenue SF number :
-
-SF 87/003/1A
-
-Zurich - ASCON number :
-
-A7001069T
-
-Zurich Registered Pension Scheme number (PSTR number): :
-
-This is a registered pension scheme automatically registered by HM Revenue &amp; Customs (HMRC) under Chapter 2 Part 4 of the Finance Act 2004 (as amended). Our registered number is 00605305RN.
-
-<!-- page: 6 -->
+- **Zurich - Inland Revenue SF number ::** SF 87/003/1A
+- **Zurich - ASCON number ::** A7001069T
+- **Zurich Registered Pension Scheme number (PSTR number): ::** This is a registered pension scheme automatically registered by HM Revenue & Customs (HMRC) under Chapter 2 Part 4 of the Finance Act 2004 (as amended). Our registered number is 00605305RN.
 
 ## Plan summary
 
@@ -178,25 +141,23 @@ This is a registered pension scheme automatically registered by HM Revenue &amp;
 
 <!-- image -->
 
-<!-- page: 7 -->
+Icon
 
 ## Notes
 
-This plan is not designed to go past age 75.
-
-If benefits are not listed within the plan details, then they are not included on this plan.
-
-Zurich does not currently offer the facility to take just the 25% tax-free lump sum from our pension plans, leaving the remainder to claim at a later date.
-
-We do not currently offer the option to take a partial UFPLS. However, if one has been taken in the past the client is able to take another one. For details on your retirement options and what we offer, please visit www.zurich.co.uk/retirement.
-
-If this plan has capital units, there will be an exit charge applied if the fund is transferred. This exit charge is a standard term of the contract. The charge is taken in order to recover the charges, which would be due, if the fund were to remain invested with Zurich until the customer has reached their selected retirement age (SRA). The charge is taken by reducing the number of capital units paid out; the charge reduces by around 0.3%-0.4% a month until SRA where there is no charge. The charge is capped at 1% from age 55.
+- **This plan is not designed to go past age 75.:** [blank]
+- **If benefits are not listed within the plan details, then they are not included on this plan.:** [blank]
+- Zurich does not currently offer the facility to take just the 25% tax-free lump sum from our pension plans, leaving the remainder to claim at a later date.
+- We do not currently offer the option to take a partial UFPLS. However, if one has been taken in the past the client is able to take another one. For details on your retirement options and what we offer, please visit www.zurich.co.uk/retirement.
+- If this plan has capital units, there will be an exit charge applied if the fund is transferred. This exit charge is a standard term of the contract. The charge is taken in order to recover the charges, which would be due, if the fund were to remain invested with Zurich until the customer has reached their selected retirement age (SRA). The charge is taken by reducing the number of capital units paid out; the charge reduces by around 0.3%-0.4% a month until SRA where there is no charge. The charge is capped at 1% from age 55.
 
 ## Payments
 
+[No details]
+
 ## Current regular payments
 
-Currently, no payments are being made to this plan.
+- **Currently, no payments are being made to this plan.:** [blank]
 
 ## Total payments received
 
@@ -208,77 +169,47 @@ Currently, no payments are being made to this plan.
 
 The above payments include the cost of all benefits if applicable.
 
-<!-- page: 8 -->
-
 ## Trusts
 
-Non protected rights benefit written in trust? :
-
-This plan does not have a non protected rights element.
-
-Former protected rights element written in trust? :
-
-Additional trustees
-
-:
-
-No
-
-None currently appointed
-
-Life cover element written in trust? :
-
-This plan does not have life cover.
+- **Non protected rights benefit written in trust? ::** This plan does not have a non protected rights element.
+- **Former protected rights element written in trust? ::** No
+- **::** None currently appointed
+- **Life cover element written in trust? ::** This plan does not have life cover.
+- **Additional trustees:** [blank]
 
 ## Assignments
 
-Life cover element of plan assigned?
-
-:
-
-There is no life cover on this plan.
+- **Life cover element of plan assigned?:** [blank]
+- **::** [blank]
+- **There is no life cover on this plan.:** [blank]
 
 ## Notice of interest
 
-Notice of interest in tax-free lump sum?
-
-:
-
-No
+- **::** No
+- **Notice of interest in tax-free lump sum?:** [blank]
 
 ## Transfer claims and 'Origo'
 
-Transfer claims and 'Origo'
-
-: Where the selected provider is also a member of 'Origo Options', we use this service to complete the transfer claim.
-
-<!-- page: 9 -->
+- **Transfer claims and 'Origo':** : Where the selected provider is also a member of 'Origo Options', we use this service to complete the transfer claim.
 
 ## Death benefits
 
-Please note - the following information is a summary only. Please refer to the plan terms and conditions for full details.
-
-Are there death benefits on this plan?
-
-:
-
-Yes
-
-Former protected rights benefits :
-
-In the event of a valid claim we would pay the value of the former protected rights fund.
+- **::** Yes
+- **Former protected rights benefits ::** In the event of a valid claim we would pay the value of the former protected rights fund.
+- **Please note - the following information is a summary only. Please refer to the plan terms and conditions for full details.:** [blank]
+- **Are there death benefits on this plan?:** [blank]
 
 ## Disability benefits
 
-Are there disability benefits on this plan?
-
-: No
-
-<!-- page: 10 -->
+- **Are there disability benefits on this plan?:** : No
 
 ## Current value statement
 
+[No details]
+
 ## Value of the plan
+
+[No details]
 
 ## Former protected rights
 
@@ -291,11 +222,8 @@ Are there disability benefits on this plan?
 
 ## Current transfer value
 
-The current transfer value of the former protected rights fund is always the same as the current total fund value.
-
-Total of all former protected rights payments made to the plan
-
-£14,763.69
+- **Total of all former protected rights payments made to the plan:** £14,763.69
+- **The current transfer value of the former protected rights fund is always the same as the current total fund value.:** [blank]
 
 ## Please note:
 
@@ -304,6 +232,8 @@ Total of all former protected rights payments made to the plan
 - To change your choice of funds, please contact us for a fund switch form.
 
 ## Where the future payments will be invested
+
+[No details]
 
 ## Former protected rights
 
@@ -315,15 +245,10 @@ Have you heard about Zurich My Plans portal? It's a great way to keep track of y
 
 If you haven't already, signing up is quick and easy. Just have your plan number and National Insurance number to hand and head to www.zurich.co.uk/my-pension-plan.
 
-<!-- page: 11 -->
-
 ## Schedule of payments received
 
-Personal Pension Plan: P10026-719-001/DL
-
-No payments have been received in the last ten years.
-
-<!-- page: 12 -->
+- **Personal Pension Plan: P10026-719-001/DL:** [blank]
+- **No payments have been received in the last ten years.:** [blank]
 
 ## Plan charges
 
@@ -336,7 +261,7 @@ No payments have been received in the last ten years.
 
 <!-- image -->
 
-<!-- page: 13 -->
+Icon
 
 | Name of charge                                        | Rate/Amount                                                                                                                                                                   | Explanation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 |-------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -346,7 +271,7 @@ No payments have been received in the last ten years.
 
 <!-- image -->
 
-<!-- page: 14 -->
+Icon
 
 | Name of charge                             | Rate/Amount                                                 | Explanation                                                                                                                                   |
 |--------------------------------------------|-------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
@@ -354,37 +279,29 @@ No payments have been received in the last ten years.
 
 ## Charge comparisons with stakeholder or workplace pension plans
 
-We will not be changing the charging structure on this generation of pension plans to that of stakeholder or workplace pension products. The main reason for this is that the terms and conditions of the plan were set when the plan was issued and confirmed in the policy documents. These contracts have a charging structure that means that the majority of our plan holders will have already incurred most of or all of the initial charges on their plans, and existing payments and funds may be attracting lower charges than those in stakeholder or workplace products.
-
-Adviser charges are not taken from the plan and cannot be added.
-
-<!-- image -->
-
-<!-- page: 15 -->
+- We will not be changing the charging structure on this generation of pension plans to that of stakeholder or workplace pension products. The main reason for this is that the terms and conditions of the plan were set when the plan was issued and confirmed in the policy documents. These contracts have a charging structure that means that the majority of our plan holders will have already incurred most of or all of the initial charges on their plans, and existing payments and funds may be attracting lower charges than those in stakeholder or workplace products.
+- **Adviser charges are not taken from the plan and cannot be added.:** [blank]
 
 ## Transfer OUut
 
+[No details]
+
 ## Claim form (Individual)
+
+[No details]
 
 ## Please complete this page if you are aged 50 or over:
 
-Are you transferring your fund for the purpose of taking your retirement benefits?
-
-<!-- image -->
-
-- [ ] Yes
-
-- [ ] No
-
-If you have answered 'Yes' to this question, you must complete the rest of this section if the receiving scheme is a defined contribution pension scheme.
-
-If you have answered 'No' to this question, please go to page 2 of the claim form.
+- **Yes:** [ ]
+- **No:** [ ]
+- **Are you transferring your fund for the purpose of taking your retirement benefits?:** If you have answered 'Yes' to this question, you must complete the rest of this section if the receiving scheme is a defined contribution pension scheme.
+- **Are you transferring your fund for the purpose of taking your retirement benefits? (additional):** If you have answered 'No' to this question, please go to page 2 of the claim form.
 
 ## Pension Wise
 
-Ppn   n d e   t   s n  e e oou understand your choices at retirement. If you are aged 50 or over we are required to offer to book you an appointment with Pension Wise before you transfer.
-
-We cannot proceed with this claim until you confirm below:
+- Ppn   n d e   t   s n  e e oou understand your choices at retirement. If you are aged 50 or over we are required to offer to book you an appointment with Pension Wise before you transfer.
+- **We cannot proceed with this claim until you confirm below::** [blank]
+- **To book an appointment with Pension Wise you can::** [blank]
 
 - that you have received Pension Wise guidance or regulated advice from a Financial Adviser in the last 6 months, or
 - that you are opting out of receiving Pension Wise guidance and confirm you do not want regulated advice.
@@ -396,38 +313,23 @@ To book an appointment with Pension Wise you can:
 
 ## Pension Wise guidance and financial advice
 
-In relation to this claim, in the last 6 months have you:
-
-1. Received regulated advice from a Financial Adviser?
-2. Attended a Pension Wise guidance appointment?*
-
-- [ ] Yes
-
-- [ ] No
-
-- [ ] Yes
-
-- [ ] No
-
-*If you have answered 'No' to question 2, then you need to attend a Pension Wise guidance appointment or opt out in the section below.
-
-If you want to receive either advice or guidance, do not complete the rest of this claim form until you have, and can answer question 1 or 2 above as 'Yes'. If you do not want to receive Pension Wise guidance, you must also complete the Opting out section below.
-
-If your personal circumstances or the value of your pension savings has significantly changed since you last received fina e           aai.
-
-If you have received regulated advice, you may still benefit from speaking to Pension Wise.
+- **Yes:** [ ]
+- **No:** [ ]
+- **Yes:** [ ]
+- **No:** [ ]
+- **In relation to this claim, in the last 6 months have you::** [blank]
+- ***If you have answered 'No' to question 2, then you need to attend a Pension Wise guidance appointment or opt out in the section below.:** [blank]
+- If you want to receive either advice or guidance, do not complete the rest of this claim form until you have, and can answer question 1 or 2 above as 'Yes'. If you do not want to receive Pension Wise guidance, you must also complete the Opting out section below.
+- If your personal circumstances or the value of your pension savings has significantly changed since you last received fina e           aai.
+- **If you have received regulated advice, you may still benefit from speaking to Pension Wise.:** [blank]
 
 ## Opting out
 
-If you do not want to receive Pension Wise guidance, then you can opt out by confirming either:
-
-(Please tick relevant box)
-
-- [ ] • I have already received my own regulated advice from a Financial Adviser in the last 6 months and do not want to receive Pension Wise guidance
-
-- [ ] • I do not want to receive Pension Wise guidance or obtain my own regulated advice from a Financial Adviser
-
-<!-- page: 16 -->
+- **• I have already received my own regulated advice from a Financial Adviser in the last 6 months and do not want to receive Pension Wise guidance:** [ ]
+- **• I do not want to receive Pension Wise guidance or obtain my own regulated advice from a Financial Adviser:** [ ]
+- **Z:** ZURICH
+- **If you do not want to receive Pension Wise guidance, then you can opt out by confirming either::** [blank]
+- **(Please tick relevant box):** [blank]
 
 ## Important information
 
@@ -437,135 +339,73 @@ w    e           c    his information and assess whether the transfer can procee
 
 ## Section 1
 
-Your details
-
-Name
-
-Previous surname (if applicable)
-
-Plan number
-
-Address
-
-Postcode
-
-Daytime telephone number*
-
-Evening telephone number*
-
-Nationality
-
-Tax residency
-
-Date of birth
-
-MM
-
-National Insurance Number
-
-*We may need to contact you to discuss the claim and if you provide your telephone number this will help to avoid any delays.
+- **Previous surname (if applicable):** Plan number
+- **Daytime telephone number*:** Evening telephone number*
+- **Nationality:** Tax residency
+- **Your details:** [blank]
+- **Name:** [blank]
+- **Address:** [blank]
+- **Postcode:** [blank]
+- **Date of birth:** [blank]
+- **MM:** [blank]
+- **National Insurance Number:** [blank]
 
 ## Section 2
 
-Adviser Details
-
-Have you received advice from a firm or individual in connection with transferring your pension benefits?
-
-- [ ] Yes
-
-- [ ] No
-
-If 'Yes', please provide the following information:
-
-What is the name of the adviser?
-
-What is their business address?
-
-Postcode
-
-What is their FCA registration number?
-
-What are their FCA permissions?
-
-If applicable, what is the name and address of the company they represent?
-
-Postcode
-
-What is their website address?
-
-fy            a       t You can also call the FCA Consumer Helpline on 0800 111 6768 if you need any help checking the register).
+- **Yes:** [ ]
+- **No:** [ ]
+- **Have you received advice from a firm or individual in connection with transferring your pension benefits?:** If 'Yes', please provide the following information:
+- **Have you received advice from a firm or individual in connection with transferring your pension benefits? (additional):** What is the name of the adviser?
+- **Have you received advice from a firm or individual in connection with transferring your pension benefits? (additional):** What is their business address?
+- **Adviser Details:** [blank]
+- **Postcode:** [blank]
+- **What is their FCA registration number?:** [blank]
+- **What are their FCA permissions?:** [blank]
+- **If applicable, what is the name and address of the company they represent?:** [blank]
+- **Postcode:** [blank]
+- **What is their website address?:** [blank]
+- fy            a       t You can also call the FCA Consumer Helpline on 0800 111 6768 if you need any help checking the register).
 
 ## Section 3
 
-Receiving scheme details
-
-Plecs e  f    ce  e e e e ce e  e ee  me
-
-Please tick the box to confirm the type of receiving scheme
-
-- [ ] A u e     (        s  ms  a re s D   t      t  s d ed)
-
-- [ ] A registered pension scheme under Chapter 2, Part 4 Finance Act 2004 (as amended)
-
-Please confirm the type of the receiving scheme, for example, Personal Pension scheme.
-
-Name of the receiving scheme
-
-Receiving scheme address
-
-Postcode
-
-Name of Scheme Administrator
+- **A u e     (        s  ms  a re s D   t      t  s d ed):** [ ]
+- **A registered pension scheme under Chapter 2, Part 4 Finance Act 2004 (as amended):** [ ]
+- **Receiving scheme details:** [blank]
+- **Plecs e  f    ce  e e e e ce e  e ee  me:** [blank]
+- **Please tick the box to confirm the type of receiving scheme:** [blank]
+- **Please confirm the type of the receiving scheme, for example, Personal Pension scheme.:** [blank]
+- **Name of the receiving scheme:** [blank]
+- **Receiving scheme address:** [blank]
+- **Postcode:** [blank]
+- **Name of Scheme Administrator:** [blank]
 
 ## Section 4
 
-Receiving scheme approval/registration
-
-What is the HMRC Approval/Registration number?
-
-Please provide a copy of the pension schemes approval/registration letter issued by HMRC or a current dated screen shot from the HMRC pension scheme portal confirming details of the scheme.
-
-If the scheme does not have a HMRC Approval/Registration number, please confirm the type of scheme:
-
-<!-- page: 17 -->
+- **Receiving scheme approval/registration:** [blank]
+- **What is the HMRC Approval/Registration number?:** [blank]
+- Please provide a copy of the pension schemes approval/registration letter issued by HMRC or a current dated screen shot from the HMRC pension scheme portal confirming details of the scheme.
+- **If the scheme does not have a HMRC Approval/Registration number, please confirm the type of scheme::** [blank]
 
 ## Section 5
 
-Payment details
-
-Please confirm either:
-
-Direct Credit (Preferred) or Cheque details
-
-Direct credit details (if appropriate):
-
-Sort code
-
-Account number
-
-Account payee name
-
-Cheque details* (if appropriate) - only available if the receiving scheme address is in the UK
-
-Address
-
-Postcode
-
-Reference
-
-Contact name
-
-<!-- page: 18 -->
-
-*This must be the provider/insurer of the receiving scheme or, if there is no provider/insurer, the scheme administrator (for exa e  e s e n  t    se d t s mme administrator's link with the receiving scheme must be provided, for instance, a copy of the scheme's letter of approval/ registration.
-
-If your plan includes a guaranteed annuity rate or guaranteed mortality basis, you may have to take financial advice before we will be able to make a payment to you. To confirm this, you must complete a 'Supplementary Guarantee declaration' form o           i           o bes able to proceed with your claim without it.
+- **Payment details:** [blank]
+- **Please confirm either::** [blank]
+- **Direct Credit (Preferred) or Cheque details:** [blank]
+- **Direct credit details (if appropriate)::** [blank]
+- **Sort code:** [blank]
+- **Account number:** [blank]
+- **Account payee name:** [blank]
+- **Cheque details* (if appropriate) - only available if the receiving scheme address is in the UK:** [blank]
+- **Address:** [blank]
+- **Postcode:** [blank]
+- **Reference:** [blank]
+- **Contact name:** [blank]
+- If your plan includes a guaranteed annuity rate or guaranteed mortality basis, you may have to take financial advice before we will be able to make a payment to you. To confirm this, you must complete a 'Supplementary Guarantee declaration' form o           i           o bes able to proceed with your claim without it.
 
 ## Section 6
 
-Transfers to an occupational pension scheme
-
-If you are requesting to transfer to an occupational pension scheme please provide us with the following information, unless the receiving scheme is an authorised master trust scheme, authorised collective money purchase scheme or a public service pension scheme. If you are unable to provide us with this information, then we may not be able to pay the transfer to the receiving scheme.
+- **Transfers to an occupational pension scheme:** [blank]
+- If you are requesting to transfer to an occupational pension scheme please provide us with the following information, unless the receiving scheme is an authorised master trust scheme, authorised collective money purchase scheme or a public service pension scheme. If you are unable to provide us with this information, then we may not be able to pay the transfer to the receiving scheme.
 
 - 1 Please send us a letter from your employer on their headed notepaper confirming that:
 - your employer is a sponsoring employer of the scheme you want to transfer to;
@@ -577,9 +417,9 @@ If you are requesting to transfer to an occupational pension scheme please provi
 - o  g ds    o d    ( g  or s  or hh e receiving scheme for the 3 months up to the date of this transfer request; and
 - a copy of your personal bank or building society statements which show the deposit of your salary from the sponsoring employer of the receiving scheme. These must be provided for the 3 months up to the date of this transfer request.
 
-<!-- page: 19 -->
-
 ## Section 7
+
+[No details]
 
 ## Declaration
 
@@ -612,21 +452,18 @@ D
 
 Print name BLOCK CAPITALS
 
-<!-- page: 20 -->
-
 Pension
 
 <!-- image -->
 
-TCP
+Logo
 
 Dear Sir or Madam,
 
 ## Have you had your free Pension Wise appointment?
 
-Pension Wise is a free and impartial service from MoneyHelper that helps you understand what you can do with your pension money.
-
-We offer appointments with our highly-trained professionals to anyone aged 50 or over with a defined contribution (personal or workplace) pension. You can also explore your pension options on our website.
+- **Pension Wise is a free and impartial service from MoneyHelper that helps you understand what you can do with your pension money.:** [blank]
+- We offer appointments with our highly-trained professionals to anyone aged 50 or over with a defined contribution (personal or workplace) pension. You can also explore your pension options on our website.
 
 ## You'll get:
 
@@ -640,11 +477,12 @@ Yours faithfully,
 
 <!-- image -->
 
+Signature
+
 ## Rosie Cottrell
 
-Rosie Cottrell Service Delivery Manager PensionWise
-
-<!-- image -->
+- **Rosie Cottrell Service Delivery Manager PensionWise:** [blank]
+- **Cut out and keep:** [blank]
 
 ## Get your free appointment now
 
@@ -658,11 +496,13 @@ PW401823005-HM (12/21) CMS
 
 <!-- image -->
 
+Logo
+
 HM Government
 
 <!-- image -->
 
-<!-- page: 21 -->
+Logo
 
 ## Fund switch request
 
@@ -691,8 +531,6 @@ If you are changing your choice of funds, please ensure that you sign the declar
 
 Plan number: P10026-719-001/DL
 
-<!-- page: 22 -->
-
 ## Section 3: New fund selection for future payments
 
 If you wish to change where your future payments are invested, please complete the table below. Please list all funds you want to invest in, specifying the percentage you wish to have in each fund, using whole numbers and ensuring they add up to 100%.
@@ -711,8 +549,6 @@ If you wish to change where your future payments are invested, please complete t
 | Total                         | 100%                       |
 
 If you do not wish to change where your future payments will be invested you do not need to complete the table above.
-
-<!-- page: 23 -->
 
 ## Section 4: Declaration
 
@@ -749,8 +585,6 @@ From here, scroll down again to the following two sections:
 
 For details of the Zurich retirement planning fund range please visit Zurich.co.uk/targetretirementfunds each fund in the range targets a particular retirement objective to suit your need.
 
-<!-- page: 24 -->
-
 ## Personal Pension Plan Illustration
 
 ## PERSONAL DETAILS
@@ -779,8 +613,6 @@ This illustration assumes that no more regular contributions will be made. (All 
 
 In the event of a valid claim we would pay the value of the former protected rights fund.
 
-<!-- page: 25 -->
-
 ## What you might get when you retire
 
 After allowing for inflation, we've estimated that when you get to your retirement date your plan could be worth the equivalent of £106,000 in today's prices.
@@ -807,8 +639,6 @@ Oou  n Tn  yn n n    y  yar is based on these assumptions. How much you actually
 
 For example, if you choose\_ for part of your pension to continue to a \_dependant after you die, you'l1 get less than if you choose for it to be paid for your lifetime only. Or, if you choose a level pension, to start with it will be higher than a pension that increases each year but over time inflation wil1 reduce how much it will buy.
 
-<!-- page: 26 -->
-
 ## What next? To find out more go to zurich.co.uk/myillustration
 
 You can find information on how we estimate your pension, the assumptions we use and to see what retirement options you may have.
@@ -828,8 +658,6 @@ If you don't think you're going to have enough to live on, you might consider
 You'll1 find information, tools and links that give you everything you need to s             dr performing in comparison to others, and information on how to make changes to your plan such as switching funds and increasing payments.
 
 Otherwise, if you just want to speak to someone, you can call us. Although we won't be able to advise you what to do, we can outline the available options and arrange changes to your plan.
-
-<!-- page: 27 -->
 
 ## Personal Pension Plan Illustration
 
@@ -859,8 +687,6 @@ This illustration assumes that no more regular contributions will be made. (All 
 
 In the event of a valid claim we would pay the value of the former protected rights fund.
 
-<!-- page: 28 -->
-
 ## What you might get when you retire
 
 After allowing for inflation, we've estimated that when you get to your retirement date your plan could be worth the equivalent of £125,000 in today's prices.
@@ -887,8 +713,6 @@ Oou  n Tn  yn n n    y  yar is based on these assumptions. How much you actually
 
 For example, if you choose\_ for part of your pension to continue to a \_dependant after you die, you'l1 get less than if you choose for it to be paid for your lifetime only. Or, if you choose a level pension, to start with it will be higher than a pension that increases each year but over time inflation wil1 reduce how much it will buy.
 
-<!-- page: 29 -->
-
 ## What next? To find out more go to zurich.co.uk/myillustration
 
 You can find informatio on how we estimate your pension, the assumptions we use and to see what retirement options you may have.
@@ -909,9 +733,9 @@ You'll find information, tools and links that give you everything you need to s 
 
 Otherwise, if you just want to speak to someone, you can call us. Although we won't be able to advise you what to do, we can outline the available options and arrange changes to your plan.
 
-<!-- page: 30 -->
-
 <!-- image -->
+
+Logo
 
 United action against pension scams
 
@@ -925,29 +749,51 @@ Your pension is your future - keep it safe
 
 <!-- image -->
 
-<!-- image -->
+Logo
 
 <!-- image -->
 
-<!-- image -->
+Logo
 
 <!-- image -->
 
-<!-- image -->
+Logo
 
 <!-- image -->
 
-<!-- page: 31 -->
+Logo
 
 <!-- image -->
 
-<!-- image -->
+Logo
 
 <!-- image -->
 
-<!-- image -->
+Logo
 
 <!-- image -->
+
+Logo
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
 
 ## Is the ofer unexpected?
 
@@ -997,8 +843,6 @@ Website:
 
 stopthinkfraud.campaign.gov.uk
 
-<!-- page: 32 -->
-
 ## Zurich Pensions
 
 ## Fund charges and expenses
@@ -1015,9 +859,11 @@ To find out which funds are available under your product you ' ll need your plan
 
 <!-- image -->
 
+Logo
+
 <!-- image -->
 
-<!-- page: 33 -->
+Logo
 
 |                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     | Product codes                                                                     |
 |-----------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
@@ -1070,17 +916,11 @@ To find out which funds are available under your product you ' ll need your plan
 | Zurich BNY Mellon Multi Asset Growth AP             |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   | ✓ ✓ ✓                                                                             | ✓                                                                                 | ✓ ✓                                                                               | 0.06                                                                              | 0.1 0 0.75                                                                        | 0.50                                                                              |                                                                                   |                                                                                   |                                                                                   |
 | Zurich Embark Horizon Multi-Asset I AP              |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |                                                                                   |
 
-<!-- page: 34 -->
-
 | Product codes   |
 |-----------------|
 
-<!-- page: 35 -->
-
 * This fund is closed to new investment. However, if you ' re making a payment into the fund by Direct Debit this can continue.
 - **	 Zurich Retirement Funds target a particular retirement date range of three years. The year specified in the fund name is the middle year. For example: ' Zurich Target Lump Sum Fund 2023 AP ' might be suitable for you if you want to take your plan as cash and you ' re aiming to retire between January 2022 and December 2024. Please visit zurich.co.uk/ targetretirementfunds for more information about the funds, the assets they invest in and how they change over time.
-
-<!-- page: 36 -->
 
 ## Things you need to know
 
@@ -1107,8 +947,6 @@ We ' ve based this information on our current understanding of law and practice.
 
 Before taking any action you should always check with your adviser as we can ' t accept responsibility for any action taken based on this information alone.
 
-<!-- page: 37 -->
-
 ## Zurich Assurance Ltd
 
 Registered in England and Wales under company number 02456671. Registered Office: Unity Place, 1 Carfax Close, Swindon, SN1 1AP. www.zurich.co.uk Telephone: 0370 241 6950
@@ -1117,9 +955,9 @@ We may record or monitor calls to improve our service.
 
 <!-- image -->
 
-Z
+Logo
 
-<!-- page: 38 -->
+Z
 
 ## Pension transfer
 
@@ -1187,9 +1025,9 @@ Will you actually use them?
 
 <!-- image -->
 
-ZURICH
+Logo
 
-<!-- page: 39 -->
+ZURICH
 
 ## Fund choices?
 
@@ -1261,7 +1099,7 @@ Have you set a date to review your investments?
 
 <!-- image -->
 
-<!-- page: 40 -->
+Logo
 
 Subject: Confidential
 
@@ -1371,8 +1209,6 @@ Please note
 
 Zurich Assurance
 
-<!-- page: 41 -->
-
 1060/2015, of 20 November, on the organisation, supervision and solvency of insurers and reinsurers, it is stated that in the event of the insurer's liquidation, Spanish liquidation regulations do not apply.
 
 Each of the following companies has its registered office at Unity Place, 1 Carfax Close, Swindon, SN1 1AP.
@@ -1386,3 +1222,20 @@ Zurich Intermediary Group Limited is registered in England and Wales No. 0190911
 Any views or opinions expressed in this email are those of the author only. Communications may be monitored to improve our service and for security and regulatory purposes.
 
 The information contained in this message is confidential and may be legally privileged. This message is intended for the addressee(s) only. If you are not the intended recipient, please do not read, copy or otherwise use it and do not disclose it to anyone else. Please notify the sender of the delivery error and then delete the message from your system. Thank you for your assistance.
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- Attended a Pension Wise guidance appointment?*
+- For example, if you choose_ for part of your pension to continue to a _dependant after you die, you'l1 get less than if you choose for it to be paid for your lifetime only. Or, if you choose a level pension, to start with it will be higher than a pension that increases each year but over time inflation wil1 reduce how much it will buy.
+- Yo n r  nr      o    oby contacting the providers directly. You can get an estimate of_your state pension and track down any pensions you may have lost track of by following the online Lir            nt source of information.
+- You can find out how much you might get from other pensions and investments by contacting the providers directly. You can get an estimate_of your state pension and track down any pensions you may have lost track of by following the online TLin            nt source of' information.
+- HM Treasury
+- NECC
+- NATIONAL ECONOMIC CRIME CENTRE
+- PSIG
+- PENSION SCAMS INDUSTRY GROUP
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 8: [signature, 76 % confidence]

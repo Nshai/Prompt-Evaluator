@@ -148,6 +148,18 @@
           "ifAssertionAbsent": "Potential Concern: a recommendation with no stated reason cannot demonstrate suitability.",
           "ifEvidenceAbsent": "Note that the rationale is unsupported by any research or meeting record, and weight by how specific the rationale is.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "Only a reader can say whether two passages agree.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -268,6 +280,18 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern where the report asserts a comparison was carried out but no research document exists."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "Only a reader can say whether two passages agree.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -351,6 +375,18 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Where personalised claims cite preferences that appear nowhere in the file, treat as unsupported personalisation."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "Only a reader can say whether two passages agree.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -504,6 +540,18 @@
         "sufficiency": {
           "ifAssertionAbsent": "Potential Concern: no alternatives presented to the client.",
           "ifEvidenceAbsent": "Where the report claims options were assessed but no research document exists, treat the claim as unsupported."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -599,6 +647,18 @@
           "ifEvidenceAbsent": "Note as a gap; no existing arrangements were found to test the report's coverage against.",
           "ifBothAbsent": "No issue on this requirement; the client holds nothing existing.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -694,6 +754,18 @@
           "ifAssertionAbsent": "Potential Concern: a change is described with no statement of whether it is recommended or who will carry it out.",
           "ifEvidenceAbsent": "Assess on the report alone; the statement is the report's duty regardless of what the file holds.",
           "minEvidenceCategories": 0
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Moderate",
+          "note": "Established by lookup. An absence is not a demonstrated contradiction, so it is held below the severities reserved for one.",
+          "requiresCitation": false,
+          "mode": "Deterministic"
         }
       }
     },
@@ -788,6 +860,18 @@
           "ifAssertionAbsent": "No issue on this requirement; no open options were presented.",
           "ifEvidenceAbsent": "Potential Concern where the report leaves an option open and nothing in the file resolves it.",
           "minEvidenceCategories": 0
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -883,6 +967,18 @@
           "ifAssertionAbsent": "Note as a gap; raise it as a concern only where timing or responsibility bears on suitability.",
           "ifEvidenceAbsent": "Assess on the report alone.",
           "minEvidenceCategories": 0
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Moderate",
+          "note": "Established by lookup. An absence is not a demonstrated contradiction, so it is held below the severities reserved for one.",
+          "requiresCitation": false,
+          "mode": "Deterministic"
         }
       }
     },
@@ -983,6 +1079,18 @@
           "ifAssertionAbsent": "Not a finding on its own — a case need not raise estate planning.",
           "ifEvidenceAbsent": "Note as a gap: the report asserts a will or attorney status the file does not record.",
           "ifBothAbsent": "No finding."
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Moderate",
+          "note": "Established by lookup. An absence is not a demonstrated contradiction, so it is held below the severities reserved for one.",
+          "requiresCitation": false,
+          "mode": "Deterministic"
         }
       }
     }

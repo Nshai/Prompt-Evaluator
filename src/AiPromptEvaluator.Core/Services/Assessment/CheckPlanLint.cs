@@ -151,6 +151,48 @@ public static class CheckPlanLint
                     + "the requirement that it is about the report's own internal consistency."));
             }
 
+            // L8. A comparison needs two sides, and the plan has to supply both.
+            //
+            // The declared method says what the group will do with what it is given, and three of
+            // the five methods are binary: ValueMatch, RangeMatch and SetCoverage each compare a
+            // stated figure or set against something the file evidences. A group declaring one of
+            // them with no assertion paths, or with no evidence-side query, has declared a
+            // comparison it cannot make — and the outcome does not show it. It reports on whatever
+            // half it did receive, in the confident register of a comparison that closed.
+            //
+            // This is the cheap, decidable half of the collidability problem. The expensive half —
+            // whether a group's paths and its evidence categories are two sides of *one* question,
+            // rather than two sides of two — is not decidable from the plan alone: G9.10 selects
+            // assertion paths about exit penalties while declaring evidence category B, where
+            // certified court orders live, and nothing in either declaration says they do not
+            // belong together. That needs the assertion digest to route around rather than a rule
+            // to forbid.
+            var method = group.Comparison?.Method ?? string.Empty;
+
+            if (TwoSidedMethods.Contains(method))
+            {
+                if (group.AllCanonicalPaths.Count == 0)
+                {
+                    violations.Add(new Violation(
+                        plan.CheckId, group.GroupId, "L8",
+                        $"declares comparison method {method}, which compares the report's own "
+                        + "figure against the file, but selects no canonical paths. There is no "
+                        + "assertion side to compare, and the group will report on the evidence "
+                        + "alone without saying so. Name the paths the claim lives at, or state a "
+                        + "method that does not need one."));
+                }
+
+                if (!group.IsModelOnly && group.QueriedCategories.Count == 0)
+                {
+                    violations.Add(new Violation(
+                        plan.CheckId, group.GroupId, "L8",
+                        $"declares comparison method {method} but no query targets a document "
+                        + "category, so nothing corroborates the assertion. Either target the "
+                        + "categories the evidence lives in, or make the group model-only and say "
+                        + "in the requirement that it compares the report against itself."));
+                }
+            }
+
             // L6. Nothing in a plan may belong to one case only. See OneCaseOnly.
             foreach (var value in group.DeclaredEvidenceSections
                          .Concat(group.Queries.SelectMany(q => q.ExpectSignals ?? []))
@@ -314,6 +356,14 @@ public static class CheckPlanLint
         ("comparison.method",
             ["ValueMatch", "SetCoverage", "PresenceOnly", "RangeMatch", "NarrativeAlignment"]),
     ];
+
+    /// <summary>
+    /// Comparison methods that put a stated value against an evidenced one, so a group declaring
+    /// them needs both sides. PresenceOnly and NarrativeAlignment do not: the first asks whether
+    /// something was said at all, the second whether two pieces of prose agree in substance.
+    /// </summary>
+    private static readonly HashSet<string> TwoSidedMethods =
+        new(["ValueMatch", "RangeMatch", "SetCoverage"], StringComparer.OrdinalIgnoreCase);
 
     private static readonly string[] CategoryCodes =
         ["A", "B", "C", "D", "E", "F", "G", "H", "I"];

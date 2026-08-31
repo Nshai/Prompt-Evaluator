@@ -1,46 +1,26 @@
 ---
-source_path: "E/SW MT Plan Schedule.pdf"
-file_name: "SW MT Plan Schedule.pdf"
-category_code: E
-pages: 3
-characters: 13926
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: SW MT Plan Schedule.pdf
+converted: 2026-08-31T00:30:06Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 £211.32
 
 <!-- image -->
 
-SCOTTISHWIDOWS | MASTERTRUST
+Logo
 
 ## Plan Information Schedule
 
-The details below reflect the current data held on our system.
+- **The details below reflect the current data held on our system.:** [blank]
 
 ## Scheme details
 
-Plan number
-
-ZU4225575
-
-Scheme name
-
-SWMT - Scottish Widows Master Trust Section 101
-
-Scheme type
-
-Registration
-
-Group Occupational Money Purchase
-
-Chapter 2, Part 4 of the Finance Act 2004
-
-Pension Scheme Tax Reference (PSTR)
-
-00797091RQ
+- **Plan number:** ZU4225575
+- **Scheme name:** SWMT - Scottish Widows Master Trust Section 101
+- **Scheme type:** Group Occupational Money Purchase
+- **Registration:** Chapter 2, Part 4 of the Finance Act 2004
+- **Pension Scheme Tax Reference (PSTR):** 00797091RQ
 
 ## Personal details
 
@@ -51,31 +31,23 @@ Pension Scheme Tax Reference (PSTR)
 
 ## Fund details
 
-Current total fund / transfer value
-
-The current fund value as at the close of business on 23/09/2025. Please be aware that this value is not guaranteed and can go up and down on a daily basis.
-
-The member can invest in as many funds as they wish by logging into their online account using the details issued to them in their welcome pack. A full list of funds that the member can select can be found at https://www.scottishwidows.co.uk/save/mastertrust101
-
-You can also download Fund fact sheets (including SEDOL / ISIN codes) via the 'Investment choices', 'Pension Funds' option on the website.
+- **Current total fund / transfer value:** £211.32
+- The current fund value as at the close of business on 23/09/2025. Please be aware that this value is not guaranteed and can go up and down on a daily basis.
+- The member can invest in as many funds as they wish by logging into their online account using the details issued to them in their welcome pack. A full list of funds that the member can select can be found at https://www.scottishwidows.co.uk/save/mastertrust101
+- **You can also download Fund fact sheets (including SEDOL / ISIN codes) via the 'Investment choices', 'Pension Funds' option on the website.:** [blank]
 
 ## Charges information
 
-A full list of charges can be found via https://www.scottishwidows.co.uk/save/mastertrust101 and visiting the 'Library', followed by ' I nvestment choices and charges'.
-
-There is no charge for switches (fair use policy applied), transferring out, claiming benefits or upon being paid up.
-
-This plan does not facilitate adviser charging.
-
-<!-- page: 2 -->
+- **SCOTTISHWIDOWS:** [blank]
+- **MASTERTRUST:** [blank]
+- **A full list of charges can be found via https://www.scottishwidows.co.uk/save/mastertrust101 and visiting the 'Library', followed by ' I nvestment choices and charges'.:** [blank]
+- **There is no charge for switches (fair use policy applied), transferring out, claiming benefits or upon being paid up.:** [blank]
+- **This plan does not facilitate adviser charging.:** [blank]
 
 ## Current fund split
 
-Funds invested in Lifestyle Strategy:
-
-Yes:
-
-SWMT Balanced Targeting Flexible Access
+- **Funds invested in Lifestyle Strategy::** Yes:
+- **SWMT Balanced Targeting Flexible Access:** [blank]
 
 | DESCRIPTION                             |   QUANTITY |   PRICE | MARKET VALUE   | PORTFOLIO %   |
 |-----------------------------------------|------------|---------|----------------|---------------|
@@ -86,9 +58,8 @@ SWMT Balanced Targeting Flexible Access
 
 ## Current contributions rates
 
-Employer - N/A Employee - N/A Salary Exchange - N/A AVC - N/A
-
-Please note this member has no current regular contributions being made to their pension plan.
+- **Employer - N/A Employee - N/A Salary Exchange - N/A AVC - N/A:** [blank]
+- **Please note this member has no current regular contributions being made to their pension plan.:** [blank]
 
 ## Additional information
 
@@ -178,8 +149,6 @@ Money Purchase Annual Allowance triggered
 
 No
 
-<!-- page: 3 -->
-
 ## Transfer(s) in received
 
 | CEDING SCHEME   | DATE      | AMOUNT   |
@@ -200,17 +169,10 @@ Please note: A 'Direct Credit Payment' could refer to either an individual trans
 
 ## Withdrawals
 
-DATE
-
-N/A
-
-AMOUNT
-
-N/A
-
-NARRATIVE
-
-N/A
+- **N/A:** N/A
+- **NARRATIVE:** N/A
+- **DATE:** [blank]
+- **AMOUNT:** [blank]
 
 ## Notes
 

@@ -1,3 +1,9 @@
+---
+source: Suitability Report - Barnes.pdf
+converted: 2026-08-31T00:50:07Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Suitability Report Mr Anthony Barnes
 
 - **JTFAS:** [blank]
@@ -178,9 +184,9 @@ By making these changes, you will benefit from lower costs, appropriate risk ali
 
 ## Recommended Solution - Pension
 
-| New Plan                       | Total Investment Value   | Additional Contributions         |
-|--------------------------------|--------------------------|----------------------------------|
-| Aviva Pension Portfolio (SIPP) | £79,092.32               | £2,880 net (£3,600 gross) single |
+| New Plan                       | Total Investment Value   | Additional Contributions                              |
+|--------------------------------|--------------------------|-------------------------------------------------------|
+| Aviva Pension Portfolio (SIPP) | £79,092.32               | £2,880 net (£3,600 gross) single contribution 2025/26 |
 
 I have recommended a Personal Pension for the following reasons:
 
@@ -351,6 +357,8 @@ Source: FE Analytics)
 The below chart shows a volatility analysis of your existing pension funds (A) against the recommended funds (C - ISA &amp; GIA / B - Pension) over a 5-year period. I have also included the benchmark for your Risk Level 4 profile for comparison (D).
 
 <!-- image -->
+
+Scatter plot
 
 (Source: FE Analytics)
 
@@ -551,23 +559,23 @@ You have confirmed you each have a valid Will in place and from our discussions 
 - **[2] Critical Yield is the growth rate required from the new solution to match the projected maturity value of the pension solution.:** [blank]
 - **[3] Effect of switching is the change in the maturity value of the new solution assuming the fund experiences the same investment growth.:** [blank]
 
-|                            | Existing pension           | New solution               |
-|----------------------------|----------------------------|----------------------------|
-| Low growth rate - (0.00%)  | Low growth rate - (0.00%)  | Low growth rate - (0.00%)  |
-| Projected value at age 60  | £74,000                    | £74,000                    |
-| Reduction in yield         | 1.6%                       | 1.6%                       |
-| Critical yield             | -                          | 0.0%                       |
-| Effect of switching        | -                          | £0 or 0.0% decrease        |
-| Mid growth rate - (2.94%)  | Mid growth rate - (2.94%)  | Mid growth rate - (2.94%)  |
-| Projected value at age 60  | £83,300                    | £83,300                    |
-| Reduction in yield [1]     | 1.7%                       | 1.7%                       |
-| Critical yield [2]         | -                          | 2.9%                       |
-| Effect of switching [3]    | -                          | £0 or 0.0% decrease        |
-| High growth rate - (5.88%) | High growth rate - (5.88%) | High growth rate - (5.88%) |
-| Projected value at age 60  | £93,400                    | £93,400                    |
-| Reduction in yield         | 1.8%                       | 1.7%                       |
-| Critical yield             | -                          | 5.9%                       |
-| Effect of switching        | -                          | £0 or 0.0% decrease        |
+|                            | Existing pension   | New solution        |
+|----------------------------|--------------------|---------------------|
+| Low growth rate - (0.00%)  |                    |                     |
+| Projected value at age 60  | £74,000            | £74,000             |
+| Reduction in yield         | 1.6%               | 1.6%                |
+| Critical yield             | -                  | 0.0%                |
+| Effect of switching        | -                  | £0 or 0.0% decrease |
+| Mid growth rate - (2.94%)  |                    |                     |
+| Projected value at age 60  | £83,300            | £83,300             |
+| Reduction in yield [1]     | 1.7%               | 1.7%                |
+| Critical yield [2]         | -                  | 2.9%                |
+| Effect of switching [3]    | -                  | £0 or 0.0% decrease |
+| High growth rate - (5.88%) |                    |                     |
+| Projected value at age 60  | £93,400            | £93,400             |
+| Reduction in yield         | 1.8%               | 1.7%                |
+| Critical yield             | -                  | 5.9%                |
+| Effect of switching        | -                  | £0 or 0.0% decrease |
 
 [1] Reduction in Yield is the impact of product, platform and fund charges on the investment growth rate. For example, if the fund grows due to investment growth by 4% in a year and the reduction in yield is 2.5% the fund growth experienced will be 1.5%.
 
@@ -638,10 +646,9 @@ Interest distributions from authorised investment funds are typically paid gross
 
 Capital Gains - Capital gains above the annual exemption of £3,000 are taxed according to an individual's tax bracket at the following rates.
 
-| Non-Taxpayer                                                    | Basic Rate Taxpayer   | Higher Rate Taxpayer   | Additional Rate Taxpayer   |
-|-----------------------------------------------------------------|-----------------------|------------------------|----------------------------|
-| 18%                                                             | 24%                   |                        |                            |
-| (assuming total taxable income and gains do not exceed £37,700) | 24%                   |                        |                            |
+| Non-Taxpayer   | Basic Rate Taxpayer   | Higher Rate Taxpayer   | Additional Rate Taxpayer   |
+|----------------|-----------------------|------------------------|----------------------------|
+| 18%            | 18%                   | 24%                    | 24%                        |
 
 ## Individual Savings Account (ISA)
 
@@ -759,3 +766,10 @@ _The following details were present in Docling's structured JSON output but omit
 - If at any point there were insufficient liquid assets or accessible pensions to meet your expenditure, this would be shown by red bars on the chart. In this case, based on the current assumptions, no shortfall is projected throughout your lifetime.
 - Based on the cashflow analysis, your projected income throughout your lifetime is sufficient to meet your expenditure needs. The charts show no shortfall periods (indicated by red bars), meaning your current financial position and planned investments should support your desired lifestyle through to age 100. Your current surplus income, combined with your investment growth and pension arrangements, provides a solid foundation for your retirement planning.
 - This documentation is important and contains information regarding the products which I have recommended, particularly with regards to how the product works, its aims, risks and charges, together with its legal status, tax treatment and your cancellation rights. Therefore, please ensure you have read these documents carefully. If there are any points on which you are unsure, or require further clarification, please contact me and I will be pleased to explain these in greater detail.
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 5: [line_chart, 100 % confidence]
+- Image 6: [scatter_plot, 54 % confidence]
+- Image 7: [line_chart, 74 % confidence]
+- Image 8: [bar_chart, 100 % confidence]
+- Image 9: [signature, 95 % confidence]

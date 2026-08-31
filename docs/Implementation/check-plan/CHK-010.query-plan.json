@@ -192,6 +192,18 @@
         "sufficiency": {
           "ifAssertionAbsent": "Where the file records support needs the report never mentions, that gap is the finding.",
           "ifEvidenceAbsent": "Where the report claims support arrangements with nothing in the file, treat the claim as unsupported."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -281,6 +293,19 @@
         },
         "sufficiency": {
           "ifBothAbsent": "Note as a gap where vulnerability indicators are present."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -382,6 +407,18 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Where indicators are present and no adjustment is recorded anywhere, that is the finding."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -506,6 +543,18 @@
         "sufficiency": {
           "ifBothAbsent": "Where no vulnerability assessment exists anywhere in the case, record that as the finding — the overlay was never applied.",
           "ifEvidenceAbsent": "Where the report asserts no vulnerability but nothing in the file shows it was considered, treat the assertion as unsupported."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -599,6 +648,18 @@
           "ifEvidenceAbsent": "Note as a gap; a vulnerability asserted in the report with no record of how it was identified.",
           "ifBothAbsent": "No issue on this requirement; no vulnerability is recorded anywhere.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     }

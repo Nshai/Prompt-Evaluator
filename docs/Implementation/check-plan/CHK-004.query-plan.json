@@ -152,6 +152,19 @@
           "ifAssertionAbsent": "Note as a gap; the report should state the knowledge level it relied on.",
           "ifEvidenceAbsent": "Potential Concern: knowledge level asserted with no assessment on file.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -256,6 +269,18 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern where the recommendation relies on prior experience to justify complexity."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -363,6 +388,18 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern where a complex product is recommended and no product literature is on file."
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Moderate",
+          "note": "Established by lookup. An absence is not a demonstrated contradiction, so it is held below the severities reserved for one.",
+          "requiresCitation": false,
+          "mode": "Deterministic"
         }
       }
     },
@@ -452,6 +489,18 @@
         },
         "sufficiency": {
           "ifBothAbsent": "Potential Concern only where G4.3 identified a complex product."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -533,6 +582,18 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Potential Concern where the product is complex or the stated knowledge level is None or Limited."
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -625,6 +686,18 @@
           "ifAssertionAbsent": "No issue on this requirement where the report makes no claim about prior experience.",
           "ifEvidenceAbsent": "Potential Concern: prior experience asserted with no holdings or history in the file to support it.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -718,6 +791,18 @@
           "ifEvidenceAbsent": "Note as a gap; the explanation is asserted but not corroborated by a meeting record.",
           "ifBothAbsent": "No issue where the product is not complex.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     }

@@ -1,3 +1,9 @@
+---
+source: True-Potential-TrinityBridge-Balanced-20260317.pdf
+converted: 2026-08-31T00:56:06Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## True Potential TrinityBridge Balanced
 
 - **true:** potential
@@ -16,6 +22,8 @@ The True Potential TrinityBridge Balanced Fund returned 0.83% (net of fees). The
 ## Growth of £10,000 invested 5 years ago
 
 <!-- image -->
+
+Line chart
 
 - l True Potential TrinityBridge Balanced Acc*
 - l Morningstar UK Moderate Target Allocation Index**
@@ -51,6 +59,8 @@ The True Potential TrinityBridge Balanced Fund returned 0.83% (net of fees). The
 - The balanced approach of the fund strives to provide both growth and income, while managing short-term losses through a diversified mix of assets that moderate risk.
 
 <!-- image -->
+
+Logo
 
 ## Key fund information
 
@@ -101,23 +111,13 @@ The OCF of this fund is currently 0.69%. This means that if you invest £1000 in
 - **l:** [blank]
 - **l:** [blank]
 
-| Asset class                           | % of total exposure***   |    |
-|---------------------------------------|--------------------------|----|
-| l US Stocks                           | 39.38%                   |    |
-| l UK Stocks                           | 10.61%                   |    |
-| Global Treasury Bonds                 | 10.48%                   | l  |
-| l Gold                                | 6.15%                    |    |
-| l Cash and Cash Equivalents****       | 5.93%                    |    |
-| l Europe ex UK Equity Stocks          | 5.61%                    |    |
-| l UK Corporate Bond                   | 4.18%                    |    |
-| l UK Gilts                            | 4.01%                    |    |
-| l Global Corporate Bonds              | 3.98%                    |    |
-| l Global High Yield Bond (GBP Hedged) | 3.84%                    |    |
-| l Asia Pacific Stocks                 | 2.96%                    |    |
-| l Emerging Markets Stocks             | 2.20%                    |    |
-| l Alternatives                        | 0.68%                    |    |
+| Asset class                                                                                                                                                                                                                                                       | % of total exposure***                                                     |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| l US Stocks l UK Stocks l Global Treasury Bonds l Gold l Cash and Cash Equivalents**** l Europe ex UK Equity Stocks l UK Corporate Bond l UK Gilts l Global Corporate Bonds l Global High Yield Bond (GBP Hedged) l Asia Pacific Stocks l Emerging Markets Stocks | 39.38% 10.61% 5.61% 4.18% 4.01% 10.48% 6.15% 5.93% 3.98% 3.84% 2.96% 2.20% |
 
 <!-- image -->
+
+Pie chart
 
 ## Risks
 
@@ -172,3 +172,7 @@ _The following details were present in Docling's structured JSON output but omit
 - £12,000
 - £13,000
 - £14,000
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [line_chart, 100 % confidence]
+- Image 15: [pie_chart, 100 % confidence]

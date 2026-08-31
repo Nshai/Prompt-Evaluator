@@ -1,4 +1,12 @@
+---
+source: Risk profile report 13 07 2026 16 02 Kevin.docx
+converted: 2026-08-31T01:09:57Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 ########### 
 
@@ -13,6 +21,8 @@
 13 July 2026
 
 <!-- image -->
+
+Logo
 
 **Risk profile**
 
@@ -66,9 +76,13 @@ Projecting these details, along with the agreed risk level, produced the followi
 
 <!-- image -->
 
+Line chart
+
 Investment Projection Graph based on Agreed Risk Level
 
 <!-- image -->
+
+Line chart
 
 Investment Risk Comparison Graph based on Agreed Risk Level
 
@@ -172,3 +186,7 @@ _The following details were present in Docling's structured JSON output but omit
 
 ### Additional extracted text (not present in the base markdown export)
 - This report was prepared with data sourced from Defaqto Engage. Whilst every attempt has been made to ensure the accuracy of the data used in this report, items can change and we advise that you check the issues most important to you if you proceed with the purchase of the selected contract.
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 3: [line_chart, 97 % confidence]
+- Image 4: [line_chart, 97 % confidence]

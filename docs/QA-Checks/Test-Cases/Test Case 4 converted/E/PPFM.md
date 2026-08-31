@@ -1,3 +1,9 @@
+---
+source: PPFM.pdf
+converted: 2026-08-31T01:25:39Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Principles &amp; Practices of Financial Management
 
 - **■:** [blank]
@@ -148,8 +154,8 @@ The ultimate parent company of PAC is M&amp;G plc. M&amp;G plc also owns, direct
 
 | The Prudential Assurance Company Limited (PAC)   | The Prudential Assurance Company Limited (PAC)   | The Prudential Assurance Company Limited (PAC)   | The Prudential Assurance Company Limited (PAC)   | The Prudential Assurance Company Limited (PAC)   |
 |--------------------------------------------------|--------------------------------------------------|--------------------------------------------------|--------------------------------------------------|--------------------------------------------------|
-| With-Profits Fund                                | With-Profits Fund                                | Non-Profit Sub-Fund (NPSF)                       | General Insurance Fund                           | Other                                            |
-| With-Profits Sub-Fund (WPSF)                     | Defined Charge Participating Sub-Fund (DCPSF)    | Non-Profit Sub-Fund (NPSF)                       | General Insurance Fund                           | Other                                            |
+| With-Profits Fund                                | With-Profits Fund                                | Non-Profit Sub-Fund (NPSF)                       | Other                                            |                                                  |
+| With-Profits Sub-Fund (WPSF)                     | Defined Charge Participating Sub-Fund (DCPSF)    | Non-Profit Sub-Fund (NPSF)                       | Other                                            |                                                  |
 
 This diagram does not indicate relative sizes.
 
@@ -555,15 +561,9 @@ The Board may choose to amend the level of discretion applied in the determinati
 - Where a partial withdrawal is subject to an MVR the asset share is reduced by the proportion that the withdrawal amount bears to the policy value before any MVR deduction.
 - The Board may choose to amend the level of discretion applied in the determination of the MVR where required to protect the interest of continuing policyholders.
 
-| Income comprises credits for:   | Premiums Investment return (including unrealised gains) Miscellaneous profits Past excess surplus distributions (net of any clawback) of the Inherited Estate for eligible policies   |
-|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Outgo comprises charges for:    | Tax, including an allowance for tax on unrealised gains Guarantees and smoothing                                                                                                      |
-| Outgo comprises charges for:    | Mortality and morbidity                                                                                                                                                               |
-| Outgo comprises charges for:    | Shareholders' profit transfers                                                                                                                                                        |
-| Outgo comprises charges for:    | Miscellaneous losses                                                                                                                                                                  |
-| Outgo comprises charges for:    | Expenses and commission (net of any tax relief)                                                                                                                                       |
-| Outgo comprises charges for:    | Payments (including regular withdrawals, full or partial surrenders or switches)                                                                                                      |
-| Outgo comprises charges for:    |                                                                                                                                                                                       |
+| Income comprises credits for:   | Premiums Investment return (including unrealised gains) Miscellaneous profits Past excess surplus distributions (net of any clawback) of the Inherited Estate for eligible policies                                                                                                           |
+|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Outgo comprises charges for:    | Tax, including an allowance for tax on unrealised gains Guarantees and smoothing Mortality and morbidity Shareholders' profit transfers Miscellaneous losses Expenses and commission (net of any tax relief) Payments (including regular withdrawals, full or partial surrenders or switches) |
 
 Variations in asset share calculations for Income Choice Annuity and With-Profits Annuity are set out in section 1.3.8.
 
@@ -577,16 +577,9 @@ For the purposes of setting bonus rates sample asset shares are generally calcul
 - Where applicable, tax is charged to asset shares and PruFund net asset value through the net investment return, i.e. a deduction is made from the gross investment return in respect of the expected tax payable. This approach requires assumptions to be made about the deferral of realisation. These assumptions are reviewed on an annual basis or more regularly if required. Any difference between the assumed tax and the actual tax payable will be paid by the estate.
 - **Further detail on the components of the income and charges is included below.:** [blank]
 
-| Income comprises credits for:   | Premiums (purchase units) Investment return (including unrealised gains) Past excess surplus distributions of the Inherited Estate for eligible policies   |
-|---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Outgo comprises charges for:    | Tax, including an allowance for tax on unrealised gains                                                                                                    |
-| Outgo comprises charges for:    | Guarantees and smoothing                                                                                                                                   |
-| Outgo comprises charges for:    | Mortality and morbidity                                                                                                                                    |
-| Outgo comprises charges for:    | Shareholders' profit transfers                                                                                                                             |
-| Outgo comprises charges for:    | Expenses (net of any tax relief) Charges and/or commission                                                                                                 |
-| Outgo comprises charges for:    | (deducted by units or unit price)                                                                                                                          |
-| Outgo comprises charges for:    | Payments (including regular withdrawals, full or partial surrenders or switches)                                                                           |
-| Outgo comprises charges for:    |                                                                                                                                                            |
+| Income comprises credits for:   | Premiums (purchase units) Investment return (including unrealised gains) Past excess surplus distributions of the Inherited Estate for eligible policies                                                                                                                                                              |
+|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Outgo comprises charges for:    | Tax, including an allowance for tax on unrealised gains Guarantees and smoothing Mortality and morbidity Shareholders' profit transfers Expenses (net of any tax relief) Charges and/or commission (deducted by units or unit price) Payments (including regular withdrawals, full or partial surrenders or switches) |
 
 Further detail on the components of the income and charges is included below.
 
@@ -1190,7 +1183,7 @@ The investment return that is credited to asset shares will be determined by ref
 | Net asset value                                          | The unsmoothed fund value for PruFund investments                                                                                                                                                                                                                                                                                                                                                     |
 | Net asset value per unit                                 | The unsmoothed unit price for PruFund investments.                                                                                                                                                                                                                                                                                                                                                    |
 | Ordinary Branch (OB) Business                            | Business for which premiums are paid by cheque, direct debit or other banking means and not with a cash payment (as opposed to Industrial Branch business).                                                                                                                                                                                                                                           |
-| Principles                                               | The Principles define the overarching standards adopted in managing PAC's with- profits business to maintain the long-term solvency of the Fund for current and future policyholders and describe the approach used: • in meeting PAC's duty to with-profits policyholders, and                                                                                                                       |
+| Principles                                               | The Principles define the overarching standards adopted in managing PAC's with- profits business to maintain the long-term solvency of the Fund for current and future policyholders and describe the approach used: • in meeting PAC's duty to with-profits policyholders, and • in responding to longer-term changes in the business and economic environment.                                      |
 | Practices                                                | The Practices describe the approach used: • in managing PAC's with-profits business, and • in responding to changes in the business and economic environment in the shorter-term.                                                                                                                                                                                                                     |
 
 | Term/Phrase                  | Definition                                                                                                                                                                                                                                                                                                                                                |
@@ -1208,7 +1201,7 @@ The investment return that is credited to asset shares will be determined by ref
 | Unitised with-profits        | Another term for accumulating with-profits business, as defined above.                                                                                                                                                                                                                                                                                    |
 | With-Profits Actuary (WPA)   | Under the supervisory regime introduced on 1 January 2005, the WPA is appointed by a company to review material relevant to the operation of the with-profits business, with the specific duty to advise the Board on the reasonableness of how discretion has been exercised in applying the PPFM and how any conflicting interests have been addressed. |
 | With-Profits Committee (WPC) | A committee comprising at least three members, the majority of whom must be independent of the company, which provides an independent assessment of the way in which the company manages its with-profits business and how the company balances the rights and interests of policyholders and shareholders in relation to its With-Profits Fund.          |
-| With-Profits Fund            | The With-Profits Fund is the fund where PAC's with-profits business is written. This is divided into 2 sub-funds, the With-Profits Sub-Fund (WPSF), and the Defined Charge Participating Sub-Fund (DCPSF). With-profits policyholders are eligible to participate in the profits of the With-Profits                                                      |
+| With-Profits Fund            | The With-Profits Fund is the fund where PAC's with-profits business is written. This is divided into 2 sub-funds, the With-Profits Sub-Fund (WPSF), and the Defined Charge Participating Sub-Fund (DCPSF). With-profits policyholders are eligible to participate in the profits of the With-Profits Fund through discretionary distributions.            |
 | Working capital              | The capital of a business which is used in its day-to-day trading operations. For a with-profits fund, the working capital is also known as the Inherited Estate.                                                                                                                                                                                         |
 
 ## [pru.co.uk](http://www.pru.co.uk/)

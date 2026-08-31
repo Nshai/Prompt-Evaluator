@@ -1,4 +1,12 @@
+---
+source: Client report_Barnes Doc 2.PDF
+converted: 2026-08-31T00:39:31Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 ## Client report
 
@@ -31,21 +39,31 @@ This is a summary of the headline figures from your product(s).
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
 
-| Opening value:             | £59,017.42       | Closing value:   | £79,092.32   |
-|----------------------------|------------------|------------------|--------------|
-|  Opening value  Money in | £59,017.42 £0.50 | Change in value  | +£20,074.91  |
-|  Money out                | £0.00            | Change in value  | +£20,074.91  |
-|  Closing value            | £79,092.32       | Return           | +34.02%      |
+Icon
+
+<!-- image -->
+
+Icon
+
+| Opening value:                         | Closing value:                                                                                                                                                                                                                                  | £79,092.32                                                                                                                                                                                                                                      |
+|----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|  Opening value  Money in  Money out | Change in value Return                                                                                                                                                                                                                          | +£20,074.91                                                                                                                                                                                                                                     |
+|  Closing value                        |                                                                                                                                                                                                                                                 | +34.02%                                                                                                                                                                                                                                         |
+|                                        | The return performance figures and 'change in value' metrics will always return data based on all sub-accounts within the account, regardless of selection made on builder page. The return % has been calculated using the Simple Return basis | The return performance figures and 'change in value' metrics will always return data based on all sub-accounts within the account, regardless of selection made on builder page. The return % has been calculated using the Simple Return basis |
 
 ## Product information
 
 <!-- image -->
+
+Bar chart
 
 Account type Individual
 
@@ -69,6 +87,8 @@ This is a summary of your product instructions.
 
 <!-- image -->
 
+Icon
+
 | Pension Portfolio Pre- Retirement   | AV2075926-001   |
 |-------------------------------------|-----------------|
 | Employer regular payment            | None            |
@@ -85,20 +105,26 @@ This is a summary of your product(s) valuation.
 
 <!-- image -->
 
+Pie chart
+
 £79,092.32
 
 | Product                           | Account number   | Allocation   | Value      |
 |-----------------------------------|------------------|--------------|------------|
 | Pension Portfolio Pre- Retirement | AV2075926-001    | 100.00%      | £79,092.32 |
-| Total                             | AV2075926-001    | 100.00%      | £79,092.32 |
+| Total                             |                  | 100.00%      | £79,092.32 |
 
 <!-- image -->
+
+Icon
 
 ## Valuation detail as at 23/11/2025
 
 This is a breakdown of your investment valuation.
 
 <!-- image -->
+
+Icon
 
 ## Pension Portfolio Pre-Retirement AV2075926-001
 
@@ -119,10 +145,8 @@ Pension Portfolio Pre-Retirement total
 
 This is a summary of your product(s) opening and closing values, money movements, and monetary and percentage change.
 
-| Portfolio value as at 23 rd   | Change in value   | Return   |
-|-------------------------------|-------------------|----------|
-| November 2025                 | +£20,074.91       | +34.02%  |
-| £79,092.32                    |                   |          |
+| Portfolio value as at 23 rd November 2025 £79,092.32   | Change in value +£20,074.91   | Return +34.02%   |
+|--------------------------------------------------------|-------------------------------|------------------|
 
 | Product                          | Opening value   | Money in   | Money out   | Account transfers   | Change in value   | Return   | Closing value   |
 |----------------------------------|-----------------|------------|-------------|---------------------|-------------------|----------|-----------------|
@@ -141,6 +165,8 @@ This is a graph of your product(s) valuation and money movements plotted over ti
 
 <!-- image -->
 
+Line chart
+
 | Product   | Opening value   | Money In   | Money out   | Change in value   | Return   | Closing value   |
 |-----------|-----------------|------------|-------------|-------------------|----------|-----------------|
 | Total     | £59,017.42      | £0.50      | £0.00       | £20,074.91        | 34.02%   | £79,092.32      |
@@ -153,9 +179,11 @@ This is a graph of your investment performance plotted over time. The performanc
 
 <!-- image -->
 
-| Investment      | 3 months   | 1 year   | 3 years   | 5 years   | Since 24 November 2022   |
-|-----------------|------------|----------|-----------|-----------|--------------------------|
-| Portfolio total | 3.73%      | 9.43%    | 33.91%    | 41.83%    | 33.91%                   |
+Line chart
+
+| Investment        | 3 months   | 1 year   | 3 years   | 5 years   | Since 24 November 2022   |
+|-------------------|------------|----------|-----------|-----------|--------------------------|
+| ■ Portfolio total | 3.73%      | 9.43%    | 33.91%    | 41.83%    | 33.91%                   |
 
 Cumulative performance is the percentage growth over the period shown. All cumulative performance figures are up until the last price point. Where no past performance figure is shown for the product(s) then performance does not exist for that time period, as the product(s) may not have been available for the full time period.
 
@@ -172,6 +200,8 @@ More information about charges and how these affect your investment can be found
 This is a graph of your investment performance plotted over a defined 12 month time period. The performance figures do not include product charges, money paid in or out.
 
 <!-- image -->
+
+Bar chart
 
 Time
 
@@ -195,13 +225,15 @@ This is a chart of your product(s) investment and geographic allocation.
 
 <!-- image -->
 
-|                  | Region        | Allocation   |
-|------------------|---------------|--------------|
-| ●                | North America | 46.80%       |
-| ● United Kingdom |               | 25.80%       |
-| ● Europe         | 11.66%        |              |
-| ● Asia Pacific   |               | 7.68%        |
-| ●                | Japan         | 4.52%        |
+Geographical map
+
+|    | Region         | Allocation   |
+|----|----------------|--------------|
+| ●  | North America  | 46.80%       |
+| ●  | United Kingdom | 25.80%       |
+| ●  | Europe         | 11.66%       |
+| ●  | Asia Pacific   | 7.68%        |
+| ●  | Japan          | 4.52%        |
 
 |    | Region                | Allocation   |
 |----|-----------------------|--------------|
@@ -217,17 +249,21 @@ This is a chart of your product(s) investment asset class allocation.
 
 <!-- image -->
 
+Pie chart
+
 ## Sector allocation as at 23/11/2025
 
 This is a chart of your product(s) investment stock sector allocation.
 
 <!-- image -->
 
-| Asset class    | Allocation   |
-|----------------|--------------|
-| ● Cash         | 0.03%        |
-| ● Multi-Asset  | 99.97%       |
-| ● Unclassified | 0.00%        |
+Bar chart
+
+| Asset class   | Asset class   | Allocation   |
+|---------------|---------------|--------------|
+| ●             | Cash          | 0.03%        |
+| ●             | Multi-Asset   | 99.97%       |
+| ●             | Unclassified  | 0.00%        |
 
 ## Largest holdings as at 23/11/2025
 
@@ -235,20 +271,26 @@ This is a chart of your product(s) investment top ten largest holdings allocatio
 
 <!-- image -->
 
+Bar chart
+
 ## Summary from 24/11/2022 to 23/11/2025
 
 This is a summary of your product(s) money paid in, money taken out and charges.
 
 <!-- image -->
 
-| Product                           | Money in   | Money out   | Charges   |
-|-----------------------------------|------------|-------------|-----------|
-| Pension Portfolio Pre- Retirement | £0.50      | £0.00       | £637.92   |
-| Total                             | £0.50      | £0.00       | £637.92   |
+Icon
+
+| Product                | Money in   | Money out   | Charges   |
+|------------------------|------------|-------------|-----------|
+| Pension Portfolio Pre- | £0.50      | £0.00       | £637.92   |
+| Total                  | £0.50      | £0.00       | £637.92   |
 
 ## Money In
 
 <!-- image -->
+
+Icon
 
 | Product                           | Regular payment   | Single payment   | Transfer   | Interest Distributions   | Income Distributions   | Total   |
 |-----------------------------------|-------------------|------------------|------------|--------------------------|------------------------|---------|
@@ -258,6 +300,8 @@ This is a summary of your product(s) money paid in, money taken out and charges.
 ## Money Out
 
 <!-- image -->
+
+Icon
 
 | Product                           | Tax free cash   | Drawdown income   | Transfer   | Dividend   | Withdrawals   | Total   |
 |-----------------------------------|-----------------|-------------------|------------|------------|---------------|---------|
@@ -269,6 +313,8 @@ This is a summary of your product(s) money paid in, money taken out and charges.
 ## Charges
 
 <!-- image -->
+
+Icon
 
 | Product                           | Adviser charge   | Aviva charge   | Discretionary manager charge   | Total   |
 |-----------------------------------|------------------|----------------|--------------------------------|---------|
@@ -354,3 +400,14 @@ _The following details were present in Docling's structured JSON output but omit
 - Vanguard U.K. Investment Grade Bond
 - Index Fund
 - Vanguard Japan Stock Index Fund
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 8: [bar_chart, 75 % confidence]
+- Image 10: [pie_chart, 60 % confidence]
+- Image 13: [line_chart, 100 % confidence]
+- Image 14: [line_chart, 100 % confidence]
+- Image 15: [bar_chart, 100 % confidence]
+- Image 16: [geographical_map, 100 % confidence]
+- Image 17: [pie_chart, 87 % confidence]
+- Image 18: [bar_chart, 100 % confidence]
+- Image 19: [bar_chart, 100 % confidence]

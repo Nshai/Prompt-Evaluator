@@ -1,14 +1,12 @@
 ---
-source_path: "G/Pension switch report - updated.docx"
-file_name: "Pension switch report - updated.docx"
-category_code: G
-pages: 1
-characters: 46570
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: false
+source: Pension switch report - updated.docx
+converted: 2026-08-31T00:35:13Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
 
 <!-- image -->
+
+Logo
 
 ########### 
 
@@ -23,6 +21,8 @@ page_provenance: false
 23 October 2025
 
 <!-- image -->
+
+Logo
 
 ########### Recommendation
 
@@ -100,6 +100,8 @@ The figures assume that you switch your existing funds and continue the same lev
 
 <!-- image -->
 
+Logo
+
 ########### 
 
 ########### 
@@ -109,6 +111,8 @@ The figures assume that you switch your existing funds and continue the same lev
 ########### XXXX
 
 <!-- image -->
+
+Logo
 
 **Contents**
 
@@ -376,6 +380,8 @@ The analysis is based on consolidating the existing pensions into a new solution
 
 <!-- image -->
 
+Bar chart
+
 The following graph is based on the existing pension and chosen new solution growing at the same rate, over the same term and the effect charges have on the maturity value.
 
 #### Benefits
@@ -431,10 +437,10 @@ This results in a shortfall in the death benefit immediately after the switch of
 
 The client's portfolio contains the following investments:
 
-| Investment                                                   | Provider                                         | ISIN         | Risk controlled   | Diamond rating  [1]   | Family diamond rating  [1]   |    % Invested |
-|--------------------------------------------------------------|--------------------------------------------------|--------------|-------------------|-----------------------|------------------------------|---------------|
-| CT Universal MAP Balanced Fund C Acc (GBP)                   | Columbia Threadneedle Fund Management Limited    | GB00BF99W060 | <!-- image -->    |                       | <!-- image -->               |         50.00 |
-| HSBC Global Strategy Balanced Portfolio Accumulation C (GBP) | HSBC Asset Management (Fund Services UK) Limited | GB00B76WP695 |                   |                       | <!-- image -->               |         50.00 |
+| Investment                                                   | Provider                                         | ISIN         | Risk controlled      | Diamond rating  [1]   | Family diamond rating  [1]   |    % Invested |
+|--------------------------------------------------------------|--------------------------------------------------|--------------|----------------------|-----------------------|------------------------------|---------------|
+| CT Universal MAP Balanced Fund C Acc (GBP)                   | Columbia Threadneedle Fund Management Limited    | GB00BF99W060 | <!-- image -->  Logo |                       | <!-- image -->  Logo         |         50.00 |
+| HSBC Global Strategy Balanced Portfolio Accumulation C (GBP) | HSBC Asset Management (Fund Services UK) Limited | GB00B76WP695 |                      |                       | <!-- image -->  Logo         |         50.00 |
 
 **[1] Defaqto Diamond Rating**
 
@@ -526,6 +532,8 @@ This alternative comparison included retaining one or more of the existing pensi
 
 <!-- image -->
 
+Bar chart
+
 The following graph shows the projected maturity value based on taking no action (retaining all existing pensions) compared to switching some of the existing pensions into a new solution.
 
 [1] Maturity value is the sum of all the maturity values. Product providers may have used different growth rates to determine the maturity values
@@ -574,6 +582,8 @@ This alternative comparison included retaining one or more of the existing pensi
 
 <!-- image -->
 
+Bar chart
+
 The following graph shows the projected maturity value based on taking no action (retaining all existing pensions) compared to switching some of the existing pensions into a new solution.
 
 [1] Maturity value is the sum of all the maturity values. Product providers may have used different growth rates to determine the maturity values
@@ -621,6 +631,8 @@ This alternative comparison included retaining one or more of the existing pensi
 * Total maturity value is the sum of all projected maturity values rounded down to three significant figures
 
 <!-- image -->
+
+Bar chart
 
 The following graph shows the projected maturity value based on taking no action (retaining all existing pensions) compared to switching some of the existing pensions into a new solution.
 
@@ -801,3 +813,12 @@ Charge Payable - Annually Charge Applied Monthly
 
 
 Arrears/Advance - Arrears
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 5: [bar_chart, 100 % confidence]
+- Image 12: [bar_chart, 100 % confidence]
+- Image 13: [bar_chart, 100 % confidence]
+- Image 14: [bar_chart, 100 % confidence]

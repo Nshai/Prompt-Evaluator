@@ -1,3 +1,9 @@
+---
+source: Meeting Summary.docx
+converted: 2026-08-31T00:54:01Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 **Meeting Summary**
 
 | Client(s)          | Melanie Anness                                                       | Melanie Anness                                                       | Melanie Anness                                                       |

@@ -1,14 +1,8 @@
 ---
-source_path: "E/SW Further Info 4.pdf"
-file_name: "SW Further Info 4.pdf"
-category_code: E
-pages: 3
-characters: 4442
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: SW Further Info 4.pdf
+converted: 2026-08-31T00:29:52Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 From:
 
@@ -56,8 +50,6 @@ hƩps://adviser.scoƫshwidows.co.uk/assets/literature/docs/wd1174sw.pdf
 
 AddiƟonal informaƟon:
 
-<!-- page: 2 -->
-
 *       The member can invest into as many of the available funds as they wish.
 *       Market Value Adjustment/ReducƟon are both not applicable.
 *       I can also confirm that there are no guarantees, discounts or bonuses aƩached to this member's plan.
@@ -85,10 +77,17 @@ If your aƩachments are not showing please make sure you have Adobe Reader, v7.0
 
 ## Best regards,
 
-Kiran Morley| Pension Administrator | Workplace Savings
+- The aƩached documentaƟon should provide you with all the informaƟon you require, however if you do need anything further this can be obtained through our website, hƩps://www.scoƫshwidows.co.uk/save/mastertrust101
+- Should you have any queries please call the Support Centre on freephone 0800 032 1260, or +44 113 366 0159 if calling from overseas, alternaƟvely email us at
+- workplacesavings@scoƫshwidows.co.uk<mailto:workplacesavings@scoƫshwidows.co.uk>. Our offices are open Monday to Friday 8am to 6pm. We're happy to help.
+- **Need help? Chat to a member of our team online at Money4Life (scoƫshwidows.co.uk) We're available Monday to Friday, between 9am and 5pm.:** [blank]
+- For your security and data protecƟon we advise not to send any personal details or informaƟon via email unless you are confident you are using a secure or password protected system.
+- If your aƩachments are not showing please make sure you have Adobe Reader, v7.0 or above. There'll be a link in the secure email giving you the chance to download the latest version. This will also need to be set as your default programme, to set this as your default programme try: Start menu - type default - select default programmes - set your default programmes - select the Adobe v7.0 or above - set as default programme.
+- **Kiran Morley| Pension Administrator | Workplace Savings:** [blank]
+- **Tel No. 0800 587 1912 | Scoƫsh Widows Workplace Savings, PO Box 24173, 69 Morrison Street, EDINBURGH, EH3 1HP:** [blank]
 
-Tel No. 0800 587 1912 | Scoƫsh Widows Workplace Savings, PO Box 24173, 69 Morrison Street, EDINBURGH, EH3 1HP
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
 
-<!-- page: 3 -->
-
-Follow us @&lt;hƩp://www.twiƩer.com/scoƫshwidows&gt;scoƫshwidows&lt;hƩp://www.twiƩer.com/scoƫshwidows&gt; or @&lt;hƩp://www.twiƩer.com/swidowsadviser&gt;SWidowsAdviser&lt;hƩp://www.twiƩer.com/swidowsadviser&gt; Like us on Facebook&lt;hƩp://www.facebook.com/scoƫshwidows&gt; | Follow us on LinkedIn&lt;hƩp://www.linkedin.com/groups?gid=4805538&amp;trk=myg\_ugrp\_ovr&gt;
+### Additional extracted text (not present in the base markdown export)
+- Follow us @<hƩp://www.twiƩer.com/scoƫshwidows>scoƫshwidows<hƩp://www.twiƩer.com/scoƫshwidows> or @<hƩp://www.twiƩer.com/swidowsadviser>SWidowsAdviser<hƩp://www.twiƩer.com/swidowsadviser> Like us on Facebook<hƩp://www.facebook.com/scoƫshwidows> | Follow us on LinkedIn<hƩp://www.linkedin.com/groups?gid=4805538&trk=myg_ugrp_ovr>

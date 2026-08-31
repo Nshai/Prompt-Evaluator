@@ -477,9 +477,22 @@ public sealed class CaseDocumentIndexer : ICaseDocumentIndexer
         {
             throw;
         }
+        // An exception the app raised about itself already names the field to change and the
+        // reason. Wrapping it adds a sentence saying the model "could not be reached" — which is
+        // false, the endpoint answered — followed by advice to check the URL, the key and the
+        // model, none of which is wrong. The precise message then appears at the bottom of a
+        // paragraph telling the reader to look somewhere else.
+        catch (InvalidOperationException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
-            var baseUrl = _settings.ResolveBaseUrl();
+            // The embedding endpoint, not the chat one. This message exists to catch a
+            // misconfigured embedding service and it used to print the chat base URL — so it
+            // named a URL that was very likely correct, and its "add /v1" hint pointed at the
+            // field that was not the problem.
+            var baseUrl = _settings.ResolveEmbeddingBaseUrl();
 
             // A 404 here is nearly always the base URL missing its version segment: the client
             // appends "/embeddings" to whatever is configured, so ".../v1" is what it needs.
@@ -491,7 +504,8 @@ public sealed class CaseDocumentIndexer : ICaseDocumentIndexer
 
             throw new InvalidOperationException(
                 $"The embedding model \"{_settings.EmbeddingModel}\" could not be reached at "
-                + $"{baseUrl}. Check the base URL, API key and embedding model in Settings."
+                + $"{baseUrl}. Check the embedding base URL, embedding API key and embedding model "
+                + "in Settings; where those are blank the chat endpoint and key are used instead."
                 + $"{hint}\n\n{ex.Message.Trim()}", ex);
         }
 
@@ -527,7 +541,8 @@ public sealed class CaseDocumentIndexer : ICaseDocumentIndexer
     /// <summary>How the documents are split, for the load report.</summary>
     public string ChunkingDescription =>
         $"semantic similarity ({_settings.EmbeddingModel}), max {Math.Max(64, _settings.MaxTokensPerChunk)} "
-        + $"tokens per chunk, {_settings.ChunkOverlapTokens} overlap";
+        + $"tokens per chunk, {_settings.ChunkOverlapTokens} overlap"
+        + (_settings.TableAwareChunking ? ", tables kept whole" : string.Empty);
 
     /// <summary>
     /// The semantic chunker, driven by the same embedding generator the search uses — the
@@ -544,7 +559,14 @@ public sealed class CaseDocumentIndexer : ICaseDocumentIndexer
             OverlapTokens = Math.Clamp(_settings.ChunkOverlapTokens, 0, Math.Max(64, _settings.MaxTokensPerChunk) - 1),
         };
 
-        return new SemanticSimilarityChunker(_embeddings, options);
+        var semantic = new SemanticSimilarityChunker(_embeddings, options);
+
+        // Tables are cut by a similarity-and-budget chunker wherever the budget runs out, which
+        // delivers a header row without figures or figures without a header row. The findings that
+        // turn on reading one row against its column heading are the ones the benchmark counts.
+        return _settings.TableAwareChunking
+            ? new TableAwareChunker(semantic)
+            : semantic;
     }
 
     private static string Compose(string? context, string content) =>

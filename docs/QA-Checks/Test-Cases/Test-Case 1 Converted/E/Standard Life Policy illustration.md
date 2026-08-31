@@ -1,16 +1,12 @@
 ---
-source_path: "E/Standard Life Policy illustration.pdf"
-file_name: "Standard Life Policy illustration.pdf"
-category_code: E
-pages: 4
-characters: 6786
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: Standard Life Policy illustration.pdf
+converted: 2026-08-31T00:27:49Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
 
-<!-- page: 1 -->
-
 <!-- image -->
+
+Icon
 
 ## There's a lot to look forward to
 
@@ -22,41 +18,19 @@ The Penslon Lab The Dock 75 Exploration Drive Leicester Leicestershire LE45NU
 
 1 October 2025
 
-## Your personal illustration to help you plan for retirement
-
-<!-- image -->
-
 ## What you could get back
 
-Your pension pot could be:
-
-This could give an annual income for life before tax of:
-
-£3,250
-
-£300
-
-These figures are based on the assumed payments and investments shown in this document. We've used an investment return of 2.0% per year after inflation, and a retirement date of 6 June 2031.
-
-<!-- image -->
-
-E
+- **Your pension pot could be::** This could give an annual income for life before tax of:
+- £3,250
+- £300
+- These figures are based on the assumed payments and investments shown in this document. We've used an investment return of 2.0% per year after inflation, and a retirement date of 6 June 2031.
 
 ## The value of your plan
 
-Your plan value at 1 October 2025 is:
-
-£3,002.02
-
-Any payments or instructions given to us3working days before this date may not be included in the plan value shown.
-
-We've assumed no f further r payments will Il be paid.
-
-<!-- image -->
-
-RECEIVED 06OCT2025
-
-<!-- image -->
+- **Your plan value at 1 October 2025 is::** Any payments or instructions given to us3working days before this date may not be included in the plan value shown.
+- **E:** [blank]
+- £3,002.02
+- **We've assumed no f further r payments will Il be paid.:** [blank]
 
 ## standardlife.co.uk
 
@@ -66,7 +40,11 @@ Update your address
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
 
 See your current value
 
@@ -78,21 +56,7 @@ Date of birth Plan number
 
 ## Financial advice
 
-We recommend that you speak to a financial adviser about the options that are available to you.
-
-<!-- image -->
-
-Continued
-
-<!-- image -->
-
-<!-- page: 2 -->
-
-<!-- image -->
-
-Your investments
-
-The table below shows the investments you have selected. The assumed returns and charges used in this illustration are based on your investments.
+- **We recommend that you speak to a financial adviser about the options that are available to you.:** [blank]
 
 | Investment                                         | Currentplan value   |
 |----------------------------------------------------|---------------------|
@@ -102,13 +66,15 @@ The table below shows the investments you have selected. The assumed returns and
 
 <!-- image -->
 
-Lower return | Pension pot | of -1.0% | £2,750 | Annual income | per year | £219 | Mid return | Pension pot | of 2.0% | £3,250 | Annual income | per year | £300 | Pension pot | Higher return | £3,830 | of 5.0% | Annual income | per year | £403
+Flow chart
 
 See the Important information section for the assumptions used to calculate these figures.
 
 For more information on the funds and investments you've chosen go to standardlife.co.uk/funds
 
 <!-- image -->
+
+Icon
 
 ## Charges and discounts on your plan
 
@@ -121,15 +87,13 @@ The assumed average charges each year used in this illustration are:
 
 <!-- image -->
 
-Charges | Total | charge | Fund charges | 1.0% | 0.5% | Discounts | -0.5%
+Bar chart
 
 The discounts shown reduce the total chargeson your plan.
 
 The charges shown are averages calculated over the full duration of the illustration.
 
 The charges are determined by the investments you have selected and the terms of your plan. You can find more detail about the charges at standardlife.co.uk
-
-<!-- page: 3 -->
 
 ## How charges affect the value of your plan
 
@@ -148,11 +112,9 @@ The table above shows that all charges would reduce your investment return from 
 
 You can use reduction in growth figures to compare charges between similar products.
 
-<!-- page: 4 -->
-
 <!-- image -->
 
-Important information
+Logo
 
 It's essential for you to note that this illustration is based on a number of assumptions so your benefits at retirement could be very different. Tax rates or inflation rates could change and charges may vary. The value of investments can go down as well as up and you couldget back less than you paid in.
 
@@ -180,16 +142,44 @@ Your plan gives you options when you retire. We've illustrated what the benefits
 
 <!-- image -->
 
+Icon
+
 Login at standardlife.co.ukto:
 
 <!-- image -->
+
+Icon
 
 Update your address See your current value Make changes to your plan
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
 
 Call us on 0345 606 0012. Monday to Friday, 9am - 5pm. Call charges will vary. Write to us at Standard Life House, 30 Lothian Road, Edinburgh, EH1 2DH
 
 Phoenix Life Limited, trading as Standard Life, is registered in England and Wales (1016269) at 1 Wythall Green Way, Wythall, Birmingham, B47 6WG. Phoenix Life Limited is authorised by the Prudential Regulation Authority and regulated by the Financial Conduct Authority and the Prudential Regulation Authority. Phoenix Life Limited uses the Standard Life brand, name and logo, under licence from Phoenix Group Management Services Limited.
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- Your personal illustration to help you plan for retirement
+- RECEIVED 06OCT2025
+- The table below shows the investments you have selected. The assumed returns and charges used in this illustration are based on your investments.
+- Lower return
+- of -1.0%
+- £2,750
+- £219
+- Mid return
+- Higher return
+- £3,830
+- of 5.0%
+- £403
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 4: [qr_code, 98 % confidence]

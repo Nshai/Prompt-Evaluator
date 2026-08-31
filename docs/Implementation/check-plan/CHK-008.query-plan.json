@@ -185,6 +185,18 @@
         "sufficiency": {
           "ifAssertionAbsent": "Potential Concern: a report presenting only benefits is not fair, clear and not misleading.",
           "ifEvidenceAbsent": "Assess on the report alone; note the absence of research or product literature to test completeness against."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -305,6 +317,18 @@
         },
         "sufficiency": {
           "ifEvidenceAbsent": "Note that no product literature is on file to verify risk coverage against."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -410,6 +434,18 @@
         },
         "sufficiency": {
           "ifAssertionAbsent": "Potential Concern where the recommendation has a tax consequence (encashment, crystallisation, contribution)."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -496,6 +532,18 @@
         },
         "sufficiency": {
           "ifBothAbsent": "Potential Concern: loss scenarios are explicitly named by this check."
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Moderate",
+          "note": "Established by lookup. An absence is not a demonstrated contradiction, so it is held below the severities reserved for one.",
+          "requiresCitation": false,
+          "mode": "Deterministic"
         }
       }
     },
@@ -597,6 +645,18 @@
         },
         "sufficiency": {
           "ifAssertionAbsent": "Record that no dedicated risk or disadvantages section exists and note where risk content was found instead."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "Only a reader can say whether two passages agree.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -689,6 +749,18 @@
           "ifAssertionAbsent": "Potential Concern where features exist in the file: the report is silent about what is being lost.",
           "ifEvidenceAbsent": "No issue on this requirement where nothing is being replaced.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -783,6 +855,18 @@
           "ifAssertionAbsent": "Potential Concern where costs rise or projections fall and the report does not say why that is acceptable.",
           "ifEvidenceAbsent": "Assess on the report alone.",
           "minEvidenceCategories": 0
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "Only a reader can say whether two passages agree.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     },
@@ -895,6 +979,18 @@
           "ifAssertionAbsent": "Potential Concern: the report discloses no risks at all.",
           "ifEvidenceAbsent": "Assess the report's disclosure on its own terms; nothing in the file adds to it.",
           "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
         }
       }
     }

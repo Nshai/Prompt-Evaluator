@@ -25,6 +25,11 @@ partial class ConfigurationForm
     private Label selectedModelLabel;
     private ComboBox selectedModelComboBox;
     private Button chatTestButton;
+    private Button embeddingTestButton;
+    private Label embeddingProviderLabel;
+    private ComboBox embeddingProviderComboBox;
+    private Label chatProviderLabel;
+    private ComboBox chatProviderComboBox;
     private Label embeddingModelLabel;
     private TextBox embeddingModelTextBox;
     private FlowLayoutPanel modelsNumericRow;
@@ -110,6 +115,23 @@ partial class ConfigurationForm
     private Label embeddingCharsLabel;
     private NumericUpDown embeddingCharsUpDown;
     private CheckBox coreQueriesOnlyCheckBox;
+    private CheckBox tableAwareChunkingCheckBox;
+    private CheckBox hybridRetrievalCheckBox;
+    private FlowLayoutPanel assertionDigestRow;
+    private CheckBox assertionDigestCheckBox;
+    private Label assertionDigestCharsLabel;
+    private NumericUpDown assertionDigestCharsUpDown;
+    private Label joinedAssertionsLabel;
+    private NumericUpDown joinedAssertionsUpDown;
+    private FlowLayoutPanel narrationRow;
+    private CheckBox pictureNarrationCheckBox;
+    private CheckBox tableNarrationCheckBox;
+    private Label narrationModelLabel;
+    private TextBox narrationModelTextBox;
+    private Label minimumImageBytesLabel;
+    private NumericUpDown minimumImageBytesUpDown;
+    private Label maxImagesLabel;
+    private NumericUpDown maxImagesUpDown;
     private Label embeddingBaseUrlLabel;
     private TextBox embeddingBaseUrlTextBox;
     private Label embeddingApiKeyLabel;
@@ -164,6 +186,11 @@ partial class ConfigurationForm
         selectedModelLabel = new Label();
         selectedModelComboBox = new ComboBox();
         chatTestButton = new Button();
+        embeddingTestButton = new Button();
+        embeddingProviderLabel = new Label();
+        embeddingProviderComboBox = new ComboBox();
+        chatProviderLabel = new Label();
+        chatProviderComboBox = new ComboBox();
         embeddingModelLabel = new Label();
         embeddingModelTextBox = new TextBox();
         modelsNumericRow = new FlowLayoutPanel();
@@ -249,6 +276,23 @@ partial class ConfigurationForm
         embeddingCharsLabel = new Label();
         embeddingCharsUpDown = new NumericUpDown();
         coreQueriesOnlyCheckBox = new CheckBox();
+        tableAwareChunkingCheckBox = new CheckBox();
+        hybridRetrievalCheckBox = new CheckBox();
+        assertionDigestRow = new FlowLayoutPanel();
+        assertionDigestCheckBox = new CheckBox();
+        assertionDigestCharsLabel = new Label();
+        assertionDigestCharsUpDown = new NumericUpDown();
+        joinedAssertionsLabel = new Label();
+        joinedAssertionsUpDown = new NumericUpDown();
+        narrationRow = new FlowLayoutPanel();
+        pictureNarrationCheckBox = new CheckBox();
+        tableNarrationCheckBox = new CheckBox();
+        narrationModelLabel = new Label();
+        narrationModelTextBox = new TextBox();
+        minimumImageBytesLabel = new Label();
+        minimumImageBytesUpDown = new NumericUpDown();
+        maxImagesLabel = new Label();
+        maxImagesUpDown = new NumericUpDown();
         embeddingBaseUrlLabel = new Label();
         embeddingBaseUrlTextBox = new TextBox();
         embeddingApiKeyLabel = new Label();
@@ -282,6 +326,10 @@ partial class ConfigurationForm
         ((System.ComponentModel.ISupportInitialize)temperatureUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)topPUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)seedUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)assertionDigestCharsUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)joinedAssertionsUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)minimumImageBytesUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)maxImagesUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)passagesPerGroupUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)reserveCategoryUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)reserveSectionUpDown).BeginInit();
@@ -444,7 +492,10 @@ partial class ConfigurationForm
         modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         modelsLayout.Dock = DockStyle.Fill;
-        modelsLayout.RowCount = 6;
+        modelsLayout.RowCount = 8;
+        modelsLayout.Controls.Add(chatProviderLabel, 0, 7);
+        modelsLayout.Controls.Add(chatProviderComboBox, 1, 7);
+        modelsLayout.SetColumnSpan(chatProviderComboBox, 2);
         modelsLayout.Controls.Add(availableModelsLabel, 0, 0);
         modelsLayout.Controls.Add(availableModelsTextBox, 1, 0);
         modelsLayout.SetColumnSpan(availableModelsTextBox, 2);
@@ -453,14 +504,17 @@ partial class ConfigurationForm
         modelsLayout.Controls.Add(chatTestButton, 2, 1);
         modelsLayout.Controls.Add(embeddingModelLabel, 0, 2);
         modelsLayout.Controls.Add(embeddingModelTextBox, 1, 2);
-        modelsLayout.SetColumnSpan(embeddingModelTextBox, 2);
-        modelsLayout.Controls.Add(embeddingBaseUrlLabel, 0, 3);
-        modelsLayout.Controls.Add(embeddingBaseUrlTextBox, 1, 3);
+        modelsLayout.Controls.Add(embeddingTestButton, 2, 2);
+        modelsLayout.Controls.Add(embeddingProviderLabel, 0, 3);
+        modelsLayout.Controls.Add(embeddingProviderComboBox, 1, 3);
+        modelsLayout.SetColumnSpan(embeddingProviderComboBox, 2);
+        modelsLayout.Controls.Add(embeddingBaseUrlLabel, 0, 4);
+        modelsLayout.Controls.Add(embeddingBaseUrlTextBox, 1, 4);
         modelsLayout.SetColumnSpan(embeddingBaseUrlTextBox, 2);
-        modelsLayout.Controls.Add(embeddingApiKeyLabel, 0, 4);
-        modelsLayout.Controls.Add(embeddingApiKeyTextBox, 1, 4);
+        modelsLayout.Controls.Add(embeddingApiKeyLabel, 0, 5);
+        modelsLayout.Controls.Add(embeddingApiKeyTextBox, 1, 5);
         modelsLayout.SetColumnSpan(embeddingApiKeyTextBox, 2);
-        modelsLayout.Controls.Add(modelsNumericRow, 0, 5);
+        modelsLayout.Controls.Add(modelsNumericRow, 0, 6);
         modelsLayout.SetColumnSpan(modelsNumericRow, 3);
         modelsLayout.Name = "modelsLayout";
 
@@ -512,6 +566,50 @@ partial class ConfigurationForm
         chatTestButton.Text = "Test";
         chatTestButton.UseVisualStyleBackColor = true;
         chatTestButton.Click += ChatTestButton_Click;
+
+        // embeddingTestButton — embeds one short string as typed, without saving. Sits beside the
+        // embedding model for the same reason the chat one sits beside the chat model: the field
+        // it verifies is the field next to it. It also reports the vector width, which is the
+        // mistake that does not announce itself — a mismatched model embeds perfectly well and
+        // then disagrees with the collection on every upsert.
+        embeddingTestButton.Anchor = AnchorStyles.Left;
+        embeddingTestButton.AutoSize = true;
+        embeddingTestButton.Name = "embeddingTestButton";
+        embeddingTestButton.Text = "Test";
+        embeddingTestButton.UseVisualStyleBackColor = true;
+        embeddingTestButton.Click += EmbeddingTestButton_Click;
+
+        // embeddingProviderLabel / ComboBox — the wire protocol the embedding endpoint speaks.
+        // Not a preference: Bedrock's runtime takes POST /model/{id}/invoke, not /embeddings, and
+        // answers an unknown path with HTTP 200, so choosing wrong reports zero embeddings rather
+        // than an error. DropDownList because there are exactly two right answers.
+        embeddingProviderLabel.Anchor = AnchorStyles.Left;
+        embeddingProviderLabel.AutoSize = true;
+        embeddingProviderLabel.Margin = new Padding(0, 7, 6, 0);
+        embeddingProviderLabel.Name = "embeddingProviderLabel";
+        embeddingProviderLabel.Text = "Embedding API";
+
+        embeddingProviderComboBox.Anchor = AnchorStyles.Left;
+        embeddingProviderComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        embeddingProviderComboBox.Margin = new Padding(0, 3, 0, 3);
+        embeddingProviderComboBox.Name = "embeddingProviderComboBox";
+        embeddingProviderComboBox.Width = 220;
+
+        // chatProviderLabel / ComboBox — the wire protocol the chat endpoint speaks. Bedrock's
+        // Converse API is the only route to Claude in an account whose gateway lists every
+        // Anthropic model and serves none of them, and the only one that can be told to cache the
+        // prompt prefix this pipeline repeats on every group call.
+        chatProviderLabel.Anchor = AnchorStyles.Left;
+        chatProviderLabel.AutoSize = true;
+        chatProviderLabel.Margin = new Padding(0, 7, 6, 0);
+        chatProviderLabel.Name = "chatProviderLabel";
+        chatProviderLabel.Text = "Chat API";
+
+        chatProviderComboBox.Anchor = AnchorStyles.Left;
+        chatProviderComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        chatProviderComboBox.Margin = new Padding(0, 3, 0, 3);
+        chatProviderComboBox.Name = "chatProviderComboBox";
+        chatProviderComboBox.Width = 220;
 
         // maxTokensLabel
         maxTokensLabel.AutoSize = true;
@@ -963,13 +1061,178 @@ partial class ConfigurationForm
         limitsLayout.ColumnCount = 1;
         limitsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         limitsLayout.Dock = DockStyle.Fill;
-        limitsLayout.RowCount = 5;
+        limitsLayout.RowCount = 9;
         limitsLayout.Controls.Add(limitsHintLabel, 0, 0);
         limitsLayout.Controls.Add(packNumericRow, 0, 1);
         limitsLayout.Controls.Add(budgetNumericRow, 0, 2);
         limitsLayout.Controls.Add(concurrencyNumericRow, 0, 3);
         limitsLayout.Controls.Add(coreQueriesOnlyCheckBox, 0, 4);
+        limitsLayout.Controls.Add(assertionDigestRow, 0, 5);
+        limitsLayout.Controls.Add(tableAwareChunkingCheckBox, 0, 6);
+        limitsLayout.Controls.Add(hybridRetrievalCheckBox, 0, 7);
+        limitsLayout.Controls.Add(narrationRow, 0, 8);
+
+        // narrationRow — the two conversion passes that cost money, and the guards around them.
+        //
+        // Both are off by default and belong here rather than beside the Docling endpoint, because
+        // what they are is a spending decision: a vision call per picture and a model call per
+        // table, on a pipeline whose objective is minimum cost. Changing either means the case has
+        // to be re-converted and re-indexed, which is why the labels say so.
+        narrationRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        narrationRow.AutoSize = true;
+        narrationRow.Controls.Add(pictureNarrationCheckBox);
+        narrationRow.Controls.Add(tableNarrationCheckBox);
+        narrationRow.Controls.Add(narrationModelLabel);
+        narrationRow.Controls.Add(narrationModelTextBox);
+        narrationRow.Controls.Add(minimumImageBytesLabel);
+        narrationRow.Controls.Add(minimumImageBytesUpDown);
+        narrationRow.Controls.Add(maxImagesLabel);
+        narrationRow.Controls.Add(maxImagesUpDown);
+        narrationRow.Margin = new Padding(0, 6, 0, 0);
+        narrationRow.Name = "narrationRow";
+        narrationRow.WrapContents = true;
+
+        // pictureNarrationCheckBox — where a document's tables are bitmaps this is the only route
+        // to their content: Docling cannot extract structure from a picture of a table and OCR
+        // does not reach it.
+        pictureNarrationCheckBox.AutoSize = true;
+        pictureNarrationCheckBox.Margin = new Padding(0, 7, 16, 0);
+        pictureNarrationCheckBox.Name = "pictureNarrationCheckBox";
+        pictureNarrationCheckBox.Text =
+            "Transcribe pictures with a vision model (costs a call per picture; re-convert after "
+            + "changing this)";
+        pictureNarrationCheckBox.UseVisualStyleBackColor = true;
+
+        // tableNarrationCheckBox — the narrative is appended, never substituted: the grid stays
+        // exactly as it was, because that is what the extractor reads.
+        tableNarrationCheckBox.AutoSize = true;
+        tableNarrationCheckBox.Margin = new Padding(0, 7, 16, 0);
+        tableNarrationCheckBox.Name = "tableNarrationCheckBox";
+        tableNarrationCheckBox.Text =
+            "Also narrate each table as prose (costs a call per table; the table itself is kept)";
+        tableNarrationCheckBox.UseVisualStyleBackColor = true;
+
+        // narrationModelLabel
+        narrationModelLabel.Anchor = AnchorStyles.Left;
+        narrationModelLabel.AutoSize = true;
+        narrationModelLabel.Margin = new Padding(0, 7, 6, 0);
+        narrationModelLabel.Name = "narrationModelLabel";
+        narrationModelLabel.Text = "Narration model (blank = the selected chat model)";
+
+        // narrationModelTextBox — reading a picture needs a vision-capable model, and
+        // transcription is a cheaper task than adjudication.
+        narrationModelTextBox.Margin = new Padding(0, 3, 16, 3);
+        narrationModelTextBox.Name = "narrationModelTextBox";
+        narrationModelTextBox.Width = 220;
+
+        // minimumImageBytesLabel
+        minimumImageBytesLabel.Anchor = AnchorStyles.Left;
+        minimumImageBytesLabel.AutoSize = true;
+        minimumImageBytesLabel.Margin = new Padding(0, 7, 6, 0);
+        minimumImageBytesLabel.Name = "minimumImageBytesLabel";
+        minimumImageBytesLabel.Text = "Smallest picture worth a call, bytes";
+
+        // minimumImageBytesUpDown — the measured split put content between roughly 19 KB and
+        // 75 KB and decoration near 2 KB, so the default sits below the content and above the
+        // noise. 0 asks about every picture, letterhead included.
+        minimumImageBytesUpDown.Margin = new Padding(0, 3, 16, 3);
+        minimumImageBytesUpDown.Maximum = 10000000;
+        minimumImageBytesUpDown.Minimum = 0;
+        minimumImageBytesUpDown.Name = "minimumImageBytesUpDown";
+        minimumImageBytesUpDown.Width = 110;
+
+        // maxImagesLabel
+        maxImagesLabel.Anchor = AnchorStyles.Left;
+        maxImagesLabel.AutoSize = true;
+        maxImagesLabel.Margin = new Padding(0, 7, 6, 0);
+        maxImagesLabel.Name = "maxImagesLabel";
+        maxImagesLabel.Text = "Most pictures read per document";
+
+        // maxImagesUpDown — so a slide deck cannot run away with a run.
+        maxImagesUpDown.Margin = new Padding(0, 3, 16, 3);
+        maxImagesUpDown.Maximum = 1000;
+        maxImagesUpDown.Minimum = 0;
+        maxImagesUpDown.Name = "maxImagesUpDown";
+        maxImagesUpDown.Width = 90;
+
+        // hybridRetrievalCheckBox — sparse lexical matching fused with the dense search. A routing
+        // fix rather than a recall fix: retrieval already finds the passages, but a figure like
+        // 33.4 reaches one group while two checks need it, and dense embeddings are weakest on
+        // exactly the exact tokens those findings turn on. Changing it changes the collection's
+        // shape, so the case must be re-indexed.
+        hybridRetrievalCheckBox.AutoSize = true;
+        hybridRetrievalCheckBox.Margin = new Padding(0, 6, 0, 0);
+        hybridRetrievalCheckBox.Name = "hybridRetrievalCheckBox";
+        hybridRetrievalCheckBox.Text =
+            "Hybrid retrieval: fuse sparse literal matching with the dense search "
+            + "(rebuild the collection and re-index after changing this)";
+        hybridRetrievalCheckBox.UseVisualStyleBackColor = true;
+
+        // tableAwareChunkingCheckBox — a table cut in half is worse than a table missing: a header
+        // row without figures, or figures without a header row, answers nothing. Changing this
+        // changes the index, so a case has to be re-indexed for it to take effect.
+        tableAwareChunkingCheckBox.AutoSize = true;
+        tableAwareChunkingCheckBox.Margin = new Padding(0, 6, 0, 0);
+        tableAwareChunkingCheckBox.Name = "tableAwareChunkingCheckBox";
+        tableAwareChunkingCheckBox.Text =
+            "Keep tables whole when chunking (re-index the case after changing this)";
+        tableAwareChunkingCheckBox.UseVisualStyleBackColor = true;
         limitsLayout.Name = "limitsLayout";
+
+        // assertionDigestRow — sits with the pack cap because the two are one decision.
+        // The digest is meant to be paid for out of the pack, not added to it: on the measured
+        // runs, adding 13% more prompt cost eleven points of recall, and the designed
+        // configuration is a pack of 12 with the digest on, which is a smaller prompt than the
+        // default pack of 24 with it off.
+        assertionDigestRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        assertionDigestRow.AutoSize = true;
+        assertionDigestRow.Controls.Add(assertionDigestCheckBox);
+        assertionDigestRow.Controls.Add(assertionDigestCharsLabel);
+        assertionDigestRow.Controls.Add(assertionDigestCharsUpDown);
+        assertionDigestRow.Controls.Add(joinedAssertionsLabel);
+        assertionDigestRow.Controls.Add(joinedAssertionsUpDown);
+        assertionDigestRow.Margin = new Padding(0, 6, 0, 0);
+        assertionDigestRow.Name = "assertionDigestRow";
+        assertionDigestRow.WrapContents = true;
+
+        // assertionDigestCheckBox
+        assertionDigestCheckBox.AutoSize = true;
+        assertionDigestCheckBox.Margin = new Padding(0, 7, 16, 0);
+        assertionDigestCheckBox.Name = "assertionDigestCheckBox";
+        assertionDigestCheckBox.Text =
+            "Show every group the whole assertion side, one line per canonical path";
+        assertionDigestCheckBox.UseVisualStyleBackColor = true;
+
+        // assertionDigestCharsLabel
+        assertionDigestCharsLabel.Anchor = AnchorStyles.Left;
+        assertionDigestCharsLabel.AutoSize = true;
+        assertionDigestCharsLabel.Margin = new Padding(0, 7, 6, 0);
+        assertionDigestCharsLabel.Name = "assertionDigestCharsLabel";
+        assertionDigestCharsLabel.Text =
+            $"Digest budget, characters (0 = off, default {Defaults.AssertionDigestMaxChars})";
+
+        // assertionDigestCharsUpDown
+        assertionDigestCharsUpDown.Increment = 1000;
+        assertionDigestCharsUpDown.Margin = new Padding(0, 3, 0, 3);
+        assertionDigestCharsUpDown.Maximum = 400000;
+        assertionDigestCharsUpDown.Minimum = 0;
+        assertionDigestCharsUpDown.Name = "assertionDigestCharsUpDown";
+        assertionDigestCharsUpDown.Width = 110;
+
+        // joinedAssertions — the code-level join's budget. Sits with the digest because both
+        // spend the same thing: room in one group's prompt, traded against the passage pack.
+        joinedAssertionsLabel.Anchor = AnchorStyles.Left;
+        joinedAssertionsLabel.AutoSize = true;
+        joinedAssertionsLabel.Margin = new Padding(16, 7, 6, 0);
+        joinedAssertionsLabel.Name = "joinedAssertionsLabel";
+        joinedAssertionsLabel.Text =
+            $"Joined assertions / group (0 = off, default {Defaults.MaxJoinedAssertions})";
+
+        joinedAssertionsUpDown.Margin = new Padding(0, 3, 0, 3);
+        joinedAssertionsUpDown.Maximum = 100;
+        joinedAssertionsUpDown.Minimum = 0;
+        joinedAssertionsUpDown.Name = "joinedAssertionsUpDown";
+        joinedAssertionsUpDown.Width = 90;
 
         // limitsHintLabel — 0 means unbounded for the caps, and no reservation for the floors.
         // Saying which is which here is cheaper than a reader discovering it from a run.
@@ -1334,6 +1597,10 @@ partial class ConfigurationForm
         ((System.ComponentModel.ISupportInitialize)reserveTopScoreUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)reserveSectionUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)reserveCategoryUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)assertionDigestCharsUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)joinedAssertionsUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)maxImagesUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)minimumImageBytesUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)passagesPerGroupUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)seedUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)topPUpDown).EndInit();

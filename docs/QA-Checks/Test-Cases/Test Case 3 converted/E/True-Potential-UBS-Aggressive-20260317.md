@@ -1,3 +1,9 @@
+---
+source: True-Potential-UBS-Aggressive-20260317.pdf
+converted: 2026-08-31T00:56:19Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## True Potential UBS Aggressive
 
 - **true:** potential
@@ -16,6 +22,8 @@ The True Potential UBS Aggressive Fund returned 3.32% (net of fees), with a larg
 ## Growth of £10,000 invested 5 years ago
 
 <!-- image -->
+
+Line chart
 
 - l True Potential UBS Aggressive Acc*
 - l Morningstar UK Adventurous Target Allocation Index**
@@ -52,6 +60,8 @@ The True Potential UBS Aggressive Fund returned 3.32% (net of fees), with a larg
 - The fund's aggressive risk profile focuses on maximizing longterm returns over minimizing short-term losses.
 
 <!-- image -->
+
+Logo
 
 ## Key fund information
 
@@ -153,23 +163,13 @@ The OCF of this fund is currently 0.63%. This means that if you invest £1000 in
 - **l:** [blank]
 - **l:** [blank]
 
-| Asset class                           | % of total exposure***   |    |
-|---------------------------------------|--------------------------|----|
-| l US Stocks                           | 53.62%                   |    |
-| l Europe ex UK Equity Stocks          | 11.54%                   |    |
-| l Emerging Markets Stocks             | 10.78%                   |    |
-| l UK Stocks                           | 9.09%                    |    |
-| l Asia Pacific Stocks                 | 7.98%                    |    |
-| l Gold                                | 4.65%                    |    |
-| l Global Treasury Bonds               | 0.95%                    |    |
-| l UK Gilts                            | 0.50%                    |    |
-| l Global High Yield Bond (GBP Hedged) | 0.26%                    |    |
-| UK Corporate Bond                     | 0.22%                    | l  |
-| Emerging Market Bond                  | 0.22%                    |    |
-| HC                                    |                          | l  |
-| l Alternatives                        | 0.19%                    |    |
+| Asset class                                                                                                                                                                                                                                       | % of total exposure***                                                     |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|
+| l US Stocks l Europe ex UK Equity Stocks l Emerging Markets Stocks l UK Stocks l Asia Pacific Stocks l Gold l Global Treasury Bonds l UK Gilts l Global High Yield Bond (GBP Hedged) l UK Corporate Bond l Emerging Market Bond HC l Alternatives | 53.62% 11.54% 4.65% 0.95% 0.50% 10.78% 9.09% 7.98% 0.26% 0.22% 0.22% 0.19% |
 
 <!-- image -->
+
+Pie chart
 
 ## Risks
 
@@ -181,7 +181,7 @@ The following are some of the key risks associated with investing in this Fund. 
 | Performance Risk     | Investment objectives express an intended result but there is no guarantee that such a result will be achieved. Depending on market conditions and the macro-economic environment, certain investment types and styles may perform better than others and investment objectives may become more difficult to achieve.      |
 | Emerging Market Risk | Investments in emerging markets may involve greater risks due to political and economic instability, and underdeveloped markets and systems.                                                                                                                                                                               |
 | Counterparty Risk    | There may be cases where the organisation from which we buy a derivative, or an asset, fails to meet its obligations. The Fund's cash deposits are also subject to counterparty risk.                                                                                                                                      |
-| Derivative Risk      | The Fund is entitled to use derivatives. Derivatives may not achieve their intended purpose. Their prices may move up or                                                                                                                                                                                                   |
+| Derivative Risk      | The Fund is entitled to use derivatives. Derivatives may not achieve their intended purpose. Their prices may move up or down significantly over relatively short periods of time which may result in losses greater than the amount paid.                                                                                 |
 | Operational Risk     | The Fund faces non-market risk, relating to purchasing, holding and servicing the Fund's assets.                                                                                                                                                                                                                           |
 | Credit Risk          | Where the Fund invests in bonds, there is a risk the bond issuer may fail to meet its repayments. Changes in interest rates, inflation and the creditworthiness of the bond issuer may also affect the bond's market value. This risk is particularly relevant where the fund invests in bonds with a lower credit rating. |
 | Exchange Rate Risk   | The Fund may invest in securities not denominated in GBP. The value of your investments may be affected by changes in currency exchange rates.                                                                                                                                                                             |
@@ -226,3 +226,7 @@ _The following details were present in Docling's structured JSON output but omit
 - £15,000
 - £17,000
 - £19,000
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [line_chart, 100 % confidence]
+- Image 14: [pie_chart, 100 % confidence]

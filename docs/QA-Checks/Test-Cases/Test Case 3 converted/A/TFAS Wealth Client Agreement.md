@@ -1,3 +1,9 @@
+---
+source: TFAS Wealth Client Agreement.pdf
+converted: 2026-08-31T00:50:18Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Introduction
 
 - This Client Agreement (which include the Glossary of Terms and the Declaration attached) set out the terms and conditions on which we, TFAS Wealth, will provide our advisory services to you. This Client Agreement, the Privacy  Notice and  the  document  ' Important Information  about  our  Services' explains the basis under which we supply our services to you and how we willl process your personal data. We refer to these documents together as the 'Agreement' between us .
@@ -221,3 +227,7 @@ _The following details were present in Docling's structured JSON output but omit
 - There may be situations where the firm providing a service requires us to enter into an agreement with them as your agent .  As your agent the provider would treat us as their client for the purposes of the FCA rules.  This means that you would not have a direct relationship with the provider.  As we are an FCA authorised firm typically this would mean that the provider would categorise us as a 'per se professional client' (rather than a retail client ) and your financial adviser will either ensure you are treated as a retail client or that the implications of us being treated as a professional client are explained to you fully such as FSCS protections and Financial Ombudsman Service rights.
 - Before recommending any products or services, we will discuss with you the financial risks of those products.
 - Signed by James Poka
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 2: [signature, 100 % confidence]
+- Image 3: [signature, 68 % confidence]

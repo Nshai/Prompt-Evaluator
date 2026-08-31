@@ -1,14 +1,12 @@
 ---
-source_path: "D/Risk profile report.docx"
-file_name: "Risk profile report.docx"
-category_code: D
-pages: 1
-characters: 15726
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: false
+source: Risk profile report.docx
+converted: 2026-08-31T00:25:16Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
 
 <!-- image -->
+
+Logo
 
 ########### 
 
@@ -23,6 +21,8 @@ page_provenance: false
 18 September 2025
 
 <!-- image -->
+
+Logo
 
 **Risk profile**
 
@@ -76,13 +76,19 @@ Projecting these details, along with the agreed risk level, produced the followi
 
 <!-- image -->
 
+Line chart
+
 Investment Projection Graph based on Natural Risk Level
 
 <!-- image -->
 
+Line chart
+
 Investment Projection Graph based on Agreed Risk Level
 
 <!-- image -->
+
+Line chart
 
 Investment Risk Comparison Graph based on Natural Risk Level and Agreed Risk Level
 
@@ -180,3 +186,23 @@ Capacity For Loss questionnaire responses for  John Sullivan on 18/09/2025
 | My spouse or partner (or another family member) is likely to be able and willing to support me financially if circumstances require. | Disagree                   |
 | It would be relatively easy for me to cut my spending in retirement if circumstances require.                                        | Neither agree nor disagree |
 | I am flexible about my retirement date (or other determinant of investment horizon).                                                 | Agree                      |
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- CONFIDENTIAL
+- This report was prepared with data sourced from Defaqto Engage. Whilst every attempt has been made to ensure the accuracy of the data used in this report, items can change and we advise that you check the issues most important to you if you proceed with the purchase of the selected contract.
+- Research report prepared by Thomas Redmond using Defaqto Engage
+Page 2
+- Research report prepared by Thomas Redmond using Defaqto Engage
+Page 8
+- Research report prepared by Thomas Redmond using Defaqto Engage
+Page 9
+- Research report prepared by Thomas Redmond using Defaqto Engage
+Page 10
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 3: [line_chart, 99 % confidence]
+- Image 4: [line_chart, 99 % confidence]
+- Image 5: [line_chart, 95 % confidence]

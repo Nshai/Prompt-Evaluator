@@ -1,3 +1,9 @@
+---
+source: True-Potential-SEI-Aggressive-20260317.pdf
+converted: 2026-08-31T00:55:53Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## True Potential SEI Aggressive
 
 - **true:** potential
@@ -14,6 +20,8 @@ Global equities delivered further gains in February as value style shares signif
 The True Potential SEI Aggressive Fund returned 3.26% (net of fees). All of the allocations to index funds that track global equity factors produced gains in absolute terms, with the Fund's tilt towards the 'value' factor' proving particularly beneficial. The 'small cap', 'dynamic factor allocation' and 'dynamic asset allocation' factors also performed well. Conversely, the 'momentum' and 'quality' factors underperformed global equities. Elsewhere, the Fund's allocation to EM shares provided a notable contribution.
 
 <!-- image -->
+
+Line chart
 
 - l True Potential SEI Aggressive Acc*
 - l Morningstar UK Adventurous Target Allocation Index**
@@ -48,6 +56,8 @@ The benchmark for this fund is Morningstar UK Adventurous Target Allocation. The
 - The fund's aggressive risk profile focuses on maximizing longterm returns over minimizing short-term losses.
 
 <!-- image -->
+
+Logo
 
 ## Key fund information
 
@@ -85,26 +95,40 @@ The OCF of this fund is currently 0.96%. This means that if you invest £1000 in
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-<!-- image -->
-
-|    | Asset class                   | % of total exposure***   |
-|----|-------------------------------|--------------------------|
-| l  | US Stocks                     | 64.20%                   |
-| l  | Europe ex UK Equity Stocks    | 11.52%                   |
-| l  | Emerging Markets Stocks       | 11.38%                   |
-| l  | Asia Pacific Stocks           | 8.78%                    |
-| l  | UK Stocks                     | 3.55%                    |
-| l  | Cash and Cash Equivalents**** | 0.57%                    |
+Icon
 
 <!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
+
+| Asset class                     | % of total exposure***   |
+|---------------------------------|--------------------------|
+| l US Stocks                     | 64.20%                   |
+| l Europe ex UK Equity Stocks    | 11.52%                   |
+| l Emerging Markets Stocks       | 11.38%                   |
+| l Asia Pacific Stocks           | 8.78%                    |
+| l UK Stocks                     | 3.55%                    |
+| l Cash and Cash Equivalents**** | 0.57%                    |
+
+<!-- image -->
+
+Pie chart
 
 O
 
@@ -118,7 +142,7 @@ The following are some of the key risks associated with investing in this Fund. 
 | Performance Risk     | Investment objectives express an intended result but there is no guarantee that such a result will be achieved. Depending on market conditions and the macro-economic environment, certain investment types and styles may perform better than others and investment objectives may become more difficult to achieve.      |
 | Emerging Market Risk | Investments in emerging markets may involve greater risks due to political and economic instability, and underdeveloped markets and systems.                                                                                                                                                                               |
 | Counterparty Risk    | There may be cases where the organisation from which we buy a derivative, or an asset, fails to meet its obligations. The Fund's cash deposits are also subject to counterparty risk.                                                                                                                                      |
-| Derivative Risk      | The Fund is entitled to use derivatives. Derivatives may not achieve their intended purpose. Their prices may move up or                                                                                                                                                                                                   |
+| Derivative Risk      | The Fund is entitled to use derivatives. Derivatives may not achieve their intended purpose. Their prices may move up or down significantly over relatively short periods of time which may result in losses greater than the amount paid.                                                                                 |
 | Operational Risk     | The Fund faces non-market risk, relating to purchasing, holding and servicing the Fund's assets.                                                                                                                                                                                                                           |
 | Credit Risk          | Where the Fund invests in bonds, there is a risk the bond issuer may fail to meet its repayments. Changes in interest rates, inflation and the creditworthiness of the bond issuer may also affect the bond's market value. This risk is particularly relevant where the fund invests in bonds with a lower credit rating. |
 | Exchange Rate Risk   | The Fund may invest in securities not denominated in GBP. The value of your investments may be affected by changes in currency exchange rates.                                                                                                                                                                             |
@@ -164,3 +188,7 @@ _The following details were present in Docling's structured JSON output but omit
 - £15,000
 - £17,000
 - £19,000
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [line_chart, 100 % confidence]
+- Image 9: [pie_chart, 100 % confidence]

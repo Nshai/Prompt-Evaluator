@@ -1,3 +1,9 @@
+---
+source: Notes.docx
+converted: 2026-08-31T01:09:49Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 | Summary of the Advice                         | Angela and Kevin were retiring at the end of May and closing down their business. Thye were seeking advice as they need to generate an income of £3,500pm from August and only have Kevin's State Pension as income for the next 3 years until Angela gets her State Pension.  They have never sought advice before and had a bad experience with the initial Advice Firm they contacted.  Advice is to use their Pensions to produce a combined initial income of £2,466.34 on top of Kevin's State Pension.  Angela has her PA available.  My thoughts are we utilise Angela's PA and set up reg UFPLS of £1,396.66pm with remaining income to be met by their Cash ISA's.  This will meet their retirement income need and all income would be Tax Free.   |
 |-----------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Justification for the initial and ongoing fee | Both clients are in expensive products with fees ranging from 0.75% pa to 1% pa for Platform and Investment Costs.  They want a trusted adviser that will look after them and provide good quality on-going management of their invested assets and help them acheive their income and capital needs in the most tax effeicient way.                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -19,6 +25,8 @@
 
 <!-- image -->
 
+Screenshot from computer
+
 - Kevins has the same Pru Withprofits pension as Angela. This means that it has the same characteristics. No adviser charging, no drawdown options, 1 fund which doesn’t align to the clients risk. Limits his growth potential in his risk profile. The fund is also expensive at 0.95%
 - Kevin currently has no MVR and has a bonus of £11,297.20. while the plan is in the strong position it would be a good time to switch the pension.
 - No fund research to be done on the Prudential plan.
@@ -38,7 +46,11 @@
 
 <!-- image -->
 
+Screenshot from computer
+
 <!-- image -->
+
+Screenshot from computer
 
 Angela is a risk level 4, I propose we use HSBC Conservative and Vanguard 40% to keep it passive while she is drawing on the pension.
 
@@ -59,3 +71,10 @@ Annuity Quotes produced for Angela due to her taking income. Discounted as she w
 Decide on Aviva as they have better administration for us and the client.
 
 Aegon are slightly cheaper at 0.20% rather than Aviva at 0.21%. however this cost isn’t that much over the year and Angela would like to start drawing down on her pension meaning we need ease of administration for the client, which Aegon currently do not provide.
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 2: [screenshot_from_computer, 55 % confidence]
+- Image 3: [screenshot_from_computer, 92 % confidence]

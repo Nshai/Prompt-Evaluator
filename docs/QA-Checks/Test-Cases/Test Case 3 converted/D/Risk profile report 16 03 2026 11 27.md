@@ -1,4 +1,12 @@
+---
+source: Risk profile report 16 03 2026 11 27.docx
+converted: 2026-08-31T00:54:07Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 ########### 
 
@@ -13,6 +21,8 @@
 16 March 2026
 
 <!-- image -->
+
+Logo
 
 **Risk profile**
 

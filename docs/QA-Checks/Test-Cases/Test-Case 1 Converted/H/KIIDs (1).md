@@ -1,32 +1,19 @@
 ---
-source_path: "H/KIIDs (1).pdf"
-file_name: "KIIDs (1).pdf"
-category_code: H
-pages: 4
-characters: 25154
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: KIIDs (1).pdf
+converted: 2026-08-31T00:36:34Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 ## Non-UCITS retail scheme Key Investor Information
 
-This document provides you with key investor information about this Fund. It is not marketing material. The information is required by law to help you understand the nature and the risks of investing in this Fund. You are advised to read it so you can make an informed decision about whether to invest.
+- **Asset Management:** [blank]
+- This document provides you with key investor information about this Fund. It is not marketing material. The information is required by law to help you understand the nature and the risks of investing in this Fund. You are advised to read it so you can make an informed decision about whether to invest.
 
 ## Global Strategy Balanced Portfolio
 
-a sub-fund of HSBC OpenFunds, (the "OEIC"); managed by HSBC Asset Management (Fund Services UK) Limited Asset Management
-
-<!-- image -->
-
-HSBC
-
-Class: Accumulation C
-
-ISIN: GB00B76WP695
-
-Explanations of terms shown within the objectives and policy in bold, can be found within the glossary on the HSBC Global Asset Management (UK) Limited website: http://www.assetmanagement.hsbc.com.
+- **a sub-fund of HSBC OpenFunds, (the "OEIC"); managed by HSBC Asset Management (Fund Services UK) Limited:** Class: Accumulation C
+- **ISIN: GB00B76WP695:** [blank]
+- Explanations of terms shown within the objectives and policy in bold, can be found within the glossary on the HSBC Global Asset Management (UK) Limited website: http://www.assetmanagement.hsbc.com.
 
 ## Objectives and Investment Policy
 
@@ -41,35 +28,21 @@ Explanations of terms shown within the objectives and policy in bold, can be fou
 
 ## Risk and Reward Profile
 
-Lower risk
-
-Higher risk
-
-Typically lower rewards
-
-Typically higher rewards
-
-1
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-The risk and reward indicator is based on historical data and may not be a reliable indication of the future risk profile of the Fund.
-
-The risk and reward category shown is not guaranteed to remain unchanged and may shift over time. The lowest category does not mean a risk-free investment.
+- **Lower risk:** Higher risk
+- **Typically lower rewards:** Typically higher rewards
+- 1
+- 2
+- 3
+- 4
+- 5
+- 6
+- 7
+- **The risk and reward indicator is based on historical data and may not be a reliable indication of the future risk profile of the Fund.:** [blank]
+- The risk and reward category shown is not guaranteed to remain unchanged and may shift over time. The lowest category does not mean a risk-free investment.
 
 ## Why is this Fund in this specific category?
 
-This Fund is classified in category 4 because its price or simulated data has shown medium fluctuations historically.
+- **This Fund is classified in category 4 because its price or simulated data has shown medium fluctuations historically.:** [blank]
 
 ## Material risks not fully captured by the Risk and Reward Indicator:
 
@@ -97,11 +70,10 @@ This Fund is classified in category 4 because its price or simulated data has sh
 - . Liquidity Risk Liquidity is a measure of how easily the Fund's holdings can be quickly converted to cash. The value of the Fund's holdings may be significantly impacted by liquidity risk during adverse market conditions.
 - . Operational Risk Operational errors may affect transactions, valuation, accounting, financial reporting and other processes relating to the Fund.
 
-<!-- page: 2 -->
-
 ## Charges
 
-The charges you pay are used to pay the running costs of the Fund, including the marketing and distribution costs. These charges reduce the potential growth of the investment.
+- The charges you pay are used to pay the running costs of the Fund, including the marketing and distribution costs. These charges reduce the potential growth of the investment.
+- **Further information on Charges can be found in the 'Fees and Expenses' section of the Fund's Prospectus.:** [blank]
 
 | One-off charges taken before or after you invest Entry charge                                                                           | 0.00%                                                                                                                                   |
 |-----------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
@@ -113,15 +85,42 @@ The charges you pay are used to pay the running costs of the Fund, including the
 
 ## Past Performance
 
-<!-- image -->
-
-� | Fund | 30% | 20% | 10% | 0% | -10% | -20% | -30% | 2024 | 2023 | 2022 | 2021 | 2020 | 2019 | 2018 | 2017 | 2016 | 2015 | 10.8 | 10.4 | -10.5 | 12.7 | 7.7 | 17.0 | -4.2 | 9.9 | 19.5 | 2.0
+- **�:** Fund
+- 30%
+- 19.5
+- 17.0
+- 20%
+- 12.7
+- 10.4
+- 10.8
+- 9.9
+- 7.7
+- 10%
+- 2.0
+- 0%
+- **-4.2:** [blank]
+- **-10%:** [blank]
+- **-10.5:** [blank]
+- **-20%:** [blank]
+- **-30%:** [blank]
+- 2015
+- 2016
+- 2017
+- 2018
+- 2019
+- 2020
+- 2021
+- 2022
+- 2023
+- 2024
 
 ## Practical Information
 
+[No details]
+
 ## Depositary
 
-State Street Trustees Limited.
+- **State Street Trustees Limited.:** UK tax legislation may have an impact on your personal position. Segregated liability
 
 ## Further information
 
@@ -133,13 +132,10 @@ Other share classes are available, as detailed in the Prospectus. It is possible
 
 ## Remuneration Policy
 
-The Remuneration Policy of the Authorised Corporate Director, which describes the remuneration practices and governance arrangements for UCITS and AIFMD Authorised entities, is available at
-
-www.assetmanagement.hsbc.com (please select 'About Us' then 'Our Governance' then 'Remuneration Practices and Governance
-
-Arrangements for UCITS and AIFMD Authorised Entities') or on request free of charge from the Administrator.
-
-The Fund is authorised in the United Kingdom and regulated by the Financial Conduct Authority. HSBC Asset Management (Fund Services UK) Limited is authorised in the United Kingdom and regulated by the Financial Conduct Authority. This key investor information is accurate as at 18 February 2025.
+- **The Remuneration Policy of the Authorised Corporate Director, which describes the remuneration practices and governance arrangements for UCITS and AIFMD Authorised entities, is available at:** [blank]
+- **www.assetmanagement.hsbc.com (please select 'About Us' then 'Our Governance' then 'Remuneration Practices and Governance:** [blank]
+- **Arrangements for UCITS and AIFMD Authorised Entities') or on request free of charge from the Administrator.:** [blank]
+- The Fund is authorised in the United Kingdom and regulated by the Financial Conduct Authority. HSBC Asset Management (Fund Services UK) Limited is authorised in the United Kingdom and regulated by the Financial Conduct Authority. This key investor information is accurate as at 18 February 2025.
 
 - . The entry and exit charges shown are the maximum that may be charged. In some cases you may pay less. You can obtain the actual charges from your financial adviser.
 - . A conversion charge may be payable.
@@ -159,17 +155,17 @@ UK tax legislation may have an impact on your personal position. Segregated liab
 
 The OEIC is an umbrella investment company with segregated liability between Funds.This means that the holdings of one Fund are kept separate from the holdings of the other Funds and your investment in the Fund cannot be used to pay the liabilities of any other Fund.
 
-<!-- page: 3 -->
-
 ## KEY INVESTOR INFORMATION
 
-This  document  provides  you  with  key  investor  information  about  this  fund.  It  is  not  marketing  material.  The  information  is required by law to help you understand the nature and the risks of investing in this fund. You are advised to read it so you can make an informed decision about whether to invest.
+- **COLUMBIA:** [blank]
+- **THREADNEEDLE:** [blank]
+- This  document  provides  you  with  key  investor  information  about  this  fund.  It  is  not  marketing  material.  The  information  is required by law to help you understand the nature and the risks of investing in this fund. You are advised to read it so you can make an informed decision about whether to invest.
+- **INVESTMENTS:** [blank]
 
 ## CT UNIVERSAL MAP BALANCED FUND (THE "FUND")
 
-Class C Accumulation Shares (GBP) GB00BF99W060, a sub-fund of Columbia Threadneedle (UK) ICVC III (the "Company"), regulated by the FCA.
-
-This sub-fund is managed by Columbia Threadneedle Fund Management Limited, (part of the Columbia and Threadneedle group of companies).
+- **Class C Accumulation Shares (GBP) GB00BF99W060, a sub-fund of Columbia Threadneedle (UK) ICVC III (the "Company"), regulated by the FCA.:** [blank]
+- **This sub-fund is managed by Columbia Threadneedle Fund Management Limited, (part of the Columbia and Threadneedle group of companies).:** [blank]
 
 ## Objectives and Investment Policy
 
@@ -195,7 +191,7 @@ Higher Risk, Typically higher rewards
 
 <!-- image -->
 
-1 | 2 | 3 | 4 | 5 | 6 | 7
+Engineering drawing
 
 - n The Fund is rated 4 because historically it has shown a medium level of volatility (how much the value of the Fund goes up and down).
 - n The lowest category does not mean a risk-free investment.
@@ -212,13 +208,13 @@ Higher Risk, Typically higher rewards
 
 <!-- image -->
 
-COLUMBIA | THREADNEEDLE | INVESTMENTS
-
-<!-- page: 4 -->
+Logo
 
 ## Charges
 
-The charges you pay are used to pay the costs of running the Fund, including the costs of marketing and distributing it. These charges reduce the potential growth of your investment.
+- The charges you pay are used to pay the costs of running the Fund, including the costs of marketing and distributing it. These charges reduce the potential growth of your investment.
+- The ongoing charges figure is based on expenses for the year ending 29/11/24. This figure may vary from year to year. It excludes the costs of buying or selling assets for the Fund (unless these assets are shares of another fund).
+- **For more information about charges please see the Fund's prospectus.:** [blank]
 
 | One-off charges taken before or after you invest                                                                                                                                       |                                                                                                                                                                                        |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -232,7 +228,7 @@ The charges you pay are used to pay the costs of running the Fund, including the
 
 <!-- image -->
 
-Past Performance | -15% | -10% | -5% | 0% | 5% | 10% | 15% | 20% | Fund | -15% | -10% | -5% | 0% | 5% | 10% | 15% | 20% | Fund | 2015 | 2016 | 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | -- | -- | -- | -0.7 | 14.8 | 7.3 | 11.4 | -9.1 | 10.9 | 11.3
+Bar chart
 
 ## Practical Information
 
@@ -252,7 +248,7 @@ en-GB
 
 <!-- image -->
 
-COLUMBIA | THREADNEEDLE | INVESTMENTS
+Logo
 
 The ongoing charges figure is based on expenses for the year ending 29/11/24. This figure may vary from year to year. It excludes the costs of buying or selling assets for the Fund (unless these assets are shares of another fund).
 
@@ -269,3 +265,19 @@ Performance is calculated in GBP.
 All charges and fees, except any entry, exit and switching charge, have been included within the performance.
 
 This  chart  shows how much the Fund increased or decreased in value as a percentage each year.
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- -15%
+- -0.7
+- 14.8
+- 11.4
+- -9.1
+- 10.9
+- 11.3
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 2: [bar_chart, 100 % confidence]
+- Image 5: [bar_chart, 97 % confidence]

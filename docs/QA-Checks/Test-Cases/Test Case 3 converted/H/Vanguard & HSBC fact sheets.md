@@ -1,3 +1,9 @@
+---
+source: Vanguard & HSBC fact sheets.pdf
+converted: 2026-08-31T01:07:50Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Fund Factsheet
 
 - **Vanguard:** [blank]
@@ -235,6 +241,8 @@ This is designed for use by and is directed only at persons resident in the UK.
 
 <!-- image -->
 
+Pie chart
+
 | Fixed income characteristics 3   |        |
 |----------------------------------|--------|
 | Number of bonds                  | 17,013 |
@@ -305,11 +313,15 @@ The Fund aims to provide growth in line with its risk profile in the long term, 
 
 <!-- image -->
 
+Icon
+
 ## Investment strategy
 
 This is one of a range of actively managed Global Strategy Portfolios offered at different risk levels. The asset allocation of each fund in the range reflects the risk level. The Fund is managed with the aim of maximising returns in line with its agreed long term risk profile therefore any potential returns are likely to be limited by the risk profile of the Fund.  The exposure to each asset class may be achieved by investing in collective investment schemes, investing directly in asset classes and investing in derivatives. The Fund aims to meet its objective with a focus on lower ongoing charges. This is taken into consideration when deciding which asset classes the Fund will invest in and how the Fund achieves exposure to those asset classes.  The Fund is not managed with reference to a benchmark.
 
 <!-- image -->
+
+Icon
 
 ## Main risks
 
@@ -349,16 +361,19 @@ This is one of a range of actively managed Global Strategy Portfolios offered at
 
 <!-- image -->
 
-| Performance (%)     | YTD       | 1 month   | 3 months   | 6 months   | 1         | year      | 3 years ann   | 5 years ann   | 5 years ann   | 10 years ann   |
-|---------------------|-----------|-----------|------------|------------|-----------|-----------|---------------|---------------|---------------|----------------|
-| Acc C               | 1.04      | 1.04      | 0.42       | 8.08       |           | 9.17      | 12.11         | 8.97          | 8.97          | 10.75          |
-| Rolling performance | 31/01/25- | 31/01/24- | 31/01/23-  | 31/01/22-  | 31/01/21- | 31/01/20- | 31/01/19-     | 31/01/18-     | 31/01/17-     | 31/01/16-      |
-| (%)                 | 31/01/26  | 31/01/25  | 31/01/24   | 31/01/23   | 31/01/22  | 31/01/21  | 31/01/20      | 31/01/19      | 31/01/18      | 31/01/17       |
-| Acc C               | 9.17      | 17.76     | 9.58       | -1.22      | 10.39     | 8.21      | 15.68         | -1.24         | 12.60         | 29.84          |
+Line chart
+
+| Performance (%)         | YTD                | 1 month            | 3 months           | 6 months           | 1 year             | 3 years            | ann                | 5 years ann              | 10 years           | ann                |
+|-------------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------|--------------------------|--------------------|--------------------|
+| Acc C                   | 1.04               | 1.04               | 0.42               | 8.08               | 9.17               |                    | 12.11              | 8.97                     |                    | 10.75              |
+| Rolling performance (%) | 31/01/25- 31/01/26 | 31/01/24- 31/01/25 | 31/01/23- 31/01/24 | 31/01/22- 31/01/23 | 31/01/21- 31/01/22 | 31/01/20- 31/01/21 | 31/01/19- 31/01/20 | 31/01/18- 31/01/19 -1.24 | 31/01/17- 31/01/18 | 31/01/16- 31/01/17 |
+| Acc C                   | 9.17               | 17.76              | 9.58               | -1.22              | 10.39              | 8.21               | 15.68              |                          | 12.60              | 29.84              |
 
 ## Currency Allocation (%)
 
 <!-- image -->
+
+Bar chart
 
 | Top 10 holdings              |   Weight (%) |
 |------------------------------|--------------|
@@ -406,13 +421,19 @@ The stated cash position can include Money Market Funds/ instruments and collate
 
 <!-- image -->
 
+Bar chart
+
 ## Market cap allocation (GBP Mil %)
 
 <!-- image -->
 
+Bar chart
+
 ## Equity geographical allocation (%)
 
 <!-- image -->
+
+Bar chart
 
 Fund
 
@@ -452,6 +473,8 @@ Fund
 
 <!-- image -->
 
+Bar chart
+
 Fund Fund
 
 | Geographical allocation (Option adjusted duration)   |   Fund | Reference Benchmark   | Relative   |
@@ -473,13 +496,17 @@ Fund Fund
 
 <!-- image -->
 
-|                                                                     |   3 year total return (%) |   Amount based on GBP 1000 invested |   3 Year Volatility (%) |
-|---------------------------------------------------------------------|---------------------------|-------------------------------------|-------------------------|
-| Global Strategy Dynamic Portfolio Accumulation C                    |                     12.11 |                            1,408.91 |                    7.54 |
-| Peer Group Average - EAA Fund GBP Moderately Adventurous Allocation |                      9.24 |                            1,303.51 |                    6.58 |
-| Lowest Returning Fund in Peer Group                                 |                      0.70 |                            1,021.24 |                    4.69 |
-| Highest Returning Fund in Peer Group                                |                     17.12 |                            1,606.54 |                   10.02 |
-| Cash                                                                |                      4.82 |                            1,151.56 |                    0.15 |
+Bar chart
+
+|                                                          | Amount based on GBP     | Amount based on GBP   |   3 Year Volatility (%) |
+|----------------------------------------------------------|-------------------------|-----------------------|-------------------------|
+|                                                          | 3 year total return (%) | 1000 invested         |                         |
+| Global Strategy Dynamic Portfolio Accumulation C         | 12.11                   | 1,408.91              |                    7.54 |
+| Peer Group Average - EAA Fund GBP Moderately Adventurous | 9.24                    | 1,303.51              |                    6.58 |
+| Allocation                                               |                         |                       |                         |
+| Lowest Returning Fund in Peer Group                      | 0.70                    | 1,021.24              |                    4.69 |
+| Highest Returning Fund in Peer Group                     | 17.12                   | 1,606.54              |                   10.02 |
+| Cash                                                     | 4.82                    | 1,151.56              |                    0.15 |
 
 HSBC OpenFunds offer a choice of five different risk levels, to be selected by investors depending on factors like their financial goals, time horizon and capacity for loss. Typically, the more risk investors take, the more return they would expect to see.
 
@@ -524,11 +551,15 @@ Source: HSBC Asset Management, data as at 31 January 2026
 
 <!-- image -->
 
+Icon
+
 For more information please contact us at E-mail:
 
 Wholesale.clientservices@hsbc.com. www.assetmanagement.hsbc.com/uk To help improve our service and in the interests of security we may record and/ or monitor your communication with us.
 
 <!-- image -->
+
+Qr code
 
 [www.assetmanagement.hsbc.co.uk/en/ api/v1/download/document/ gb00b80qg615/gb/en/glossary](https://www.assetmanagement.hsbc.co.uk/en/api/v1/download/document/gb00b80qg615/gb/en/glossary)
 
@@ -613,3 +644,20 @@ _The following details were present in Docling's structured JSON output but omit
 - 1.40
 - 5.63
 - 6.64
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 2: [line_chart, 100 % confidence]
+- Image 3: [pie_chart, 100 % confidence]
+- Image 4: [pie_chart, 100 % confidence]
+- Image 5: [pie_chart, 98 % confidence]
+- Image 6: [pie_chart, 100 % confidence]
+- Image 7: [pie_chart, 100 % confidence]
+- Image 8: [pie_chart, 100 % confidence]
+- Image 14: [line_chart, 100 % confidence]
+- Image 15: [bar_chart, 99 % confidence]
+- Image 16: [bar_chart, 100 % confidence]
+- Image 17: [bar_chart, 100 % confidence]
+- Image 18: [bar_chart, 100 % confidence]
+- Image 19: [bar_chart, 99 % confidence]
+- Image 20: [bar_chart, 100 % confidence]
+- Image 22: [qr_code, 100 % confidence]

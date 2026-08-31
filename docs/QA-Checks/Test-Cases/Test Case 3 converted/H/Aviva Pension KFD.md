@@ -1,4 +1,12 @@
+---
+source: Aviva Pension KFD.pdf
+converted: 2026-08-31T01:06:47Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 ## PENSION PORTFOLIO KEY FEATURES
 

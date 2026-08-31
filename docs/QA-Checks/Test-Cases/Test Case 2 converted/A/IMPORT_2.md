@@ -1,4 +1,12 @@
+---
+source: IMPORT_2.PDF
+converted: 2026-08-31T00:37:54Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 ## IMPORTANT INFORMATION ABOUT OUR INVESTMENT, PENSION AND PROTECTION ADVICE SERVICES
 
@@ -140,6 +148,8 @@ TFAS
 
 <!-- image -->
 
+Logo
+
 - We will tell you if it is possible to settle our fees through a deduction from your investment/pension.
 - For new investments and pension plans funded by regular contributions only, you can choose to pay our fees by instalments.
 - We will allow you to settle our fee in up to 12 monthly instalments over a maximum term of 12 months.
@@ -171,6 +181,8 @@ TFAS
 TFAS
 
 <!-- image -->
+
+Logo
 
 - Please note that if you cancel your investment or pension product before our fee is settled in full, including cancellation during a statutory cooling off period, you will need to make alternative arrangements to pay our fee.
 

@@ -1,34 +1,24 @@
 ---
-source_path: "H/Key Features (1).pdf"
-file_name: "Key Features (1).pdf"
-category_code: H
-pages: 11
-characters: 49419
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: Key Features (1).pdf
+converted: 2026-08-31T00:36:22Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 <!-- image -->
 
-keyfacts
+Logo
 
 ## PENSION PORTFOLIO KEY FEATURES
 
-<!-- image -->
-
-AVIVA | WEALTH
-
-<!-- page: 2 -->
+- **keyfacts:** [blank]
+- **AVIVA:** [blank]
+- **WEALTH:** [blank]
 
 ## KEY FEATURES OF THE PENSION PORTFOLIO
 
-The Financial Conduct Authority is a financial services regulator. It requires us, Aviva, to give you this important information to help you to decide whether our Pension Portfolio is right for you. You should read this document carefully so that you understand what you're buying, and then keep it safe for future reference.
-
-This document explains the key features and benefits of your Pension Portfolio. You should read this with the Pension Portfolio Terms and Conditions (LF01064).
-
-If you have any questions, we recommend that you discuss them with your financial adviser.
+- The Financial Conduct Authority is a financial services regulator. It requires us, Aviva, to give you this important information to help you to decide whether our Pension Portfolio is right for you. You should read this document carefully so that you understand what you're buying, and then keep it safe for future reference.
+- **This document explains the key features and benefits of your Pension Portfolio. You should read this with the Pension Portfolio Terms and Conditions (LF01064).:** [blank]
+- **If you have any questions, we recommend that you discuss them with your financial adviser.:** [blank]
 
 ## Its aims
 
@@ -53,6 +43,8 @@ If you have any questions, we recommend that you discuss them with your financia
 
 ## Risks
 
+[No details]
+
 ## Pension Portfolio risks
 
 - The value of your pension pot and the retirement benefits it can provide may go down as well as up.
@@ -64,8 +56,6 @@ If you have any questions, we recommend that you discuss them with your financia
 - If you cancel your investment within the cancellation period and your payment was a single payment, you may not get back all of your original payment. Please read the 'Can I change my mind?' section of this document for details of your cancellation rights.
 - It is your responsibility to ensure there is sufficient cash in your cash account to pay any charges. If there's insufficient cash, we will automatically sell enough investments to pay any charges. For further information please see 'What are the charges for your Pension Portfolio?' on page 6.
 - If there isn't enough in your cash account to pay your income, your adviser will be able to choose on your behalf how to sell assets in order to do so (this is called 'disinvestment'). This could be either from particular assets your adviser has specified or proportionately across the assets. However, if the disinvestment method chosen by your adviser doesn't generate enough cash to pay your income, we'll disinvest proportionately across the assets in order to do so. Any disinvestment will reduce the value of your investments and will include an additional amount which is the greater of £10 or 10% of the disinvestment. Please note that Commercial Property and Structured Products will be excluded from this process. Exchange-traded instruments will also be excluded, unless they've been specifically selected.
-
-<!-- page: 3 -->
 
 - The risk profile of your Pension Portfolio will depend upon your choice of investments.
 - The price of some investments includes initial and yearly costs that will have an effect on your investments. Initial costs will have an immediate effect on the value of those investments, so you should view such investments as medium to long term (typically more than five years).
@@ -101,9 +91,9 @@ If you have any questions, we recommend that you discuss them with your financia
 - Remember that the value of your pension can go down as well as up and you may get back less than has been paid in. This may not be the case in your previous pension scheme.
 - We also recommend you get ongoing advice from your financial adviser to help you on a continuing basis after the transfer. An adviser will be able to review how your pension is performing in relation to your circumstances and recommend changes if they're needed.
 
-<!-- page: 4 -->
-
 ## Questions and answers
+
+[No details]
 
 ## What's the Aviva Platform?
 
@@ -165,8 +155,6 @@ adviser regularly review the balance of your cash account.
 
  If you're in the Core option, you can only invest in insured funds from the list above. The other investment options listed are only available in the Choice option. This doesn't mean you're unable to invest in all of the above, it simply means we would automatically move you into the other option if your investment choices change in the future. The Choice option has additional charges. Your adviser will be able to give you more information on the range of investments and help choose the investments in which you want to invest.
 
-<!-- page: 5 -->
-
 - Your adviser may invest into one or more model portfolio(s) for you. A model portfolio holds your selected investments in set proportions. Over time, as a result of varying Investment performance, the proportions of investments in a model portfolio will change and your adviser may rebalance the investments accordingly. This will involve switching. Your adviser may also tell us to automatically rebalance the investments at a specified frequency or set levels. With your agreement, your adviser may outsource the management of a model portfolio to a Discretionary Investment Manager. We invest any future payments in line with your chosen model portfolio(s). Your adviser can change your model portfolio(s) at any time. You can't hold structured products or commercial property in a model portfolio.
 
 ## How do I change my investments?
@@ -208,8 +196,6 @@ adviser regularly review the balance of your cash account.
 ## Single drawdown
 
 You take up to 25% of your pension fund up front as a tax-free lump sum. You invest the remaining 75% and use it to pay your chosen taxable income amount.
-
-<!-- page: 6 -->
 
 ## Self-Select phased income drawdown
 
@@ -277,8 +263,6 @@ In certain circumstances, these investments may be sold after the charge has bee
 
 - The provider of the structured product will take charges from the amount we invest on your behalf. Please see the structured product provider's guide for details. These charges won't affect the return described in the guide. The value of the structured product is subject to our Aviva charge.
 
-<!-- page: 7 -->
-
 ## Discretionary Investment Model Charge
 
 - If you're invested in a model portfolio managed by a Discretionary Investment Manager, then the Discretionary Investment Model Charge will apply. You'll agree this charge with your Discretionary Investment Manager up front. This charge only applies to assets held within a Discretionary Investment Manager Model Portfolio and is shown on your illustration and transaction history.
@@ -329,8 +313,6 @@ being advised by your adviser, there are some restrictions and conditions you'll
 
 - You may be able to transfer all or part of your Pension Portfolio to another provider, subject to their consent and the details set out in the relevant terms and conditions. You may have to transfer the value as cash. Otherwise, you may be able to choose a unit transfer if we have the same investments on the Aviva Platform. During a cash transfer, your money won't be invested for a period of time and therefore won't be affected by any changes in market conditions. We don't charge for transferring, but there may be charges associated with the pension or re-registering underlying investments.
 
-<!-- page: 8 -->
-
 - For post-retirement (drawdown) accounts, it's not possible to partially transfer out - the account must be transferred in full.
 - It's not possible to transfer structured products either into or out of your Pension Portfolio.
 
@@ -360,6 +342,8 @@ Calls to Aviva may be monitored and/or recorded.
 
 ## Other information
 
+[No details]
+
 ## How to complain
 
 If you've taken a product out with Aviva and are unhappy with the product or the service you received, you can contact us using the details in the 'How to contact Aviva' section.
@@ -385,16 +369,17 @@ This key features document gives a summary of the Pension Portfolio. You should 
 
 ## Compensation
 
-The Financial Services Compensation Scheme (FSCS) has been set up to provide protection to consumers if authorised financial services firms (like Aviva Life &amp; Pensions UK Limited) are unable to meet claims against them. Whether you qualify for any compensation under the FSCS will depend on the type of investments you hold, and different limits of compensation apply to different types of investment. In some circumstances you might not receive any compensation under the FSCS.
-
-If you're not sure about the type of funds you're invested in you should contact your financial adviser or call us on 0800 068 2170 .
-
-The availability of compensation depends on:
+- **If you'd like further information or have any questions, you can write, phone or email::** [blank]
+- The Financial Services Compensation Scheme (FSCS) has been set up to provide protection to consumers if authorised financial services firms (like Aviva Life & Pensions UK Limited) are unable to meet claims against them. Whether you qualify for any compensation under the FSCS will depend on the type of investments you hold, and different limits of compensation apply to different types of investment. In some circumstances you might not receive any compensation under the FSCS.
+- ** Aviva Client Services PO Box 26957 Glasgow G2 9DS:** [blank]
+- **Phone: 0800 068 2170:** [blank]
+- Email: advisedplatform@aviva.com
+- **Calls to Aviva may be monitored and/or recorded.:** [blank]
+- **If you're not sure about the type of funds you're invested in you should contact your financial adviser or call us on 0800 068 2170 .:** [blank]
+- **The availability of compensation depends on::** [blank]
 
 -  the type and structure of the investments you choose within your product;
 - which party is unable to meets its claims; and
-
-<!-- page: 9 -->
 
 -  whether you were a UK resident at the time you took out the product.
 
@@ -404,7 +389,9 @@ Where compensation is available in relation to any of your investments, Aviva Pe
 
 ## Portfolio provider
 
-If you suffer a financial loss as a result of the portfolio provider, Aviva Pension Trustees UK Limited, becoming unable or unlikely to be able to meet its claims, you'll normally be able to claim under the investment section of the FSCS up to a maximum amount of £85,000 per person. Any other plans you hold with Aviva Pension Trustees UK Limited will also be subject to this overall limit.
+- If you suffer a financial loss as a result of the portfolio provider, Aviva Pension Trustees UK Limited, becoming unable or unlikely to be able to meet its claims, you'll normally be able to claim under the investment section of the FSCS up to a maximum amount of £85,000 per person. Any other plans you hold with Aviva Pension Trustees UK Limited will also be subject to this overall limit.
+- **For further information on the FSCS scheme::** [blank]
+- **Phone: 0800 678 1100 or 0207 741 419 Website: fscs.org.uk:** [blank]
 
 ## Aviva's insured funds
 
@@ -418,9 +405,10 @@ Commercial property is held within our commercial property provider's long-term 
 
 ## Collective investments and ETIs (including equities)
 
-Collective Investments and ETIs are held by the Trustee directly for the members who have a beneficial interest. If the individual fund manager becomes unable or unlikely to be able to meet its claims, the Trustee will be eligible to claim compensation under the FSCS, although this will be restricted to 100% of the first £85,000 held per person, per fund management firm.
-
-In respect of equities, the assets are held by our nominated stockbroker in a Nominee account and the Trustee should be able to make a claim under the FSCS, should the stockbroker be unable to return the assets for any reason. The protection provided would be 100% of the first £85,000 per person per stockbroking firm.
+- Collective Investments and ETIs are held by the Trustee directly for the members who have a beneficial interest. If the individual fund manager becomes unable or unlikely to be able to meet its claims, the Trustee will be eligible to claim compensation under the FSCS, although this will be restricted to 100% of the first £85,000 held per person, per fund management firm.
+- **You can get a copy of our conflicts of interest policy from your adviser.:** [blank]
+- If there's a conflict of interest that, despite all efforts to manage it, can't be prevented, we'll tell your financial adviser about this. Your adviser will give you a copy of this disclosure before you commit to taking out this product or take any investment action in relation to it. This is an important document and you should read it before making any investment decision.
+- In respect of equities, the assets are held by our nominated stockbroker in a Nominee account and the Trustee should be able to make a claim under the FSCS, should the stockbroker be unable to return the assets for any reason. The protection provided would be 100% of the first £85,000 per person per stockbroking firm.
 
 ## Structured products
 
@@ -440,23 +428,15 @@ Every year we publish a Solvency and Financial Condition report which provides i
 
 ## Law
 
-Aviva and you have a free choice about the law that can apply to a contract. Aviva proposes to choose the law of England, and, by entering into the contract you agree that the law of England applies.
-
-We're regulated by the Financial Conduct Authority:
-
- The Financial Conduct Authority 12 Endeavour Square London E20 1JN
+- If you choose one of our insured funds which invests in another collective investment fund (including Aviva Investors) or one that invests in a fund run by another insurer, the Trustee won't be eligible to make a claim under the FSCS, should that third party be unable to meet its obligations. In this situation, the value of your units will depend upon the amount that we can recover from that third party.
+- Aviva and you have a free choice about the law that can apply to a contract. Aviva proposes to choose the law of England, and, by entering into the contract you agree that the law of England applies.
+- **We're regulated by the Financial Conduct Authority::** [blank]
+- ** The Financial Conduct Authority 12 Endeavour Square London E20 1JN:** [blank]
 
 ## Potential conflicts of interest
 
-There may be times when Aviva plc group companies or our appointed officers have some form of interest in the business being transacted.
-
-If this happens or we become aware that our interests, or those of our officers, conflict with your interests, we'll take all appropriate steps to manage that conflict of interest. We'll do this in a way that treats all customers fairly and in line with proper standards of business.
-
-You can get a copy of our conflicts of interest policy from your adviser.
-
-If there's a conflict of interest that, despite all efforts to manage it, can't be prevented, we'll tell your financial adviser about this. Your adviser will give you a copy of this disclosure before you commit to taking out this product or take any investment action in relation to it. This is an important document and you should read it before making any investment decision.
-
-<!-- page: 10 -->
+- **There may be times when Aviva plc group companies or our appointed officers have some form of interest in the business being transacted.:** [blank]
+- If this happens or we become aware that our interests, or those of our officers, conflict with your interests, we'll take all appropriate steps to manage that conflict of interest. We'll do this in a way that treats all customers fairly and in line with proper standards of business.
 
 ## Client classification
 
@@ -472,11 +452,9 @@ We provide products and services to advisers and other firms designed to enhance
 
 For further details of the services we've provided your adviser, or if you have any questions, you can contact us using the details in the 'How to contact Aviva' section.
 
-<!-- page: 11 -->
-
 ## Need this in a different format?
 
-Please get in touch if you'd prefer this key features ( LF01068 ) in large print, braille, or as audio.
+- **Please get in touch if you'd prefer this key features ( LF01068 ) in large print, braille, or as audio.:** [blank]
 
 ## How to contact us
 
@@ -486,16 +464,14 @@ Please get in touch if you'd prefer this key features ( LF01068 ) in large print
 
 ## Insurance Retirement Wealth
 
+[No details]
+
 ## Aviva Wrap UK Limited.
 
-Registered in England No. 4470008. Aviva, Wellington Row, York, YO90 1WR. Authorised and regulated by the Financial Conduct Authority. Firm reference number 231530.
+- **Registered in England No. 4470008. Aviva, Wellington Row, York, YO90 1WR. Authorised and regulated by the Financial Conduct Authority. Firm reference number 231530.:** [blank]
+- **Aviva Pension Trustees UK Limited.:** [blank]
+- **Registered in England No. 2407799. Aviva, Wellington Row, York, YO90 1WR.:** [blank]
+- **Authorised and regulated by the Financial Conduct Authority. Firm reference number 465132.:** [blank]
+- **AVIVA:** [blank]
+- **WEALTH:** [blank]
 
-Aviva Pension Trustees UK Limited.
-
-Registered in England No. 2407799. Aviva, Wellington Row, York, YO90 1WR.
-
-Authorised and regulated by the Financial Conduct Authority. Firm reference number 465132.
-
-<!-- image -->
-
-AVIVA | WEALTH

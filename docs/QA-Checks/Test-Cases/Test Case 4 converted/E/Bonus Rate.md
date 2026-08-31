@@ -1,3 +1,9 @@
+---
+source: Bonus Rate.pdf
+converted: 2026-08-31T01:10:54Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## 2025 Bonus Rates
 
 [No details]
@@ -83,6 +89,8 @@ We can't predict the future. Past performance isn't a guide to future performanc
 Pru
 
 <!-- image -->
+
+Logo
 
 ## Pre-Series A Pensions (Ex-Scottish Amicable Life)*
 

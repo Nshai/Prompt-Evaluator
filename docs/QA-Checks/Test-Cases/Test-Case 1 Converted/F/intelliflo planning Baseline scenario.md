@@ -1,28 +1,12 @@
 ---
-source_path: "F/intelliflo planning Baseline scenario.pdf"
-file_name: "intelliflo planning Baseline scenario.pdf"
-category_code: F
-pages: 38
-characters: 33208
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: intelliflo planning Baseline scenario.pdf
+converted: 2026-08-31T00:33:59Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 ## SINGLE SCENARIO REPORT
 
-<!-- image -->
-
-Sullivan;
-
-Baseline Scenario Prepared by Kyle Jenkinson 14/10/2025
-
-<!-- image -->
-
-TFAS | WEALTH
-
-<!-- page: 2 -->
+- **TFAS:** [blank]
 
 ## 1. Introduction to your plan
 
@@ -50,8 +34,6 @@ All figures are in 'real' terms also known as 'today's money'. This means future
 - A Required withdrawal (Pensions) is made from accessible pensions when there is a shortfall in a year and it 10. cannot be met from liquid assets.
 - The Surplus income percentage saved shows how much of any surplus (where your regular income exceeds 11. regular expenditure and tax) will be retained in your surplus account.
 - Lifetime gifts are gifts that you have made to beneficiaries within the plan. Whilst gifts are potentially out of your 12. estate at the point of death, they are included in some projections to ensure benefits of any gifting are reflected in the plan.
-
-<!-- page: 3 -->
 
 ## 3. Your plan assumptions
 
@@ -81,29 +63,23 @@ STATE PENSION 2.5 %
 
 LENDING 4 %
 
-<!-- page: 4 -->
-
 ## 4. Baseline Scenario
-
-<!-- page: 5 -->
 
 <!-- image -->
 
-Asset Tree Asset Tree | Total Assets | £122,997 | Property Equity | Liquid Assets | Pensions | Businesses | Possessions | £0 | £6,000 | £116,997 | £0 | £0 | Savings | Aviva - SP50163762 | £6,000 | £3,744 | Surplus Account | Zurich - P10026-719-00... | £0 | £103,439 | Standard Life - D230133... | £3,002 | Peoples pension - 61971... | £6,601 | Scottish Widows - ZU42... | £211
-
-<!-- page: 6 -->
+Flow chart
 
 ## Timeline
 
 <!-- image -->
 
-2025—69 /65 | 2026 — 70 / 66 | 2027— 71 /67 | 2056 — 100 / 96 | 2060 — 104 /100 | First Year Of Plan | Retire (Kim) | Retire (John) | + | Illness (John) | Illness (Kim) | Death (John) | Death (Kim)
-
-<!-- page: 7 -->
+Bar chart
 
 ## Heads of Household
 
 <!-- image -->
+
+Icon
 
 07/06/1956 - 69 years old
 
@@ -117,6 +93,8 @@ STATE PENSION AGE
 
 <!-- image -->
 
+Icon
+
 07/05/1960 - 65 years old
 
 Relationship Events
@@ -128,6 +106,8 @@ Relationship Events
 
 <!-- image -->
 
+Icon
+
 STATE PENSION AGE
 
 66
@@ -138,17 +118,17 @@ MINIMUM PENSION AGE
 
 <!-- image -->
 
+Icon
+
 MINIMUM PENSION AGE
 
 55
 
 <!-- image -->
 
-JS
+Icon
 
 KS
-
-<!-- page: 8 -->
 
 ## Investments
 
@@ -175,11 +155,11 @@ LIQUIDATED 2ND
 
 <!-- image -->
 
+Other
+
 <!-- image -->
 
-JS
-
-<!-- page: 9 -->
+Icon
 
 ## Income
 
@@ -190,17 +170,15 @@ JS
 
 <!-- image -->
 
-JS
+Icon
 
 <!-- image -->
 
-JS
+Icon
 
 <!-- image -->
 
-KS
-
-<!-- page: 10 -->
+Icon
 
 ## Pensions
 
@@ -276,31 +254,35 @@ Death
 
 <!-- image -->
 
-<!-- image -->
-
-JS
+Table
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-JS
+Icon
 
 <!-- image -->
 
-KS
+Table
 
 <!-- image -->
 
-JS
+Icon
 
 <!-- image -->
 
-JS
+Icon
 
-<!-- page: 11 -->
+<!-- image -->
+
+Icon
+
+<!-- image -->
+
+Icon
 
 ## Peoples pension - 6197175/PP
 
@@ -356,17 +338,19 @@ EXCLUDED FROM SCENARIO UNCRYSTALLISED LIQUIDATION 13TH CRYSTALLISED LIQUIDATION 
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
 
-JS
+Icon
 
 <!-- image -->
 
-JS
+Icon
 
-<!-- page: 12 -->
+<!-- image -->
+
+Icon
 
 ## Expenses
 
@@ -386,15 +370,13 @@ TOTAL REGULAR EXPENSES
 
 <!-- image -->
 
-JS | KS
+Icon
 
 - Currently £1,200 p/a (discretionary) increasing by 2% p/a
 - Currently £15,660 p/a (essential) increasing by 2% p/a
 - Currently £1,656 p/a (essential) increasing by 2% p/a
 - Currently £300 p/a (essential) increasing by 2% p/a
 - Currently £1,800 p/a (essential) increasing by 2% p/a
-
-<!-- page: 13 -->
 
 ## 5. Baseline Scenario - projections
 
@@ -428,8 +410,6 @@ This table shows the opening value of your assets for each year of the plan, aft
 |   2046 | 90 / 86 |               5,139 |                     117,823 |                               0 |              0 |              0 |                 0 |     122,961 |
 |   2047 | 91 / 87 |               5,101 |                     117,863 |                               0 |              0 |              0 |                 0 |     122,964 |
 
-<!-- page: 14 -->
-
 |   Year | Age       |   Liquid Assets (£) |   Pensions - Accessible (£) |   Pensions - Non Accessible (£) |   Property (£) |   Business (£) |   Possessions (£) |   Total (£) |
 |--------|-----------|---------------------|-----------------------------|---------------------------------|----------------|----------------|-------------------|-------------|
 |   2048 | 92 / 88   |               5,063 |                     117,904 |                               0 |              0 |              0 |                 0 |     122,968 |
@@ -445,8 +425,6 @@ This table shows the opening value of your assets for each year of the plan, aft
 |   2058 | 102 / 98  |                   0 |                     117,353 |                               0 |              0 |              0 |                 0 |     117,353 |
 |   2059 | 103 / 99  |                   0 |                     114,436 |                               0 |              0 |              0 |                 0 |     114,436 |
 |   2060 | 104 / 100 |                   0 |                     111,171 |                               0 |              0 |              0 |                 0 |     111,171 |
-
-<!-- page: 15 -->
 
 ## Liquid Asset and Defined Contribution Statements
 
@@ -477,15 +455,11 @@ This section details the value of your cash and investments as well as pensions 
 |---------------|---------------------|
 | Total         |                   0 |
 
-<!-- page: 16 -->
-
 ## Liabilities
 
 | Description   |   Opening Value (£) |
 |---------------|---------------------|
 | Total         |                   0 |
-
-<!-- page: 17 -->
 
 ## Cashflow Statement
 
@@ -520,8 +494,6 @@ Where there is a deficit, a drawing from liquid assets and/or accessible pension
 |   2043 | 87 / 83 |                                   122,955 |               26,149 |                          21,013 |                               0 |
 |   2044 | 88 / 84 |                                   122,957 |               26,277 |                          21,039 |                               0 |
 
-<!-- page: 18 -->
-
 |   Year | Age       |   Liquid Assets & Accessible Pensions (£) |   Total Money In (£) |   In Year Surplus / Deficit (£) | In Year Surplus / Deficit (£)   |
 |--------|-----------|-------------------------------------------|----------------------|---------------------------------|---------------------------------|
 |   2045 | 89 / 85   |                                   122,959 |               26,406 |                          21,064 | 0                               |
@@ -541,8 +513,6 @@ Where there is a deficit, a drawing from liquid assets and/or accessible pension
 |   2059 | 103 / 99  |                                   114,436 |               14,139 |                          17,495 | (3,357)                         |
 |   2060 | 104 / 100 |                                   111,171 |                    0 |                               0 | 0                               |
 
-<!-- page: 19 -->
-
 ## Income Statement - First Year of Plan
 
 | Income               |    (£) |   (£) |   Combined (£) |   Combined (£) |
@@ -550,8 +520,6 @@ Where there is a deficit, a drawing from liquid assets and/or accessible pension
 | State Pension        | 11,973 |     0 |                |         11,973 |
 | Employment           | 16,640 |       |         13,200 |         29,840 |
 | Total Regular Income | 28,613 |       |         13,200 |         41,813 |
-
-<!-- page: 20 -->
 
 ## Regular Expenditure Statement - First Year of Plan
 
@@ -565,8 +533,6 @@ Where there is a deficit, a drawing from liquid assets and/or accessible pension
 | Transport                 |        1,800 |
 | Miscellaneous             |          300 |
 | Total Regular Expenditure |       24,001 |
-
-<!-- page: 21 -->
 
 ## 6. Baseline Scenario - projection graphs
 
@@ -588,17 +554,13 @@ A required Withdrawal (Investments) is made from available liquid assets when th
 
 A required Withdrawal (Pensions) is made from accessible pensions when there is a shortfall in a year and it cannot be met from liquid assets.
 
-<!-- page: 22 -->
-
 ## Liquid Assets
 
 This graph shows your liquid assets, net of any liabilities
 
 <!-- image -->
 
-£7k | £6k | £5k | £4k | £3k | £2k | £1k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69 /65 | 74/70 | 79/75 | 84 /80 | 89 / 85 | 94/90 | 99 / 95 | 104/100 | Liquid Assets
-
-<!-- page: 23 -->
+Bar chart
 
 ## Liquid Assets Detail
 
@@ -606,9 +568,7 @@ This graph shows a breakdown of your liquid assets. The black line represents an
 
 <!-- image -->
 
-£7k | £6k | £5k | £4k | £3k | £2k | £1k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69 /65 | 74/70 | 79/75 | 84/80 | 89 / 85 | 94/90 | 99 /95 | 104/100 | Cash/NS&I | Surplus Account
-
-<!-- page: 24 -->
+Bar chart
 
 ## Liquid Assets &amp; Pensions
 
@@ -616,9 +576,7 @@ This graph shows your liquid assets and accessible defined contribution pensions
 
 <!-- image -->
 
-£140k | £120k | £100k | £80k | £60k | £40k | £20k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69 /65 | 74/70 | 79/75 | 84/80 | 89 /85 | 94 / 90 | 99 /95 | 104/100 | Pensions (Accessible) | Liquid Assets
-
-<!-- page: 25 -->
+Bar chart
 
 ## Liquid Assets &amp; Pensions Detail
 
@@ -626,15 +584,11 @@ This graph shows a breakdown of your liquid assets and accessible defined contri
 
 <!-- image -->
 
-£140k | £120k | £100k | £80k | £60k | £40k | £20k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69/65 | 74/70 | 79/75 | 84 / 80 | 89 / 85 | 94/90 | 99 / 95 | 104/100 | Pensions (Accessible) | Cash/NS&I | Surplus Account
-
-<!-- page: 26 -->
+Bar chart
 
 ## Non Liquid Assets &amp; Pensions
 
 This graph shows your non-liquid assets and non- accessible defined contribution pensions.
-
-<!-- page: 27 -->
 
 ## Total Assets
 
@@ -642,9 +596,7 @@ This graph shows your total assets categorised as liquid assets, property, posse
 
 <!-- image -->
 
-£140k | £120k | £100k | £80k | £60k | £40k | £20k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69 /65 | 74/70 | 79/75 | 84/80 | 89 /85 | 94 / 90 | 99 /95 | 104/100 | Pensions (Accessible) | Liquid Assets
-
-<!-- page: 28 -->
+Bar chart
 
 ## Total Assets Detail
 
@@ -652,9 +604,7 @@ This graph shows a breakdown of your total assets. The black line represents any
 
 <!-- image -->
 
-£140k | £120k | £100k | £80k | £60k | £40k | £20k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69/65 | 74/70 | 79/75 | 84 / 80 | 89 / 85 | 94/90 | 99 / 95 | 104/100 | Pensions (Accessible) | Cash/NS&I | Surplus Account
-
-<!-- page: 29 -->
+Bar chart
 
 ## Summary Cashflow
 
@@ -662,9 +612,7 @@ The black line on this graph reflects your expenditure (including tax &amp; NI) 
 
 <!-- image -->
 
-£45k | £40k | £35k | £30k | £25k | £20k | £15k | £10k | £5k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69/65 | 74/70 | 79/75 | 84/80 | 89 / 85 | 94/90 | 99 / 95 | 104/100 | Required Withdrawal (Pensions) | Required Withdrawal (Investments) | Employment Income | State Pension | Total Expenses Inc Tax | Essential Expenses Inc Tax
-
-<!-- page: 30 -->
+Bar chart
 
 ## Regular Expenditure Detail
 
@@ -672,9 +620,7 @@ This graph shows a breakdown of your regular expenditure throughout the plan as 
 
 <!-- image -->
 
-£27.5k | £25k | £22.5k | £20k | £17.5k | £15k | £12.5k | £10k | £7.5k | £5k | £2.5k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69/65 | 74/70 | 79/75 | 84 / 80 | 89/ 85 | 94/90 | 99 / 95 | 104/100 | Household and Living | Leisure, Holidays and Health | Other | Tax &NI | Transport
-
-<!-- page: 31 -->
+Bar chart
 
 ## Total Regular Expenditure
 
@@ -682,17 +628,13 @@ This graph shows your total regular expenditure throughout the plan as well as a
 
 <!-- image -->
 
-£27.5k | £25k | £22.5k | £20k | £17.5k | £15k | £12.5k | £10k | £7.5k | £5k | £2.5k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69/65 | 74/70 | 79/75 | 84 /80 | 89/ 85 | 94/90 | 99 /95 | 104/100 | Total Regular Expenditure
-
-<!-- page: 32 -->
+Bar chart
 
 Tax
 
 <!-- image -->
 
-£4k | £3.5k | £3k | £2.5k | £2k | £1.5k | £1k | £500 | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69/65 | 74/70 | 79/75 | 84 / 80 | 89/ 85 | 94/90 | 99 / 95 | 104/100 | Non-Savings Tax | National Insurance
-
-<!-- page: 33 -->
+Bar chart
 
 ## Cumulative Tax
 
@@ -700,15 +642,11 @@ This graph shows the personal taxes and National Insurance may pay cumulatively 
 
 <!-- image -->
 
-£16k | £14k | £12k | £10k | £8k | £6k | £4k | £2k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69/65 | 74/70 | 79/75 | 84/80 | 89 / 85 | 94/90 | 99 / 95 | 104/100 | Non-Savings Tax | National Insurance
-
-<!-- page: 34 -->
+Bar chart
 
 ## Beneficiaries Fund
 
 This graph shows the value of assets in the hands of your beneficiaries. These values include gifts added to your plan as well as the transfer of assets upon first death (where there are two people in the plan). The values shown here are outside of your estate for inheritance tax purposes.
-
-<!-- page: 35 -->
 
 ## Estate on Death
 
@@ -716,9 +654,7 @@ This graph shows your estate on death position every year of the plan. The Inher
 
 <!-- image -->
 
-£140k | £120k | £100k | £80k | £60k | £40k | £20k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69/65 | 74/70 | 79/75 | 84 / 80 | 89 / 85 | 94/90 | 99 / 95 | 104/100 | Pensions | Total Assets Subject To IHT
-
-<!-- page: 36 -->
+Bar chart
 
 ## Cumulative Estate on Death
 
@@ -726,16 +662,91 @@ This graph shows your cumulative estate on death position every year of the plan
 
 <!-- image -->
 
-£140k | £120k | £100k | £80k | £60k | £40k | £20k | £0 | 2025 | 2030 | 2035 | 2040 | 2045 | 2050 | 2055 | 2060 | 69/65 | 74/70 | 79/75 | 84 / 80 | 89 / 85 | 94/90 | 99 / 95 | 104/100 | Pensions | Total Assets Subject To IHT
-
-<!-- page: 37 -->
+Bar chart
 
 ## Total Liabilities Detail
 
 This graph shows a breakdown of all mortgage and liabilities JTFAS
 
-<!-- page: 38 -->
-
 <!-- image -->
 
-WEALTH
+Logo
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- Sullivan;
+- Baseline Scenario Prepared by Kyle Jenkinson 14/10/2025
+- WEALTH
+- Asset Tree Asset Tree
+- £122,997
+- Property Equity
+- Businesses
+- £116,997
+- Zurich - P10026-719-00...
+- Standard Life - D230133...
+- Peoples pension - 61971...
+- Scottish Widows - ZU42...
+- 2025—69 /65
+- 2027— 71 /67
+- 2060 — 104 /100
+- 69 /65
+- 74/70
+- 79/75
+- 84 /80
+- 94/90
+- 104/100
+- 84/80
+- 99 /95
+- Cash/NS&I
+- £140k
+- £120k
+- £100k
+- £80k
+- £60k
+- £40k
+- £20k
+- 89 /85
+- Pensions (Accessible)
+- 69/65
+- £45k
+- £35k
+- £30k
+- £25k
+- £15k
+- £10k
+- £27.5k
+- £22.5k
+- £17.5k
+- £12.5k
+- £7.5k
+- £2.5k
+- 89/ 85
+- Leisure, Holidays and Health
+- Tax &NI
+- £3.5k
+- £1.5k
+- £500
+- Non-Savings Tax
+- £16k
+- £14k
+- £12k
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 4: [bar_chart, 55 % confidence]
+- Image 10: [other, 53 % confidence]
+- Image 18: [table, 64 % confidence]
+- Image 28: [bar_chart, 100 % confidence]
+- Image 29: [bar_chart, 100 % confidence]
+- Image 30: [bar_chart, 100 % confidence]
+- Image 31: [bar_chart, 100 % confidence]
+- Image 32: [bar_chart, 100 % confidence]
+- Image 33: [bar_chart, 100 % confidence]
+- Image 34: [bar_chart, 74 % confidence]
+- Image 35: [bar_chart, 100 % confidence]
+- Image 36: [bar_chart, 100 % confidence]
+- Image 37: [bar_chart, 100 % confidence]
+- Image 38: [bar_chart, 100 % confidence]
+- Image 39: [bar_chart, 100 % confidence]
+- Image 40: [bar_chart, 100 % confidence]

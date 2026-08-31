@@ -1,10 +1,22 @@
-<!-- image -->
+---
+source: Existing vs Recommended - Performance.pdf
+converted: 2026-08-31T00:46:28Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
 
 <!-- image -->
+
+Logo
+
+<!-- image -->
+
+Logo
 
 3 December 2025
 
 <!-- image -->
+
+Line chart
 
 Dec 20 Apr 21 Jul Sep Dec Mar 22 Jun Aug Oct Jan 23 Apr Jun Aug Oct Jan 24 Apr Jun Aug Oct Jan 25 Apr Jun Aug Oct 02/12/2020-02/12/2025
 
@@ -26,6 +38,8 @@ Dec 20 Apr 21 Jul Sep Dec Mar 22 Jun Aug Oct Jan 23 Apr Jun Aug Oct Jan 24 Apr J
 Note: Performance figures shown are based on Bid-Bid returns.
 
 <!-- image -->
+
+Logo
 
 ## Discrete Performance as at 02/12/2025
 
@@ -65,3 +79,6 @@ _The following details were present in Docling's structured JSON output but omit
 - 10.0%
 - 0.0%
 - -10.0%
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 3: [line_chart, 100 % confidence]

@@ -1,3 +1,9 @@
+---
+source: Aviva Insured Funds Multi-Asset Plus II S14 - Factsheet.pdf
+converted: 2026-08-31T00:49:13Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Aviva Insured Funds
 
 ## Multi-asset Plus Fund II November 2025
@@ -38,13 +44,19 @@ Please note there is no relationship between the number of risk warnings and the
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
 
 ## Risk rating
 
 To help you decide which investment funds to invest in, we give each one a risk/return rating, ranging from 1 (Lowest Volatility) to 7 (Highest Volatility).
 
 <!-- image -->
+
+Bar chart
 
 Funds typically investing in assets such as the highest-quality corporate bonds , which normally offer better long-¬term returns than savings accounts. There's still a risk that the value of your investment could fall. We review each investment fund's risk rating on a yearly basis, so they may change from time to time.
 
@@ -61,7 +73,11 @@ There are different risks associated with investing in funds. To help you unders
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Logo
 
 AVIVA
 
@@ -69,10 +85,9 @@ Past performance is not a guide to future performance. Performance information h
 
 ## Discrete annual performance to last quarter end
 
-|          | 30/09/20   | 30/09/21   | 30/09/22   | 30/09/23   | 30/09/24   |
-|----------|------------|------------|------------|------------|------------|
-|          | 30/09/21   | 30/09/22   | 30/09/23   | 30/09/24   | 30/09/25   |
-| Fund (%) | 10.13      | -6.89      | 1.71       | 16.09      | 9.03       |
+|          |   30/09/20 30/09/21 |   30/09/21 30/09/22 |   30/09/22 30/09/23 |   30/09/23 30/09/24 |   30/09/24 30/09/25 |
+|----------|---------------------|---------------------|---------------------|---------------------|---------------------|
+| Fund (%) |               10.13 |               -6.89 |                1.71 |               16.09 |                9.03 |
 
 Source: FE fundinfo performance data up to 30/09/2025, bid to bid, net income invested, all returns in GBP.
 
@@ -88,13 +103,21 @@ Source: FE fundinfo performance data up to 31/10/2025, bid to bid, net income in
 
 <!-- image -->
 
-<!-- image -->
+Icon
 
 <!-- image -->
+
+Icon
+
+<!-- image -->
+
+Line chart
 
 Powered by data from FE
 
 <!-- image -->
+
+Icon
 
 ## Fund breakdown
 
@@ -133,7 +156,11 @@ Please note there may be instances where allocations do not total 100% due to ro
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
 
 ## Top 10 holdings
 
@@ -151,6 +178,8 @@ Please note there may be instances where allocations do not total 100% due to ro
 | As 31/10/2025                                                 |         |
 
 <!-- image -->
+
+Icon
 
 ## Risk warnings
 
@@ -180,7 +209,11 @@ There are different risks associated with investing in funds. To help you unders
 
 <!-- image -->
 
+Icon
+
 <!-- image -->
+
+Icon
 
 invested in Alternative Investment Funds and monitor this closely.
 
@@ -227,3 +260,7 @@ _The following details were present in Docling's structured JSON output but omit
 - Oct 25
 - Aviva Pen MItiAstPsllPn S14 Fund
 - ABI Volatility Managed
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 3: [bar_chart, 88 % confidence]
+- Image 8: [line_chart, 100 % confidence]

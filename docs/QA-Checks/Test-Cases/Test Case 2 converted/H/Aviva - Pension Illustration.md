@@ -1,4 +1,12 @@
+---
+source: Aviva - Pension Illustration.pdf
+converted: 2026-08-31T00:48:46Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 16 December 2025
 
@@ -40,6 +48,8 @@ Bond provided by Aviva Life &amp; Pensions UK Limited. Registered in England No.
 
 <!-- image -->
 
+Logo
+
 ## Staying informed
 
 - It is important to keep track of your pension fund. To help you do this we will send you a statement every three months which will advise you of your pension fund value and what your benefits might be worth. You can also view the value of your investment at any time via MyAviva.
@@ -60,10 +70,10 @@ Bond provided by Aviva Life &amp; Pensions UK Limited. Registered in England No.
 
 ## Single Payments
 
-| Payment source                             | Amount    |
-|--------------------------------------------|-----------|
-| You pay                                    | £2,880.00 |
-| Basic rate tax relief (recovered from HMRC | £720.00   |
+| Payment source                                             | Amount    |
+|------------------------------------------------------------|-----------|
+| You pay                                                    | £2,880.00 |
+| Basic rate tax relief (recovered from HMRC on your behalf) | £720.00   |
 
 ## Transfers
 
@@ -77,7 +87,6 @@ Bond provided by Aviva Life &amp; Pensions UK Limited. Registered in England No.
 
 | Investment                                   | Single Uncrystallised   | Single Uncrystallised   |
 |----------------------------------------------|-------------------------|-------------------------|
-|                                              | contribution            | transfers in            |
 | Assets                                       |                         |                         |
 | Aviva Insured Funds Multi- Asset Plus II S14 | 100.00%                 | 100.00%                 |
 | Total investment                             | 100.00%                 | 100.00%                 |
@@ -139,9 +148,8 @@ In addition to the initial fund charge, fund managers will also take charges tha
 - **To check the current interest rate on the cash account at any time, go to aviva.co.uk/bank-interestrates/:** [blank]
 - **You have agreed to pay adviser charges through your Pension.:** [blank]
 
-| Ongoing Adviser Charge   | 1.00% of the value of your Aviva pension fund each year. Based on your new payments and today's value of your Aviva pension fund, this is estimated as   |
-|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-|                          | £68.91 taken each month. The amount you pay will vary over time as the value of your Aviva pension fund changes.                                         |
+| Ongoing Adviser Charge   | 1.00% of the value of your Aviva pension fund each year. Based on your new payments and today's value of your Aviva pension fund, this is estimated as £68.91 taken each month. The amount you pay will vary over time as the value of your Aviva pension fund changes.   |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 ## What your pension fund might be worth
 

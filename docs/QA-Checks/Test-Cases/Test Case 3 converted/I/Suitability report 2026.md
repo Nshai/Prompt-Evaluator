@@ -1,3 +1,9 @@
+---
+source: Suitability report 2026.pdf
+converted: 2026-08-31T01:08:35Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Suitability Report
 
 [No details]
@@ -121,27 +127,20 @@ Your background in accounting and currency trading has equipped you with a solid
 | Number of funds available               | This is a platform that offers access to a wide range of funds and investment strategies |
 | Allows Servicing Adviser                | Yes                                                                                      |
 
-| Provider/Scheme                         | True Potential                                        |
-|-----------------------------------------|-------------------------------------------------------|
-| Type of Plan                            | Personal Pension                                      |
-| Fund Value                              | £46,672.80                                            |
-| Transfer Value                          | £46,672.80                                            |
-| Contributions                           | Nil                                                   |
-| Safeguarded Features incl. TFC/GARs/MIG | Does not contain any safeguarded benefits             |
-| Charges                                 | Platform Charges 0.40%                                |
-|                                         | Ongoing Advice charge 0.50%                           |
-|                                         | Weighted Average Fund Management Charges 0.58%        |
-| Investment Funds                        | True Potential Goldman Sachs Balanced - £2,787.29     |
-|                                         | True Potential Growth Aligned Aggressive - £10,764.88 |
-|                                         | True Potential Schroders Balanced - £2,378.80         |
-|                                         | True Potential SEI Aggressive - £7,254.00             |
-|                                         | True Potential Trinity Bridge Balanced - £7,771.29    |
-|                                         | True Potential UBS Aggressive - £10,099.00            |
-| Risk Level                              | 6                                                     |
-| Penalties/Cost of exit/Switching        | No charges for transfer and/or switching              |
-| Retirement Options                      | Flexi-access drawdown, full and partial UFPLS         |
-| Number of funds available               | 35                                                    |
-| Allows Servicing Adviser                | Yes                                                   |
+| Provider/Scheme                         | True Potential                                                                                                                                                                                                                                                                                                                            |
+|-----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Type of Plan                            | Personal Pension                                                                                                                                                                                                                                                                                                                          |
+| Fund Value                              | £46,672.80                                                                                                                                                                                                                                                                                                                                |
+| Transfer Value                          | £46,672.80                                                                                                                                                                                                                                                                                                                                |
+| Contributions                           | Nil                                                                                                                                                                                                                                                                                                                                       |
+| Safeguarded Features incl. TFC/GARs/MIG | Does not contain any safeguarded benefits                                                                                                                                                                                                                                                                                                 |
+| Charges                                 | Platform Charges 0.40% Ongoing Advice charge 0.50% Weighted Average Fund Management Charges 0.58%                                                                                                                                                                                                                                         |
+| Investment Funds                        | True Potential Allianz Balanced - £5,617.54 True Potential Goldman Sachs Balanced - £2,787.29 True Potential Growth Aligned Aggressive - £10,764.88 True Potential Schroders Balanced - £2,378.80 True Potential SEI Aggressive - £7,254.00 True Potential Trinity Bridge Balanced - £7,771.29 True Potential UBS Aggressive - £10,099.00 |
+| Risk Level                              | 6                                                                                                                                                                                                                                                                                                                                         |
+| Penalties/Cost of exit/Switching        | No charges for transfer and/or switching                                                                                                                                                                                                                                                                                                  |
+| Retirement Options                      | Flexi-access drawdown, full and partial UFPLS                                                                                                                                                                                                                                                                                             |
+| Number of funds available               | 35                                                                                                                                                                                                                                                                                                                                        |
+| Allows Servicing Adviser                | Yes                                                                                                                                                                                                                                                                                                                                       |
 
 | Provider/Scheme                         | Nest                                                                          |
 |-----------------------------------------|-------------------------------------------------------------------------------|
@@ -150,9 +149,9 @@ Your background in accounting and currency trading has equipped you with a solid
 | Transfer Value                          | £21,272.64                                                                    |
 | Contributions                           | Plan is now paid up                                                           |
 | Safeguarded Features incl. TFC/GARs/MIG | Does not contain any safeguarded benefits                                     |
-| Charges                                 | Plan Charges 0.30%                                                            |
-|                                         | Contribution charge 1.8%                                                      |
-| Investment Funds Risk Level             | Nest Higher Risk Fund 8                                                       |
+| Charges                                 | Plan Charges 0.30% Contribution charge 1.8%                                   |
+| Investment Funds                        | Nest Higher Risk Fund                                                         |
+| Risk Level                              | 8                                                                             |
 | Penalties/Cost of exit/ Switching       | No charges for transfer and/or switching                                      |
 | Retirement Options                      | You can access full and partial UFPLS. Flexi-access drawdown is not available |
 | Number of funds available               | 6                                                                             |
@@ -215,9 +214,9 @@ By switching to this scheme, you will benefit from overall lower costs, greater 
 
 ## Recommended Solution
 
-| New Plan      | Total Transfer Value   | Regular Contributions   |
-|---------------|------------------------|-------------------------|
-| Aviva Pension | £67,945.44 (transfer)  | Portfolio Nil           |
+| New Plan                | Total Transfer Value                                   | Regular Contributions   |
+|-------------------------|--------------------------------------------------------|-------------------------|
+| Aviva Pension Portfolio | £67,945.44 (transfer) £260,000 (Pension Sharing Order) | Nil                     |
 
 I have recommended a Personal Pension for the following reasons:
 
@@ -268,10 +267,10 @@ The charges quoted in this report exclude the transaction costs of the underlyin
 
 The table below shows the difference in the total recurring annual charges of the existing plan and the alternative plan that has been recommended to replace it in both percentage and monetary terms. The difference in monetary terms is based on the current fund value of the existing plan, as highlighted in the earlier review section.
 
-| Plan           | Current Annual Recurring Charge of Existing Plan Impact of Recommended Alternative   | Current Annual Recurring Charge of Existing Plan Impact of Recommended Alternative   | Current Annual Recurring Charge of Existing Plan Impact of Recommended Alternative   | Current Annual Recurring Charge of Existing Plan Impact of Recommended Alternative   |
-|----------------|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| True Potential | 0.98%                                                                                | £457.39                                                                              | -0.59%                                                                               | -£275.37                                                                             |
-| Nest           | 0.30%                                                                                | £63.82                                                                               | +0.09%                                                                               | +£19.15                                                                              |
+| Plan           | Current Annual Recurring Charge of Existing Plan   | Current Annual Recurring Charge of Existing Plan   | Impact of Recommended Alternative   | Impact of Recommended Alternative   |
+|----------------|----------------------------------------------------|----------------------------------------------------|-------------------------------------|-------------------------------------|
+| True Potential | 0.98%                                              | £457.39                                            | -0.59%                              | -£275.37                            |
+| Nest           | 0.30%                                              | £63.82                                             | +0.09%                              | +£19.15                             |
 
 ## Like for Like
 
@@ -354,6 +353,8 @@ The below chart and table show a volatility analysis of your existing plans (B -
 
 <!-- image -->
 
+Scatter plot
+
 This shows that the recommended funds have outperformed your existing True Potential funds and underperformed against the Nest fund. This is to be expected given the level of risk for each plan, with the Nest funds with a higher equity content achieving greater growth.
 
 The recommended funds, being more balanced and in line with your risk tolerance, has understandably lagged behind the higher-risk funds but has demonstrated strong risk-adjusted performance within its category.
@@ -383,6 +384,8 @@ Any input information is based on the assumptions detailed at the end of this re
 
 <!-- image -->
 
+Bar chart
+
 The chart above displays a bar for each year of your life, up to age 100, showing your household income. Each income source is represented by a different colour. Your expenditure is shown by the solid black line running across the bars.
 
 Where income is insufficient to cover your expenditure, the modeller assumes that you will draw from your liquid assets. Pension withdrawals are represented by the orange shading in the chart to utilise your personal allowance, with the green shading showing your savings being used to make up the shortfall. Once your savings are depleted, the purple shading shows pension funds being accessed again.
@@ -390,6 +393,8 @@ Where income is insufficient to cover your expenditure, the modeller assumes tha
 ## Current Total Assets
 
 <!-- image -->
+
+Line chart
 
 The chart shows the value of your assets, with the blue being pension funds and green is the inheritance which we assumed you receive in two years' time. As you can see your assets are sufficient to make up your income shortfall throughout your lifetime.
 
@@ -462,6 +467,8 @@ Yours sincerely,
 
 <!-- image -->
 
+Signature
+
 James Poka MFinPlan DipPFS Head of Advice - Independent Financial Adviser TFAS Wealth Limited
 
 ## Appendix
@@ -480,8 +487,8 @@ Values shown are in real terms which mean that they have been adjusted to take i
 
 |                                                                 | Assumed Growth Rates (Average)   | Assumed Growth Rates (Average)   | Assumed Growth Rates (Average)   |
 |-----------------------------------------------------------------|----------------------------------|----------------------------------|----------------------------------|
-|                                                                 | 0%                               | 2.94%                            | 5.88%                            |
-| ExistingSchemes*                                                | £48,408                          | £121,807                         | £298,632                         |
+| ExistingSchemes*                                                | 0%                               | 2.94%                            | 5.88%                            |
+|                                                                 | £48,408                          | £121,807                         | £298,632                         |
 | Aviva Pension Portfolio (Choice)                                | £42,300                          | £106,000                         | £261,000                         |
 | Rate of Return Required from Aviva                              | 0.41% (+0.41%)                   | 3.37%(+0.43%)                    | 6.32%(+0.44%)                    |
 | The effect this will have on the fund if moved to Aviva -12.42% |                                  | -12.42%                          | -12.42%                          |
@@ -635,3 +642,11 @@ _The following details were present in Docling's structured JSON output but omit
 - £600,000
 - £400,000
 - £200,000
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 2: [table, 95 % confidence]
+- Image 3: [line_chart, 100 % confidence]
+- Image 4: [scatter_plot, 52 % confidence]
+- Image 5: [bar_chart, 89 % confidence]
+- Image 6: [line_chart, 68 % confidence]
+- Image 7: [signature, 100 % confidence]

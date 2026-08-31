@@ -1,4 +1,12 @@
+---
+source: Pru - part of M+G plc - 50094231 5.6.26.pdf
+converted: 2026-08-31T01:26:38Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Icon
 
 TFAS WEALTH LIMITED 2ND FLOOR ST.ANDREWSHOUSE 119-121 THE HEADROW LEEDS LS15JW
 
@@ -25,6 +33,8 @@ TFAS WEALTH LIMITED 2ND FLOOR ST.ANDREWSHOUSE 119-121 THE HEADROW LEEDS LS15JW
 Pru
 
 <!-- image -->
+
+Logo
 
 Date of this letter 5 June 2026 Plan number 50094231 Planholder ANGELA STEAD
 
@@ -62,6 +72,8 @@ Take a moment to register for your online account and you'll be able to check yo
 tf   n  e g o    e  t   o te most of the information and features available to you.
 
 <!-- image -->
+
+Icon
 
 ## We're here to help
 
@@ -221,6 +233,8 @@ In deciding how much a bonus should be, we use a process called 'smoothing'. Thi
 
 <!-- image -->
 
+Line chart
+
 ## Why we sometimes apply an MVR to a with-profitsfund
 
 - **Pru:** [blank]
@@ -302,3 +316,7 @@ _The following details were present in Docling's structured JSON output but omit
 - Lee Bullen Head of Customer Operations
 - If lots of investors pull their money out of a with-profits fund after a sharp fall in its value, there's a risk they could get an unfairly large share of the fund's profits. This would leave remaining investors worse off. So, an MVR protects investors who aren't taking their money out, and means that you get a return based on the earnings of the with-profits fund over the period your payments have been invested.
 - So, if you tell us you want to make a withdrawal or a transfer from a with-profits fund, we might decide to apply an MVR to your transaction. This means you'll get less than the value of your plan, as shown in your last statement.
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 4: [signature, 100 % confidence]
+- Image 6: [line_chart, 94 % confidence]

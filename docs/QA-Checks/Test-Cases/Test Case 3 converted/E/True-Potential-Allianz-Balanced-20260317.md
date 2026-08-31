@@ -1,3 +1,9 @@
+---
+source: True-Potential-Allianz-Balanced-20260317.pdf
+converted: 2026-08-31T00:55:15Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## True Potential Allianz Balanced
 
 - **true:** potential
@@ -16,6 +22,8 @@ The True Potential Allianz Balanced Fund returned 2.80% (net of fees). The Fund'
 ## Growth of £10,000 invested 5 years ago
 
 <!-- image -->
+
+Line chart
 
 - l True Potential Allianz Balanced Acc*
 - l Morningstar UK Moderate Target Allocation Index**
@@ -52,6 +60,8 @@ The True Potential Allianz Balanced Fund returned 2.80% (net of fees). The Fund'
 - The balanced approach of the fund strives to provide both growth and income, while managing short-term losses through a diversified mix of assets that moderate risk.
 
 <!-- image -->
+
+Logo
 
 ## Key fund information
 
@@ -134,23 +144,18 @@ The OCF of this fund is currently 0.76%. This means that if you invest £1000 in
 - **l:** [blank]
 - **l:** [blank]
 
-| Asset class                                 | % of total exposure***   |    |
-|---------------------------------------------|--------------------------|----|
-| l US Stocks                                 | 23.07%                   |    |
-| Global Treasury Bonds                       | 11.38%                   | l  |
-| Europe ex UK Equity Stocks                  | 11.36%                   | l  |
-| Emerging Markets Stocks                     | 10.11%                   | l  |
-| l Asia Pacific Stocks                       | 9.50%                    |    |
-| l Alternatives                              | 7.89%                    |    |
-| l UK Stocks                                 | 7.44%                    |    |
-| l Global Corporate Bonds                    | 5.50%                    |    |
-| l Emerging Market Bond HC                   | 4.01%                    |    |
-| l UK Gilts                                  | 3.04%                    |    |
-| l Global High Yield Bond (GBP Hedged)       | 2.45%                    |    |
-| l UK Corporate Bond                         | 2.26%                    |    |
-| l Global Inflation-Linked Bond (GBP Hedged) | 1.98%                    |    |
+| Asset class                                                                                                                                                                                    | %                                                                        |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| l US Stocks l Global Treasury Bonds l Europe ex UK Equity Stocks l Emerging Markets Stocks l Asia Pacific Stocks l Alternatives l UK Stocks l Global Corporate Bonds l Emerging Market Bond HC | of total exposure*** 23.07% 11.38% 7.89% 7.44% 5.50% 11.36% 10.11% 9.50% |
+|                                                                                                                                                                                                | 4.01%                                                                    |
+| l UK Gilts                                                                                                                                                                                     | 3.04%                                                                    |
+| l Global High Yield Bond (GBP Hedged)                                                                                                                                                          | 2.45%                                                                    |
+| l UK Corporate Bond                                                                                                                                                                            | 2.26%                                                                    |
+| l Global Inflation-Linked Bond (GBP Hedged)                                                                                                                                                    | 1.98%                                                                    |
 
 <!-- image -->
+
+Pie chart
 
 ## Risks
 
@@ -207,3 +212,7 @@ _The following details were present in Docling's structured JSON output but omit
 - £13,000
 - £14,000
 - £15,000
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [line_chart, 100 % confidence]
+- Image 16: [pie_chart, 100 % confidence]

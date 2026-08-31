@@ -1,4 +1,12 @@
+---
+source: Anness, M Aviva pension illustration 24.3.26.pdf
+converted: 2026-08-31T01:06:37Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 24 March 2026
 
@@ -39,6 +47,8 @@ Aviva Wrap UK Limited. Registered in England No. 4470008. Aviva, Wellington Row,
 Bond provided by Aviva Life &amp; Pensions UK Limited. Registered in England No. 3253947. Aviva, Wellington Row, York, YO90 1WR. Authorised by the Prudential Regulation Authority and regulated by the Financial Conduct Authority and the Prudential Regulation Authority. Firm Reference Number 185896.
 
 <!-- image -->
+
+Logo
 
 ## Staying informed
 
@@ -138,9 +148,9 @@ To check the current interest rate on the cash account at any time, go to aviva.
 - **To check the current interest rate on the cash account at any time, go to aviva.co.uk/bank-interestrates/:** [blank]
 - **You have agreed to pay adviser charges through your Pension.:** [blank]
 
-| Initial Adviser Charge   | 3.00% which equals £9,838.36 from the cash transfer payments into your pension.                                                                                                                                                |
-|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Ongoing Adviser Charge   | 1.00% of the value of your Aviva pension fund each year. Based on your new payments and today's value of your Aviva pension fund, this is estimated as £265.09 taken each month. The amount you pay will vary over time as the |
+| Initial Adviser Charge   | 3.00% which equals £9,838.36 from the cash transfer payments into your pension.                                                                                                                                                                                          |
+|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Ongoing Adviser Charge   | 1.00% of the value of your Aviva pension fund each year. Based on your new payments and today's value of your Aviva pension fund, this is estimated as £265.09 taken each month. The amount you pay will vary over time as the value of your Aviva pension fund changes. |
 
 ## What your pension fund might be worth
 

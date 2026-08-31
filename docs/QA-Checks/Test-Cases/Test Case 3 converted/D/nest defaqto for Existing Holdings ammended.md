@@ -1,3 +1,9 @@
+---
+source: nest defaqto for Existing Holdings ammended.docx
+converted: 2026-08-31T00:54:05Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Existing Holdings
 
 | **13.21 10 Year Volatility**  **[2]**   | **8**   |
@@ -18,6 +24,12 @@
 
 ## Asset allocation
 
-| <!-- image -->                                                                         | ASSET ALLOCATION ASSET ALLOCATION NET %⁽¹⁾  SHORT % LONG % l North America Equity 40.21 0.00 40.21 l Global Property 10.64 0.00 10.64 l Emerging Markets Equity 10.52 0.00 10.52 l Global (ex-UK) Fixed Income 7.90 -0.74 8.64 l Developed Pacific (ex-Japan) Equity 7.83 0.00 7.83 l UK Index Linked Bonds 7.39 0.00 7.39 l Europe (ex-UK) Equity 6.97 0.00 6.97 l Commodities 3.18 0.00 3.18 l Japan Equity 3.01 0.00 3.01 l UK Equity 1.95 0.00 1.95 l Cash - Short Term Money Market 0.30 -0.01 0.31 l Other 0.10 0.00 0.10   |
+| <!-- image -->  Pie chart                                                              | ASSET ALLOCATION ASSET ALLOCATION NET %⁽¹⁾  SHORT % LONG % l North America Equity 40.21 0.00 40.21 l Global Property 10.64 0.00 10.64 l Emerging Markets Equity 10.52 0.00 10.52 l Global (ex-UK) Fixed Income 7.90 -0.74 8.64 l Developed Pacific (ex-Japan) Equity 7.83 0.00 7.83 l UK Index Linked Bonds 7.39 0.00 7.39 l Europe (ex-UK) Equity 6.97 0.00 6.97 l Commodities 3.18 0.00 3.18 l Japan Equity 3.01 0.00 3.01 l UK Equity 1.95 0.00 1.95 l Cash - Short Term Money Market 0.30 -0.01 0.31 l Other 0.10 0.00 0.10   |
 |----------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ⁽¹⁾ Due to rounding there may be a discrepancy between the Long/Short % and the Net %. | ⁽¹⁾ Due to rounding there may be a discrepancy between the Long/Short % and the Net %.                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [pie_chart, 94 % confidence]

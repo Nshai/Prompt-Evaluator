@@ -1,14 +1,8 @@
 ---
-source_path: "G/Test Case 1 - Policy Research -2025.xlsx"
-file_name: "Test Case 1 - Policy Research -2025.xlsx"
-category_code: G
-pages: 2
-characters: 42456
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: Test Case 1 - Policy Research -2025.xlsx
+converted: 2026-08-31T00:35:20Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 | Adviser                     | Tom Redmond   | Tom Redmond      | Tom Redmond               |
 |-----------------------------|---------------|------------------|---------------------------|
@@ -86,8 +80,6 @@ page_provenance: true
 | Any guaranteed bonus rates                          | No                                                         |                                                            | 1                | 2                | No                               |                                  | 1                  | 5                  | No                                                   |                                                      | n/a                | n/a                | No                               |                                  | 1                | 4                | No                                                             |                                                                | N.A            | N/A                    |
 | Market Value Reduction (MVR)?                       | No                                                         | No                                                         | n/a              | n/a              | No                               | No                               | 1                  | 5                  | No                                                   | No                                                   | n/a                | n/a                | No                               | No                               | 1                | 4                | No                                                             | No                                                             | 4              | 2                      |
 
-<!-- page: 2 -->
-
 Overall File Strategy
 
 | Detail                                        | Notes                                                                                                                                                                                                                                                                                                                                     |
@@ -146,3 +138,18 @@ Scheme 6 - Name of Fund
 | Recommendation                                    |         |
 | Which objective/ goal is this achieving?          |         |
 | Why/Why isnt this scheme suitable for the client? |         |
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- [author: Threaded comment]: If the client is invested in more than 1 fund, please detail the split.
+- [author: Threaded comment]: GMP only applies between 06/04/1978 and 05/04/1997
+- [author: Threaded comment]: If Yes, please detail.
+- [author: Threaded comment]: This could be policy fees, platform cost, servicing cost, DFM charges
+- [author: Threaded comment]: Could also be know as Trail or commission
+- [author: Threaded comment]: If Yes, please confirm the parameters of this. E.G. L&G only allow adhoc.
+- [author: Threaded comment]: List all funds that the client is invested in. A screenshot is sufficient on another tab.
+- [author: Threaded comment]: If the plan is With Profits. Complete stage 6
+- [author: Threaded comment]: Please detail a number, not just a link.
+- [author: Threaded comment]: If Yes, please confirm the Bonus rate.

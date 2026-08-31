@@ -1,3 +1,9 @@
+---
+source: A Barnes - Policy Research - 2025.xlsx
+converted: 2026-08-31T00:46:50Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 | Adviser                     | Tom Redmond    | Tom Redmond      | Tom Redmond   |
 |-----------------------------|----------------|------------------|---------------|
 | Client Name                 | Anthony Barnes | Identification   | N             |
@@ -78,6 +84,8 @@
 
 <!-- image -->
 
+Table
+
 Overall File Strategy
 
 | Detail                                        | Notes   |
@@ -151,3 +159,6 @@ _The following details were present in Docling's structured JSON output but omit
 - [author: Threaded comment]: If the plan is With Profits. Complete stage 6
 - [author: Threaded comment]: Please detail a number, not just a link.
 - [author: Threaded comment]: If Yes, please confirm the Bonus rate.
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [table, 79 % confidence]

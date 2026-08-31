@@ -1,3 +1,9 @@
+---
+source: 240716-True-Potential-Schroders-Balanced.pdf
+converted: 2026-08-31T00:54:15Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## True Potential Schroders Balanced
 
 ## Objective and Investment Policy
@@ -38,18 +44,18 @@
 - 0
 - *OCF payable can fluctuate over time as the underlying investments are variable and can change. The OCF figure is sourced from the KIID dated 20/05/2024 found at www.truepotential.co.uk/documents/.
 
-| UK Stocks                           | 18.1%   |
-|-------------------------------------|---------|
-| US Stocks                           | 9.0%    |
-| European (ex UK) Stocks             | 6.4%    |
-| Asia Pacific Stocks                 | 19.0%   |
-| Emerging Market Stocks              | 9.5%    |
-| UK Gilts                            | 2.3%    |
-| Global Treasury Bonds               | 2.3%    |
-| Global Corporate Bonds              | 0.3%    |
-| Global High Yield Bond (GBP Hedged) | 0.1%    |
-| Alternatives                        | 18.4%   |
-| Cash and Cash Equivalents           | 14.6%   |
+| =   | UK Stocks                           | 18.1%   |
+|-----|-------------------------------------|---------|
+| =   | US Stocks                           | 9.0%    |
+| =   | European (ex UK) Stocks             | 6.4%    |
+| =   | Asia Pacific Stocks                 | 19.0%   |
+| =   | Emerging Market Stocks              | 9.5%    |
+| =   | UK Gilts                            | 2.3%    |
+| =   | Global Treasury Bonds               | 2.3%    |
+| =   | Global Corporate Bonds              | 0.3%    |
+| =   | Global High Yield Bond (GBP Hedged) | 0.1%    |
+| =   | Alternatives                        | 18.4%   |
+| =   | Cash and Cash Equivalents           | 14.6%   |
 
 0
 
@@ -73,13 +79,13 @@ Asset Allocation is subject to change at any time without notice, is for informa
 - **-30:** [blank]
 - * Source: Bloomberg, based on net asset value (as of 30/06/2024). The True Potential Schroders Balanced fund converted from a Non-UCITS Retail Scheme to a UCITS Scheme on 27 December 2019, as such past performance is limited. Past performance is not a reliable indicator of future performance.
 
-| Percentage Growth                      |                   |          |                   |                   |                   |                   |                   |
-|----------------------------------------|-------------------|----------|-------------------|-------------------|-------------------|-------------------|-------------------|
-|                                        | 1 Month           | 3 Months | 6 Months          | 1 Year            | 3 Years           | 5 Years           | Since Conversion  |
-| True Potential Schroders Balanced Acc* | -1.1%             | 1.9%     | 4.8%              | 11.3%             | 20.2%             | -                 | 35.1%             |
-| Annual Percentage Growth               |                   |          |                   |                   |                   |                   |                   |
-|                                        | Jun 2018 Jun 2019 |          | Jun 2019 Jun 2020 | Jun 2020 Jun 2021 | Jun 2021 Jun 2022 | Jun 2022 Jun 2023 | Jun 2023 Jun 2024 |
-| True Potential Schroders Balanced Acc* | -                 |          | -                 | 22.1%             | 1.8%              | 6.1%              | 11.3%             |
+| Percentage Growth                      |       |          |          |          |          |          |          |
+|----------------------------------------|-------|----------|----------|----------|----------|----------|----------|
+| True Potential Schroders Balanced Acc* | -1.1% | 1.9%     | 4.8%     | 11.3%    | 20.2%    | -        | 35.1%    |
+| Annual Percentage Growth               |       |          |          |          |          |          |          |
+|                                        |       | Jun 2018 | Jun 2019 | Jun 2020 | Jun 2021 | Jun 2022 | Jun 2023 |
+|                                        |       | Jun 2019 | Jun 2020 | Jun 2021 | Jun 2022 | Jun 2023 | Jun 2024 |
+| True Potential Schroders Balanced Acc* |       | -        | -        | 22.1%    | 1.8%     | 6.1%     | 11.3%    |
 
 * Source: Bloomberg, based on net asset value (as of 30/06/2024). The True Potential Schroders Balanced fund converted from a Non-UCITS Retail Scheme to a UCITS Scheme on 27 December 2019, as such past performance is limited. Past performance is not a reliable indicator of future performance.
 
@@ -98,3 +104,7 @@ _The following details were present in Docling's structured JSON output but omit
 
 ### Additional extracted text (not present in the base markdown export)
 - Sub-investment manager
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 2: [pie_chart, 100 % confidence]
+- Image 3: [line_chart, 100 % confidence]

@@ -83,19 +83,132 @@ public sealed record PlanRetrieval
     /// </summary>
     [JsonPropertyName("evidenceSections")] public List<string> EvidenceSections { get; init; } = [];
 
+    /// <summary>
+    /// How many passages this group's assessor may be shown, overriding
+    /// <see cref="AppSettings.MaxPassagesPerGroup"/>.
+    ///
+    /// <b>Groups are not alike, and one global cap prices them as though they were.</b> 53 of 88
+    /// sit at the cap; CHK-007 reaches eight document categories across eleven groups while
+    /// CHK-010 reaches three across five. The pack is 54–65% of a run's chat tokens, so a cap set
+    /// for the widest group is paid by every narrow one — and the measured relationship between
+    /// pack size and recall in this pipeline is <i>negative</i>, so the wide setting is not even
+    /// buying quality for the groups that do not need it.
+    ///
+    /// The plan is the right place for this because the plan already knows the shape: it declares
+    /// the categories, the sections and the comparison. Absent means the global setting, so a plan
+    /// that says nothing behaves exactly as it did.
+    /// </summary>
+    [JsonPropertyName("maxPassages")] public int? MaxPassages { get; init; }
+
     [JsonPropertyName("queries")] public List<PlannedQuery> Queries { get; init; } = [];
 }
 
 /// <summary>
-/// Everything that decides <b>what the assessor makes of what it was given</b>. Every field
-/// here is a string interpolated into one group's prompt; nothing in the runner branches on
-/// any of them.
+/// What code may establish for this requirement before any model is asked.
+///
+/// <b>A directive, not a steer.</b> Everything else under <see cref="PlanVerification"/> is a
+/// string interpolated into a prompt, and the measured result of that is unambiguous: every
+/// judgement moved into code has held, and every judgement moved into a prompt clause has been
+/// ignored by at least one model — a comparison-basis clause violated by both models while they
+/// quoted both dates, three guards and a hint that never fired across eight runs. These fields are
+/// read by the reconciler and branched on. Nothing here reaches the prompt as prose.
+/// </summary>
+public sealed record PlanReconciliation
+{
+    /// <summary>
+    /// What makes a candidate here.
+    ///
+    /// <c>None</c> is the important value and the one that is easy to under-use: narrative has no
+    /// value to diverge, and comparing prose as values manufactures findings. The largest false
+    /// positive in either measured run was ten "contradictions" at High severity that were one
+    /// undisclosed charge basis, tabulated ten times.
+    /// </summary>
+    [JsonPropertyName("detect")] public string Detect { get; init; } = "None";
+
+    /// <summary>
+    /// One candidate for the path rather than one per array element. Sixteen missing allocation
+    /// rows are one observation, not sixteen findings — and the routing mechanism this governs was
+    /// measured delivering one item into 26 of 88 groups, 92 times over.
+    /// </summary>
+    [JsonPropertyName("emitOnePerPath")] public bool EmitOnePerPath { get; init; }
+
+    /// <summary>
+    /// <c>CurrentOnly</c> refuses to compare a projection against a current figure, which is not a
+    /// discrepancy. The canonical model already records this: its provenance carries a modality,
+    /// and a measured extract holds 60 Projected, 29 Assumed and 13 Conditional values that a
+    /// current-figure comparison has no business touching.
+    /// </summary>
+    [JsonPropertyName("modality")] public string Modality { get; init; } = "AnyModality";
+
+    /// <summary>
+    /// How far apart two dated values may be before the difference is an as-at artefact rather
+    /// than a conflict — £600 at 24/03 against £800 at 21/07 is not a contradiction.
+    /// </summary>
+    [JsonPropertyName("asAtToleranceDays")] public int? AsAtToleranceDays { get; init; }
+
+    [JsonPropertyName("note")] public string? Note { get; init; }
+
+    /// <summary>True when the plan says code should compare nothing for this requirement.</summary>
+    public bool DetectsNothing =>
+        string.IsNullOrWhiteSpace(Detect)
+        || Detect.Equals("None", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>True when a projected or assumed value may not stand in for a current one.</summary>
+    public bool CurrentOnly =>
+        Modality.Equals("CurrentOnly", StringComparison.OrdinalIgnoreCase);
+}
+
+/// <summary>
+/// Whether this requirement needs judgement at all, and how far its severity may reach.
+///
+/// <b>A directive, not a steer</b> — see <see cref="PlanReconciliation"/>. The adjudicator branches
+/// on these.
+/// </summary>
+public sealed record PlanAdjudication
+{
+    /// <summary>
+    /// <c>Deterministic</c> where code has already proved the finding and only a sentence is
+    /// wanted. An Appropriateness limb is never Deterministic: code can establish the facts but
+    /// not the verdict.
+    /// </summary>
+    [JsonPropertyName("mode")] public string Mode { get; init; } = "Model";
+
+    /// <summary>
+    /// The highest severity this requirement may report. An absence is held below the severities
+    /// reserved for a demonstrated contradiction.
+    /// </summary>
+    [JsonPropertyName("severityCeiling")] public string? SeverityCeiling { get; init; }
+
+    /// <summary>Whether a finding here must carry a locatable quote to be reported.</summary>
+    [JsonPropertyName("requiresCitation")] public bool RequiresCitation { get; init; }
+
+    [JsonPropertyName("note")] public string? Note { get; init; }
+
+    /// <summary>True when the plan says code settles this requirement without asking a model.</summary>
+    public bool IsDeterministic =>
+        Mode.Equals("Deterministic", StringComparison.OrdinalIgnoreCase);
+}
+
+/// <summary>
+/// Everything that decides <b>what the assessor makes of what it was given</b>.
+///
+/// The block is now two kinds of thing, and the difference is the whole point. <c>limb</c>,
+/// <c>comparison</c>, <c>sufficiency</c> and <c>issueCategories</c> are strings interpolated into
+/// one group's prompt — nothing branches on them, and the measured result of that is that a model
+/// may ignore any of them. <see cref="Reconciliation"/> and <see cref="Adjudication"/> are
+/// directives: code reads them, code branches on them, and no model is asked to comply.
 /// </summary>
 public sealed record PlanVerification
 {
     [JsonPropertyName("limb")] public string Limb { get; init; } = "Consistency";
     [JsonPropertyName("comparison")] public PlanComparison? Comparison { get; init; }
     [JsonPropertyName("sufficiency")] public PlanSufficiency? Sufficiency { get; init; }
+
+    /// <summary>What code may establish before a model is asked. See <see cref="PlanReconciliation"/>.</summary>
+    [JsonPropertyName("reconciliation")] public PlanReconciliation? Reconciliation { get; init; }
+
+    /// <summary>Whether judgement is needed, and its ceiling. See <see cref="PlanAdjudication"/>.</summary>
+    [JsonPropertyName("adjudication")] public PlanAdjudication? Adjudication { get; init; }
 
     /// <summary>
     /// The kinds of problem this requirement can raise, from <see cref="IssueCategory"/>.
@@ -176,6 +289,35 @@ public sealed record PlanQueryGroup
         IssueCategory.Clean(Verification?.IssueCategories);
     public PlanComparison? Comparison => Verification?.Comparison;
     public PlanSufficiency? Sufficiency => Verification?.Sufficiency;
+
+    /// <summary>
+    /// What code may establish for this group before a model is asked.
+    ///
+    /// Never null: a plan written before these fields existed reads as "detect nothing, ceiling
+    /// nothing, ask the model" — which is exactly what those plans did, so an old plan keeps its
+    /// behaviour rather than acquiring a default somebody has to discover from a run.
+    /// </summary>
+    public PlanReconciliation Reconciliation => Verification?.Reconciliation ?? new PlanReconciliation();
+
+    /// <inheritdoc cref="Reconciliation"/>
+    public PlanAdjudication Adjudication => Verification?.Adjudication ?? new PlanAdjudication();
+
+    /// <summary>
+    /// The pack cap for this group: the plan's own budget where it sets one, else the global
+    /// setting. A plan may only narrow the cap, never widen it past what the run was configured
+    /// to afford — a budget is a ceiling somebody chose, and a plan file should not be able to
+    /// raise the bill of a run without the run's consent.
+    /// </summary>
+    public int PassageCap(int configured)
+    {
+        if (Retrieval.MaxPassages is not { } planned || planned <= 0)
+        {
+            return configured;
+        }
+
+        // 0 means unbounded on the setting, so anything the plan names is narrower than that.
+        return configured <= 0 ? planned : Math.Min(planned, configured);
+    }
 
     /// <summary>The queries that will actually run, after the Core-only switch.</summary>
     public IEnumerable<PlannedQuery> QueriesToRun(bool coreOnly) =>

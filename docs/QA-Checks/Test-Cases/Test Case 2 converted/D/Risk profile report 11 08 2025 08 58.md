@@ -1,4 +1,12 @@
+---
+source: Risk profile report 11 08 2025 08 58.docx
+converted: 2026-08-31T00:38:46Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 ########### 
 
@@ -13,6 +21,8 @@
 11 August 2025
 
 <!-- image -->
+
+Logo
 
 **Risk profile**
 
@@ -66,9 +76,13 @@ Projecting these details, along with the agreed risk level, produced the followi
 
 <!-- image -->
 
+Line chart
+
 Investment Projection Graph based on Agreed Risk Level
 
 <!-- image -->
+
+Line chart
 
 Investment Risk Comparison Graph based on Agreed Risk Level
 
@@ -181,3 +195,6 @@ Page 7
 Page 8
 - Research report prepared by Thomas Redmond using Defaqto Engage
 Page 9
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 3: [line_chart, 99 % confidence]

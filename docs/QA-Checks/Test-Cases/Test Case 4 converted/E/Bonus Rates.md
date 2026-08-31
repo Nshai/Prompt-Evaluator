@@ -1,6 +1,14 @@
+---
+source: Bonus Rates.pdf
+converted: 2026-08-31T01:11:05Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 Unitised plans - Units are allocated when premiums are paid and the plan payout value depends on the number of units and the unit price. Unlike investment-linked units, the price of most types of with-profits units normally increases daily, even if the value of the assets in the with-profits fund fall.
 
 <!-- image -->
+
+Logo
 
 ## Standard Life
 
@@ -23,12 +31,12 @@ To see how your plan has changed, you can look at your annual statement or login
 - We've provided some examples of what this could mean for you. Of course, it's important to remember that these examples are purely for illustration. Everyone's circumstances are different. There are a number of factors that can affect the value of your with-profits investment, including how old you are, when you started your investment, and how much you've paid in.
 - **The figures shown refer to the past. Past performance is not a reliable guide to future performance.:** [blank]
 
-| Type of plan   | Term of plan                 | Gender/Age                       | Amount invested   | Plan value at 01/02/2025   | Payout at 01/02/2026   |
-|----------------|------------------------------|----------------------------------|-------------------|----------------------------|------------------------|
-| Pensions       | 20 years: started 1 Feb 2006 | Male or Female Retirement age 65 | £48,000 (£200pm)  | £76,588                    | £86,798                |
-| Pensions       | 25 years: started 1 Feb 2001 | Male or Female Retirement age 65 | £60,000 (£200pm)  | £111,894                   | £125,868               |
-| Pensions       | 30 years: started 1 Feb 1996 | Male or Female Retirement age    | £72,000           | £142,722                   | £167,438               |
-| Conventional   | 35 years: started            | 65 Male 30 at start              | (£200pm) £21,000  | £41,085*                   | £44,916*               |
+| Type of plan                   | Term of plan                 | Gender/Age                       | Amount invested   | Plan value at 01/02/2025   | Payout at 01/02/2026   |
+|--------------------------------|------------------------------|----------------------------------|-------------------|----------------------------|------------------------|
+| Pensions                       | 20 years: started 1 Feb 2006 | Male or Female Retirement age 65 | £48,000 (£200pm)  | £76,588                    | £86,798                |
+|                                | 25 years: started 1 Feb 2001 | Male or Female Retirement age 65 | £60,000 (£200pm)  | £111,894                   | £125,868               |
+|                                | 30 years: started 1 Feb 1996 | Male or Female Retirement age 65 | £72,000 (£200pm)  | £142,722                   | £167,438               |
+| Conventional Savings Endowment | 35 years: started 1 Feb 1991 | Male 30 at start                 | £21,000 (£50pm)   | £41,085*                   | £44,916*               |
 
 The figures shown refer to the past. Past performance is not a reliable guide to future performance.
 
@@ -53,11 +61,15 @@ The figures shown refer to the past. Past performance is not a reliable guide to
 
 <!-- image -->
 
+Logo
+
 Conventional plans In return for payment of an agreed premium, a fixed sum assured is guaranteed to be paid on (or a set amount of pension starts to be paid from) a defined future date (the maturity/retirement date). The guaranteed amount can be increased over time by the addition of regular (reversionary) bonuses.
 
 For more information on the inherited estate including 'Who is eligible?' please read our leaflet
 
 <!-- image -->
+
+Logo
 
 |                                                    | From 1 February 2026 (until further notice) guaranteed benefits will grow at a rate of   |
 |----------------------------------------------------|------------------------------------------------------------------------------------------|
@@ -67,10 +79,10 @@ For more information on the inherited estate including 'Who is eligible?' please
 
 ## The bonus added to guaranteed benefits on conventional plans will be:
 
-|                      | Bonus added to guaranteed benefits on 1 February 2026   | Bonus added to guaranteed benefits on 1 February 2026   |
-|----------------------|---------------------------------------------------------|---------------------------------------------------------|
-| Life plans           | 0.25% on sum assured                                    | 0.35% on attaching bonuses                              |
-| Personal Pension and | 0.25% on sum assured                                    | 0.25% on attaching bonuses                              |
+|                                              | Bonus added to guaranteed benefits on 1 February 2026   | Bonus added to guaranteed benefits on 1 February 2026   |
+|----------------------------------------------|---------------------------------------------------------|---------------------------------------------------------|
+| Life plans                                   | 0.25% on sum assured                                    | 0.35% on attaching bonuses                              |
+| Personal Pension and Executive Pension plans | 0.25% on sum assured                                    | 0.25% on attaching bonuses                              |
 
 |                     | For scheme year ending on or after 1 March 2026   | For scheme year ending on or after 1 March 2026   |
 |---------------------|---------------------------------------------------|---------------------------------------------------|
@@ -87,13 +99,13 @@ You'll be in one of the different types of with-profits plans with different ass
 - **Different asset mixes have different investment returns::** [blank]
 - The figures shown refer to the past. Past performance is not a reliable guide to future performance. The returns shown are the gross returns before charges, expenses or the effects of any smoothing.
 
-| Class of with-profits business                                                       | Fund Name (see your plan statement)                                                                                                           | Estimated Gross Return for 6 months to 30/09/2025   |
-|--------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|
-| 1 Unitised pensions for which a minimum unit price growth rate of 4% applies         | Pension With Profits                                                                                                                          | 5.5%                                                |
-| 2 Unitised life plans for which a minimum unit price growth rate of 3% applies       | With Profits                                                                                                                                  | 5.5%                                                |
-| 3 Other unitised pensions for which a minimum unit price growth rate of 0% applies   | Pension With Profits One Pension 2 With Profits 2 Pension Millennium With Profits Pension With Profits One 2006 Pension 2 With Profits 2 2006 | 10.1%                                               |
-| 4 Other unitised life plans for which a minimum unit price growth rate of 0% applies | Life With Profits S2 Life With Profits S2 Life With Profits 2006                                                                              | 10.1%                                               |
-| 5 Conventional Life and Pension plans                                                | N/A                                                                                                                                           | 8.3%                                                |
+|    | Class of with-profits business                                                     | Fund Name (see your plan statement)                                                                                                                                                | Estimated Gross Return for 6 months to 30/09/2025   |
+|----|------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|
+|  1 | Unitised pensions for which a minimum unit price growth rate of 4% applies         | Pension With Profits                                                                                                                                                               | 5.5%                                                |
+|  2 | Unitised life plans for which a minimum unit price growth rate of 3% applies       | With Profits                                                                                                                                                                       | 5.5%                                                |
+|  3 | Other unitised pensions for which a minimum unit price growth rate of 0% applies   | Pension With Profits One Pension 2 With Profits 2 Pension Millennium With Profits Pension With Profits One 2006 Pension 2 With Profits 2 2006 Pension Millennium With Profits 2006 | 10.1%                                               |
+|  4 | Other unitised life plans for which a minimum unit price growth rate of 0% applies | Life With Profits S2 Life With Profits S2 Life With Profits 2006                                                                                                                   | 10.1%                                               |
+|  5 | Conventional Life and Pension plans                                                | N/A                                                                                                                                                                                | 8.3%                                                |
 
 The figures shown refer to the past. Past performance is not a reliable guide to future performance. The returns shown are the gross returns before charges, expenses or the effects of any smoothing.
 

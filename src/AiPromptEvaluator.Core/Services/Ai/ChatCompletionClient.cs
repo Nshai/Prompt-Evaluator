@@ -122,16 +122,40 @@ public class ChatCompletionClient : IChatCompletionClient
 
         // Providers that report a cached-input count expose it as additional usage; anything
         // that doesn't simply prices the whole input at the uncached rate.
+        //
+        // Two families, and both are read because the app is pointed at both. OpenAI-compatible
+        // endpoints cache automatically and report a single "cached" figure. Anthropic caches on
+        // explicit breakpoints and reports the two halves separately — the call that populates the
+        // cache and the calls that read it — which is a distinction worth keeping, because they
+        // are priced differently in opposite directions: a write costs 1.25x and a read 0.1x.
         var cachedRead = ReadAdditionalCount(usage, "InputTokenDetails.CachedTokenCount")
                       ?? ReadAdditionalCount(usage, "cached_tokens")
+                      ?? ReadAdditionalCount(usage, "cache_read_input_tokens")
                       ?? 0;
 
-        var input = usage.InputTokenCount ?? 0;
+        // Previously hard-coded to zero, which is right for a provider that never charges for a
+        // cache write and wrong for the one family that does. A run through an Anthropic route
+        // with caching enabled was billed for cache creation and reported it as ordinary input,
+        // so the breakdown understated the first call and overstated every later one.
+        var cachedWrite = ReadAdditionalCount(usage, "cache_creation_input_tokens")
+                       ?? ReadAdditionalCount(usage, "InputTokenDetails.CacheCreationTokenCount")
+                       ?? 0;
 
+        var input = usage.InputTokenCount ?? 0;
+        var cached = cachedRead + cachedWrite;
+
+        // <b>The two families disagree about what "input" includes, and the numbers say which is
+        // which.</b> OpenAI counts cached tokens inside its input total, so they have to come out
+        // or they are billed twice. Bedrock's Converse reports them alongside it — a fully cached
+        // call comes back as inputTokens 0 with cacheReadInputTokens 4,902 — so subtracting there
+        // would erase tokens that were charged at the full rate.
+        //
+        // Containment is the test, because it is the thing that actually differs: a cached count
+        // larger than the input total cannot have been inside it.
         return new TokenUsage(
-            InputTokens: Math.Max(0, input - cachedRead),
+            InputTokens: input >= cached ? input - cached : input,
             OutputTokens: usage.OutputTokenCount ?? 0,
-            CacheWriteTokens: 0,
+            CacheWriteTokens: cachedWrite,
             CacheReadTokens: cachedRead);
     }
 

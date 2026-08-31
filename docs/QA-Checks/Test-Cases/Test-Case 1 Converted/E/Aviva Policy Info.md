@@ -1,82 +1,35 @@
 ---
-source_path: "E/Aviva Policy Info.pdf"
-file_name: "Aviva Policy Info.pdf"
-category_code: E
-pages: 17
-characters: 40946
-converter: docling-serve (do_ocr=true, to_formats=md)
-page_provenance: true
+source: Aviva Policy Info.pdf
+converted: 2026-08-31T00:25:36Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
 ---
-
-<!-- page: 1 -->
 
 ## Personal pension plan details
 
-Plan number
-
-SP50163762
-
-Plan name
-
-Designer Stakeholder @ Aviva
-
-Start date
-
-1 November 2017
-
-Plan holder
-
-Plan status
-
-Paid Up - Regular payments are not being made currently
-
-Retirement age
-
-70
-
-Trust
-
-No
-
-Beneficiaries
-
-None
-
-Life cover
-
-None
-
-Waiver of payment
-
-None - it's no longer possible to add this.
-
-PST reference no.
-
-00613774RB
-
-Plan regulations
-
-This contract is a registered pension scheme under Part 4 of the Finance Act 2004
+- **Plan name:** Designer Stakeholder @ Aviva
+- **Start date:** 1 November 2017
+- **Retirement age:** 70
+- **Trust:** No
+- **Waiver of payment:** None - it's no longer possible to add this.
+- **PST reference no.:** 00613774RB
+- **Plan regulations:** This contract is a registered pension scheme under Part 4 of the Finance Act 2004
+- **Plan number:** [blank]
+- **SP50163762:** [blank]
+- **Plan holder:** [blank]
+- **Plan status:** [blank]
+- **Paid Up - Regular payments are not being made currently:** [blank]
+- **Beneficiaries:** [blank]
+- **None:** [blank]
+- **Life cover:** [blank]
+- **None:** [blank]
 
 ## Plan value
 
-These amounts aren't guaranteed and may go down as well as up in the future. Your client may get back less than has been paid in.
-
-Plan value
-
-£3,744.36
-
-Transfer value
-
-£3,744.36
-
-We've based these figures on the values as at 22 September 2025 .
-
-Visit aviva.co.uk/retirement/using -pension-money to see how the money from this plan can be used in retirement.
-
-<!-- page: 2 -->
-
-Plan number: SP50163762
+- **Plan value:** £3,744.36
+- **Transfer value:** £3,744.36
+- These amounts aren't guaranteed and may go down as well as up in the future. Your client may get back less than has been paid in.
+- **Visit aviva.co.uk/retirement/using -pension-money to see how the money from this plan can be used in retirement.:** [blank]
+- **We've based these figures on the values as at 22 September 2025 .:** [blank]
 
 ## Fund breakdown
 
@@ -103,19 +56,12 @@ Loyalty units or bonus:
 
 ## Not applicable on this product
 
-Protected tax-free lump sum
-
-This plan has received no transfers in and has no protected tax-free lump sum entitlement. This plan has received no block/bulk transfers in.
-
-The tax-free lump sum available for this plan is 25%.
-
-Any changes to this plan, such as transferring out, won t affect the tax-free lump sum entitlement on any other Aviva plan.
-
-Primary / Enhanced protection
-
-Please speak to the plan holder.
-
-<!-- page: 3 -->
+- **Protected tax-free lump sum:** This plan has received no transfers in and has no protected tax-free lump sum entitlement. This plan has received no block/bulk transfers in.
+- **Primary / Enhanced protection:** Please speak to the plan holder.
+- **Plan number: SP50163762:** [blank]
+- **Loyalty units or bonus::** [blank]
+- **The tax-free lump sum available for this plan is 25%.:** [blank]
+- **Any changes to this plan, such as transferring out, won t affect the tax-free lump sum entitlement on any other Aviva plan.:** [blank]
 
 ## Pension input period
 
@@ -140,9 +86,14 @@ Yes
 
 ## Charges
 
+[No details]
+
 ## Annual fund charge
 
-The following table shows how this charge is split:
+- **Allocation rate (The % of payments into the plan being invested):** 100%.
+- **Transferring out charge:** None
+- **Plan number: SP50163762:** [blank]
+- **The following table shows how this charge is split::** [blank]
 
 | Fund value   | Current annual fund charge %over the last 12 months (excluding any additional fund charge)   |
 |--------------|----------------------------------------------------------------------------------------------|
@@ -160,37 +111,18 @@ None
 
 Plan number: SP50163762
 
-<!-- page: 4 -->
-
 ## Charges
 
-Bid/offer spread
-
-None.
-
-Switch investment funds
-
-Weoffer free, unlimited switching.
-
-Policy fee
-
-None.
-
-Adviser charging
-
-This plan does not allow adviser charging.
-
-If you ve recently taken over servicing rights to this plan: Wewill need a new Remuneration Agreement signed by your client. The charges shown may be payable to another adviser (and may cease depending on policy type). Please contact us for confirmation if you ve recently become the servicing agent.
+- **Bid/offer spread:** None.
+- **Switch investment funds:** Weoffer free, unlimited switching.
+- **Policy fee:** None.
+- **Adviser charging:** This plan does not allow adviser charging.
+- If you ve recently taken over servicing rights to this plan: Wewill need a new Remuneration Agreement signed by your client. The charges shown may be payable to another adviser (and may cease depending on policy type). Please contact us for confirmation if you ve recently become the servicing agent.
 
 ## Plan activity
 
-Switches in the last 2 plan years
-
-None
-
-Pension sharing / Earmarking order
-
-Please contact us.
+- **Switches in the last 2 plan years:** None
+- **Pension sharing / Earmarking order:** Please contact us.
 
 ## Your client can get 24/7 access to their pension at MyAviva
 
@@ -200,11 +132,8 @@ They can check their life insurance policy, find car insurance documents and eve
 
 ## What if your client doesn t want to keep making payments?
 
-They can still keep the pension money built up in this pension with us (until age 75).
-
-Plan number: SP50163762
-
-<!-- page: 5 -->
+- **Plan number: SP50163762:** [blank]
+- **They can still keep the pension money built up in this pension with us (until age 75).:** [blank]
 
 ## What if your client doesn t want to keep making payments?
 
@@ -214,35 +143,19 @@ Your client s pension money has to stay in a pension until they at least reach t
 
 ## Your client s retirement options
 
-Income Drawdown
-
-Taking the fund as a cash lump sum, known as a full/partial UFPLS (Uncrystallised Funds Pension Lump Sum)
-
-Annuity income
-
-Open Market Option Moving funds to drawdown is available for this plan from age 55 (57 from 6 April 2028). We allow ad hoc payments to be taken, but don t offer a regular withdrawal facility.
-
-Moving to income drawdown isn t possible after age 75. But once funds have been moved to income drawdown, the money can remain invested for the rest of life.
-
-It's possible to take 100% of your plan value or a partial lump sum from age 55 (57 from 6 April 2028). It s not possible to take a cash lump sum after age 75.
-
-The planholder can take their pension as an income.
-
-Different providers offer different products and services. We always recommend shopping around
-
-<!-- page: 6 -->
-
-Plan number: SP50163762
+- **Income Drawdown:** Moving funds to drawdown is available for this plan from age 55 (57 from 6 April 2028). We allow ad hoc payments to be taken, but don t offer a regular withdrawal facility.
+- **Taking the fund as a cash lump sum, known as a full/partial UFPLS (Uncrystallised Funds Pension Lump Sum):** It's possible to take 100% of your plan value or a partial lump sum from age 55 (57 from 6 April 2028). It s not possible to take a cash lump sum after age 75.
+- **Annuity income:** The planholder can take their pension as an income.
+- **Open Market Option:** Different providers offer different products and services. We always recommend shopping around
+- Moving to income drawdown isn t possible after age 75. But once funds have been moved to income drawdown, the money can remain invested for the rest of life.
 
 ## Your client s retirement options
 
-The importance of age 75
-
-Your client must decide how to take their retirement benefits before their 75th birthday. If you haven t told us, and no funds have been moved into income drawdown, we ll automatically move their pension funds into an annuity. We ll do this the working day before their 75th birthday. Where part of the plan has already been moved to income drawdown, we will move any remaining accumulation funds to income drawdown at age 75.
-
-Death benefits before retirement
-
-Death benefits after retirement If the plan holder dies before retirement, in most cases we can:
+- **The importance of age 75:** Your client must decide how to take their retirement benefits before their 75th birthday. If you haven t told us, and no funds have been moved into income drawdown, we ll automatically move their pension funds into an annuity. We ll do this the working day before their 75th birthday. Where part of the plan has already been moved to income drawdown, we will move any remaining accumulation funds to income drawdown at age 75.
+- **Death benefits before retirement:** If the plan holder dies before retirement, in most cases we can:
+- **Death benefits after retirement:** The benefits payable following the plan holder's death in retirement will depend on the options chosen at retirement.
+- **Plan number: SP50163762:** [blank]
+- **For more information go to connect.avivab2b.co.uk/adviser/ and click on 'Retirement'.:** [blank]
 
 - pay a lump sum,
 - move funds to a dependant's or nominee's flexi-access drawdown or
@@ -252,17 +165,14 @@ The benefits payable following the plan holder's death in retirement will depend
 
 For more information go to connect.avivab2b.co.uk/adviser/ and click on 'Retirement'.
 
-<!-- page: 7 -->
-
 Plan number: SP50163762
 
 ## Estimated maturity value
 
-We've based all these estimated values on the plan value of £3,744.36 as of 22 September 2025 . The fund value we ve shown above doesn t include any bonuses. However the estimated values in the table below include any bonuses and take into consideration any investment approach (if applicable).
-
-We've worked out what we think the pension plan could be worth on 7 June 2026. This is based on no further payments being made.
-
-These figures are estimates only and aren't guaranteed. Actual amounts could be more or less and may be worth less than has been paid in.
+- **Plan number: SP50163762:** [blank]
+- We've based all these estimated values on the plan value of £3,744.36 as of 22 September 2025 . The fund value we ve shown above doesn t include any bonuses. However the estimated values in the table below include any bonuses and take into consideration any investment approach (if applicable).
+- **We've worked out what we think the pension plan could be worth on 7 June 2026. This is based on no further payments being made.:** [blank]
+- **These figures are estimates only and aren't guaranteed. Actual amounts could be more or less and may be worth less than has been paid in.:** [blank]
 
 | If the investment goes up or down each year by                                                                                                                     | -0.4%                                                                                                                                                              | 2.5%                                                                                                                                                               | 5.5%                                                                                                                                                               |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -273,13 +183,18 @@ These figures are estimates only and aren't guaranteed. Actual amounts could be 
 | or a tax free lump sum of                                                                                                                                          | £930                                                                                                                                                               | £950                                                                                                                                                               | £969                                                                                                                                                               |
 | and a smaller yearly pension of                                                                                                                                    | £210                                                                                                                                                               | £214                                                                                                                                                               | £218                                                                                                                                                               |
 
-<!-- page: 8 -->
-
 Plan number: SP50163762
 
 ## Estimated maturity value
 
-We've worked out what we think the pension plan could be worth on 7 June 2031. This is based on no further payments being made.
+- **Plan number: SP50163762:** [blank]
+- **We've worked out what we think the pension plan could be worth on 7 June 2031. This is based on no further payments being made.:** [blank]
+- **The quotes above assume your client's retirement income::** [blank]
+- Our figures take inflation into account, which reduces how much investment and savings are worth. The effect of inflation means the fund may reduce as well as grow in "today's money". We've assumed inflation will be 2% a year until retirement.
+- These figures are estimates only and aren t guaranteed. Actual amounts could be more or less and may be worth less than has been paid in.
+- **As we review the growth rates we use for illustrations these may change in the future. Our charges may also change.:** [blank]
+- Your client can choose the age at which they take their retirement income, this can't normally be before the age of 55 unless they have a protected pension age (from 6 April 2028 this will be 57 - to find out more visit aviva.co.uk/nmpa ).
+- Please remember the HM Revenue & Customs rules which govern this plan may change in the future. If this happens, it could affect the payments the plan holder makes into it, how and when they can take out their money, and also how it'll be taxed.
 
 | If the investment goes up or down each year by                                                                                                                 | -1.4%                                                                                                                                                          | 1.6%                                                                                                                                                           | 4.5%                                                                                                                                                           |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -306,37 +221,25 @@ Your client can choose the age at which they take their retirement income, this 
 
 Please remember the HM Revenue &amp; Customs rules which govern this plan may change in the future. If this happens, it could affect the payments the plan holder makes into it, how and when they can take out their money, and also how it'll be taxed.
 
-<!-- page: 9 -->
-
 Plan number: SP50163762
 
 ## Don't forget...
 
-Wehave a range of options your client may find suitable if they're thinking about transferring. If you'd like more information please contact us or visit connect.avivab2b.co.uk/adviser/ .
-
-We've enclosed discharge forms if your client wants to transfer this plan. However, please remember this plan is supported by Origo options.
-
-Please note that in-specie transfers (where funds are transferred between pension schemes without first selling the units) aren t possible for this product. We offer cash transfers only.
+- Wehave a range of options your client may find suitable if they're thinking about transferring. If you'd like more information please contact us or visit connect.avivab2b.co.uk/adviser/ .
+- **We've enclosed discharge forms if your client wants to transfer this plan. However, please remember this plan is supported by Origo options.:** [blank]
+- Please note that in-specie transfers (where funds are transferred between pension schemes without first selling the units) aren t possible for this product. We offer cash transfers only.
 
 ## Beware of pension scams
 
-Most pension transfers are problem-free, however there are some instances of people being victims of pension scams. It s a legal requirement to check a transfer for signs of a pension scam. Before the transfer can proceed, it must meet one of the following conditions:
-
-1. the receiving pension scheme is a master trust or collective money purchase pension scheme authorised by The Pensions Regulator, or a public service pension scheme; or
-2. there are no warning flags indicating a pension scam. If warning flags are present, you may have to seek transfer guidance from MoneyHelper, a free and impartial service. In some circumstances, your transfer may be stopped to protect your pension savings.
-
-You ll be contacted if there are any concerns about the transfer or if further information is required. You can also check fca.org.uk/scamsmart to find information about known investment scheme scams.
+- **Plan number: SP50163762:** [blank]
+- Most pension transfers are problem-free, however there are some instances of people being victims of pension scams. It s a legal requirement to check a transfer for signs of a pension scam. Before the transfer can proceed, it must meet one of the following conditions:
+- You ll be contacted if there are any concerns about the transfer or if further information is required. You can also check fca.org.uk/scamsmart to find information about known investment scheme scams.
 
 - § Pensions together in one place with Aviva could save money for your client and time and admin costs for you § Our pension portfolio is a flexible, online, self-invested pension with access to thousands of investment choices and income drawdown facility
 
-<!-- page: 10 -->
-
 ## Transferring your plan
 
-Before a transfer can be made to a new provider, please send us:
-
-1. The form  Transfer form   Plan holder , completed by the plan holder
-2. The form  Transfer form   New pension provider , completed by the new provider
+- **Before a transfer can be made to a new provider, please send us::** [blank]
 
 ## It s essential that these two forms are returned together:
 
@@ -347,63 +250,38 @@ Wecan t transfer your plan until we have received both completed forms.
 
 ## Transfer form - Plan holder
 
-To be completed by the plan holder
-
-Please fill in this form completely using black ink and in BLOCK CAPITALS.
-
-Important: In-species transfers (where funds are transferred between pension schemes without first selling the units) aren t possible for this product. We offer cash transfers only.
+- **To be completed by the plan holder:** [blank]
+- **Please fill in this form completely using black ink and in BLOCK CAPITALS.:** [blank]
+- Important: In-species transfers (where funds are transferred between pension schemes without first selling the units) aren t possible for this product. We offer cash transfers only.
 
 ## Aviva scheme details
 
-Plan number
-
-SP50163762
-
-Plan holder name
-
-Plan holder email address
-
-Plan holder phone number
-
-(we will only use this if we need to contact you about your transfer)
+- **Plan number:** SP50163762
+- **Plan holder name:** [blank]
+- **Plan holder email address:** [blank]
+- **Plan holder phone number:** [blank]
+- **(we will only use this if we need to contact you about your transfer):** [blank]
 
 ## Details of new pension provider
 
-Newpension provider
-
-Department
-
-Address
-
-<!-- page: 11 -->
+- **Newpension provider:** [blank]
+- **Department:** [blank]
+- **Address:** [blank]
 
 ## Transfer form - Plan holder (continued)
 
-Contact name, if known
-
-Newplan number, if known
-
-Full or partial transfer
-
-Are you transferring
-
-- [ ] the full value of this plan?
-
-- [ ] or only part of this plan? □
-
-- [ ] (Tick one box only) □
-
-If you re only transferring part of your plan, please tell us either the number of segments you re transferring or the transfer amount (complete one box only):
-
-Number of segments
-
-or
-
-Transfer amount
-
-£
-
-Please note that if you specify a transfer amount, we may not be able to transfer the exact amount specified, but we will transfer the relevant number of segments to achieve the closest match.
+- **or only part of this plan? □:** [ ]
+- **(Tick one box only) □:** [ ]
+- **the full value of this plan?:** [ ]
+- **Transfer amount:** £
+- **Contact name, if known:** [blank]
+- **Newplan number, if known:** [blank]
+- **Full or partial transfer:** [blank]
+- **Are you transferring:** [blank]
+- If you re only transferring part of your plan, please tell us either the number of segments you re transferring or the transfer amount (complete one box only):
+- **Number of segments:** [blank]
+- **or:** [blank]
+- Please note that if you specify a transfer amount, we may not be able to transfer the exact amount specified, but we will transfer the relevant number of segments to achieve the closest match.
 
 ## I understand that:
 
@@ -428,21 +306,17 @@ Plan holder's signature
 
 Date
 
-<!-- page: 12 -->
-
 ## Transfer form   Plan holder (continued)
+
+[No details]
 
 ## Your advice and guidance
 
-Pensions and retirement options are complicated things and deciding what to do with your pension can feel a bit like the flat-pack chair laid out before you in a hundred pieces. Now, where did those instructions go?
-
-Good news! There is guidance to help you sort the left leg from the right, screw the seat on properly and sit comfortably into retirement.
-
-That s why we encourage you to get some free specialist guidance from Pension Wise to help you make an informed decision about what to do with your pension savings.
-
-Pension Wise is a government-backed service from MoneyHelper giving you specialist and impartial guidance, either face to face or over the phone.
-
-With Pension Wise , you ll be speaking to an independent pension specialist, who will discuss your different pension options and help you understand what your overall financial situation will be when you retire.
+- **Pensions and retirement options are complicated things and deciding what to do with your pension can feel a bit like the flat-pack chair laid out before you in a hundred pieces. Now, where did those instructions go?:** [blank]
+- **Good news! There is guidance to help you sort the left leg from the right, screw the seat on properly and sit comfortably into retirement.:** [blank]
+- That s why we encourage you to get some free specialist guidance from Pension Wise to help you make an informed decision about what to do with your pension savings.
+- **Pension Wise is a government-backed service from MoneyHelper giving you specialist and impartial guidance, either face to face or over the phone.:** [blank]
+- With Pension Wise , you ll be speaking to an independent pension specialist, who will discuss your different pension options and help you understand what your overall financial situation will be when you retire.
 
 ## So, if you haven t done so already, you can:
 
@@ -453,63 +327,40 @@ With Pension Wise , you ll be speaking to an independent pension specialist, who
 
 You can also obtain advice from an FCA regulated financial adviser who can provide advice suitable to your own personal circumstances. An adviser will charge for this service. If you don t have an adviser, you can find one in your local area at unbiased.co.uk
 
-<!-- page: 13 -->
-
 ## Transfer form   Plan holder (continued)
+
+[No details]
 
 ## About your transfer
 
-There are many reasons for wanting to transfer your existing pension from Aviva.
-
-Please tell us the reason from the two alternatives below. Choose the main reason that best fits your situation (only choose one box).
-
-- [ ] I m consolidating my pension plans into one pot. Possibly because; easier to manage, lower charges, different investment choices, or more options at retirement, to mention just a few. (If you have ticked this box, you don t need to complete the rest of this form).
-
-OR
-
-- [ ] I m transferring with a view to taking my plan benefits* and I ve already decided which retirement option I want (usually you must be over age 55, or 57 from 6 April 2028, to take your benefits).
-
-The guidance and advice you ve received
-
-If you ve booked an appointment with Pension Wise or a financial adviser, please wait until after you ve had your Pension Wise appointment or have received advice before returning your transfer application.
-
-Please let us know what you ve done below:
-
-If you ve received guidance or advice
-
-- [ ] I ve received Pension Wise guidance
-
-My Pension Wise reference number is
-
-/
-
-- [ ] I ve received advice from an FCA regulated financial adviser
-
-If your circumstances or your policy details (for example the value of any of your pension plans) have changed significantly, you may benefit from further guidance or advice as different pension options or considerations could apply.
-
-If you wish to proceed without taking guidance or advice
-
-Weencourage you to get help with your pension option before you proceed without taking any guidance. If you ve not attended a Pension Wise appointment that had been previously booked; you can always make another appointment, or we can book one for you, or you can get financial advice.
-
-- [ ] I do not wish to receive any Pension Wise guidance or financial advice
-
-Please let us know why you ve decided not to take advice or guidance at this time:
-
-- [ ] I feel I already have a good understanding / knowledge
-
-- [ ] I don't see any benefit to me in getting guidance or advice
-
-- [ ] I don t have time to wait / I m not willing to wait / inconvenient appointment time for Pension Wise guidance or financial advice.
-
-- [ ] Other - please tell us your reason here:
-
-<!-- page: 14 -->
+- **I m consolidating my pension plans into one pot. Possibly because; easier to manage, lower charges, different investment choices, or more options at retirement, to mention just a few. (If you have ticked this box, you don t need to complete the rest of this form).:** [ ]
+- **I m transferring with a view to taking my plan benefits* and I ve already decided which retirement option I want (usually you must be over age 55, or 57 from 6 April 2028, to take your benefits).:** [ ]
+- **I ve received Pension Wise guidance:** [ ]
+- **I ve received advice from an FCA regulated financial adviser:** [ ]
+- **I do not wish to receive any Pension Wise guidance or financial advice:** [ ]
+- **I feel I already have a good understanding / knowledge:** [ ]
+- **I don't see any benefit to me in getting guidance or advice:** [ ]
+- **I don t have time to wait / I m not willing to wait / inconvenient appointment time for Pension Wise guidance or financial advice.:** [ ]
+- **Other - please tell us your reason here::** [ ]
+- **My Pension Wise reference number is:** /
+- **There are many reasons for wanting to transfer your existing pension from Aviva.:** [blank]
+- **Please tell us the reason from the two alternatives below. Choose the main reason that best fits your situation (only choose one box).:** [blank]
+- **OR:** [blank]
+- **The guidance and advice you ve received:** [blank]
+- If you ve booked an appointment with Pension Wise or a financial adviser, please wait until after you ve had your Pension Wise appointment or have received advice before returning your transfer application.
+- **Please let us know what you ve done below::** [blank]
+- **If you ve received guidance or advice:** [blank]
+- If your circumstances or your policy details (for example the value of any of your pension plans) have changed significantly, you may benefit from further guidance or advice as different pension options or considerations could apply.
+- **If you wish to proceed without taking guidance or advice:** [blank]
+- Weencourage you to get help with your pension option before you proceed without taking any guidance. If you ve not attended a Pension Wise appointment that had been previously booked; you can always make another appointment, or we can book one for you, or you can get financial advice.
+- **Please let us know why you ve decided not to take advice or guidance at this time::** [blank]
 
 ## Transfer form   new pension provider
 
-To be completed by the new pension provider
-
-To be filled in by the new pension provider, using black ink and in BLOCK CAPITALS. This form should then be returned along with the form  Transfer form   Plan holder
+- **To be completed by the new pension provider:** [blank]
+- To be filled in by the new pension provider, using black ink and in BLOCK CAPITALS. This form should then be returned along with the form  Transfer form   Plan holder
+- **Wecan t transfer the plan until we have received both completed forms from the plan holder and the new provider.:** [blank]
+- Important: In-specie transfers (where funds are transferred between pension schemes without first selling the units) aren t possible for this product. We offer cash transfers only.
 
 - § by post to Aviva, PO Box 520, Norwich, NR1 3WG, or
 - § by email to
@@ -520,117 +371,81 @@ Important: In-specie transfers (where funds are transferred between pension sche
 
 ## Aviva scheme details
 
-Plan number
-
-SP50163762
-
-Plan holder name
-
-New pension provider details
-
-Scheme / contract name
-
-Scheme / contract number
+- **Plan number:** SP50163762
+- **Plan holder name:** [blank]
+- **New pension provider details:** [blank]
+- **Scheme / contract name:** [blank]
+- **Scheme / contract number:** [blank]
 
 ## Bank details for new provider
 
-Bank
-
-Account holder name
-
-Account number
-
-Sort code
-
-BACS payment reference
+- **Account number:** Sort code
+- **Bank:** [blank]
+- **Account holder name:** [blank]
+- **BACS payment reference:** [blank]
 
 ## Transfer form   new pension provider(Continued)
 
+[No details]
+
 ## Type of scheme   please tick one box only
 
-- [ ] A registered personal pension (including stakeholder) scheme
-
-- [ ] Small self-administered schemes (SSAS)
-
-- [ ] Self-invested personal pension (SIPP)
-
-- [ ] Occupational defined contribution
-
-- [ ] Occupational defined benefit
-
-For any of these schemes please fill in section 1 and section 3
-
-- [ ] Overseas scheme
-
-- [ ] Please contact us for an overseas
-
-transfer quote on 0800 068 6800
-
-- [ ] Any other type of scheme Please fill in section 2 and section 3
+- **A registered personal pension (including stakeholder) scheme:** [ ]
+- **Small self-administered schemes (SSAS):** [ ]
+- **Self-invested personal pension (SIPP):** [ ]
+- **Occupational defined contribution:** [ ]
+- **Occupational defined benefit:** [ ]
+- **Overseas scheme:** [ ]
+- **Any other type of scheme Please fill in section 2 and section 3:** [ ]
+- **Please contact us for an overseas:** [ ]
+- **For any of these schemes please fill in section 1 and section 3:** [blank]
+- **transfer quote on 0800 068 6800:** [blank]
 
 ## Section 1
 
-Newpension provider HMRC registration / approval reference number
-
-Date approved
-
-Name and address of new provider
-
-Newprovider email
-
-Newprovider phone number
-
-Newplan number (if known)
-
-Please enclose a copy of your HMRC registration / approval letter
+- **Newpension provider HMRC registration / approval reference number:** [blank]
+- **Date approved:** [blank]
+- **Name and address of new provider:** [blank]
+- **Newprovider email:** [blank]
+- **Newprovider phone number:** [blank]
+- **Newplan number (if known):** [blank]
+- **Please enclose a copy of your HMRC registration / approval letter:** [blank]
 
 ## Section 2
 
-Type of scheme
-
-Receiving scheme approved by tax authority
-
-Tax authority reference number
-
-Please enclose a copy of your HMRC registration / approval letter.
-
-<!-- page: 16 -->
+- **Type of scheme:** [blank]
+- **Receiving scheme approved by tax authority:** [blank]
+- **Tax authority reference number:** [blank]
+- **Please enclose a copy of your HMRC registration / approval letter.:** [blank]
 
 ## Transfer form   new pension provider (continued)
 
+[No details]
+
 ## Section 3   Declaration of new pension provider
 
-Please sign the declaration below:
-
-I confirm the above statements are true. When we receive and accept the transfer request we'll use it to provide benefits for, or in relation to, the member of the scheme. This is in accordance with the appropriate regulations made under the Finance Act 2004.
-
-Signed
-
-Position
-
-Signing for and on behalf of the trustees / administrators of
-
-Date
-
-<!-- page: 17 -->
+- **Please sign the declaration below::** [blank]
+- I confirm the above statements are true. When we receive and accept the transfer request we'll use it to provide benefits for, or in relation to, the member of the scheme. This is in accordance with the appropriate regulations made under the Finance Act 2004.
+- **Signed:** [blank]
+- **Position:** [blank]
+- **Signing for and on behalf of the trustees / administrators of:** [blank]
+- **Date:** [blank]
 
 ## Subject: Your Policy Information Request for SP50163762
 
-From:
-
-Sent: 2025-09-23 14:09:07
-
-<!-- image -->
-
-Hi Kim,
+- **From::** [blank]
+- **Sent: 2025-09-23 14:09:07:** [blank]
+- **AVIVA:** [blank]
+- **Hi Kim,:** [blank]
 
 ## Your recent policy information request
 
-Thank you for getting in touch. We've received the letter of authority from John Sullivan. and attached information about their plan.
+- **Thank you for getting in touch. We've received the letter of authority from John Sullivan. and attached information about their plan.:** [blank]
 
 ## MyAviva - everything in one place
 
-At myaviva.co.uk , can:
+- **At myaviva.co.uk , can::** [blank]
+- **It's completely free for them to register and just one of the ways we're making life easier for our customers.:** [blank]
 
 - Check their pension valuation and monitor fund performance.
 - View previous statements and documents.
@@ -645,41 +460,26 @@ If you've got any questions, please contact us by replying to this email, emaili
 
 ## Kind Regards
 
-The Aviva customer team
+- **The Aviva customer team:** [blank]
 
 ## | Retirement | Investments | Insurance | Health |
 
-Members of the Association of British Insurers
+- **Members of the Association of British Insurers:** [blank]
 
 ## Aviva Life &amp; Pensions UK Limited. Registered in England No 3253947. Aviva, Wellington Row, York, YO90 1WR. This email was encrypted by Aviva's Secure Email service
 
-Authorised by the Prudential Regulation Authority and regulated by the Financial Conduct Authority and the Prudential Regulation
-
-Authority
-
-Aviva is the trading name for the principal subsidiaries of the
-
-Firm Reference Number 185896. www.aviva.co.uk
-
-Aviva Group in the United Kingdom. The principal subsidiaries are:
-
-Aviva Insurance Limited.
-
-Registered Office Pitheavlis, Perth PH2 0NH.
-
-Registered in Scotland Number 2116.
-
-Authorised by the Prudential Regulation Authority and regulated by the Financial
-
-Conduct Authority and the Prudential Regulation Authority.
-
-Firm Reference Number 202153.
-
-Aviva Life &amp; Pensions UK Limited.
-
-Registered Office: Aviva, Wellington Row, York, YO90 1WR.
-
-<!-- page: 18 -->
+- **Aviva is the trading name for the principal subsidiaries of the:** Authority
+- **Authorised by the Prudential Regulation Authority and regulated by the Financial Conduct Authority and the Prudential Regulation:** [blank]
+- **Firm Reference Number 185896. www.aviva.co.uk:** [blank]
+- **Aviva Group in the United Kingdom. The principal subsidiaries are::** [blank]
+- **Aviva Insurance Limited.:** [blank]
+- **Registered Office Pitheavlis, Perth PH2 0NH.:** [blank]
+- **Registered in Scotland Number 2116.:** [blank]
+- **Authorised by the Prudential Regulation Authority and regulated by the Financial:** [blank]
+- **Conduct Authority and the Prudential Regulation Authority.:** [blank]
+- **Firm Reference Number 202153.:** [blank]
+- **Aviva Life & Pensions UK Limited.:** [blank]
+- **Registered Office: Aviva, Wellington Row, York, YO90 1WR.:** [blank]
 
 | Registered in England No. 3253947.                                                                                                                                                                                                                                                                                                 |
 |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -703,3 +503,10 @@ Registered Office: Aviva, Wellington Row, York, YO90 1WR.
 | take/retain/distribute any copies.                                                                                                                                                                                                                                                                                                 |
 | **********************************************************************                                                                                                                                                                                                                                                             |
 | aviva.co.uk (END)                                                                                                                                                                                                                                                                                                                  |
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Additional extracted text (not present in the base markdown export)
+- the receiving pension scheme is a master trust or collective money purchase pension scheme authorised by The Pensions Regulator, or a public service pension scheme; or
+- there are no warning flags indicating a pension scam. If warning flags are present, you may have to seek transfer guidance from MoneyHelper, a free and impartial service. In some circumstances, your transfer may be stopped to protect your pension savings.

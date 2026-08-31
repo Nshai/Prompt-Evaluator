@@ -1,10 +1,22 @@
-<!-- image -->
+---
+source: FE perforamnce chart for reprot.pdf
+converted: 2026-08-31T01:05:18Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
 
 <!-- image -->
+
+Logo
+
+<!-- image -->
+
+Logo
 
 24 March 2026
 
 <!-- image -->
+
+Line chart
 
 Mar21 JulSep Dec Mar 22 Jun Aug Oct Jan 23 Apr Jun Aug Oct Jan 24 Apr Jun Aug Oct Jan 25 Apr Jun Aug Oct Jan 26 23/03/2021-23/03/2026
 
@@ -26,6 +38,8 @@ Mar21 JulSep Dec Mar 22 Jun Aug Oct Jan 23 Apr Jun Aug Oct Jan 24 Apr Jun Aug Oc
 Note: Performance figures shown are based on Bid-Bid returns.
 
 <!-- image -->
+
+Logo
 
 ## Discrete Performance as at 23/03/2026
 
@@ -66,3 +80,6 @@ _The following details were present in Docling's structured JSON output but omit
 - 10.0%
 - 0.0%
 - -10.0%
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 3: [line_chart, 100 % confidence]

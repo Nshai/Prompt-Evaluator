@@ -1,3 +1,9 @@
+---
+source: Transaction history 20.01.2018 to 25.11.2025.xlsx
+converted: 2026-08-31T00:39:33Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 |            |                     | All cash transactions: 20/01/2018 to 25/11/2025                                          |         |
 |------------|---------------------|------------------------------------------------------------------------------------------|---------|
 | Reference  | Payment date        | Payment description                                                                      | Amount  |

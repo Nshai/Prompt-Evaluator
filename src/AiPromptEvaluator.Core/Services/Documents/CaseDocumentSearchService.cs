@@ -90,10 +90,13 @@ public sealed class CaseDocumentSearchService : ICaseDocumentSearchService
             .GenerateVectorAsync(searchText, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
+        // The search text goes to the store as well as to the embedder: on a hybrid collection it
+        // is the lexical half of the query, and it is the half that matches a figure written the
+        // same way in both places. A dense-only store ignores it.
         var hits = await _store
             .SearchAsync(
                 _caseReference, _settings.TenantId, vector, limit,
-                categoryCodes: null, cancellationToken)
+                categoryCodes: null, queryText: searchText, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         if (categoryCodes is { Count: > 0 })
@@ -101,7 +104,7 @@ public sealed class CaseDocumentSearchService : ICaseDocumentSearchService
             var targeted = await _store
                 .SearchAsync(
                     _caseReference, _settings.TenantId, vector, limit,
-                    categoryCodes, cancellationToken)
+                    categoryCodes, queryText: searchText, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
 
             // Targeted hits first, so the categories the plan asked for survive the per-group

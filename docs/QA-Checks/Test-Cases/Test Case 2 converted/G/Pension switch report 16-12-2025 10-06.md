@@ -1,4 +1,12 @@
+---
+source: Pension switch report 16-12-2025 10-06.docx
+converted: 2026-08-31T00:47:29Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 ########### 
 
@@ -13,6 +21,8 @@
 16 December 2025
 
 <!-- image -->
+
+Logo
 
 ########### Recommendation
 
@@ -76,6 +86,8 @@ The figures assume that you switch your existing funds and continue the same lev
 
 <!-- image -->
 
+Logo
+
 ########### 
 
 ########### 
@@ -87,6 +99,8 @@ The figures assume that you switch your existing funds and continue the same lev
 ########### 
 
 <!-- image -->
+
+Logo
 
 **Contents**
 
@@ -228,6 +242,8 @@ The analysis is based on switching the existing pension into a new solution befo
 
 <!-- image -->
 
+Bar chart
+
 The following graph is based on the existing pension and chosen new solution growing at the same rate, over the same term and the effect charges have on the maturity value.
 
 #### Benefits
@@ -280,9 +296,9 @@ At the point of switching the fund values are as follows:
 
 The client's portfolio contains the following investments:
 
-| Investment                                         | Provider                     | ISIN         | Risk controlled   | Diamond rating  [1]   | Family diamond rating  [1]   |    % Invested |
-|----------------------------------------------------|------------------------------|--------------|-------------------|-----------------------|------------------------------|---------------|
-| Aviva Insured Funds Multi-asset Plus Fund II (GBP) | Aviva Life & Pensions UK Ltd | GB00B8BV3X17 | <!-- image -->    |                       |                              |        100.00 |
+| Investment                                         | Provider                     | ISIN         | Risk controlled      | Diamond rating  [1]   | Family diamond rating  [1]   |    % Invested |
+|----------------------------------------------------|------------------------------|--------------|----------------------|-----------------------|------------------------------|---------------|
+| Aviva Insured Funds Multi-asset Plus Fund II (GBP) | Aviva Life & Pensions UK Ltd | GB00B8BV3X17 | <!-- image -->  Logo |                       |                              |        100.00 |
 
 **[1] Defaqto Diamond Rating**
 
@@ -452,3 +468,9 @@ Charge Payable - Annually Charge Applied Monthly
 
 
 Arrears/Advance - Arrears
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 5: [bar_chart, 100 % confidence]

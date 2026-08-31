@@ -1,3 +1,9 @@
+---
+source: CT Universal MAP Cautious C Acc - Factsheet.pdf
+converted: 2026-08-31T00:49:27Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## CT Universal MAP Cautious Fund
 
 ## Share Class C Acc
@@ -16,14 +22,14 @@ The Fund seeks to provide long term growth (combining capital and income) consis
 
 The value of investments and any income derived from them can go down as well as up as a result of market or currency movements and investors may not get back the original amount invested. An investment concerns the acquisition of units or shares in a fund, and not underlying assets such as buildings or shares of a company, as these are only the underlying assets owned by the fund. The decision to invest in the promoted fund should also take into account all the characteristics or objectives of the promoted fund as described in the prospectus. Full list of relevant risks can be found in the KIID/KID and prospectus.
 
-| Fund details          |                         |                 |         |                      |          |                |                         |
-|-----------------------|-------------------------|-----------------|---------|----------------------|----------|----------------|-------------------------|
-| Launch date:          | 11-Nov-2017             | Fund currency:  | GBP     | Ann. return 5 years: | 5.59%    | Year end:      | 31-Dec                  |
-| Fund type:            | UK UCITS                | Fund size:      | £551.6m | Minimum investment:  | £250,000 | ISIN:          | GB00BF99VY38            |
-| Comparator benchmark: | IA Mixed Investment 20- | Share price:    | 74.63p  | Price frequency:     | Daily    | Sedol:         | BF99VY3                 |
-| Comparator benchmark: | 60% Shares              | Historic yield: | 2.30%   | Share currency:      | GBP      | FATCA:         | AXLE4V.00000.SP.826     |
-| Comparator benchmark: |                         | Initial charge: | 0.00%   |                      |          | Administrator: | SS&C Financial          |
-| Comparator benchmark: | Ongoing                 | charge:         | 0.29%   |                      |          |                | Services Europe Limited |
+| Fund details          | Fund details                       | Fund details    | Fund details   | Fund details         | Fund details   | Fund details   | Fund details            |
+|-----------------------|------------------------------------|-----------------|----------------|----------------------|----------------|----------------|-------------------------|
+| Launch date:          | 11-Nov-2017                        | Fund currency:  | GBP            | Ann. return 5 years: | 5.59%          | Year end:      | 31-Dec                  |
+| Fund type:            | UK UCITS                           | Fund size:      | £551.6m        | Minimum investment:  | £250,000       | ISIN:          | GB00BF99VY38            |
+| Comparator benchmark: | IA Mixed Investment 20- 60% Shares | Share price:    | 74.63p         | Price frequency:     | Daily          | Sedol:         | BF99VY3                 |
+| Comparator benchmark: | IA Mixed Investment 20- 60% Shares | Historic yield: | 2.30%          | Share currency:      | GBP            | FATCA:         | AXLE4V.00000.SP.826     |
+|                       |                                    | Initial charge: | 0.00%          |                      |                | Administrator: | SS&C Financial          |
+|                       |                                    | Ongoing charge: | 0.29%          |                      |                |                | Services Europe Limited |
 
 ## Past performance does not predict future returns.
 
@@ -58,6 +64,8 @@ The value of investments and any income derived from them can go down as well as
 
 <!-- image -->
 
+Logo
+
 31-Oct-25 | For professional investors only
 
 ## Discrete performance as at 31-Oct-25
@@ -70,43 +78,45 @@ All fund performance data is net of management fees. Costs may increase or decre
 
 no data mes age wil  be presented.
 
-| MSCI Emerging Markets Index   | 3.9%   |
-|-------------------------------|--------|
-| Nvidia Corp                   | 2.1%   |
-| CT GBP Corporate Bond Fund    | 2.0%   |
-| Apple inc                     | 1.6%   |
-| US 5y Treasury future         | 1.4%   |
-| UK Gilt 4.75% October 2035    | 1.0%   |
-| Microsoft Corp                | 1.0%   |
-| S&P 500 index                 | 1.0%   |
-| Amazon.com Inc                | 1.0%   |
-| US Treasury 3.875% April 2030 | 0.9%   |
+| Top Holdings                  |      |
+|-------------------------------|------|
+| MSCI Emerging Markets Index   | 3.9% |
+| Nvidia Corp                   | 2.1% |
+| CT GBP Corporate Bond Fund    | 2.0% |
+| Apple inc                     | 1.6% |
+| US 5y Treasury future         | 1.4% |
+| UK Gilt 4.75% October 2035    | 1.0% |
+| Microsoft Corp                | 1.0% |
+| S&P 500 index                 | 1.0% |
+| Amazon.com Inc                | 1.0% |
+| US Treasury 3.875% April 2030 | 0.9% |
 
-| Q3 2025 Active engagement report Business Conduct     |   21 |
-|-------------------------------------------------------|------|
-| Climate Change                                        |   39 |
-| Corporate Governance                                  |   25 |
-| Environmental Standards                               |   15 |
-| Labour Standards                                      |   50 |
-| Public Health                                         |    0 |
-|                                                       |   74 |
-| Last 2 quarters: companies Last 2 quarters: countries |   13 |
+| Q3 2025 Active engagement report                      | Q3 2025 Active engagement report   |
+|-------------------------------------------------------|------------------------------------|
+| Business Conduct                                      | 21                                 |
+| Climate Change                                        | 39                                 |
+| Corporate Governance                                  | 25                                 |
+| Environmental Standards                               | 15                                 |
+| Human Rights                                          | 16                                 |
+| Labour Standards                                      | 50                                 |
+| Public Health                                         | 0                                  |
+| Last 2 quarters: companies Last 2 quarters: countries | 74 13                              |
 
-|                         | Geographical allocation   |
-|-------------------------|---------------------------|
-| UK Equity               | 12.6%                     |
-| North America Equity    | 22.7%                     |
-| Europe ex UK Equity     | 4.0%                      |
-| Japan Equity            | 1.1%                      |
-| Pacific ex Japan Equity | 0.6%                      |
-| Emerging Markets Equity | 3.7%                      |
-| UK Gilts                | 7.2%                      |
-| UK Index Linked         | 4.2%                      |
-| Global ex UK Govt Bonds | 10.4%                     |
-| Global Corporate Bonds  | 23.6%                     |
-| High Yield              | 4.3%                      |
-| Emerging Market Debt    | 0.3%                      |
-| Cash                    | 5.6%                      |
+| Geographical allocation   | Geographical allocation   |
+|---------------------------|---------------------------|
+| UK Equity                 | 12.6%                     |
+| North America Equity      | 22.7%                     |
+| Europe ex UK Equity       | 4.0%                      |
+| Japan Equity              | 1.1%                      |
+| Pacific ex Japan Equity   | 0.6%                      |
+| Emerging Markets Equity   | 3.7%                      |
+| UK Gilts                  | 7.2%                      |
+| UK Index Linked           | 4.2%                      |
+| Global ex UK Govt Bonds   | 10.4%                     |
+| Global Corporate Bonds    | 23.6%                     |
+| High Yield                | 4.3%                      |
+| Emerging Market Debt      | 0.3%                      |
+| Cash                      | 5.6%                      |
 
 ## Glossary
 
@@ -124,6 +134,8 @@ www.columbiathreadneedle.com/glossary. Financial promotions are issued for marke
 
 <!-- image -->
 
+Logo
+
 † © 2025 Morningstar. All Rights Reserved. Ratings are latest available at time of publication and may be lagged 1 month. The information contained herein: (1) is proprietary to Morningstar and/or its content providers; (2) may not be copied or distributed; and (3) is not warranted to be accurate, complete or timely. Neither Morningstar nor its content providers are responsible for any damages or losses arising from any use of this information. Past performance is no guarantee of future results. For more detailed information about Morningstar Rating, including its methodology, please click here.
 
 ## Backfilled content (recovered from structured JSON export)
@@ -132,3 +144,7 @@ _The following details were present in Docling's structured JSON output but omit
 ### Additional extracted text (not present in the base markdown export)
 - INVESTMENTS®
 - INVESTMENTS*
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 1: [photograph, 100 % confidence]
+- Image 2: [bar_chart, 100 % confidence]

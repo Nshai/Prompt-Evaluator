@@ -89,6 +89,23 @@ public class AppSettings
     [JsonPropertyName("openAiBaseUrl")]
     public string OpenAiBaseUrl { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Which wire protocol the chat endpoint speaks: <c>OpenAI</c> or <c>Bedrock</c>.
+    ///
+    /// <b>Not a preference — a fact about the endpoint</b>, and the two are not interchangeable in
+    /// either direction. An OpenAI-compatible gateway in front of Bedrock may list every Claude
+    /// model and serve none of them over <c>/v1/chat/completions</c>; Bedrock's own runtime speaks
+    /// <c>Converse</c> and answers an unknown path with HTTP 200. Choosing <c>Bedrock</c> also
+    /// buys the only prompt caching this pipeline can ask for — see
+    /// <see cref="BedrockChatClient"/>.
+    ///
+    /// Model ids are not portable between the two: a gateway calls it
+    /// <c>anthropic.claude-haiku-4-5</c> and Bedrock wants
+    /// <c>eu.anthropic.claude-haiku-4-5-20251001-v1:0</c>.
+    /// </summary>
+    [JsonPropertyName("chatProvider")]
+    public string ChatProvider { get; set; } = EmbeddingProviders.OpenAi;
+
     [JsonPropertyName("availableModels")]
     public string AvailableModels { get; set; } = "gpt-4.1,gpt-4.1-mini,gpt-4o,gpt-4o-mini";
 
@@ -113,11 +130,68 @@ public class AppSettings
     public string EmbeddingApiKey { get; set; } = string.Empty;
 
     /// <summary>
+    /// Which wire protocol the embedding endpoint speaks: <c>OpenAI</c> or <c>Bedrock</c>.
+    ///
+    /// <b>This is not a preference, it is a fact about the endpoint</b>, and getting it wrong
+    /// fails in a way that took a session to diagnose. AWS Bedrock's runtime is not
+    /// OpenAI-compatible — it takes <c>POST /model/{id}/invoke</c> with the model's own request
+    /// shape, not <c>POST /embeddings</c> with OpenAI's. Worse, Bedrock answers an unrecognised
+    /// path with <b>HTTP 200</b> and a Coral <c>UnknownOperationException</c> body, which the
+    /// OpenAI client parses as a perfectly valid response containing zero embeddings. The error
+    /// that reaches the user is "Expected the number of embeddings (0) to match the number of
+    /// inputs (1)" — which names neither the endpoint, the protocol, nor the mistake.
+    ///
+    /// OpenAI-compatible gateways that front Bedrock for <i>chat</i> commonly serve no embedding
+    /// models at all, so "the chat endpoint works" is not evidence that embeddings will.
+    /// </summary>
+    [JsonPropertyName("embeddingProvider")]
+    public string EmbeddingProvider { get; set; } = EmbeddingProviders.OpenAi;
+
+    /// <summary>
     /// Vector width of <see cref="EmbeddingModel"/>. It defines the Qdrant collection, so
     /// changing it means the collection has to be recreated.
     /// </summary>
     [JsonPropertyName("embeddingDimensions")]
     public int EmbeddingDimensions { get; set; } = 1536;
+
+    /// <summary>
+    /// Keep every table whole when chunking, as its own passage carrying the heading above it.
+    ///
+    /// <b>A table cut in half is worse than a table missing.</b> The semantic chunker splits on
+    /// similarity and a token budget and knows nothing about tables, so a charges table or a fund
+    /// allocation is cut wherever the budget runs out — delivering a header row with no figures, or
+    /// figures with no header row. Neither answers the question that was asked of it, and the
+    /// findings that turn on reading one row against its column heading are the ones the benchmark
+    /// counts.
+    ///
+    /// <b>Changing this changes the index</b>, so a case has to be re-indexed for it to take
+    /// effect. It is fingerprinted for the same reason: two runs chunked differently are not the
+    /// same run, however identical everything downstream looks.
+    /// </summary>
+    [JsonPropertyName("tableAwareChunking")]
+    public bool TableAwareChunking { get; set; } = true;
+
+    /// <summary>
+    /// Index and search a sparse lexical vector alongside the dense one, fusing the two with
+    /// reciprocal rank fusion.
+    ///
+    /// <b>A routing fix, not a recall fix</b>, and the distinction is the whole justification.
+    /// Retrieval already finds the passages — its recall is ~99% and it is 0.2% of run cost. What
+    /// fails is that a passage reaches the wrong group: <c>33.4</c> reached exactly one pack while
+    /// two checks needed it, and no query in either retrieves it. Dense embeddings are weakest on
+    /// exactly the tokens those findings turn on — <c>48.06</c>, <c>£9,839.36</c>, <c>17.68</c>
+    /// against <c>13.21</c> — because a general-purpose model puts two different four-figure sums
+    /// in nearly the same place. Sparse matching is strongest there.
+    ///
+    /// <b>Turning this on or off changes the collection's shape</b>: a hybrid collection names its
+    /// vectors and a dense-only one does not, and a point written for one cannot be read by the
+    /// other. The collection has to be dropped and the case re-indexed either way — it cannot be
+    /// migrated in place, and the store says so rather than failing obscurely.
+    ///
+    /// Off by default: it costs a re-index, and a run that has not had one should keep working.
+    /// </summary>
+    [JsonPropertyName("hybridRetrieval")]
+    public bool HybridRetrieval { get; set; }
 
     [JsonPropertyName("documentFolder")]
     public string DocumentFolder { get; set; } = string.Empty;
@@ -134,6 +208,65 @@ public class AppSettings
     /// </summary>
     [JsonPropertyName("doclingEndpoint")]
     public string DoclingEndpoint { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Read pictures with a vision model during conversion.
+    ///
+    /// <b>Off by default, and the default is the important part.</b> It is a model call per picture
+    /// per document, on a pipeline whose stated objective is minimum cost — and most pictures in a
+    /// case bundle are letterhead, signatures and decorative rules. Switching it on is a decision
+    /// about a specific case, not a setting to leave on.
+    ///
+    /// What it is <em>for</em> is the case where a table was pasted into a document as a bitmap.
+    /// Docling can extract structure from a table and cannot extract structure from a picture of
+    /// one, and OCR does not reach it — so where a document's tables are images, this is the only
+    /// route to their content.
+    ///
+    /// <b>Changing it changes what conversion produces</b>, so a case has to be re-converted and
+    /// re-indexed for it to take effect. It is fingerprinted for the same reason.
+    /// </summary>
+    [JsonPropertyName("pictureNarration")]
+    public bool PictureNarration { get; set; }
+
+    /// <summary>
+    /// Re-express each converted table as prose with a model, alongside the table itself.
+    ///
+    /// <b>Off by default, and this default matters more than the other one.</b> The pipeline's
+    /// design requires that tables survive as tables — the chunker keeps a table whole and the
+    /// extractor reads the grid — so narration is an override for documents whose tables are
+    /// genuinely prose-shaped, not the normal path. The narrative is always appended and never
+    /// substituted: the grid stays exactly as it was.
+    ///
+    /// Fingerprinted, and requires a re-convert and a re-index, for the same reason as
+    /// <see cref="PictureNarration"/>.
+    /// </summary>
+    [JsonPropertyName("tableNarration")]
+    public bool TableNarration { get; set; }
+
+    /// <summary>
+    /// Which model narrates tables and reads pictures. Empty uses <see cref="SelectedModel"/>.
+    ///
+    /// Separate because the two jobs have different requirements from assessment: reading a picture
+    /// needs a vision-capable model, and transcription is a cheaper task than adjudication, so the
+    /// run that wants a strong assessor rarely wants to pay it to read letterheads.
+    /// </summary>
+    [JsonPropertyName("narrationModel")]
+    public string NarrationModel { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Smallest picture worth a model call, in bytes.
+    ///
+    /// Signature logos, icons and decorative rules arrive on nearly every document, and a vision
+    /// call apiece costs real money to be told it is a logo. The reference measurement across three
+    /// cases put the pictures carrying content between roughly 19 KB and 75 KB and the decoration
+    /// near 2 KB, so the default sits deliberately below the content and above the noise.
+    /// </summary>
+    [JsonPropertyName("minimumImageBytes")]
+    public int MinimumImageBytes { get; set; } = 4096;
+
+    /// <summary>Most pictures read in one document, so a slide deck cannot run away with a run.</summary>
+    [JsonPropertyName("maxImagesPerDocument")]
+    public int MaxImagesPerDocument { get; set; } = 40;
 
     /// <summary>
     /// Base URL of the Qdrant instance holding the indexed chunks — the gRPC port (6334),
@@ -208,6 +341,56 @@ public class AppSettings
     /// </summary>
     [JsonPropertyName("maxPassagesPerGroup")]
     public int MaxPassagesPerGroup { get; set; } = 24;
+
+    /// <summary>
+    /// Print the whole assertion side of the case to every group, one line per populated
+    /// canonical path, alongside the fragments the group's own plan selected.
+    ///
+    /// <b>The experiment this setting exists to run.</b> The claim and the fact that contradicts
+    /// it routinely land in different prompts — traced end to end on the most severe finding of
+    /// two separate cases — and the decision that put them there is a hand-authored list of paths
+    /// in a plan file, invariant to model choice and wrong for about a fifth of the model. This is
+    /// the cheapest test of that diagnosis: no new stage, no new vendor, one flag.
+    ///
+    /// <b>Turn it on together with a smaller pack.</b> Adding context here has been measured once
+    /// and it went badly — 13% more prompt cost eleven points of recall — so the digest is meant
+    /// to be paid for out of <see cref="MaxPassagesPerGroup"/> rather than added to it. The
+    /// designed configuration is a pack of 12 with the digest on, which is a smaller prompt than a
+    /// pack of 24 with it off. If recall falls at constant prompt size, the diagnosis is wrong and
+    /// the moves that follow from it should not be built.
+    ///
+    /// Off by default: it changes every prompt in a run, so it is something a run opts into and
+    /// records in its fingerprint, not something a fresh install does silently.
+    /// </summary>
+    [JsonPropertyName("assertionDigest")]
+    public bool AssertionDigest { get; set; }
+
+    /// <summary>
+    /// The character budget for that digest, applied per group by dropping whole lines from the
+    /// end. 0 turns it off as surely as the flag does.
+    ///
+    /// 40,000 is roughly 10k tokens, which on the measured models is about four hundred lines —
+    /// enough for every populated path of both cases measured. It is a budget rather than a target:
+    /// a digest that fits is printed whole, and one that does not says so in the prompt rather
+    /// than trailing off.
+    /// </summary>
+    [JsonPropertyName("assertionDigestMaxChars")]
+    public int AssertionDigestMaxChars { get; set; } = 40_000;
+
+    /// <summary>
+    /// How many assertions from elsewhere in the report a group may be shown because one of its
+    /// own passages carries the same figure. <b>0 turns the join off.</b>
+    ///
+    /// The claim and the fact that contradicts it routinely land in different prompts, because
+    /// which may meet which is authored by hand in the plans. This matches them in code instead —
+    /// see <see cref="EvidenceJoin"/> — and the cap is here rather than in the code because it is
+    /// a budget, and every budget in this prompt trades against the pack.
+    ///
+    /// Kept small deliberately. The mechanism this follows was measured broadcasting one item into
+    /// 26 of 88 groups, 92 times over; a prompt that flags everything flags nothing.
+    /// </summary>
+    [JsonPropertyName("maxJoinedAssertions")]
+    public int MaxJoinedAssertions { get; set; } = EvidenceJoin.MaxPerGroup;
 
     /// <summary>
     /// How many slots the pack holds for each category a group declared its evidence lives in,

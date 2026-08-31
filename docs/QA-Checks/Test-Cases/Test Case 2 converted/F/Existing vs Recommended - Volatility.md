@@ -1,4 +1,12 @@
+---
+source: Existing vs Recommended - Volatility.pdf
+converted: 2026-08-31T00:46:34Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 <!-- image -->
+
+Logo
 
 ## Pricing Spread: Bid-Bid · Currency: Pounds Sterling
 
@@ -77,4 +85,12 @@
 
 <!-- image -->
 
+Logo
+
 3 December 2025
+
+## Backfilled content (recovered from structured JSON export)
+_The following details were present in Docling's structured JSON output but omitted or flattened by its default markdown export; they are appended here so no extracted information is lost._
+
+### Image content recovered from the document JSON (not present in the base markdown export)
+- Image 2: [scatter_plot, 79 % confidence]

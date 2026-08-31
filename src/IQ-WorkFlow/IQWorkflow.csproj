@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The pipeline run end to end, without a person.
+
+    Every stage this drives lives in AiPromptEvaluator.Core and is already tested. What lives here
+    is the sequencing, the resumption and the record of what happened — the orchestration that was
+    previously reachable only by clicking WinForms buttons in the right order.
+
+    The target framework matches Core's: DocumentToPdfConverter drives Word and Excel over COM to
+    convert a case folder, and that is a Windows dependency the workflow inherits rather than one it
+    introduces.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+
+    <!--
+      An executable as well as a library. The workflow's whole point is being startable by something
+      that is not a person, and a second project holding a ten-line Main would be a project to
+      version, package and reference for no gain. Referencing an exe project is legal, and the tests
+      already do it.
+    -->
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>IQWorkflow</RootNamespace>
+    <AssemblyName>IQWorkflow</AssemblyName>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AiPromptEvaluator.Core\AiPromptEvaluator.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
+
+    <!-- The host builds its own container; nothing else in the project does. -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.11" />
+
+    <!--
+      The execution engine. The stages are ours and stay independent of it — see
+      StageExecutorNode — but the graph, the concurrency, the event stream and the checkpointing
+      are the framework's, and reimplementing any of those would be work with no upside.
+    -->
+    <PackageReference Include="Microsoft.Agents.AI.Workflows" Version="1.19.0" />
+
+    <!--
+      Email. Docling reads neither format: .eml is MIME and .msg is an OLE compound file, and
+      neither is something to parse by hand. MimeKit reads the first, MsgReader the second.
+
+      System.Text.Encoding.CodePages is not optional with them: Outlook stores its RTF body with a
+      Windows-1252 declaration and MsgReader asks the framework for that encoding by name, which
+      .NET Core does not ship. See EmailDocumentConverter's static constructor.
+    -->
+    <PackageReference Include="MimeKit" Version="4.17.0" />
+    <PackageReference Include="MsgReader" Version="6.1.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.0" />
+  </ItemGroup>
+
+  <!--
+    Stage sequencing, the manifest's own shape and the path guard decide whether a run is
+    reproducible and whether it is safe. The tests need to reach them; nothing else does.
+  -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="IQWorkflow.Tests" />
+  </ItemGroup>
+
+</Project>

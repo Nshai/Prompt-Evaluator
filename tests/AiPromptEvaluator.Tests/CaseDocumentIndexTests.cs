@@ -111,6 +111,11 @@ public class CaseDocumentIndexTests
     /// Retrieval quality rests on where the documents were cut. A fixed-width splitter would
     /// index and search just as happily, so pin the strategy: chunks are cut on semantic
     /// similarity, using the same embedding generator the search queries with.
+    ///
+    /// Table-aware chunking wraps that rather than replacing it — prose keeps the cut points tuned
+    /// for it, and only tables are treated specially — so the test looks through the wrapper. It
+    /// would otherwise stop noticing a regression to a fixed-width splitter, which is the whole
+    /// thing it exists to catch.
     /// </summary>
     [Fact]
     public void Indexing_UsesSemanticChunking_DrivenByTheEmbeddingGenerator()
@@ -121,8 +126,26 @@ public class CaseDocumentIndexTests
 
         var indexer = new CaseDocumentIndexer(settings, embeddings, store);
 
-        Assert.IsType<SemanticSimilarityChunker>(indexer.CreateChunker());
+        var wrapped = Assert.IsType<TableAwareChunker>(indexer.CreateChunker());
+        Assert.IsType<SemanticSimilarityChunker>(wrapped.Prose);
         Assert.Contains("semantic similarity", indexer.ChunkingDescription, StringComparison.Ordinal);
+        Assert.Contains("tables kept whole", indexer.ChunkingDescription, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// Turning the wrapper off leaves the pipeline exactly as it was, which is what makes the
+    /// setting a safe experiment: a run with it off is comparable to every run before it existed.
+    /// </summary>
+    [Fact]
+    public void Indexing_WithoutTableAwareness_IsTheSemanticChunkerAlone()
+    {
+        var settings = new AppSettings { TableAwareChunking = false };
+        using var store = new CaseDocumentStore(settings);
+
+        var indexer = new CaseDocumentIndexer(settings, new StubEmbeddingGenerator(), store);
+
+        Assert.IsType<SemanticSimilarityChunker>(indexer.CreateChunker());
+        Assert.DoesNotContain("tables kept whole", indexer.ChunkingDescription, StringComparison.Ordinal);
     }
 
     /// <summary>Overlap can't reach the chunk size, or a chunk would repeat the previous one whole.</summary>

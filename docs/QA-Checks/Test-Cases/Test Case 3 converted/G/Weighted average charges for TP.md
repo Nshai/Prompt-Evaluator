@@ -1,3 +1,9 @@
+---
+source: Weighted average charges for TP.pdf
+converted: 2026-08-31T01:06:17Z
+converter: docling-serve (do_ocr=true, table_mode=accurate, picture_classification=true, picture_description=false, backfilled=true, tables_narrated=false)
+---
+
 ## Weighted Average charge from input of fund values &amp; charge %
 
 | Fund Name                                             | Fund amount   |
@@ -16,12 +22,12 @@
 
 ## Fund charge % Fund charge £
 
-| 0.76%         | 42.69            |        |
-|---------------|------------------|--------|
-| 0.90%         | 25.09            |        |
-| 0.54%         | 58.13            | 23.06% |
-| 1.23%         | 29.26            | 5.10%  |
-| 0.96%         | 69.64            | 15.54% |
-| 0.67%         | 52.07            | 16.65% |
-| 0.63%         | 63.62            |        |
-| Total charges | £272.72 Weighted | 60.35% |
+| 0.76%         | 42.69            |       |        |
+|---------------|------------------|-------|--------|
+| 0.90%         | 25.09            |       |        |
+| 0.54%         | 58.13            |       | 23.06% |
+| 1.23%         | 29.26            |       | 5.10%  |
+| 0.96%         | 69.64            |       | 15.54% |
+| 0.67%         | 52.07            |       | 16.65% |
+| 0.63%         | 63.62            |       |        |
+| Total charges | £272.72 Weighted | 0.58% | 60.35% |

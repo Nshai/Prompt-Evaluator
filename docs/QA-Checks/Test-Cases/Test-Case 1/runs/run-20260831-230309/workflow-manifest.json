@@ -1,0 +1,58 @@
+{
+  "manifestVersion": "1.0",
+  "caseReference": "Test-Case 1",
+  "tenantId": 99,
+  "startedAt": "2026-08-31T23:03:09.0416878+01:00",
+  "settingsDigest": "b0c72815d973",
+  "chatModel": "eu.anthropic.claude-haiku-4-5-20251001",
+  "embeddingModel": "amazon.titan-embed-text-v2:0",
+  "stages": [
+    {
+      "Stage": "Convert",
+      "Status": "Succeeded",
+      "Summary": "Converted 28 document(s) from 28 file(s).",
+      "ElapsedSeconds": 524.519,
+      "CompletedAt": "2026-08-31T23:11:53.6301584+01:00",
+      "Detail": {
+        "documents": "28",
+        "converted": "28",
+        "failed": "0",
+        "recoveredTables": "0",
+        "summary": "C:\\Work\\IQ-Assessment\\Ai-Prompt-Evaluator\\docs\\QA-Checks\\Test-Cases\\Test-Case 1\\_conversion-summary.json"
+      },
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    },
+    {
+      "Stage": "Extract",
+      "Status": "Failed",
+      "Summary": "Extract failed unexpectedly: Every extraction pass failed. First error: The chat model \"eu.anthropic.claude-haiku-4-5-20251001\" is an AWS Bedrock model or inference-profile id — the region prefix and the \"-v1:0\" suffix are Bedrock's naming, not an OpenAI-compatible gateway's. https://bedrock-mantle.eu-west-1.api.aws/v1 will report that it does not exist. Use the id the gateway lists at /v1/models (usually the same model without the region prefix or version suffix).",
+      "ElapsedSeconds": 1.463,
+      "CompletedAt": "2026-08-31T23:11:55.0945149+01:00",
+      "Detail": {
+        "exception": "InvalidOperationException"
+      },
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    },
+    {
+      "Stage": "Index",
+      "Status": "Failed",
+      "Summary": "Index failed unexpectedly: \"amazon.titan-embed-text-v2:0\" emits 1024, 512, 256-dimension vectors, but the configured embedding dimensions are 1536. 1536 is Titan v1's fixed width and OpenAI's default; no setting makes this model produce it. Set the dimensions to 1024 in Settings. The Qdrant collection is created at that width, so an existing collection has to be recreated and the case re-indexed.",
+      "ElapsedSeconds": 1.197,
+      "CompletedAt": "2026-08-31T23:11:55.241084+01:00",
+      "Detail": {
+        "exception": "InvalidOperationException"
+      },
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    }
+  ],
+  "Satisfied": [
+    "Convert"
+  ],
+  "Succeeded": false
+}

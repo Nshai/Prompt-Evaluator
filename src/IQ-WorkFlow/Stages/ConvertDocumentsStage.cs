@@ -66,7 +66,8 @@ public sealed class ConvertDocumentsStage : IWorkflowStage
         WorkflowContext context, CancellationToken cancellationToken = default) =>
         Task.FromResult(
             Directory.Exists(context.CaseFolder)
-            && Directory.EnumerateFiles(context.CaseFolder, "*.md", SearchOption.AllDirectories).Any());
+            && Directory.EnumerateFiles(context.CaseFolder, "*.md", SearchOption.AllDirectories)
+                .Any(f => !string.Equals(Path.GetFileName(f), ScoreBenchmarkStage.BenchmarkFileName, StringComparison.OrdinalIgnoreCase)));
 
     public async Task<StageOutcome> ExecuteAsync(
         WorkflowContext context,

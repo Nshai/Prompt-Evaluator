@@ -112,7 +112,15 @@ public sealed class ReportStage : IWorkflowStage
         try
         {
             File.WriteAllText(temporary, content, Encoding.UTF8);
-            File.Move(temporary, path, overwrite: true);
+            try
+            {
+                File.Move(temporary, path, overwrite: true);
+            }
+            catch (Exception moveEx) when (moveEx is IOException or UnauthorizedAccessException)
+            {
+                File.Copy(temporary, path, overwrite: true);
+                try { File.Delete(temporary); } catch { }
+            }
         }
         catch
         {

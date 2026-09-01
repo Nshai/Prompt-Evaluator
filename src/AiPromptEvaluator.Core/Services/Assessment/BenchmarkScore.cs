@@ -147,7 +147,9 @@ public static class BenchmarkScore
                 var ran = finding.ParsedOutcome is not CheckOutcome.NotApplicable;
 
                 var candidates = finding.Groups
-                    .Where(g => g.ParsedOutcome is CheckOutcome.PotentialConcern)
+                    .Where(g => g.ParsedOutcome is CheckOutcome.PotentialConcern
+                                || (g.ParsedOutcome is CheckOutcome.Indeterminate && (g.ComparedSomething || g.Discrepancies.Count > 0))
+                                || g.Discrepancies.Count > 0)
                     .Select(g => $"{g.GroupId}: {Shorten(g.Analysis)}")
                     .ToList();
 

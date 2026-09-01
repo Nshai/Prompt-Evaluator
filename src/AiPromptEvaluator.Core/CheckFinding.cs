@@ -115,13 +115,17 @@ public sealed record GroupFinding
     /// whether they matter. Suppressing a finding then means omitting an item from a list
     /// rather than softening a paragraph — a more conspicuous act, and an auditable one.
     /// </summary>
-    [JsonPropertyName("discrepancies")] public List<string> Discrepancies { get; init; } = [];
+    [JsonPropertyName("discrepancies")]
+    [JsonConverter(typeof(FlexibleStringListConverter))]
+    public List<string> Discrepancies { get; init; } = [];
 
     /// <summary>False when a value the comparison depends on was not available.</summary>
     [JsonPropertyName("comparisonPerformed")] public bool ComparisonPerformed { get; init; } = true;
 
     /// <summary>What was missing, when <see cref="ComparisonPerformed"/> is false.</summary>
-    [JsonPropertyName("missingInputs")] public List<string> MissingInputs { get; init; } = [];
+    [JsonPropertyName("missingInputs")]
+    [JsonConverter(typeof(FlexibleStringListConverter))]
+    public List<string> MissingInputs { get; init; } = [];
 
     [JsonPropertyName("analysis")] public string Analysis { get; init; } = string.Empty;
     [JsonPropertyName("citations")] public List<FindingCitation> Citations { get; init; } = [];
@@ -138,7 +142,9 @@ public sealed record GroupFinding
     /// says so rather than forcing a choice: a mandatory category on a passing requirement is an
     /// invitation to invent a concern to justify the field.
     /// </summary>
-    [JsonPropertyName("issueCategories")] public List<string> IssueCategories { get; init; } = [];
+    [JsonPropertyName("issueCategories")]
+    [JsonConverter(typeof(FlexibleStringListConverter))]
+    public List<string> IssueCategories { get; init; } = [];
 
     [JsonPropertyName("severity")] public string? Severity { get; init; }
     [JsonPropertyName("outcome")] public string Outcome { get; init; } = nameof(CheckOutcome.NoIssue);
@@ -1100,4 +1106,60 @@ public sealed record FindingsReport(
         string.Join(
             Environment.NewLine,
             text.Replace("\r\n", "\n").Split('\n').Select(line => prefix + line.TrimEnd()));
+}
+
+/// <summary>
+/// Deserializes a string list that may arrive from an LLM as either a JSON array or a single string
+/// (e.g. multi-line or numbered items).
+/// </summary>
+public sealed class FlexibleStringListConverter : JsonConverter<List<string>>
+{
+    public override List<string>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
+        {
+            return [];
+        }
+
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            var text = reader.GetString();
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return [];
+            }
+
+            var items = text.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            return items.Length > 0 ? items.ToList() : [text.Trim()];
+        }
+
+        if (reader.TokenType == JsonTokenType.StartArray)
+        {
+            var list = new List<string>();
+            while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+            {
+                if (reader.TokenType == JsonTokenType.String)
+                {
+                    var item = reader.GetString();
+                    if (!string.IsNullOrWhiteSpace(item))
+                    {
+                        list.Add(item.Trim());
+                    }
+                }
+            }
+            return list;
+        }
+
+        return [];
+    }
+
+    public override void Write(Utf8JsonWriter writer, List<string> value, JsonSerializerOptions options)
+    {
+        writer.WriteStartArray();
+        foreach (var item in value)
+        {
+            writer.WriteStringValue(item);
+        }
+        writer.WriteEndArray();
+    }
 }

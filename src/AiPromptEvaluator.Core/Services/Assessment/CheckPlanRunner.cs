@@ -35,6 +35,7 @@ public sealed class CheckPlanRunner : ICheckPlanRunner
         PropertyNameCaseInsensitive = true,
         AllowTrailingCommas = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
+        Converters = { new FlexibleStringListConverter() },
     };
 
     /// <summary>

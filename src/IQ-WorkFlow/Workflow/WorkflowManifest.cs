@@ -146,7 +146,15 @@ public sealed record WorkflowManifest
         var temporary = path + ".tmp";
 
         File.WriteAllText(temporary, ToJson());
-        File.Move(temporary, path, overwrite: true);
+        try
+        {
+            File.Move(temporary, path, overwrite: true);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            File.Copy(temporary, path, overwrite: true);
+            try { File.Delete(temporary); } catch { }
+        }
     }
 
     /// <summary>

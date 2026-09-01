@@ -149,7 +149,15 @@ public sealed class ScoreBenchmarkStage : IWorkflowStage
             var temporary = worksheetPath + ".tmp";
             await File.WriteAllTextAsync(temporary, content, Encoding.UTF8, cancellationToken)
                 .ConfigureAwait(false);
-            File.Move(temporary, worksheetPath, overwrite: true);
+            try
+            {
+                File.Move(temporary, worksheetPath, overwrite: true);
+            }
+            catch (Exception moveEx) when (moveEx is IOException or UnauthorizedAccessException)
+            {
+                File.Copy(temporary, worksheetPath, overwrite: true);
+                try { File.Delete(temporary); } catch { }
+            }
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {

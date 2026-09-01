@@ -1,0 +1,37 @@
+{
+  "manifestVersion": "1.0",
+  "caseReference": "Test-Case 1",
+  "tenantId": 99,
+  "startedAt": "2026-08-31T23:01:57.3071294+01:00",
+  "settingsDigest": "b0c72815d973",
+  "chatModel": "eu.anthropic.claude-haiku-4-5-20251001",
+  "embeddingModel": "amazon.titan-embed-text-v2:0",
+  "stages": [
+    {
+      "Stage": "Convert",
+      "Status": "Skipped",
+      "Summary": "Already current for this case; nothing to do.",
+      "ElapsedSeconds": 0,
+      "CompletedAt": "2026-08-31T23:01:57.4821952+01:00",
+      "Detail": null,
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    },
+    {
+      "Stage": "Extract",
+      "Status": "Failed",
+      "Summary": "No suitability report was found under C:\\Work\\IQ-Assessment\\Ai-Prompt-Evaluator\\docs\\QA-Checks\\Test-Cases\\Test-Case 1. Extraction reads the report; convert the case documents first.",
+      "ElapsedSeconds": 0.001,
+      "CompletedAt": "2026-08-31T23:01:57.5255213+01:00",
+      "Detail": null,
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    }
+  ],
+  "Satisfied": [
+    "Convert"
+  ],
+  "Succeeded": false
+}

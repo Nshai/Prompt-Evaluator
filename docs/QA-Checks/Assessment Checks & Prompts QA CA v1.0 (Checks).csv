@@ -3,16 +3,25 @@ Check ID,Check Name,Applies To,Regulatory Basis,Primary Document Categories,Prom
 ",Suitability completeness against client information ,All advised investment and pension cases,Not required for this check,"Client Authority (A)
 Know Your Client (B)
 Meeting & Communications (C)
-Recommendations & Advice (I)",Where client information/facts have been included in the Suitability Report they are consistent with the evidence provided?,"Look for data mismatches and unsupported figures. 
-- Essential facts (personal details, tax status, employment etc.)
-- Financial situation (income/expenditure, assets/liabilities & state pension entitlement)
-- Existing products (pensions and investments)
-","No Issue: evidence complete, consistent and supports outcome. 
+Existing Plans & Portfolios (E)
+Recommendations & Advice (I)","Where client and family information and factual circumstances have been included in the Suitability Report, they are consistent with the supporting client file evidence.","Personal details (name, age, date of birth, marital status, dependants, employment, residency, tax status etc.).
+Financial situation (income, expenditure, assets, liabilities, emergency funds, state pension entitlement).
+Existing products (investments, pensions, protection plans and provider details).
+Data mismatches, unsupported statements, missing evidence and conflicting information across documents.
+Values, dates, names and holdings should reconcile across the file.
+
+Do not assess:
+Suitability of recommendations.
+Attitude to Risk.
+Capacity for Loss.
+Knowledge and experience.
+Investment suitability.
+Product selection rationale","No Issue: evidence complete, consistent and supports outcome. 
 
 Potential Concern: material clarification or additional evidence required
  
 N/A: trigger absent."
-CHK-002,"Objectives, Needs and Time-Horizon Alignment",All advised investment and pension cases,COBS 9.2.1R–9.2.2R; COBS 9A.2.1R–9A.2.2R; PRIN 2A.,"Know Your Client (B)
+CHK-002,"Objectives, Needs and Time-Horizon Alignment",All advised investment and pension cases,COBS 9.2.1R-9.2.2R; COBS 9A.2.1R-9A.2.2R; PRIN 2A.,"Know Your Client (B)
 Meetings & Communications (C)
 Needs Analysis (F)
 Recommendations & Advice (I)","Are the details of the recommendations and goals consistent with the evidence provided?
@@ -32,7 +41,7 @@ Appropriateness:
 Potential Concern: material clarification or additional evidence required
  
 N/A: trigger absent."
-CHK-003,"Risk, Capacity for Loss and Investment Strategy Match",All investment and pension accumulation/decumulation cases,COBS 9.2.1R–9.2.2R; COBS 9A.2.1R–9A.,"Know Your Client (B)
+CHK-003,"Risk, Capacity for Loss and Investment Strategy Match",All investment and pension accumulation/decumulation cases,COBS 9.2.1R-9.2.2R; COBS 9A.2.1R-9A.,"Know Your Client (B)
 Risk, Capacity & Experience (D)
 Existing Plans & Portfolios (E)
 Research (G)
@@ -52,7 +61,7 @@ Appropriateness:
 Potential Concern: material clarification or additional evidence required. 
 
 N/A: trigger absent."
-CHK-004,"Knowledge, Experience and Product Complexity",All advised investment and pension cases,COBS 9.2.1R–9.2.2R; COBS 9A.2.1R–9A.2.2R; PRIN ,"Know Your Client (B)
+CHK-004,"Knowledge, Experience and Product Complexity",All advised investment and pension cases,COBS 9.2.1R-9.2.2R; COBS 9A.2.1R-9A.2.2R; PRIN ,"Know Your Client (B)
 Meetings & Communications (C)
 Research (G)
 Solution Design (H)
@@ -70,7 +79,7 @@ Potential Concern: material clarification or additional evidence required.
 
 
 N/A: trigger absent."
-CHK-005,"Financial Resilience, Affordability and Liquidity","All cases involving capital, contributions, withdrawals or charges",COBS 9.2.1R–9.2.2R; COBS 9A.2.1R–9A.2.2R; PRIN 2A.,"Know Your Client (B)
+CHK-005,"Financial Resilience, Affordability and Liquidity","All cases involving capital, contributions, withdrawals or charges",COBS 9.2.1R-9.2.2R; COBS 9A.2.1R-9A.2.2R; PRIN 2A.,"Know Your Client (B)
 Needs Analysis (F)
 Recommendations & Advice (I)","Can the client afford the recommendations in the Suitability Report, consideriing initial and ongoing commitment, and acces to funds for emergencies, planned spending and foreseeable needs?
 
@@ -87,7 +96,7 @@ Potential Concern: material clarification or additional evidence required
 
 
 N/A: trigger absent."
-CHK-006,Recommendation Rationale and Suitable Alternatives,All cases requiring a suitability report,COBS 9.4.1R–9.4.2R; COBS 9A.3.1R–9A.3.3R where applicable; PRIN 2A,"Know Your Client (B)
+CHK-006,Recommendation Rationale and Suitable Alternatives,All cases requiring a suitability report,COBS 9.4.1R-9.4.2R; COBS 9A.3.1R-9A.3.3R where applicable; PRIN 2A,"Know Your Client (B)
 Meetings & Communications (C)
 Needs Analysis (F)
 Research (G)

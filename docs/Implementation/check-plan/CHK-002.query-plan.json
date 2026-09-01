@@ -1,0 +1,948 @@
+{
+  "planVersion": "1.0",
+  "checkId": "CHK-002",
+  "checkName": "Objectives, Needs and Time-Horizon Alignment",
+  "primaryCategories": [
+    "B",
+    "C",
+    "G",
+    "I"
+  ],
+  "triggerProbe": {
+    "triggerField": "checkTriggers.isAdvisedCase",
+    "applicability": [
+      {
+        "advisedCase": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/isAdvisedCase"
+        ]
+      },
+      {
+        "goalTypes": [
+          "Investment",
+          "Pension",
+          "Retirement",
+          "RetirementObjective"
+        ],
+        "canonicalPaths": [
+          "/objectives[]/objectiveType"
+        ]
+      }
+    ],
+    "queries": [
+      {
+        "id": "T2.1",
+        "text": "your objectives needs and goals we agreed the following",
+        "side": "Assertion",
+        "targetCategories": [
+          "I"
+        ],
+        "expectSignals": [
+          "objectives",
+          "goals",
+          "aims",
+          "needs"
+        ],
+        "priority": "Core"
+      }
+    ],
+    "absentWhen": "No investment or pension objective is stated anywhere in the report.",
+    "onAbsent": "Continue"
+  },
+  "queryGroups": [
+    {
+      "groupId": "G2.1",
+      "requirement": "Stated goals and their priority order",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C",
+          "F"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/objectives[]/summary",
+          "/objectives[]/details",
+          "/objectives[]/priorityRank",
+          "/objectives[]/isClientStated"
+        ],
+        "queries": [
+          {
+            "id": "Q2.1.1",
+            "text": "we reviewed your needs objectives and time horizons and agreed the following",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "objectives",
+              "you want to",
+              "you would like",
+              "agreed"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.1.2",
+            "text": "client objectives demands and needs recorded at the meeting priority order",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "C",
+              "F"
+            ],
+            "expectSignals": [
+              "objective",
+              "priority",
+              "primary",
+              "secondary",
+              "aims"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.1.3",
+            "text": "what the client said they want to achieve in their own words discussion notes",
+            "side": "Evidence",
+            "targetCategories": [
+              "C"
+            ],
+            "expectSignals": [
+              "client said",
+              "explained",
+              "discussed",
+              "confirmed"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.1.4",
+            "text": "most important priority ranked first second third objective",
+            "side": "Either",
+            "targetCategories": [
+              "B",
+              "C",
+              "F",
+              "I"
+            ],
+            "expectSignals": [
+              "priority",
+              "most important",
+              "first",
+              "primary"
+            ],
+            "canonicalPaths": [
+              "/objectives[]/priorityRank"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Missing evidence"
+        ],
+        "comparison": {
+          "method": "SetCoverage",
+          "tolerance": "Every objective in the report must be traceable to an evidenced objective; wording need not match.",
+          "falsePositiveGuards": [
+            "Advisers paraphrase; judge on substance, not wording.",
+            "An objective present in evidence but omitted from the report is only a concern if the recommendation bears on it."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Potential Concern: a suitability report with no stated objectives cannot demonstrate suitability.",
+          "ifEvidenceAbsent": "Potential Concern: objectives asserted with no fact find, file note or needs analysis recording them.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G2.2",
+      "requirement": "Retirement target date and investment time horizon details",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C",
+          "F",
+          "G"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/objectives[]/targetDate",
+          "/objectives[]/targetAge",
+          "/objectives[]/termYears",
+          "/objectives[]/timeHorizon",
+          "/parties/clients[]/employments[]/intendedRetirementAge",
+          "/needsAnalysis/lifeExpectancyBasis"
+        ],
+        "queries": [
+          {
+            "id": "Q2.2.1",
+            "text": "you want to retire in years time at age target retirement date",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "retire in",
+              "at age",
+              "target",
+              "years time"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.2.2",
+            "text": "intended retirement age selected retirement age recorded on the fact find",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "E",
+              "C"
+            ],
+            "expectSignals": [
+              "intended retirement",
+              "selected retirement age",
+              "SRA"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.2.3",
+            "text": "investment term time horizon how long you wish to invest for years",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "D",
+              "F"
+            ],
+            "expectSignals": [
+              "term",
+              "time horizon",
+              "years",
+              "long term",
+              "medium term"
+            ],
+            "canonicalPaths": [
+              "/objectives[]/timeHorizon"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.2.4",
+            "text": "when do you need to access this money planned date of withdrawal",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "F"
+            ],
+            "expectSignals": [
+              "access",
+              "when",
+              "date",
+              "withdrawal"
+            ],
+            "priority": "Supplementary"
+          },
+          {
+            "id": "Q2.2.5",
+            "text": "retirement age used in the switch analysis term of years and months to maturity",
+            "side": "Evidence",
+            "targetCategories": [
+              "G"
+            ],
+            "expectSignals": [
+              "retirement age of 75",
+              "term of",
+              "years and",
+              "months",
+              "growth rate projection"
+            ],
+            "priority": "Core"
+          }
+        ],
+        "evidenceSections": [
+          "ranked by Maturity Value"
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
+        "comparison": {
+          "method": "RangeMatch",
+          "tolerance": "Report term and evidenced term must be reconcilable; a difference greater than 2 years is a mismatch.",
+          "falsePositiveGuards": [
+            "A pension may have a long investment horizon while the income objective is short — distinguish the horizon of the money from the date of the goal.",
+            "Selected retirement age on a plan is a contractual default, not necessarily the client's intended date.",
+            "The switch analysis states its own retirement age and term, and it is routinely a different figure from the one in the report and the fact find. Collect every horizon in the file before judging: the finding is the spread, not any single value."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Potential Concern where the risk profile or strategy is justified by a term that appears nowhere else."
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G2.3",
+      "requirement": "Access requirements — emergency, planned and ad-hoc",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "F"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/financialPosition/liquidityAndAccessNeeds[]"
+        ],
+        "queries": [
+          {
+            "id": "Q2.3.1",
+            "text": "access to funds for emergencies planned spending and ad hoc withdrawals",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "B",
+              "F"
+            ],
+            "expectSignals": [
+              "emergency",
+              "ad hoc",
+              "access",
+              "planned",
+              "lump sum"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.3.2",
+            "text": "do you have any planned expenditure or capital purchases in the next five years",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "C",
+              "F"
+            ],
+            "expectSignals": [
+              "planned",
+              "capital",
+              "purchase",
+              "next",
+              "years"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.3.3",
+            "text": "emergency fund liquid capital available for unexpected costs",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "B"
+            ],
+            "expectSignals": [
+              "emergency",
+              "liquid",
+              "rainy day",
+              "unexpected"
+            ],
+            "canonicalPaths": [
+              "/financialPosition/emergencyFund"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Missing evidence"
+        ],
+        "comparison": {
+          "method": "SetCoverage",
+          "falsePositiveGuards": [
+            "'No access needs identified' is a valid evidenced answer; absence of an access need is not the same as failure to ask."
+          ]
+        },
+        "sufficiency": {
+          "ifBothAbsent": "Potential Concern: access requirements are named explicitly by this check and should have been established."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G2.4",
+      "requirement": "Foreseeable life changes",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C",
+          "F"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/financialPosition/foreseeableChanges[]"
+        ],
+        "queries": [
+          {
+            "id": "Q2.4.1",
+            "text": "expected changes in circumstances retirement inheritance income ceasing",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "B",
+              "C",
+              "F"
+            ],
+            "expectSignals": [
+              "expect",
+              "will cease",
+              "inheritance",
+              "when you retire",
+              "in the future"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.4.2",
+            "text": "spouse partner retiring income stopping state pension starting",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "B",
+              "F"
+            ],
+            "expectSignals": [
+              "retire",
+              "state pension",
+              "from age",
+              "stops"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.4.3",
+            "text": "any known future changes health care needs downsizing property",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "C"
+            ],
+            "expectSignals": [
+              "health",
+              "care",
+              "downsize",
+              "move",
+              "change"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Missing evidence"
+        ],
+        "comparison": {
+          "method": "SetCoverage",
+          "falsePositiveGuards": [
+            "Legislative changes affecting everyone (e.g. pension IHT rules) are not client-specific foreseeable changes."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Note as a gap; escalate where a foreseeable change would materially alter the recommendation."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G2.5",
+      "requirement": "Conflicting goals",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "F",
+          "C"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/objectives[]/priorityRank",
+          "/objectives[]/targetDate",
+          "/objectives[]/targetAmount"
+        ],
+        "queries": [
+          {
+            "id": "Q2.5.1",
+            "text": "competing objectives trade off between growth and income capital preservation",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "F",
+              "C"
+            ],
+            "expectSignals": [
+              "however",
+              "whilst",
+              "balance",
+              "trade off",
+              "compromise"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.5.2",
+            "text": "how the adviser resolved conflicting priorities with the client",
+            "side": "Evidence",
+            "targetCategories": [
+              "C",
+              "F"
+            ],
+            "expectSignals": [
+              "agreed",
+              "prioritised",
+              "decided",
+              "instead"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Data inconsistency"
+        ],
+        "comparison": {
+          "method": "NarrativeAlignment",
+          "falsePositiveGuards": [
+            "Conflict is inferred, not stated — test structurally: two objectives claiming the same capital, or a growth horizon that outlasts a stated access date."
+          ]
+        },
+        "sufficiency": {
+          "ifBothAbsent": "No finding unless a structural conflict is visible in the retrieved objectives themselves."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G2.6",
+      "requirement": "Recommendations are appropriate for the stated goals given access needs, term and foreseeable changes",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "F",
+          "G",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/recommendations[]/linkedObjectiveIds",
+          "/solution/recommendedPlans[]",
+          "/objectives[]/timeHorizon"
+        ],
+        "queries": [
+          {
+            "id": "Q2.6.1",
+            "text": "my recommendation is suitable because it meets your objective of",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "because",
+              "meets your",
+              "objective",
+              "in order to"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.6.2",
+            "text": "when you can access the pension minimum pension age 55 57 restrictions on withdrawal",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "H",
+              "G"
+            ],
+            "expectSignals": [
+              "age 55",
+              "age 57",
+              "cannot access",
+              "minimum pension age"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.6.3",
+            "text": "the recommendation will provide the income you need in retirement of per month",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "F"
+            ],
+            "expectSignals": [
+              "income",
+              "per month",
+              "per annum",
+              "meet"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Missing component"
+        ],
+        "comparison": {
+          "method": "NarrativeAlignment",
+          "falsePositiveGuards": [
+            "An objective linked by boilerplate ('this meets your objectives') is not a link — require a specific objective to be named.",
+            "Check the access mechanism, not the wrapper name: a pension for a 69-year-old carries no access restriction."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Potential Concern: recommendations not tied to any stated objective.",
+          "ifEvidenceAbsent": "Assess on the report alone; note that no needs analysis supports the linkage."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G2.7",
+      "requirement": "Goals, assumptions or planning requirements stated in the report that are not supported by the evidence",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/objectives[]/summary",
+          "/objectives[]/isClientStated",
+          "/objectives[]/provenance",
+          "/needsAnalysis/assumptions[]"
+        ],
+        "queries": [
+          {
+            "id": "Q2.7.1",
+            "text": "you have told me that your objectives are and that you wish to",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "you have told me",
+              "your objective",
+              "your goal",
+              "you wish",
+              "priority"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.7.2",
+            "text": "client objectives and needs recorded what the client wants to achieve",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "C"
+            ],
+            "expectSignals": [
+              "objective",
+              "goal",
+              "achieve",
+              "priority",
+              "need"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.7.3",
+            "text": "file note of the discussion about the client's aims and what matters most",
+            "side": "Evidence",
+            "targetCategories": [
+              "C"
+            ],
+            "expectSignals": [
+              "note",
+              "discussed",
+              "agreed",
+              "aim",
+              "said"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Missing evidence",
+          "Weak justification"
+        ],
+        "comparison": {
+          "method": "SetCoverage",
+          "falsePositiveGuards": [
+            "An objective the adviser inferred and the client then confirmed at a meeting is stated, not unsupported — read the file notes before calling it unevidenced.",
+            "The report may summarise several recorded needs as one objective; the wording need not match, only the substance.",
+            "A planning assumption drawn from a provider illustration is evidenced by that illustration, not by the client."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "No issue on this requirement; nothing was asserted to verify.",
+          "ifEvidenceAbsent": "Potential Concern: an objective the recommendation rests on has no source anywhere in the file.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G2.8",
+      "requirement": "Target retirement income stated in the report is consistent with the evidence and with the figures the plan is modelled on",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C",
+          "G"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/objectives[]/targetIncome",
+          "/objectives[]/targetIncomeFrequency",
+          "/needsAnalysis/assumptions[]",
+          "/financialPosition/totals/totalMonthlyIncomeNet"
+        ],
+        "queries": [
+          {
+            "id": "Q2.8.1",
+            "text": "you would like a retirement income of approximately net per month in today's terms",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "target income",
+              "desired retirement income",
+              "net per month",
+              "income of approximately",
+              "income of between",
+              "per annum in retirement"
+            ],
+            "canonicalPaths": [
+              "/objectives[]/targetIncome"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.8.2",
+            "text": "income required in retirement recorded on the fact find target monthly figure",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "C"
+            ],
+            "expectSignals": [
+              "income required",
+              "retirement income",
+              "per month",
+              "per annum",
+              "target",
+              "in today's terms"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q2.8.3",
+            "text": "cashflow model income requirement assumption used in the projection",
+            "side": "Evidence",
+            "targetCategories": [
+              "G"
+            ],
+            "expectSignals": [
+              "assumed",
+              "income requirement",
+              "escalation",
+              "inflation",
+              "in real terms",
+              "modelled"
+            ],
+            "canonicalPaths": [
+              "/needsAnalysis/assumptions[]"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
+        "comparison": {
+          "method": "ValueMatch",
+          "tolerance": "A figure stated as approximate, or as a range, agrees with any evidence figure inside it. Gross and net are not interchangeable: compare like for like or say the bases differ.",
+          "falsePositiveGuards": [
+            "A target expressed in today's terms and a modelled figure escalated for inflation are the same target at two dates — reconcile using the stated escalation rather than reporting the difference.",
+            "A target income that includes an existing defined benefit pension is not comparable with one that excludes it; the report usually says which, and where it does not, that is the finding."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Not a finding on its own where the case has no retirement income objective; where the report models a retirement income it has to say what income it is modelling.",
+          "ifEvidenceAbsent": "Potential Concern: the report quantifies a retirement income the file does not record the client asking for.",
+          "ifBothAbsent": "No finding."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    }
+  ],
+  "decision": {
+    "noIssue": "Evidence complete, consistent and supports the outcome. Every objective in the report is evidenced in categories B, C or F; terms and access needs reconcile; and each recommendation names a specific objective it serves.",
+    "potentialConcern": "Material clarification or additional evidence required. An objective is asserted with no evidence, the stated term conflicts with the term used to justify the strategy, an access need is unaddressed, or recommendations are linked to objectives only by boilerplate.",
+    "notApplicable": "Not applicable — this check applies to all advised investment and pension cases.",
+    "severityHints": [
+      "Highest: the recommendation cannot deliver a stated objective (locked capital against a known access date).",
+      "High: the investment term justifying the risk profile contradicts the stated goal horizon.",
+      "Moderate: objectives present but generic, with no evidence of client authorship.",
+      "Low: priority order not explicit where objectives do not compete."
+    ],
+    "overlayInstruction": "Vulnerability overlay: consider whether any actual or potential drivers or characteristics of vulnerability, support needs, communication requirements or reasonable adjustments identified in the evidence materially affect this check's assessment or the conclusions it reaches. Where they do, say so in the finding. A vulnerability recorded in the file that has no bearing on this requirement is not itself a concern here — CHK-010 assesses vulnerability in its own right."
+  }
+}

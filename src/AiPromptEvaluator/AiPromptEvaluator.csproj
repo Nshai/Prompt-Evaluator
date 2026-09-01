@@ -1,4 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The desktop front end: forms, their designers, and the entry point.
+    Everything it drives lives in AiPromptEvaluator.Core, which knows nothing about WinForms.
+  -->
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -11,8 +16,20 @@
     <Version>1.0.0</Version>
   </PropertyGroup>
 
+  <!--
+    The container implementation, which only the composition root needs. Core declares what it
+    registers against the abstractions; this project is where a provider is built.
+  -->
   <ItemGroup>
-    <PackageReference Include="Anthropic" Version="12.35.1" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
   </ItemGroup>
+
+  <!--
+    The schema and query plans travel with Core, which carries them into this project's output
+    as well. Nothing here needs to name them.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\AiPromptEvaluator.Core\AiPromptEvaluator.Core.csproj" />
+  </ItemGroup>
+
 </Project>

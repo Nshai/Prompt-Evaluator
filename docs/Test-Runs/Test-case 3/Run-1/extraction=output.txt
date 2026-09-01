@@ -1,0 +1,37 @@
+Model: intelliflo-claude-haiku-4-5
+Total: £0.6935 for 313,632 tokens
+
+Extracting the canonical model for case Test-Case-3 (tenant 99)
+Schema: C:\work\Prompt-Evaluator-Semantic\src\AiPromptEvaluator\bin\Debug\net8.0-windows\canonical-suitability-model.schema.json
+Store:  C:\Users\nshaikh\AppData\Local\AiPromptEvaluator\canonical-models.db
+Report: Suitability report 2026.md
+------------------------------------------------------------------------
+Logging extraction to C:\logs\apipromptevaluator\extract_Test-Case-3_20260828_231331.log
+Response cache bypassed — every section carries a run marker, so nothing can be replayed from an earlier extraction. Expect the full input cost.
+[ 1/12] Case and parties                     5,552 chars (17.3s)
+[ 2/12] Financial position                   16,246 chars (34.6s)
+[ 3/12] Objectives                           6,160 chars (34.6s)
+[ 4/12] Risk, knowledge and vulnerability    15,101 chars (60.5s)
+[ 5/12] Existing arrangements                22,078 chars (60.5s)
+[ 6/12] Needs analysis and research          23,480 chars (60.5s)
+[ 7/12] Solution                             15,010 chars (60.5s)
+[ 8/12] Replacement analysis                 33,529 chars (60.4s)
+[ 9/12] Disclosures                          23,895 chars (60.4s)
+[10/12] Recommendations                      56,815 chars (200.8s)
+[11/12] Costs and charges                    24,567 chars — The reply wrote 2 property name(s) twice in the same object; the first of each was kept: /costsAndCharges/existing (values differ; kept the first); /costsAndCharges/existing (values differ; kept the first) 2 of them disagreed, so a value may be wrong. (200.8s)
+[12/12] Triggers and extraction report       5,961 chars (19.0s)
+------------------------------------------------------------------------
+Stored 367,343 characters of canonical model for case Test-Case-3 in 332.2s.
+Sections populated: modelVersion, source, case, parties, clientAuthority, financialPosition, objectives, riskAssessment, knowledgeAndExperience, vulnerability, existingArrangements, needsAnalysis, research, solution, replacementAnalysis, riskWarningsAndDisadvantages, taxTreatment, ongoingService, recommendations, costsAndCharges, checkTriggers, extractionReport
+
+1 value(s) are outside the documented vocabulary and were left as written:
+  modality: "Derived" is not in the documented vocabulary
+Nothing was discarded. A check matching one of these fields by value will not see them, so either the report uses a word the model does not have or the extraction invented one.
+
+1 check trigger(s) were settled from the model:
+  checkTriggers.hasVulnerabilityIndicators settled to true (was false) because a client is recorded as "Possible"
+
+1 section(s) failed and are missing from the model:
+  Cross-references — Reference resolves to nothing: linkedRecommendationIds → REC-004
+Extract again to retry them; checks that rely on a missing section will report the data as absent.
+

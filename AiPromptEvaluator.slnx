@@ -1,11 +1,14 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/AiPromptEvaluator.Core/AiPromptEvaluator.Core.csproj" />
     <Project Path="src/AiPromptEvaluator/AiPromptEvaluator.csproj" />
+    <Project Path="src/IQ-WorkFlow/IQWorkflow.csproj" />
   </Folder>
   <Folder Name="/src/installer/">
     <Project Path="src/installer/AiPromptEvaluator.Installer.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/AiPromptEvaluator.Tests/AiPromptEvaluator.Tests.csproj" />
+    <Project Path="tests/IQWorkflow.Tests/IQWorkflow.Tests.csproj" />
   </Folder>
 </Solution>

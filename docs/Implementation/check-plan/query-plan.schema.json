@@ -1,0 +1,338 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://canonical-model/suitability/v1.0/check-plan/query-plan.schema.json",
+  "title": "Check Query Plan v1.0",
+  "description": "A pre-computed semantic-search programme for one QA check, executed by CheckPlanRunner against CaseDocumentSearchService. There is no LLM-callable search tool: the plan chooses every search, so the model cannot, and two runs over the same case retrieve the same evidence. Each query group answers one requirement and produces one row of check-coverage-matrix.csv, which is generated from these plans. Every group is split into `retrieval` (what the assessor is allowed to see) and `verification` (what it may make of it). The split is load-bearing: a mistake in `retrieval` is invisible in the output, because the check reports confidently on a pack that never held the answer, while a mistake in `verification` at least shows up in the finding's own reasoning.",
+  "type": "object",
+  "required": ["planVersion", "checkId", "checkName", "queryGroups", "decision"],
+  "additionalProperties": false,
+  "properties": {
+    "planVersion": {
+      "const": "1.0",
+      "description": "ROLE: load. Checked by CheckQueryPlanLoader against SupportedPlanVersion. A plan declaring any other version is refused by name rather than half-read."
+    },
+    "checkId": {
+      "type": "string",
+      "description": "ROLE: both. Matches the plan to its row in the checks CSV (whitespace squeezed on both sides), and labels every finding, prompt-log entry and matrix row."
+    },
+    "checkName": {
+      "type": "string",
+      "description": "ROLE: verification. Rendered into the check header the assessor reads."
+    },
+    "primaryCategories": {
+      "type": "array",
+      "description": "ROLE: build-time only. Category codes from the check's Primary Document Categories column. Read by CheckPlanLint rule L2, which runs in the test suite and fails the build; nothing reads it at run time. CHK-010 deliberately keeps A and D, which its revised check drops, because a regression test pins a real miss there.",
+      "items": { "$ref": "#/$defs/CategoryCode" }
+    },
+
+    "retrieval": {
+      "type": "object",
+      "description": "ROLE: retrieval. Settings for the plan as a whole, as distinct from one group's retrieval block. Optional; absent means the global defaults.",
+      "additionalProperties": false,
+      "properties": {
+        "resultsPerCall": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "How many hits each of this check's queries may return, where the check needs a wider candidate pool than AppSettings.MaxSearchResults gives it. Raising it costs vector lookups, not prompt tokens: MaxPassagesPerGroup still caps what reaches the assessor, so a wider pool only gives ranking more to choose from. A value below the global setting is ignored rather than honoured, so a plan cannot quietly retrieve less than the rest of the run. No shipped plan sets it — see the README's note on what would justify one."
+        }
+      }
+    },
+
+    "triggerProbe": {
+      "type": "object",
+      "description": "ROLE: retrieval. Runs before any group is gathered and can eliminate the whole retrieval pass, which makes it the largest single lever in the plan.",
+      "additionalProperties": false,
+      "properties": {
+        "triggerField": {
+          "type": "string",
+          "description": "ROLE: retrieval. The checkTriggers field in the canonical model this probe settles. Resolved from the stored model first, because it was written when the report was read in full, which beats a similarity search. Where the model holds no value, the fallback is whether the probe searches found anything."
+        },
+        "applicability": {
+          "type": "array",
+          "description": "ROLE: retrieval. Rules the case must satisfy for this check to run, ANDed together and evaluated against the stored canonical model before any group is gathered. A check that does not apply then costs nothing: not one embedding, not one vector query. Read from the model rather than searched for, because whether a case has pension objectives is a fact the extraction settled when it read the report in full.",
+          "items": { "$ref": "#/$defs/ApplicabilityRule" }
+        },
+        "queries": {
+          "type": "array",
+          "description": "ROLE: retrieval. Cheap searches corroborating the trigger field. Used as the fallback only where neither triggerField nor applicability could decide.",
+          "items": { "$ref": "#/$defs/Query" }
+        },
+        "absentWhen": {
+          "type": "string",
+          "description": "ROLE: verification. Quoted verbatim in the N/A summary, so a skipped check says why rather than returning a bare verdict."
+        },
+        "onAbsent": {
+          "enum": ["Skip", "ReturnNA", "ContinueWithReducedScope", "Continue"],
+          "description": "ROLE: retrieval. Skip settles the check with zero retrieval; ReturnNA is the older spelling of the same thing and is still accepted. ContinueWithReducedScope proceeds and says so in the header, so an overlay is not read as excused. Continue proceeds silently."
+        }
+      }
+    },
+
+    "queryGroups": {
+      "type": "array",
+      "description": "One group per requirement. Each is one model call and one finding.",
+      "items": { "$ref": "#/$defs/QueryGroup" }
+    },
+
+    "decision": {
+      "type": "object",
+      "description": "ROLE: verification. Rendered into the check header at the front of every group's prompt, identical text each time, so the provider's prefix cache covers it.",
+      "additionalProperties": false,
+      "properties": {
+        "noIssue": { "type": "string" },
+        "potentialConcern": { "type": "string" },
+        "notApplicable": { "type": "string" },
+        "severityHints": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Ordered guidance on how bad a given failure is, so severity stays comparable between runs and between checks."
+        },
+        "overlayInstruction": {
+          "type": "string",
+          "description": "Free text appended to every group's header as 'Overlay:'. Carries the CHK-002..009 vulnerability overlay from the checks CSV rules, any 'Do not assess' scope exclusions, and for CHK-010 what to re-evaluate in the other checks once this one is decided."
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "CategoryCode": {
+      "enum": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+      "description": "A Client Authority; B Know Your Client; C Meetings & Communications; D Risk, Capacity & Experience; E Existing Plans & Portfolios; F Needs Analysis; G Research; H Solution Design; I Recommendations & Advice."
+    },
+
+    "ApplicabilityRule": {
+      "type": "object",
+      "description": "One condition the case must meet. The value set is named by its own key, so a rule reads as a sentence: { \"goalTypes\": [\"Investment\", \"Pension\"], \"canonicalPaths\": [\"/objectives[]/objectiveType\"] } is \"the client's goals include an investment or a pension\". A rule passes when any value found at any of its paths matches any accepted value, case-insensitively. Rules are ANDed, so adding one narrows the check and widening one widens it. The key name is carried into the N/A summary, so a skipped check says which condition it failed.",
+      "required": ["canonicalPaths"],
+      "minProperties": 2,
+      "maxProperties": 2,
+      "properties": {
+        "canonicalPaths": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" },
+          "description": "Where to look in the canonical model. A fan-out path is read element by element."
+        }
+      },
+      "patternProperties": {
+        "^(?!canonicalPaths$)[a-zA-Z][a-zA-Z0-9]*$": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": ["string", "boolean", "number"] },
+          "description": "The values that satisfy this rule. The property name labels the rule."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "Query": {
+      "type": "object",
+      "required": ["id", "text", "side"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ROLE: verification. Named in the prompt when all of this query's expectSignals miss, so the assessor can see which question came back empty."
+        },
+        "text": {
+          "type": "string",
+          "description": "ROLE: retrieval. The string that gets embedded, and the single most consequential field in the plan, because it is the query. Written in the vocabulary of the target document rather than the vocabulary of the check: the embedding matches document language, so a query phrased in check vocabulary fails silently and completely."
+        },
+        "side": {
+          "enum": ["Assertion", "Evidence", "Either"],
+          "description": "ROLE: retrieval. Decides whether the query runs at all. Assertion is never embedded: its canonicalPaths resolve against the stored canonical model, which is how a check avoids re-reading the suitability report. Evidence and Either both go to the vector store, because an Either phrasing still has an evidence half to find."
+        },
+        "targetCategories": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CategoryCode" },
+          "description": "ROLE: retrieval. The only plan field that reaches the Qdrant filter. It doubles the query: the text is embedded once and run twice, unfiltered and category-filtered, with the targeted hits prepended. Not a narrowing filter, because evidence can sit in a category the plan never named. Also reserves one slot per category in the per-group passage cap."
+        },
+        "expectSignals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "ROLE: verification, evaluated during retrieval. A case-insensitive substring scan over the hits this query already returned; it cannot re-search, widen a filter or promote a passage. Where none appear, the runner tells the assessor the data point is absent from the case file rather than merely unretrieved, which for most checks is the finding."
+        },
+        "canonicalPaths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "ROLE: retrieval. Merged with the group's own paths; the de-duplicated union is resolved against the stored model.",
+          "$comment": "JSON Pointer with one addition: a trailing [] fans out across an array's elements. Use it wherever the target is an array."
+        },
+        "priority": {
+          "enum": ["Core", "Supplementary"],
+          "description": "ROLE: retrieval. Honoured when AppSettings.CoreQueriesOnly is set: a Supplementary query is then not run at all. Roughly one query in seven is Supplementary, so the switch is the cheapest retrieval saving available, and the plan author chose what it costs rather than a score threshold choosing for them."
+        }
+      }
+    },
+
+    "QueryGroup": {
+      "type": "object",
+      "required": ["groupId", "requirement", "retrieval"],
+      "additionalProperties": false,
+      "properties": {
+        "groupId": {
+          "type": "string",
+          "description": "ROLE: both. The unit of one model call and one finding. Also compared against the id the model echoed back, so a group the assessor renamed is counted rather than trusted."
+        },
+        "requirement": {
+          "type": "string",
+          "description": "ROLE: verification. The question put to the model, the finding's own label, and this group's row in the coverage matrix. Like groupId it is taken from the plan and the model's echo is checked against it, because a requirement the assessor can quietly restate is not auditable."
+        },
+
+        "declares": {
+          "type": "object",
+          "description": "ROLE: build-time only. What the group says about itself, checked by CheckPlanLint and read by nothing at run time. It exists because these declarations were authored into every plan and then never read, which is how seventeen groups came to declare an evidence category none of their queries asked for.",
+          "additionalProperties": false,
+          "properties": {
+            "assertionCategories": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/CategoryCode" },
+              "description": "Categories the report's own claim comes from, almost always ['I']. Lint rule L2 counts these as used."
+            },
+            "evidenceCategories": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/CategoryCode" },
+              "description": "Categories the corroboration should come from. Lint rule L1 fails the build where a category declared here is targeted by no query. Ranking uses the queries' targetCategories, never this."
+            }
+          }
+        },
+
+        "retrieval": {
+          "type": "object",
+          "description": "ROLE: retrieval. What the assessor is allowed to see. A mistake here is invisible in the output.",
+          "additionalProperties": false,
+          "required": ["queries"],
+          "properties": {
+            "canonicalPaths": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Where the answer lives in the canonical model. This is the assertion side: retrieval from the stored extract rather than from the vector store.",
+              "$comment": "JSON Pointer with a trailing [] to fan out across an array's elements."
+            },
+            "evidenceSections": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Headings the evidence sits under, where the plan knows them. Substring-matched against passage text: a rank key, and each named section reserves a slot in the per-group cap, but only among targetCategories, so a hint promotes within the request rather than widening it. This is routing within a category, which is where a large multi-section document otherwise defeats a correct category."
+            },
+            "queries": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/Query" }
+            }
+          }
+        },
+
+        "verification": {
+          "type": "object",
+          "description": "ROLE: verification. What the assessor may make of what it was given. Every field here is a string interpolated into the group's prompt; nothing in the runner branches on any of them.",
+          "additionalProperties": false,
+          "properties": {
+            "reconciliation": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "ROLE: reconciliation. DIRECTIVE, not a steer: the reconciler branches on these. They say what code may establish for this requirement before any model is asked.",
+              "properties": {
+                "detect": {
+                  "enum": ["ValueDivergence", "SetDifference", "Absence", "RangeBreach", "None"],
+                  "description": "What makes a candidate here. None means code compares nothing: narrative has no value to diverge, and comparing prose as values manufactures findings."
+                },
+                "emitOnePerPath": {
+                  "type": "boolean",
+                  "description": "One candidate for the path rather than one per array element. Sixteen missing allocation rows are one observation, not sixteen findings."
+                },
+                "modality": {
+                  "enum": ["CurrentOnly", "AnyModality"],
+                  "description": "CurrentOnly refuses to compare a projection against a current figure, which is not a discrepancy."
+                },
+                "asAtToleranceDays": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "How far apart two dated values may be before the difference is an as-at artefact rather than a conflict."
+                },
+                "note": { "type": "string" }
+              },
+              "required": ["detect"]
+            },
+            "adjudication": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "ROLE: adjudication. DIRECTIVE, not a steer: the adjudicator branches on these. They say whether this requirement needs judgement at all, and how far its severity may reach.",
+              "properties": {
+                "mode": {
+                  "enum": ["Model", "Deterministic"],
+                  "description": "Deterministic where code has already proved the finding and only a sentence is wanted. An Appropriateness limb is never Deterministic: code can establish the facts but not the verdict."
+                },
+                "severityCeiling": {
+                  "enum": ["Low", "Moderate", "High", "Critical"],
+                  "description": "The highest severity this requirement may report. An absence is held below the severities reserved for a demonstrated contradiction."
+                },
+                "requiresCitation": {
+                  "type": "boolean",
+                  "description": "Whether a finding here must carry a locatable quote to be reported."
+                },
+                "note": { "type": "string" }
+              },
+              "required": ["mode"]
+            },
+            "limb": {
+              "enum": ["Consistency", "Appropriateness", "Both"],
+              "description": "One line of the group prompt. Consistency groups diff the report against the file; appropriateness groups apply rules to the merged model. No code branches on it."
+            },
+            "issueCategories": {
+              "type": "array",
+              "description": "ROLE: verification. The kinds of problem this requirement usually raises, from IssueCategory's fixed vocabulary, printed into the group prompt as a steer. A STEER AND NOT A MENU: the same prompt tells the assessor to name the kind of problem it actually found, including one not listed here, and to leave the list empty where the requirement is met. That is why this field says what the requirement TENDS to raise rather than what it MAY return — a plan that could close the vocabulary per group would be the plan deciding the finding, which is the one thing the retrieval/verification split exists to prevent. Values outside the vocabulary are rejected by CheckPlanLint rule L4 rather than passed through, because a misspelt category is a filter that silently finds nothing.",
+              "items": {
+                "enum": [
+                  "Missing evidence",
+                  "Weak justification",
+                  "Data inconsistency",
+                  "Data quality",
+                  "Missing component",
+                  "Disclosure shortfall",
+                  "Process risk",
+                  "Control gap",
+                  "Compliance concern"
+                ]
+              }
+            },
+            "comparison": {
+              "type": "object",
+              "description": "How the assertion side and evidence side are compared once both have been retrieved.",
+              "additionalProperties": false,
+              "properties": {
+                "method": {
+                  "enum": ["ValueMatch", "SetCoverage", "PresenceOnly", "RangeMatch", "NarrativeAlignment"],
+                  "description": "Printed into the prompt as a string, so the model knows what kind of agreement counts. Despite being an enum, no code branches on it: ValueMatch reaches the model as the word 'ValueMatch'."
+                },
+                "tolerance": {
+                  "type": "string",
+                  "description": "Where near-enough is enough. Printed into the prompt."
+                },
+                "falsePositiveGuards": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "The known ways this particular comparison produces spurious mismatches: gross vs net, different as-at dates, incompatible provider risk scales. One prompt line each. Naive field comparison over this domain is mostly noise, and each guard kills one specific false positive, which is what makes this the field that earns its keep."
+                }
+              }
+            },
+            "sufficiency": {
+              "type": "object",
+              "description": "What to conclude when one side or both come back empty. Makes 'nothing found' a decidable outcome rather than a stalled group, because for most checks absence is the finding.",
+              "additionalProperties": false,
+              "properties": {
+                "minEvidenceCategories": {
+                  "type": "integer",
+                  "description": "How many distinct categories must corroborate. Printed into the prompt beside the categories the pack actually reached, and left to the model rather than enforced in code."
+                },
+                "ifAssertionAbsent": { "type": "string" },
+                "ifEvidenceAbsent": { "type": "string" },
+                "ifBothAbsent": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

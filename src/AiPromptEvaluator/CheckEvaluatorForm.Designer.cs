@@ -21,6 +21,7 @@ partial class CheckEvaluatorForm
     // Left panel
     private GroupBox checksGroup;
     private ListView checksListView;
+    private ColumnHeader statusColumn;
     private ColumnHeader checkIdColumn;
     private ColumnHeader checkNameColumn;
     private ColumnHeader codesColumn;
@@ -41,6 +42,12 @@ partial class CheckEvaluatorForm
     private GroupBox responseGroup;
     private FlowLayoutPanel responseToolbar;
     private Button copyResponseButton;
+    private Button saveReportButton;
+    private Button saveModelButton;
+    private Button saveExtractButton;
+    private CheckBox bypassCacheCheckBox;
+    private CheckBox ignoreTriggerProbeCheckBox;
+    private CheckBox coreQueriesOnlyCheckBox;
     private TextBox responseTextBox;
 
     // Cost breakdown
@@ -56,12 +63,14 @@ partial class CheckEvaluatorForm
     // Action bar
     private TableLayoutPanel actionPanel;
     private Button runButton;
+    private Button runAllButton;
     private Button cancelRunButton;
     private Button unloadDocsButton;
+    private Button extractModelButton;
+    private Button deleteModelButton;
+    private Button dryRunButton;
     private Label statusLabel;
-    private Button openPromptEvaluatorButton;
     private Button openConfigButton;
-    private Button saveSettingsButton;
 
     protected override void Dispose(bool disposing)
     {
@@ -88,6 +97,7 @@ partial class CheckEvaluatorForm
         mainSplit = new SplitContainer();
         checksGroup = new GroupBox();
         checksListView = new ListView();
+        statusColumn = new ColumnHeader();
         checkIdColumn = new ColumnHeader();
         checkNameColumn = new ColumnHeader();
         codesColumn = new ColumnHeader();
@@ -100,6 +110,12 @@ partial class CheckEvaluatorForm
         responseGroup = new GroupBox();
         responseToolbar = new FlowLayoutPanel();
         copyResponseButton = new Button();
+        saveReportButton = new Button();
+        saveModelButton = new Button();
+        saveExtractButton = new Button();
+        bypassCacheCheckBox = new CheckBox();
+        ignoreTriggerProbeCheckBox = new CheckBox();
+        coreQueriesOnlyCheckBox = new CheckBox();
         responseTextBox = new TextBox();
         actionPanel = new TableLayoutPanel();
         costGroup = new GroupBox();
@@ -111,12 +127,14 @@ partial class CheckEvaluatorForm
         totalCostLabel = new Label();
         costNoteLabel = new Label();
         runButton = new Button();
+        runAllButton = new Button();
         cancelRunButton = new Button();
         unloadDocsButton = new Button();
+        extractModelButton = new Button();
+        deleteModelButton = new Button();
+        dryRunButton = new Button();
         statusLabel = new Label();
-        openPromptEvaluatorButton = new Button();
         openConfigButton = new Button();
-        saveSettingsButton = new Button();
 
         rootLayout.SuspendLayout();
         topBar.SuspendLayout();
@@ -244,17 +262,23 @@ partial class CheckEvaluatorForm
         checksGroup.Text = "Checks";
 
         // checksListView
-        checksListView.Columns.AddRange(new[] { checkIdColumn, checkNameColumn, codesColumn });
+        checksListView.Columns.AddRange(new[] { statusColumn, checkIdColumn, checkNameColumn, codesColumn });
         checksListView.Dock = DockStyle.Fill;
         checksListView.FullRowSelect = true;
         checksListView.GridLines = true;
         checksListView.HideSelection = false;
         checksListView.MultiSelect = false;
+        // The status glyph is terse by design; the tooltip carries the detail behind it.
+        checksListView.ShowItemToolTips = true;
         checksListView.Name = "checksListView";
         checksListView.UseCompatibleStateImageBehavior = false;
         checksListView.View = View.Details;
         checksListView.SelectedIndexChanged += ChecksListView_SelectedIndexChanged;
 
+        // The run status glyph. Narrow and unlabelled: it is read by shape and colour at a
+        // glance, and a header would take more room than the column it names.
+        statusColumn.Text = string.Empty;
+        statusColumn.Width = 30;
         checkIdColumn.Text = "ID";
         checkIdColumn.Width = 70;
         checkNameColumn.Text = "Check Name";
@@ -320,6 +344,9 @@ partial class CheckEvaluatorForm
         // responseToolbar
         responseToolbar.AutoSize = true;
         responseToolbar.Controls.Add(copyResponseButton);
+        responseToolbar.Controls.Add(saveReportButton);
+        responseToolbar.Controls.Add(saveModelButton);
+        responseToolbar.Controls.Add(saveExtractButton);
         responseToolbar.Dock = DockStyle.Top;
         responseToolbar.FlowDirection = FlowDirection.RightToLeft;
         responseToolbar.Name = "responseToolbar";
@@ -332,6 +359,36 @@ partial class CheckEvaluatorForm
         copyResponseButton.Text = "Copy response + cost";
         copyResponseButton.UseVisualStyleBackColor = true;
         copyResponseButton.Click += CopyResponseButton_Click;
+
+        // saveReportButton
+        saveReportButton.AutoSize = true;
+        saveReportButton.Margin = new Padding(0, 0, 8, 4);
+        saveReportButton.Name = "saveReportButton";
+        saveReportButton.Padding = new Padding(8, 2, 8, 2);
+        saveReportButton.Text = "Compliance report...";
+        saveReportButton.UseVisualStyleBackColor = true;
+        saveReportButton.Click += SaveReportButton_Click;
+
+        // saveModelButton
+        saveModelButton.AutoSize = true;
+        saveModelButton.Enabled = false;
+        saveModelButton.Margin = new Padding(0, 0, 8, 4);
+        saveModelButton.Name = "saveModelButton";
+        saveModelButton.Padding = new Padding(8, 2, 8, 2);
+        saveModelButton.Text = "Save model JSON...";
+        saveModelButton.UseVisualStyleBackColor = true;
+        saveModelButton.Click += SaveModelButton_Click;
+
+        // saveExtractButton — downloads the passages the searches retrieved, from a dry run held in
+        // memory or the latest archived check run
+        saveExtractButton.AutoSize = true;
+        saveExtractButton.Enabled = false;
+        saveExtractButton.Margin = new Padding(0, 0, 8, 4);
+        saveExtractButton.Name = "saveExtractButton";
+        saveExtractButton.Padding = new Padding(8, 2, 8, 2);
+        saveExtractButton.Text = "Save extract...";
+        saveExtractButton.UseVisualStyleBackColor = true;
+        saveExtractButton.Click += SaveExtractButton_Click;
 
         // responseTextBox
         responseTextBox.Dock = DockStyle.Fill;
@@ -392,26 +449,67 @@ partial class CheckEvaluatorForm
         totalCostLabel.Text = "Total: $0.0000 for 0 tokens";
         totalCostLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-        // actionPanel — left: Run + Cancel + status; right: Prompt Evaluator + Configuration + Save
+        // actionPanel — left: Run + Run All + Cancel + model/index buttons + status;
+        // right: Prompt Evaluator + Configuration + Save
         actionPanel.AutoSize = true;
-        actionPanel.ColumnCount = 8;
+        actionPanel.ColumnCount = 12;
         actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 0 Run
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 1 Cancel
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 2 Unload Docs
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 3 status (stretches)
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 4 Prompt Evaluator
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 5 Configuration
-        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 6 Save Settings
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 1 Run All
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 2 Cancel
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 3 Extract Model
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 4 Delete Model
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 5 Dry Run Retrieval
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 6 Unload Docs
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 7 Bypass cache
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 8 Ignore trigger probe
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 9 Core queries only
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // 10 status (stretches)
+        actionPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // 11 Configuration
         actionPanel.Dock = DockStyle.Fill;
         actionPanel.Margin = new Padding(0);
         actionPanel.RowCount = 1;
         actionPanel.Controls.Add(runButton, 0, 0);
-        actionPanel.Controls.Add(cancelRunButton, 1, 0);
-        actionPanel.Controls.Add(unloadDocsButton, 2, 0);
-        actionPanel.Controls.Add(statusLabel, 3, 0);
-        actionPanel.Controls.Add(openPromptEvaluatorButton, 4, 0);
-        actionPanel.Controls.Add(openConfigButton, 5, 0);
-        actionPanel.Controls.Add(saveSettingsButton, 6, 0);
+        actionPanel.Controls.Add(runAllButton, 1, 0);
+        actionPanel.Controls.Add(cancelRunButton, 2, 0);
+        actionPanel.Controls.Add(extractModelButton, 3, 0);
+        actionPanel.Controls.Add(deleteModelButton, 4, 0);
+        actionPanel.Controls.Add(dryRunButton, 5, 0);
+        actionPanel.Controls.Add(unloadDocsButton, 6, 0);
+        actionPanel.Controls.Add(bypassCacheCheckBox, 7, 0);
+        actionPanel.Controls.Add(ignoreTriggerProbeCheckBox, 8, 0);
+        actionPanel.Controls.Add(coreQueriesOnlyCheckBox, 9, 0);
+        actionPanel.Controls.Add(statusLabel, 10, 0);
+        actionPanel.Controls.Add(openConfigButton, 11, 0);
+
+        // bypassCacheCheckBox — applies to Extract Model and to Run, because both are answered
+        // by the same gateway and either can be served from cache.
+        bypassCacheCheckBox.Anchor = AnchorStyles.Left;
+        bypassCacheCheckBox.AutoSize = true;
+        bypassCacheCheckBox.Margin = new Padding(0, 0, 16, 0);
+        bypassCacheCheckBox.Name = "bypassCacheCheckBox";
+        bypassCacheCheckBox.Text = "Bypass cache";
+        bypassCacheCheckBox.UseVisualStyleBackColor = true;
+        bypassCacheCheckBox.CheckedChanged += BypassCacheCheckBox_CheckedChanged;
+
+        // ignoreTriggerProbeCheckBox — forces every check through full assessment even when its
+        // trigger probe would otherwise settle it as Not Applicable without ever running.
+        ignoreTriggerProbeCheckBox.Anchor = AnchorStyles.Left;
+        ignoreTriggerProbeCheckBox.AutoSize = true;
+        ignoreTriggerProbeCheckBox.Margin = new Padding(0, 0, 16, 0);
+        ignoreTriggerProbeCheckBox.Name = "ignoreTriggerProbeCheckBox";
+        ignoreTriggerProbeCheckBox.Text = "Run all checks (ignore trigger)";
+        ignoreTriggerProbeCheckBox.UseVisualStyleBackColor = true;
+        ignoreTriggerProbeCheckBox.CheckedChanged += IgnoreTriggerProbeCheckBox_CheckedChanged;
+
+        // coreQueriesOnlyCheckBox — skips Supplementary queries, running only the ones plans
+        // mark Core. The same setting Configuration exposes, mirrored here as a live toggle.
+        coreQueriesOnlyCheckBox.Anchor = AnchorStyles.Left;
+        coreQueriesOnlyCheckBox.AutoSize = true;
+        coreQueriesOnlyCheckBox.Margin = new Padding(0, 0, 16, 0);
+        coreQueriesOnlyCheckBox.Name = "coreQueriesOnlyCheckBox";
+        coreQueriesOnlyCheckBox.Text = "Core queries only";
+        coreQueriesOnlyCheckBox.UseVisualStyleBackColor = true;
+        coreQueriesOnlyCheckBox.CheckedChanged += CoreQueriesOnlyCheckBox_CheckedChanged;
         actionPanel.Name = "actionPanel";
 
         // runButton
@@ -422,6 +520,44 @@ partial class CheckEvaluatorForm
         runButton.Text = "Run Check";
         runButton.UseVisualStyleBackColor = true;
         runButton.Click += RunButton_Click;
+
+        // runAllButton — every check that has a query plan, in one pass
+        runAllButton.AutoSize = true;
+        runAllButton.Margin = new Padding(0, 0, 8, 0);
+        runAllButton.Name = "runAllButton";
+        runAllButton.Padding = new Padding(12, 4, 12, 4);
+        runAllButton.Text = "Run All Checks";
+        runAllButton.UseVisualStyleBackColor = true;
+        runAllButton.Click += RunAllButton_Click;
+
+        // extractModelButton — parses the category I report into the canonical model store
+        extractModelButton.AutoSize = true;
+        extractModelButton.Margin = new Padding(0, 0, 8, 0);
+        extractModelButton.Name = "extractModelButton";
+        extractModelButton.Padding = new Padding(12, 4, 12, 4);
+        extractModelButton.Text = "Extract Model";
+        extractModelButton.UseVisualStyleBackColor = true;
+        extractModelButton.Click += ExtractModelButton_Click;
+
+        // deleteModelButton — drops the stored canonical model for this case
+        deleteModelButton.AutoSize = true;
+        deleteModelButton.Enabled = false;
+        deleteModelButton.Margin = new Padding(0, 0, 12, 0);
+        deleteModelButton.Name = "deleteModelButton";
+        deleteModelButton.Padding = new Padding(12, 4, 12, 4);
+        deleteModelButton.Text = "Delete Model";
+        deleteModelButton.UseVisualStyleBackColor = true;
+        deleteModelButton.Click += DeleteModelButton_Click;
+
+        // dryRunButton — executes every plan's retrieval against the live index and reports which
+        // section hints reached no passage, with no model call. Diagnoses a dead hint in seconds.
+        dryRunButton.AutoSize = true;
+        dryRunButton.Margin = new Padding(0, 0, 12, 0);
+        dryRunButton.Name = "dryRunButton";
+        dryRunButton.Padding = new Padding(12, 4, 12, 4);
+        dryRunButton.Text = "Dry Run Retrieval";
+        dryRunButton.UseVisualStyleBackColor = true;
+        dryRunButton.Click += DryRunButton_Click;
 
         // cancelRunButton
         cancelRunButton.AutoSize = true;
@@ -450,15 +586,6 @@ partial class CheckEvaluatorForm
         statusLabel.Name = "statusLabel";
         statusLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-        // openPromptEvaluatorButton
-        openPromptEvaluatorButton.AutoSize = true;
-        openPromptEvaluatorButton.Margin = new Padding(8, 0, 8, 0);
-        openPromptEvaluatorButton.Name = "openPromptEvaluatorButton";
-        openPromptEvaluatorButton.Padding = new Padding(8, 2, 8, 2);
-        openPromptEvaluatorButton.Text = "Prompt Evaluator...";
-        openPromptEvaluatorButton.UseVisualStyleBackColor = true;
-        openPromptEvaluatorButton.Click += OpenPromptEvaluatorButton_Click;
-
         // openConfigButton
         openConfigButton.AutoSize = true;
         openConfigButton.Margin = new Padding(0, 0, 8, 0);
@@ -467,15 +594,6 @@ partial class CheckEvaluatorForm
         openConfigButton.Text = "Configuration...";
         openConfigButton.UseVisualStyleBackColor = true;
         openConfigButton.Click += OpenConfigButton_Click;
-
-        // saveSettingsButton
-        saveSettingsButton.AutoSize = true;
-        saveSettingsButton.Margin = new Padding(0);
-        saveSettingsButton.Name = "saveSettingsButton";
-        saveSettingsButton.Padding = new Padding(8, 2, 8, 2);
-        saveSettingsButton.Text = "Save Settings";
-        saveSettingsButton.UseVisualStyleBackColor = true;
-        saveSettingsButton.Click += SaveSettingsButton_Click;
 
         // CheckEvaluatorForm
         AutoScaleDimensions = new SizeF(7F, 15F);

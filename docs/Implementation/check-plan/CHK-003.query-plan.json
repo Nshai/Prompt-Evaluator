@@ -1,0 +1,1312 @@
+{
+  "planVersion": "1.0",
+  "checkId": "CHK-003",
+  "checkName": "Risk, Capacity for Loss and Investment Strategy Match",
+  "primaryCategories": [
+    "B",
+    "C",
+    "D",
+    "E",
+    "G",
+    "I"
+  ],
+  "triggerProbe": {
+    "triggerField": "checkTriggers.hasInvestmentOrPensionRecommendation",
+    "applicability": [
+      {
+        "investmentOrPensionRecommendation": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/hasInvestmentOrPensionRecommendation"
+        ]
+      }
+    ],
+    "queries": [
+      {
+        "id": "T3.1",
+        "text": "recommended investment strategy funds portfolio allocation for your pension",
+        "side": "Assertion",
+        "targetCategories": [
+          "I",
+          "H"
+        ],
+        "expectSignals": [
+          "fund",
+          "portfolio",
+          "allocation",
+          "%",
+          "invest"
+        ],
+        "priority": "Core"
+      }
+    ],
+    "absentWhen": "No investment or pension recommendation was made.",
+    "onAbsent": "Skip"
+  },
+  "queryGroups": [
+    {
+      "groupId": "G3.1",
+      "requirement": "Risk rating and summary",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "D"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/riskAssessment/perClient[]/attitudeToRisk/assessedCode",
+          "/riskAssessment/perClient[]/attitudeToRisk/agreedCode",
+          "/riskAssessment/perClient[]/attitudeToRisk/label"
+        ],
+        "queries": [
+          {
+            "id": "Q3.1.1",
+            "text": "your attitude to risk you are a risk rating balanced cautious adventurous investor",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "risk rating",
+              "Balanced",
+              "Cautious",
+              "Moderate",
+              "attitude to risk"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.1.2",
+            "text": "attitude to risk questionnaire result score profile outcome",
+            "side": "Evidence",
+            "targetCategories": [
+              "D",
+              "B"
+            ],
+            "expectSignals": [
+              "questionnaire",
+              "score",
+              "profile",
+              "risk level",
+              "result"
+            ],
+            "canonicalPaths": [
+              "/riskAssessment/perClient[]/attitudeToRisk/assessedCode"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.1.3",
+            "text": "risk profile description what this risk level means for your investments",
+            "side": "Either",
+            "targetCategories": [
+              "D",
+              "I"
+            ],
+            "expectSignals": [
+              "as a",
+              "investor",
+              "you may be suited",
+              "description"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.1.4",
+            "text": "risk scale one to ten definition of each risk category",
+            "side": "Evidence",
+            "targetCategories": [
+              "D",
+              "G"
+            ],
+            "expectSignals": [
+              "1-10",
+              "scale",
+              "level",
+              "FE",
+              "risk profiler",
+              "out of 10"
+            ],
+            "canonicalPaths": [
+              "/riskAssessment/perClient[]/attitudeToRisk/scaleName"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
+        "comparison": {
+          "method": "ValueMatch",
+          "tolerance": "The agreed code in the report must equal the code adopted in the ATR evidence, on the same scale.",
+          "falsePositiveGuards": [
+            "Never compare numbers across different risk scales — a 5 on a 1-10 scale is not a 5 on a 1-7 scale.",
+            "A questionnaire result and an agreed rating legitimately differ; that is an override, handled in G3.6, not a mismatch."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Potential Concern: an investment recommendation with no stated risk profile.",
+          "ifEvidenceAbsent": "Potential Concern: risk rating asserted with no questionnaire or risk assessment on file.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G3.2",
+      "requirement": "Capacity for loss assessment",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "D",
+          "F"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/riskAssessment/perClient[]/capacityForLoss/rating",
+          "/riskAssessment/perClient[]/capacityForLoss/assessmentBasis",
+          "/riskAssessment/perClient[]/capacityForLoss/isSeparatelyAssessedFromAtr"
+        ],
+        "evidenceSections": [
+          "Capacity For Loss questionnaire responses",
+          "Capacity for loss questionnaire"
+        ],
+        "queries": [
+          {
+            "id": "Q3.2.1",
+            "text": "capacity for loss you have a low medium high capacity to absorb a fall in value",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "D"
+            ],
+            "expectSignals": [
+              "capacity for loss",
+              "low",
+              "medium",
+              "high",
+              "absorb"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.2.2",
+            "text": "would a fall in the value of your investments affect your standard of living",
+            "side": "Either",
+            "targetCategories": [
+              "D",
+              "B",
+              "I"
+            ],
+            "expectSignals": [
+              "standard of living",
+              "day to day",
+              "detrimental",
+              "impact",
+              "reliant"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.2.3",
+            "text": "capacity for loss assessment questions and answers scoring",
+            "side": "Evidence",
+            "targetCategories": [
+              "D"
+            ],
+            "expectSignals": [
+              "capacity",
+              "question",
+              "answer",
+              "assessment"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.2.4",
+            "text": "other income and assets available if the investment falls in value alternative provision",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "F"
+            ],
+            "expectSignals": [
+              "other assets",
+              "other income",
+              "savings",
+              "surplus"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
+        "comparison": {
+          "method": "ValueMatch",
+          "falsePositiveGuards": [
+            "Capacity for loss restated as a consequence of attitude to risk ('medium CFL, consistent with your ATR of 5') is a weak assessment — flag it as such rather than as a value mismatch.",
+            "A CFL rating with no supporting financial reasoning is not evidenced merely because the words appear."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Potential Concern: capacity for loss asserted with no assessment on file.",
+          "ifAssertionAbsent": "Potential Concern: CFL is explicitly named by this check and by COBS 9.2."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G3.3",
+      "requirement": "Tolerance for loss and need-level risk",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "D",
+          "F"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/riskAssessment/perClient[]/toleranceForLoss",
+          "/objectives[]/needLevelRisk"
+        ],
+        "queries": [
+          {
+            "id": "Q3.3.1",
+            "text": "maximum loss you would be prepared to tolerate percentage fall in a year",
+            "side": "Either",
+            "targetCategories": [
+              "D",
+              "I"
+            ],
+            "expectSignals": [
+              "maximum",
+              "tolerate",
+              "%",
+              "fall",
+              "loss"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.3.2",
+            "text": "level of risk required to meet this objective need level risk required return",
+            "side": "Evidence",
+            "targetCategories": [
+              "F",
+              "G"
+            ],
+            "expectSignals": [
+              "required return",
+              "need",
+              "risk required",
+              "to achieve"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.3.3",
+            "text": "how would you feel if your investment fell by twenty percent",
+            "side": "Evidence",
+            "targetCategories": [
+              "D",
+              "C"
+            ],
+            "expectSignals": [
+              "fell",
+              "20%",
+              "comfortable",
+              "concerned"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
+        "comparison": {
+          "method": "RangeMatch",
+          "falsePositiveGuards": [
+            "Many firms do not quantify tolerance for loss separately; absence is a documentation gap, not a contradiction."
+          ]
+        },
+        "sufficiency": {
+          "ifBothAbsent": "Note as a gap — record that tolerance for loss was never quantified, which matters where a stress test models a large fall."
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G3.4",
+      "requirement": "Time horizon used to support the risk profile",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "D",
+          "F"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/riskAssessment/perClient[]/investmentTermYears",
+          "/objectives[]/timeHorizon"
+        ],
+        "evidenceSections": [
+          "Capacity For Loss questionnaire responses",
+          "my investment horizon",
+          "Time Horizon"
+        ],
+        "queries": [
+          {
+            "id": "Q3.4.1",
+            "text": "invest over a period of years growth potential over the long term",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "over a",
+              "year period",
+              "long term",
+              "growth potential"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.4.2",
+            "text": "investment term recorded in the risk assessment how long until the money is needed",
+            "side": "Evidence",
+            "targetCategories": [
+              "D",
+              "B",
+              "F"
+            ],
+            "expectSignals": [
+              "term",
+              "years",
+              "horizon",
+              "until"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
+        "comparison": {
+          "method": "RangeMatch",
+          "tolerance": "The term used in the risk section must be reconcilable with the objective horizon from CHK-002.",
+          "falsePositiveGuards": [
+            "Money left invested through retirement can legitimately have a longer horizon than the retirement date itself — but the report must say so."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Potential Concern where a long horizon is the stated justification for a higher risk profile."
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G3.5",
+      "requirement": "Investment strategy and asset allocation",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "G",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/solution/investmentStrategy/targetRiskRating",
+          "/solution/investmentStrategy/holdings[]",
+          "/solution/investmentStrategy/assetAllocation[]",
+          "/solution/investmentStrategy/strategyType"
+        ],
+        "queries": [
+          {
+            "id": "Q3.5.1",
+            "text": "fund recommendation allocation percentage risk rating annual charge table",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "Allocation",
+              "Risk Rating",
+              "%",
+              "fund"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.5.2",
+            "text": "fund factsheet risk profile rating of this fund volatility measure",
+            "side": "Evidence",
+            "targetCategories": [
+              "H",
+              "G"
+            ],
+            "expectSignals": [
+              "risk rating",
+              "risk profile",
+              "volatility",
+              "SRRI",
+              "rated"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.5.3",
+            "text": "asset allocation equities bonds property cash percentage breakdown",
+            "side": "Either",
+            "targetCategories": [
+              "H",
+              "G",
+              "I"
+            ],
+            "expectSignals": [
+              "equities",
+              "bonds",
+              "property",
+              "cash",
+              "%"
+            ],
+            "canonicalPaths": [
+              "/solution/investmentStrategy/assetAllocation[]"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.5.4",
+            "text": "model portfolio risk targeted multi asset fund designed to remain within risk level",
+            "side": "Either",
+            "targetCategories": [
+              "G",
+              "H",
+              "I"
+            ],
+            "expectSignals": [
+              "risk targeted",
+              "multi-asset",
+              "model portfolio",
+              "remain within"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.5.5",
+            "text": "benchmark for this risk profile peer group comparison sector",
+            "side": "Evidence",
+            "targetCategories": [
+              "G",
+              "H"
+            ],
+            "expectSignals": [
+              "benchmark",
+              "IA Mixed",
+              "sector",
+              "peer"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
+        "comparison": {
+          "method": "ValueMatch",
+          "tolerance": "The strategy's risk rating must equal the client's agreed rating on the same scale; fund allocations must total 100%.",
+          "falsePositiveGuards": [
+            "Fund-level risk ratings from a provider are not necessarily on the firm's client risk scale.",
+            "A blend of two funds can target a rating neither fund carries individually — check for a stated combined rating before flagging."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Potential Concern: fund risk ratings asserted with no factsheet or research to support them.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G3.6",
+      "requirement": "Risk override justification where the agreed rating differs from the questionnaire",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "C",
+          "D"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/riskAssessment/perClient[]/reconciliation"
+        ],
+        "evidenceSections": [
+          "ATR Wording"
+        ],
+        "queries": [
+          {
+            "id": "Q3.6.1",
+            "text": "we agreed a risk rating rather than the questionnaire result did not fully reflect",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "rather than",
+              "didn't fully reflect",
+              "we agreed",
+              "instead of",
+              "increase"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.6.2",
+            "text": "discussion about changing the client's risk level and why file note",
+            "side": "Evidence",
+            "targetCategories": [
+              "C",
+              "D"
+            ],
+            "expectSignals": [
+              "discussed",
+              "agreed",
+              "changed",
+              "amended",
+              "reconcil"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.6.3",
+            "text": "client confirmed they are happy to take a higher level of risk and understand the consequences",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "C"
+            ],
+            "expectSignals": [
+              "happy to",
+              "aware",
+              "understand",
+              "accept",
+              "confirmed"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Weak justification"
+        ],
+        "comparison": {
+          "method": "PresenceOnly",
+          "falsePositiveGuards": [
+            "Where assessed and agreed ratings match, this group is not applicable — do not report a missing justification for an override that did not occur."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Only relevant if G3.1 found differing assessed and agreed codes; then Potential Concern — an unexplained override.",
+          "ifEvidenceAbsent": "Potential Concern: the override is asserted in the report but nothing in the file records the conversation."
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Moderate",
+          "note": "Established by lookup. An absence is not a demonstrated contradiction, so it is held below the severities reserved for one.",
+          "requiresCitation": false,
+          "mode": "Deterministic"
+        }
+      }
+    },
+    {
+      "groupId": "G3.7",
+      "requirement": "Recommendation or strategy exceeds risk tolerance, taking account of capacity for loss",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "D",
+          "E",
+          "G"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/solution/investmentStrategy/targetRiskRating",
+          "/riskAssessment/perClient[]/attitudeToRisk/agreedCode",
+          "/riskAssessment/perClient[]/capacityForLoss/rating",
+          "/existingArrangements[]/riskRating"
+        ],
+        "queries": [
+          {
+            "id": "Q3.7.1",
+            "text": "how the recommended strategy aligns with your attitude to risk and capacity for loss",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "aligns",
+              "in line with",
+              "consistent with",
+              "matches"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.7.2",
+            "text": "existing plan fund risk level compared with your agreed risk profile",
+            "side": "Either",
+            "targetCategories": [
+              "E",
+              "I",
+              "G",
+              "D"
+            ],
+            "expectSignals": [
+              "risk level",
+              "rated",
+              "higher than",
+              "lower than",
+              "outside"
+            ],
+            "canonicalPaths": [
+              "/existingArrangements[]/riskRating"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.7.3",
+            "text": "lifestyling strategy automatically reduces risk as you approach retirement",
+            "side": "Either",
+            "targetCategories": [
+              "E",
+              "H",
+              "I"
+            ],
+            "expectSignals": [
+              "lifestyling",
+              "de-risk",
+              "glide path",
+              "automatically"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.7.4",
+            "text": "volatility and potential loss of the recommended portfolio maximum drawdown",
+            "side": "Evidence",
+            "targetCategories": [
+              "G",
+              "H"
+            ],
+            "expectSignals": [
+              "volatility",
+              "drawdown",
+              "loss",
+              "standard deviation"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Compliance concern"
+        ],
+        "comparison": {
+          "method": "RangeMatch",
+          "falsePositiveGuards": [
+            "A retained plan invested outside the agreed profile is a concern wherever the report claims alignment for it — for the whole portfolio or for that plan alone. Silence about a retained plan's risk level is a gap; a claim of alignment that the plan's own rating contradicts is a finding.",
+            "Compare on one scale only; where scales differ and no mapping is given, report the incomparability rather than a breach. This does not excuse an assertion the report makes for itself: where the report says a specific fund or plan aligns with the client's risk appetite, that claim is testable on its own terms, and the scales being incomparable is the reason the claim is unsupported rather than a reason to leave it unassessed."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Potential Concern: no explanation of how the strategy matches the risk profile — this is the explicit subject of the check."
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G3.8",
+      "requirement": "Conflicting risk scores, descriptions or labels across the file",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C",
+          "D",
+          "E",
+          "G"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/riskAssessment/perClient[]/attitudeToRisk",
+          "/riskAssessment/perClient[]/reconciliation",
+          "/riskAssessment/perClient[]/attitudeToRisk/assessedCode",
+          "/riskAssessment/perClient[]/attitudeToRisk/agreedCode",
+          "/riskAssessment/perClient[]/attitudeToRisk/scaleName",
+          "/riskAssessment/perClient[]/attitudeToRisk/label"
+        ],
+        "evidenceSections": [
+          "ATR Wording",
+          "Attitude To Risk questionnaire responses"
+        ],
+        "queries": [
+          {
+            "id": "Q3.8.1",
+            "text": "your attitude to risk is described as cautious balanced moderate adventurous",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "risk profile",
+              "balanced",
+              "moderate",
+              "cautious",
+              "adventurous",
+              "score"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.8.2",
+            "text": "risk profiler output score category and the description of this risk level",
+            "side": "Evidence",
+            "targetCategories": [
+              "D",
+              "B",
+              "C"
+            ],
+            "expectSignals": [
+              "score",
+              "profile",
+              "category",
+              "out of",
+              "level"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.8.3",
+            "text": "fund risk rating and provider risk category for the recommended portfolio",
+            "side": "Evidence",
+            "targetCategories": [
+              "G",
+              "E"
+            ],
+            "expectSignals": [
+              "risk rating",
+              "risk category",
+              "volatility",
+              "out of"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Data quality"
+        ],
+        "comparison": {
+          "method": "ValueMatch",
+          "falsePositiveGuards": [
+            "A 5 on a 1-10 scale is not a 5 on a 1-7 scale. Profiler, provider and fund-house scales are not interchangeable — compare the descriptions before the numbers.",
+            "A questionnaire result differing from the agreed rating is an override, not a conflict. It becomes a finding only where it is unexplained, which G3.6 assesses.",
+            "The same profile carries different labels in different houses ('Balanced' and 'Moderate' routinely describe the same thing); a label difference with a matching description is not a conflict.",
+            "A joint case has a risk profile per client; two different scores for two clients are not a contradiction."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Potential Concern: the report should state the risk profile it relied on.",
+          "ifEvidenceAbsent": "Potential Concern: a risk profile asserted with no assessment on file.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G3.9",
+      "requirement": "Recommended funds and portfolio align with the client's attitude to risk, capacity for loss and investment term",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "G",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/solution/investmentStrategy",
+          "/riskAssessment/perClient[]/attitudeToRisk",
+          "/riskAssessment/perClient[]/capacityForLoss",
+          "/riskAssessment/perClient[]/investmentTermYears",
+          "/solution/recommendedPlans[]/projections"
+        ],
+        "queries": [
+          {
+            "id": "Q3.9.1",
+            "text": "the recommended portfolio is managed to a risk level consistent with your profile over your investment term",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "portfolio",
+              "risk level",
+              "term",
+              "consistent",
+              "matches"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.9.2",
+            "text": "fund factsheet risk and reward profile indicator recommended minimum holding period",
+            "side": "Evidence",
+            "targetCategories": [
+              "G",
+              "H"
+            ],
+            "expectSignals": [
+              "risk and reward",
+              "indicator",
+              "holding period",
+              "volatility",
+              "SRRI"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.9.3",
+            "text": "asset allocation equity content of the recommended portfolio percentage",
+            "side": "Evidence",
+            "targetCategories": [
+              "G",
+              "H"
+            ],
+            "expectSignals": [
+              "equity",
+              "allocation",
+              "%",
+              "bond",
+              "cash"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Data inconsistency"
+        ],
+        "comparison": {
+          "method": "NarrativeAlignment",
+          "falsePositiveGuards": [
+            "A fund's SRRI or risk-and-reward indicator runs on its own scale and does not map onto the profiler's; use it as corroboration, never as a value match.",
+            "A recommended minimum holding period longer than the client's term is a genuine mismatch; a shorter one is not.",
+            "A multi-asset fund's name ('Balanced', 'Cautious Managed') is marketing, not a risk rating; judge on the allocation and the indicator."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Note as a gap; the report should link the portfolio to the risk profile it was chosen for.",
+          "ifEvidenceAbsent": "Potential Concern: a portfolio recommended with no fund-level risk evidence to support the alignment claim.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G3.10",
+      "requirement": "Unsupported, contradictory or unexplained statements about risk, loss capacity, term or strategy",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C",
+          "D",
+          "G"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/riskAssessment/perClient[]/attitudeToRisk",
+          "/riskAssessment/perClient[]/capacityForLoss",
+          "/riskAssessment/perClient[]/toleranceForLoss",
+          "/riskAssessment/perClient[]/reconciliation",
+          "/solution/investmentStrategy"
+        ],
+        "queries": [
+          {
+            "id": "Q3.10.1",
+            "text": "you are comfortable with the level of risk and understand the value of your investment can fall",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "comfortable",
+              "risk",
+              "fall",
+              "understand",
+              "accept"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.10.2",
+            "text": "risk questionnaire answers and the adviser's notes explaining the agreed risk level",
+            "side": "Evidence",
+            "targetCategories": [
+              "D",
+              "C",
+              "B"
+            ],
+            "expectSignals": [
+              "question",
+              "answer",
+              "agreed",
+              "explain",
+              "note"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.10.3",
+            "text": "research supporting the recommended strategy for this risk profile and term",
+            "side": "Evidence",
+            "targetCategories": [
+              "G"
+            ],
+            "expectSignals": [
+              "research",
+              "strategy",
+              "profile",
+              "term",
+              "support"
+            ],
+            "priority": "Supplementary"
+          },
+          {
+            "id": "Q3.10.4",
+            "text": "compared to other people I would describe myself as I associate the phrase investment risk with the idea of taking risks when making investments",
+            "side": "Evidence",
+            "targetCategories": [
+              "D"
+            ],
+            "expectSignals": [
+              "More cautious",
+              "Caution",
+              "Low risk investments",
+              "anxious",
+              "More than"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Weak justification",
+          "Missing evidence"
+        ],
+        "comparison": {
+          "method": "NarrativeAlignment",
+          "falsePositiveGuards": [
+            "This group is the catch-all for risk statements the other groups do not reach. Do not restate a finding G3.1 to G3.9 already made — report only what they leave.",
+            "A statement the report does not evidence but that is uncontroversial and consistent with the file is a gap at most, not a contradiction.",
+            "Standard risk-warning boilerplate is not an unsupported statement about this client."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "No issue on this requirement; nothing further was asserted.",
+          "ifEvidenceAbsent": "Potential Concern: a risk statement the recommendation rests on has no support in the file.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "Only a reader can say whether two passages agree.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G3.11",
+      "requirement": "Funds inside a retained arrangement align with the agreed risk rating",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "D",
+          "E",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/existingArrangements[]/adviceAction",
+          "/existingArrangements[]/riskRating",
+          "/existingArrangements[]/holdings",
+          "/existingArrangements[]/adviceActionRationale",
+          "/riskAssessment/perClient[]/attitudeToRisk/agreedCode"
+        ],
+        "evidenceSections": [
+          "The funds available to invest in are"
+        ],
+        "queries": [
+          {
+            "id": "Q3.11.1",
+            "text": "we recommend you retain this plan and the fund it is invested in remains suitable for your risk profile",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "retain",
+              "remain",
+              "aligns with your risk",
+              "you should consider",
+              "no change"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q3.11.2",
+            "text": "fund risk level rating of the fund the plan is currently invested in",
+            "side": "Evidence",
+            "targetCategories": [
+              "E",
+              "H",
+              "D"
+            ],
+            "expectSignals": [
+              "Risk Level",
+              "risk rated",
+              "shares",
+              "risk profiler"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Compliance concern"
+        ],
+        "comparison": {
+          "method": "RangeMatch",
+          "falsePositiveGuards": [
+            "This group is about a plan the advice keeps, not one it moves. G3.7 asks whether the recommended strategy exceeds the profile; this asks the same of money left where it is, which no other requirement reads.",
+            "A retained plan carries the same alignment duty as a recommended one. A rationale for retaining the plan — an employer contribution, a guarantee, a penalty avoided — explains the retention and does not answer for the fund inside it; where the report gives one and says nothing about the fund's risk level, that is the finding.",
+            "Where the report stops short of recommending — 'you should consider switching the funds' — treat it as no recommendation made. An unactioned suggestion leaves the client invested outside the agreed profile and is not a fix for the mismatch.",
+            "Compare on one scale only; where the plan's rating is on a provider or Defaqto scale and no mapping is given, report the incomparability rather than a breach. This does not excuse an assertion the report makes for itself: where the report says the retained fund aligns with the client's risk appetite, that claim is testable on its own terms, and incomparable scales are the reason it is unsupported rather than a reason to leave it unassessed.",
+            "A fund whose rating sits inside the agreed profile is no issue, and a plan retained with no alignment claim and no rating on file is a gap rather than a breach."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Note as a gap: a plan is retained and the report does not say whether what it holds still suits the agreed profile.",
+          "ifEvidenceAbsent": "Potential Concern: a plan is retained on advice with no fund-level risk evidence to support the alignment the report implies.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    }
+  ],
+  "decision": {
+    "noIssue": "Evidence complete, consistent and supports the outcome. ATR, CFL, tolerance, term and strategy are each evidenced in categories D, B, G or H; the strategy risk rating equals the agreed rating on a stated scale; and any override carries a justification and client acknowledgement.",
+    "potentialConcern": "Material clarification or additional evidence required. A risk figure is asserted with no assessment on file, the agreed rating differs from the questionnaire without explanation, the strategy risk exceeds the agreed rating or capacity for loss, or risk ratings are compared across incompatible scales.",
+    "notApplicable": "Trigger absent. No investment or pension recommendation in the case.",
+    "severityHints": [
+      "Highest: strategy risk exceeds the agreed profile or capacity for loss.",
+      "High: questionnaire result overridden upward with no evidenced justification.",
+      "High: risk scale never identified, so no comparison can be substantiated.",
+      "Moderate: capacity for loss asserted as a restatement of attitude to risk.",
+      "Low: tolerance for loss not quantified where no large-loss scenario is modelled."
+    ],
+    "overlayInstruction": "Vulnerability overlay: consider whether any actual or potential drivers or characteristics of vulnerability, support needs, communication requirements or reasonable adjustments identified in the evidence materially affect this check's assessment or the conclusions it reaches. Where they do, say so in the finding. A vulnerability recorded in the file that has no bearing on this requirement is not itself a concern here — CHK-010 assesses vulnerability in its own right. Do not assess: existing arrangements or existing fund suitability; switch, transfer or replacement rationale; provider comparisons; product charges or cost comparisons; knowledge and experience; the client's understanding of investments. Those belong to CHK-004, CHK-007 and CHK-009. Objectives, knowledge and experience are in scope here only where the report explicitly uses them to justify the risk profile, capacity for loss, agreed rating, investment term or strategy."
+  }
+}

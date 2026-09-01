@@ -1,0 +1,1340 @@
+{
+  "planVersion": "1.0",
+  "checkId": "CHK-007",
+  "checkName": "Costs, Charges and Value of the Recommendation",
+  "primaryCategories": [
+    "A",
+    "B",
+    "C",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I"
+  ],
+  "triggerProbe": {
+    "triggerField": "checkTriggers.hasCostsAndChargesSection",
+    "applicability": [
+      {
+        "advisedCase": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/isAdvisedCase"
+        ]
+      }
+    ],
+    "queries": [
+      {
+        "id": "T7.1",
+        "text": "summary of plan charges annual recurring charges our charges",
+        "side": "Assertion",
+        "targetCategories": [
+          "I"
+        ],
+        "expectSignals": [
+          "charges",
+          "%",
+          "£",
+          "annual",
+          "total charge"
+        ],
+        "priority": "Core"
+      }
+    ],
+    "absentWhen": "The case is not an advised one.",
+    "onAbsent": "ContinueWithReducedScope"
+  },
+  "queryGroups": [
+    {
+      "groupId": "G7.1",
+      "requirement": "All material costs disclosed — product, platform, fund, transaction, advice",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "E",
+          "G",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/costsAndCharges/disclosureCompleteness",
+          "/costsAndCharges/recommended/lines[]"
+        ],
+        "queries": [
+          {
+            "id": "Q7.1.1",
+            "text": "platform charge product charge percentage per annum on the recommended plan",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "H",
+              "E"
+            ],
+            "expectSignals": [
+              "platform",
+              "product charge",
+              "%",
+              "per annum"
+            ],
+            "canonicalPaths": [
+              "/costsAndCharges/recommended/lines[]"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.1.2",
+            "text": "fund ongoing charges figure OCF investment management charge",
+            "side": "Either",
+            "targetCategories": [
+              "H",
+              "G",
+              "I"
+            ],
+            "expectSignals": [
+              "OCF",
+              "ongoing charges figure",
+              "AMC",
+              "fund charge",
+              "%"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.1.3",
+            "text": "transaction costs of the underlying funds excluded from these figures",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "H"
+            ],
+            "expectSignals": [
+              "transaction cost",
+              "exclude",
+              "broker",
+              "trading"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.1.4",
+            "text": "discretionary fund manager charge DFM model portfolio management fee",
+            "side": "Either",
+            "targetCategories": [
+              "H",
+              "G",
+              "I"
+            ],
+            "expectSignals": [
+              "DFM",
+              "discretionary",
+              "management fee",
+              "model"
+            ],
+            "priority": "Supplementary"
+          },
+          {
+            "id": "Q7.1.5",
+            "text": "total annual charge combining platform investment and adviser fees all in cost",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "total",
+              "combined",
+              "all",
+              "%",
+              "£"
+            ],
+            "canonicalPaths": [
+              "/costsAndCharges/recommended/totalOngoingPercentage"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.1.6",
+            "text": "illustration charges schedule effect of charges on the projected value",
+            "side": "Evidence",
+            "targetCategories": [
+              "H"
+            ],
+            "expectSignals": [
+              "illustration",
+              "effect of charges",
+              "projected",
+              "deduction"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Disclosure shortfall",
+          "Missing component"
+        ],
+        "comparison": {
+          "method": "SetCoverage",
+          "tolerance": "Every cost layer present in the illustration or factsheets must appear in the report.",
+          "falsePositiveGuards": [
+            "A stated exclusion (transaction costs excluded, with reasons) is a disclosure, not an omission — but record it as excluded rather than disclosed.",
+            "Charge figures in an illustration may include the adviser fee while the report's table excludes it; reconcile the basis before flagging."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Potential Concern: no charges disclosed on an advised investment case.",
+          "ifEvidenceAbsent": "Potential Concern: charge figures asserted with no illustration or factsheet to support them.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G7.2",
+      "requirement": "Initial and ongoing adviser fees, consistent with the client agreement",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "A",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/costsAndCharges/adviserFees[]"
+        ],
+        "queries": [
+          {
+            "id": "Q7.2.1",
+            "text": "our charges initial advice fee percentage of the amount invested in monetary terms",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "initial",
+              "advice fee",
+              "%",
+              "£",
+              "of the amount invested"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.2.2",
+            "text": "ongoing service fee per annum based on the value of your investments",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "ongoing",
+              "per annum",
+              "%",
+              "£",
+              "annual"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.2.3",
+            "text": "client agreement fee tariff initial and ongoing charging structure",
+            "side": "Evidence",
+            "targetCategories": [
+              "A",
+              "H"
+            ],
+            "expectSignals": [
+              "fee",
+              "tariff",
+              "initial",
+              "ongoing",
+              "%",
+              "agreement"
+            ],
+            "canonicalPaths": [
+              "/costsAndCharges/adviserFees[]/matchesClientAgreement"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.2.4",
+            "text": "how the adviser fee will be paid facilitated from the product or paid directly",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "A"
+            ],
+            "expectSignals": [
+              "facilitated",
+              "deducted",
+              "paid by",
+              "directly",
+              "from the plan"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.2.5",
+            "text": "VAT treatment of the advice fee",
+            "side": "Either",
+            "targetCategories": [
+              "A",
+              "I"
+            ],
+            "expectSignals": [
+              "VAT",
+              "plus VAT",
+              "exempt"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Disclosure shortfall"
+        ],
+        "comparison": {
+          "method": "ValueMatch",
+          "tolerance": "Percentages must match the client agreement exactly; monetary amounts must be that percentage of the stated investment.",
+          "falsePositiveGuards": [
+            "Agreements often state a maximum; a lower charged rate is compliant, a higher one is not.",
+            "The monetary fee moves with the transfer value — check the stated basis before treating a difference as an error."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Potential Concern: fees charged with no client agreement on file establishing the basis."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G7.3",
+      "requirement": "Cumulative impact of costs and charges",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "H",
+          "F"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/costsAndCharges/reductionInYield[]"
+        ],
+        "queries": [
+          {
+            "id": "Q7.3.1",
+            "text": "reduction in yield effect of charges over the term critical yield",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "H"
+            ],
+            "expectSignals": [
+              "reduction in yield",
+              "RIY",
+              "critical yield",
+              "%"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.3.2",
+            "text": "projected value at retirement age at low mid and high growth rates",
+            "side": "Either",
+            "targetCategories": [
+              "H",
+              "I",
+              "F"
+            ],
+            "expectSignals": [
+              "projected value",
+              "growth rate",
+              "low",
+              "mid",
+              "high",
+              "at age"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.3.3",
+            "text": "effect of switching on the maturity value decrease over the term",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "H"
+            ],
+            "expectSignals": [
+              "effect of switching",
+              "decrease",
+              "£",
+              "%"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.3.4",
+            "text": "cumulative effect of charges on your investment returns over time",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "cumulative",
+              "over time",
+              "compound",
+              "effect"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Disclosure shortfall"
+        ],
+        "comparison": {
+          "method": "ValueMatch",
+          "falsePositiveGuards": [
+            "Illustration growth rates are prescribed and will differ from cashflow assumptions; that is not an inconsistency by itself.",
+            "Real-terms and nominal projections are not comparable — check which basis each figure uses."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Potential Concern: cumulative impact is explicitly named by this check and is the clearest expression of long-term cost."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G7.4",
+      "requirement": "Cost comparison with alternative options",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "E",
+          "G",
+          "C"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/costsAndCharges/comparison",
+          "/costsAndCharges/comparison/perArrangement",
+          "/costsAndCharges/existing",
+          "/existingArrangements[]/charges"
+        ],
+        "queries": [
+          {
+            "id": "Q7.4.1",
+            "text": "comparison of the annual recurring charge of the existing plan against the recommended alternative",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "existing",
+              "recommended",
+              "difference",
+              "%",
+              "£",
+              "impact"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.4.2",
+            "text": "like for like cost comparison the new plan is cheaper or more expensive than your current plans",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "like for like",
+              "less expensive",
+              "more expensive",
+              "cheaper",
+              "%"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.4.3",
+            "text": "existing plan charges annual management charge policy fee from the provider",
+            "side": "Evidence",
+            "targetCategories": [
+              "E"
+            ],
+            "expectSignals": [
+              "AMC",
+              "annual management charge",
+              "policy fee",
+              "%",
+              "charge"
+            ],
+            "canonicalPaths": [
+              "/costsAndCharges/existing"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.4.4",
+            "text": "cost comparison of alternative providers and products considered in research",
+            "side": "Evidence",
+            "targetCategories": [
+              "G",
+              "C"
+            ],
+            "expectSignals": [
+              "comparison",
+              "cheaper",
+              "cost",
+              "versus",
+              "alternative"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.4.5",
+            "text": "your existing arrangements table provider plan value annual charge percentage",
+            "side": "Either",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "Existing Arrangements",
+              "Provider",
+              "Value",
+              "Charge",
+              "Annual recurring"
+            ],
+            "priority": "Core"
+          }
+        ],
+        "evidenceSections": [
+          "Existing Arrangements"
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing component"
+        ],
+        "comparison": {
+          "method": "ValueMatch",
+          "tolerance": "Each existing-plan charge in the comparison table must match the provider documentation and be arithmetically consistent with the plan's value.",
+          "falsePositiveGuards": [
+            "Recompute: a monetary charge that is not the stated percentage of the stated plan value indicates transposed or erroneous rows.",
+            "Comparisons on different bases (with and without adviser fees) are both legitimate; check which basis each conclusion uses before calling it a contradiction.",
+            "Where the report states the same plan's charge in two of its own tables, the two figures must agree. Do this for every plan that appears in both tables, not only the first one where the figures happen to catch your eye: check each plan's early-table charge against its later-table charge before reaching for any provider document, and a plan whose two figures disagree is an internal contradiction even where another plan's already established one. An internal contradiction makes the whole cost comparison unreliable, which is a different and larger finding than a single wrong figure, and a provider document is the wrong place to look when the report already disagrees with itself."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Potential Concern: existing charges quoted with no provider documentation."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G7.5",
+      "requirement": "Benefit versus cost — fair value",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "G",
+          "H",
+          "B"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/costsAndCharges/valueAssessment",
+          "/existingArrangements[]/performance[]"
+        ],
+        "queries": [
+          {
+            "id": "Q7.5.1",
+            "text": "what you receive in return for these charges benefits of the ongoing service",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "benefit",
+              "in return",
+              "service includes",
+              "you will receive"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.5.2",
+            "text": "the plan would need to outperform by in order to justify the additional cost",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "outperform",
+              "need to grow",
+              "in order to",
+              "%",
+              "£"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.5.3",
+            "text": "past performance of the recommended funds compared with the existing funds",
+            "side": "Either",
+            "targetCategories": [
+              "G",
+              "H",
+              "I"
+            ],
+            "expectSignals": [
+              "performance",
+              "5 years",
+              "cumulative",
+              "%",
+              "annualised"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.5.4",
+            "text": "client income expenditure savings and rate of income tax recorded in the fact find",
+            "side": "Evidence",
+            "targetCategories": [
+              "B"
+            ],
+            "expectSignals": [
+              "income",
+              "savings",
+              "rate of income tax",
+              "expenditure"
+            ],
+            "priority": "Supplementary"
+          },
+          {
+            "id": "Q7.5.5",
+            "text": "cumulative performance of the existing funds over five years annualised return volatility",
+            "side": "Evidence",
+            "targetCategories": [
+              "E",
+              "G"
+            ],
+            "expectSignals": [
+              "cumulative performance",
+              "past performance",
+              "annualised",
+              "volatility",
+              "5 year",
+              "data source"
+            ],
+            "canonicalPaths": [
+              "/existingArrangements[]/performance[]"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Weak justification",
+          "Disclosure shortfall"
+        ],
+        "comparison": {
+          "method": "NarrativeAlignment",
+          "falsePositiveGuards": [
+            "An assertion that required outperformance 'is achievable' is a claim, not an analysis; require supporting performance data before accepting it."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Potential Concern under PRIN 2A.4 where the recommendation increases cost."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "Only a reader can say whether two passages agree.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G7.6",
+      "requirement": "Costs are excessive relative to the benefits provided",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "G",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/costsAndCharges/valueAssessment/requiredOutperformancePercentage",
+          "/costsAndCharges/comparison/differencePercentage"
+        ],
+        "queries": [
+          {
+            "id": "Q7.6.1",
+            "text": "the recommended plan is more expensive than the existing arrangement including our fees",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "more expensive",
+              "additional cost",
+              "%",
+              "including"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.6.2",
+            "text": "initial fee in monetary terms deducted from the transferred funds",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "initial",
+              "£",
+              "deducted",
+              "reducing the investment"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Compliance concern"
+        ],
+        "comparison": {
+          "method": "RangeMatch",
+          "falsePositiveGuards": [
+            "A higher cost is not automatically poor value — test against the stated benefits before concluding."
+          ]
+        },
+        "sufficiency": {
+          "ifBothAbsent": "No finding where the recommendation reduces cost and the comparison is evidenced."
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G7.7",
+      "requirement": "Alternatives provide better cost or benefit to the client",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "G"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/recommendations[]/alternativesConsidered[]/comparativeCost"
+        ],
+        "queries": [
+          {
+            "id": "Q7.7.1",
+            "text": "cheaper alternative available but not recommended reason",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "G"
+            ],
+            "expectSignals": [
+              "cheaper",
+              "lower cost",
+              "less expensive",
+              "not recommend"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.7.2",
+            "text": "cost of leaving the existing plan in place and switching funds internally",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "G",
+              "E"
+            ],
+            "expectSignals": [
+              "internal",
+              "in situ",
+              "leave",
+              "existing",
+              "switch funds"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Missing component"
+        ],
+        "comparison": {
+          "method": "ValueMatch",
+          "falsePositiveGuards": [
+            "A cheaper option rejected for evidenced non-cost reasons (fund range, access, servicing) is a valid outcome."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Assess on the report alone; note that no comparative cost research was available."
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G7.8",
+      "requirement": "Reduction in yield, critical yield and cumulative cost illustrations",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "E",
+          "G",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/costsAndCharges/reductionInYield[]",
+          "/costsAndCharges/reductionInYield[]/riyPercentage",
+          "/costsAndCharges/reductionInYield[]/criticalYieldPercentage",
+          "/costsAndCharges/reductionInYield[]/growthRateBasis"
+        ],
+        "queries": [
+          {
+            "id": "Q7.8.1",
+            "text": "the effect of charges reduces the projected growth rate by each year",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "reduction in yield",
+              "RIY",
+              "effect of charges",
+              "critical yield",
+              "%"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.8.2",
+            "text": "reduction in yield effect of charges and expenses deductions illustration table",
+            "side": "Evidence",
+            "targetCategories": [
+              "E",
+              "G",
+              "H"
+            ],
+            "expectSignals": [
+              "reduction in yield",
+              "effect of",
+              "charges",
+              "deduction",
+              "%"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.8.3",
+            "text": "critical yield required to match the benefits of the existing plan",
+            "side": "Evidence",
+            "targetCategories": [
+              "G",
+              "E"
+            ],
+            "expectSignals": [
+              "critical yield",
+              "required",
+              "match",
+              "%",
+              "growth"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data quality",
+          "Disclosure shortfall"
+        ],
+        "comparison": {
+          "method": "RangeMatch",
+          "falsePositiveGuards": [
+            "Illustration growth rates are prescribed and differ between providers and between illustration dates; compare RIY only at the same growth basis.",
+            "A critical yield quoted to a different retirement age is a different figure, not a contradiction.",
+            "RIY expressed per year and total cost expressed in pounds describe the same thing differently; neither contradicts the other."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Note as a gap where the report claims a cost or value advantage without quoting the yield effect.",
+          "ifEvidenceAbsent": "Potential Concern: a yield figure is asserted with no illustration on file to support it.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G7.9",
+      "requirement": "The service proposition attached to the ongoing adviser charge",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "A",
+          "C"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/ongoingService/servicesIncluded[]",
+          "/ongoingService/annualCostPercentage",
+          "/ongoingService/reviewFrequency",
+          "/costsAndCharges/adviserFees[]/servicesProvidedForFee[]",
+          "/costsAndCharges/adviserFees[]/matchesClientAgreement"
+        ],
+        "queries": [
+          {
+            "id": "Q7.9.1",
+            "text": "for our ongoing service of per year you will receive an annual review",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "ongoing",
+              "annual review",
+              "service",
+              "%",
+              "per year"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.9.2",
+            "text": "client agreement ongoing service level and what is included in it",
+            "side": "Evidence",
+            "targetCategories": [
+              "A"
+            ],
+            "expectSignals": [
+              "ongoing",
+              "service",
+              "review",
+              "included",
+              "agreement"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.9.3",
+            "text": "services provided in return for the ongoing adviser charge",
+            "side": "Evidence",
+            "targetCategories": [
+              "A",
+              "C"
+            ],
+            "expectSignals": [
+              "service",
+              "ongoing charge",
+              "review",
+              "provide",
+              "in return"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Disclosure shortfall"
+        ],
+        "comparison": {
+          "method": "SetCoverage",
+          "falsePositiveGuards": [
+            "A service the client declined is still disclosed. The finding is a charge with no service described, not a service the client opted out of.",
+            "The client agreement and the report may name the same service level differently; compare what is included, not the label.",
+            "An ongoing charge with no ongoing service is a finding even where the client agreement is silent — silence in both places is worse, not better."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Potential Concern where an ongoing charge is levied: the report should say what the client receives for it.",
+          "ifEvidenceAbsent": "Potential Concern: an ongoing service is described with no client agreement on file to support it.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G7.10",
+      "requirement": "Benefits relied upon to justify a higher cost",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "E",
+          "G",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/costsAndCharges/valueAssessment/benefitsStated[]",
+          "/costsAndCharges/valueAssessment/costJustification[]"
+        ],
+        "queries": [
+          {
+            "id": "Q7.10.1",
+            "text": "although the new arrangement costs more it offers additional benefits including",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "although",
+              "more expensive",
+              "higher cost",
+              "benefit",
+              "in return"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.10.2",
+            "text": "features available on the recommended platform fund range flexibility drawdown",
+            "side": "Evidence",
+            "targetCategories": [
+              "G",
+              "H"
+            ],
+            "expectSignals": [
+              "flexibility",
+              "fund range",
+              "drawdown",
+              "online",
+              "feature"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.10.3",
+            "text": "features available on the existing plan retirement options and fund choice",
+            "side": "Evidence",
+            "targetCategories": [
+              "E"
+            ],
+            "expectSignals": [
+              "option",
+              "fund",
+              "available",
+              "feature",
+              "retirement"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Weak justification",
+          "Disclosure shortfall"
+        ],
+        "comparison": {
+          "method": "NarrativeAlignment",
+          "falsePositiveGuards": [
+            "A benefit the existing plan already provides cannot justify the extra cost; check the ceding plan's features before accepting one.",
+            "Consolidation convenience is a real benefit but not a financial one; weigh it as stated rather than as a return.",
+            "A benefit the client will never use — flexible drawdown for someone taking an annuity — does not support the cost."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "No issue on this requirement where the recommendation is not more expensive.",
+          "ifEvidenceAbsent": "Potential Concern: a benefit is claimed to justify cost with nothing in the file evidencing it.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "Only a reader can say whether two passages agree.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G7.11",
+      "requirement": "Higher charges producing lower projected outcomes or an increased yield requirement",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "E",
+          "G",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/costsAndCharges/comparison/direction",
+          "/costsAndCharges/comparison/differencePercentage",
+          "/costsAndCharges/valueAssessment/requiredOutperformancePercentage",
+          "/solution/recommendedPlans[]/projections",
+          "/costsAndCharges/reductionInYield[]/riyPercentage",
+          "/costsAndCharges/reductionInYield[]/criticalYieldPercentage"
+        ],
+        "queries": [
+          {
+            "id": "Q7.11.1",
+            "text": "the recommended arrangement is more expensive than your existing plan",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "more expensive",
+              "higher",
+              "increase",
+              "cost",
+              "than your existing"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.11.2",
+            "text": "projected fund value at retirement for the existing and the recommended plan",
+            "side": "Evidence",
+            "targetCategories": [
+              "E",
+              "G",
+              "H"
+            ],
+            "expectSignals": [
+              "projected",
+              "at age",
+              "value",
+              "growth",
+              "retirement"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q7.11.3",
+            "text": "switching analysis showing the cost of transferring and the growth needed to break even",
+            "side": "Evidence",
+            "targetCategories": [
+              "G"
+            ],
+            "expectSignals": [
+              "break even",
+              "outperform",
+              "required",
+              "growth",
+              "switch"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Data inconsistency"
+        ],
+        "comparison": {
+          "method": "RangeMatch",
+          "falsePositiveGuards": [
+            "A lower projection driven by a lower prescribed growth rate is not evidence of worse value; normalise the growth basis before concluding anything.",
+            "A higher charge buying a materially better fund range or a guarantee may still be justified. The finding is an unexplained increase, not any increase.",
+            "Required outperformance under about 0.5% a year is within the noise of the assumptions; treat it as a note, not a concern."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Assess from the cost comparison itself; the report's silence about being more expensive is itself relevant.",
+          "ifEvidenceAbsent": "Potential Concern: costs increase with no projection or analysis on file showing the effect.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Only a value outside the stated band is a candidate.",
+          "detect": "RangeBreach",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    }
+  ],
+  "decision": {
+    "noIssue": "Evidence complete, consistent and supports the outcome. Every material cost layer is disclosed or explicitly excluded with reasons, adviser fees match the client agreement, cumulative impact and a cost comparison are present and arithmetically sound, and the benefits are set against the cost.",
+    "potentialConcern": "Material clarification or additional evidence required. A cost layer is silently omitted, no aggregated total is given, charge figures do not reconcile with plan values or provider documentation, adviser fees differ from the client agreement, or a cost increase is unexplained.",
+    "notApplicable": "Not applicable — this check applies to all advised investment and pension cases.",
+    "severityHints": [
+      "Highest: a charge figure that is arithmetically impossible against the stated plan value, or fees exceeding the client agreement.",
+      "High: no aggregated all-in cost, or cumulative impact never shown.",
+      "High: the report claims a cost saving that its own comparison table contradicts.",
+      "Moderate: transaction costs excluded with reasons but never estimated.",
+      "Low: rounding differences between the report table and the illustration."
+    ],
+    "overlayInstruction": "Vulnerability overlay: consider whether any actual or potential drivers or characteristics of vulnerability, support needs, communication requirements or reasonable adjustments identified in the evidence materially affect this check's assessment or the conclusions it reaches. Where they do, say so in the finding. A vulnerability recorded in the file that has no bearing on this requirement is not itself a concern here — CHK-010 assesses vulnerability in its own right."
+  }
+}

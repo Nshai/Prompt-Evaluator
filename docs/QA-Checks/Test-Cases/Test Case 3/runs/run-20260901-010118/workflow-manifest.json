@@ -1,0 +1,109 @@
+{
+  "manifestVersion": "1.0",
+  "caseReference": "Test Case 3",
+  "tenantId": 99,
+  "startedAt": "2026-09-01T01:01:18.4790159+01:00",
+  "settingsDigest": "e833e91de22e",
+  "chatModel": "eu.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "embeddingModel": "amazon.titan-embed-text-v2:0",
+  "stages": [
+    {
+      "Stage": "Convert",
+      "Status": "Skipped",
+      "Summary": "Already current for this case; nothing to do.",
+      "ElapsedSeconds": 0,
+      "CompletedAt": "2026-09-01T01:01:18.5576946+01:00",
+      "Detail": null,
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    },
+    {
+      "Stage": "Extract",
+      "Status": "Succeeded",
+      "Summary": "Extracted the canonical model with 3 section(s) unread — a miss on a path under one of them says nothing about the advice.",
+      "ElapsedSeconds": 243.233,
+      "CompletedAt": "2026-09-01T01:05:21.9688594+01:00",
+      "Detail": {
+        "sourceDocuments": "Suitability report 2026.md",
+        "schemaVersion": "1.0",
+        "failedSections": "Cross-references: Reference resolves to nothing: linkedRecommendationIds → REC-001; Cross-references: Reference resolves to nothing: linkedRecommendationIds → REC-002; Cross-references: Reference resolves to nothing: linkedRecommendationIds → REC-003"
+      },
+      "InputTokens": 222517,
+      "OutputTokens": 97142,
+      "UsageReported": true
+    },
+    {
+      "Stage": "Index",
+      "Status": "Succeeded",
+      "Summary": "Indexed 840 passage(s) from 38 document(s).",
+      "ElapsedSeconds": 182.418,
+      "CompletedAt": "2026-09-01T01:04:21.3245473+01:00",
+      "Detail": {
+        "documents": "38",
+        "chunks": "840",
+        "collection": "case_documents",
+        "chunking": "semantic similarity (amazon.titan-embed-text-v2:0), max 600 tokens per chunk, 100 overlap, tables kept whole"
+      },
+      "InputTokens": 369107,
+      "OutputTokens": 0,
+      "UsageReported": true
+    },
+    {
+      "Stage": "Assess",
+      "Status": "Succeeded",
+      "Summary": "Assessed 10 check(s): 10 raised a concern.",
+      "ElapsedSeconds": 404.85,
+      "CompletedAt": "2026-09-01T01:12:07.4209193+01:00",
+      "Detail": {
+        "runId": "20260901-010118-Test-Case-3",
+        "checks": "10",
+        "concerns": "10",
+        "errors": "0"
+      },
+      "InputTokens": 2863446,
+      "OutputTokens": 233461,
+      "UsageReported": true
+    },
+    {
+      "Stage": "Report",
+      "Status": "Succeeded",
+      "Summary": "Wrote 2 artefact(s) to C:\\Work\\IQ-Assessment\\Ai-Prompt-Evaluator\\docs\\QA-Checks\\Test-Cases\\Test Case 3\\runs\\run-20260901-010118.",
+      "ElapsedSeconds": 0.127,
+      "CompletedAt": "2026-09-01T01:12:07.5489454+01:00",
+      "Detail": {
+        "report": "C:\\Work\\IQ-Assessment\\Ai-Prompt-Evaluator\\docs\\QA-Checks\\Test-Cases\\Test Case 3\\runs\\run-20260901-010118\\compliance-report.html",
+        "model": "C:\\Work\\IQ-Assessment\\Ai-Prompt-Evaluator\\docs\\QA-Checks\\Test-Cases\\Test Case 3\\runs\\run-20260901-010118\\canonical-model.json"
+      },
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    },
+    {
+      "Stage": "Score",
+      "Status": "Succeeded",
+      "Summary": "83 of 83 benchmark row(s) have a candidate to adjudicate.",
+      "ElapsedSeconds": 0.04,
+      "CompletedAt": "2026-09-01T01:12:07.5948882+01:00",
+      "Detail": {
+        "benchmark": "expected-results.md",
+        "expectations": "83",
+        "withCandidates": "83",
+        "checkDidNotRun": "0",
+        "worksheet": "C:\\Work\\IQ-Assessment\\Ai-Prompt-Evaluator\\docs\\QA-Checks\\Test-Cases\\Test Case 3\\runs\\run-20260901-010118\\benchmark-score.md"
+      },
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    }
+  ],
+  "Satisfied": [
+    "Convert",
+    "Extract",
+    "Index",
+    "Assess",
+    "Report",
+    "Score"
+  ],
+  "Succeeded": true
+}

@@ -1,0 +1,822 @@
+{
+  "planVersion": "1.0",
+  "checkId": "CHK-004",
+  "checkName": "Knowledge, Experience and Product Complexity",
+  "primaryCategories": [
+    "B",
+    "C",
+    "D",
+    "G",
+    "H",
+    "I"
+  ],
+  "triggerProbe": {
+    "triggerField": "checkTriggers.isAdvisedCase",
+    "applicability": [
+      {
+        "advisedCase": [
+          "true"
+        ],
+        "canonicalPaths": [
+          "/checkTriggers/isAdvisedCase"
+        ]
+      }
+    ],
+    "queries": [
+      {
+        "id": "T4.1",
+        "text": "knowledge and experience of investments and pensions",
+        "side": "Either",
+        "targetCategories": [
+          "I",
+          "B",
+          "D"
+        ],
+        "expectSignals": [
+          "knowledge",
+          "experience",
+          "familiar",
+          "understanding"
+        ],
+        "priority": "Core"
+      }
+    ],
+    "absentWhen": "The case is not an advised one.",
+    "onAbsent": "Continue"
+  },
+  "queryGroups": [
+    {
+      "groupId": "G4.1",
+      "requirement": "Client's stated product and investment knowledge level",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "C",
+          "D"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/knowledgeAndExperience/perClient[]/statedLevel"
+        ],
+        "queries": [
+          {
+            "id": "Q4.1.1",
+            "text": "you confirmed you are comfortable with how investments work and understand the risks and rewards",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "comfortable",
+              "understanding",
+              "reasonable",
+              "limited",
+              "experience"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.1.2",
+            "text": "investment knowledge level none limited good extensive recorded on the fact find",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "D"
+            ],
+            "expectSignals": [
+              "knowledge",
+              "None",
+              "Limited",
+              "Good",
+              "Extensive",
+              "level"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.1.3",
+            "text": "how would you describe your understanding of investing no understanding knowledge questionnaire response",
+            "side": "Evidence",
+            "targetCategories": [
+              "D",
+              "C"
+            ],
+            "expectSignals": [
+              "No understanding / knowledge",
+              "how would you describe yourself",
+              "understanding",
+              "experience"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.1.4",
+            "text": "compared to other people I would describe myself as I associate the phrase investment risk with the idea of when investing money to meet my objectives I would prefer to use",
+            "side": "Evidence",
+            "targetCategories": [
+              "D"
+            ],
+            "expectSignals": [
+              "Compared to other people",
+              "More cautious",
+              "Caution",
+              "Low risk investments",
+              "no understanding of investments"
+            ],
+            "priority": "Core"
+          }
+        ],
+        "evidenceSections": [
+          "No understanding / knowledge"
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Data inconsistency",
+          "Missing evidence"
+        ],
+        "comparison": {
+          "method": "ValueMatch",
+          "falsePositiveGuards": [
+            "A report describing the client as comfortable while the fact find records 'limited' knowledge is a real mismatch — but check whether the fact find predates an explanation given at the meeting.",
+            "Self-assessed comfort is not the same as assessed knowledge; treat them as distinct data points.",
+            "The questionnaire's own wording is the evidence. \"No understanding / knowledge\" recorded against a direct question is an assessed answer, not a self-deprecating aside, and a report describing the same client as comfortable contradicts it outright."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Note as a gap; the report should state the knowledge level it relied on.",
+          "ifEvidenceAbsent": "Potential Concern: knowledge level asserted with no assessment on file.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "A projected figure compared against a current one is not a discrepancy.",
+          "detect": "ValueDivergence",
+          "asAtToleranceDays": 90,
+          "emitOnePerPath": false,
+          "modality": "CurrentOnly"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "A figure driving the recommendation that contradicts the evidence is the Critical case.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G4.2",
+      "requirement": "Previous investment and pension experience",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "D",
+          "E"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/knowledgeAndExperience/perClient[]/productExperience[]"
+        ],
+        "queries": [
+          {
+            "id": "Q4.2.1",
+            "text": "you have previously held cash savings ISAs stocks and shares investments workplace pensions",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "previously",
+              "have held",
+              "have not",
+              "taken out"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.2.2",
+            "text": "products held previously investment experience years held type of product",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "D"
+            ],
+            "expectSignals": [
+              "held",
+              "experience",
+              "years",
+              "previously",
+              "type"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.2.3",
+            "text": "list of existing plans and policies held by the client",
+            "side": "Evidence",
+            "targetCategories": [
+              "E",
+              "B"
+            ],
+            "expectSignals": [
+              "plan",
+              "policy",
+              "provider",
+              "scheme"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.2.4",
+            "text": "do you understand how stocks and shares unit trusts and pension planning and income in retirement work",
+            "side": "Evidence",
+            "targetCategories": [
+              "D"
+            ],
+            "expectSignals": [
+              "stocks and shares",
+              "Unit Trusts",
+              "pension planning",
+              "income in retirement",
+              "Enterprise Investment",
+              "Venture Capital"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Missing evidence",
+          "Data inconsistency"
+        ],
+        "comparison": {
+          "method": "SetCoverage",
+          "falsePositiveGuards": [
+            "Holding a workplace pension is passive experience; a report distinguishing it from self-directed investing is being accurate, not inconsistent.",
+            "Plans held do not prove understanding — do not treat plan ownership as evidence of knowledge.",
+            "The investor-experience questionnaire asks separately about shares, unit trusts, tax-advantaged schemes and pensions. A client recorded as having no understanding of pension planning is the material answer where the recommendation is a pension, whatever the other rows say."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Potential Concern where the recommendation relies on prior experience to justify complexity."
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G4.3",
+      "requirement": "Complexity of recommended products and investments, including risks and features",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "G",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/knowledgeAndExperience/recommendedProductComplexity[]",
+          "/solution/recommendedPlans[]"
+        ],
+        "queries": [
+          {
+            "id": "Q4.3.1",
+            "text": "features of the recommended product how it works aims and risks",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "H"
+            ],
+            "expectSignals": [
+              "features",
+              "how it works",
+              "aims",
+              "risks",
+              "benefits"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.3.2",
+            "text": "key features document risk indicator complexity warning this is a complex product",
+            "side": "Evidence",
+            "targetCategories": [
+              "H"
+            ],
+            "expectSignals": [
+              "Key Features",
+              "KIID",
+              "risk indicator",
+              "complex",
+              "SRRI"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.3.3",
+            "text": "structured product with profits guarantee smoothed fund derivative unregulated investment",
+            "side": "Either",
+            "targetCategories": [
+              "H",
+              "G",
+              "I"
+            ],
+            "expectSignals": [
+              "structured",
+              "with profits",
+              "guarantee",
+              "derivative",
+              "unregulated",
+              "VCT",
+              "EIS"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.3.4",
+            "text": "flexi access drawdown how income is taken and the risks of drawing down capital",
+            "side": "Either",
+            "targetCategories": [
+              "I",
+              "H"
+            ],
+            "expectSignals": [
+              "drawdown",
+              "flexi-access",
+              "UFPLS",
+              "income",
+              "capital erosion"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Missing component",
+          "Disclosure shortfall"
+        ],
+        "comparison": {
+          "method": "PresenceOnly",
+          "falsePositiveGuards": [
+            "A mainstream personal pension in multi-asset funds is not complex; do not escalate on product volume or value alone."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Potential Concern where a complex product is recommended and no product literature is on file."
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Moderate",
+          "note": "Established by lookup. An absence is not a demonstrated contradiction, so it is held below the severities reserved for one.",
+          "requiresCitation": false,
+          "mode": "Deterministic"
+        }
+      }
+    },
+    {
+      "groupId": "G4.4",
+      "requirement": "Recommended product is too complex for the stated level of knowledge, or the knowledge level has been misinterpreted",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "C",
+          "D",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/knowledgeAndExperience/recommendedProductComplexity[]/complexity",
+          "/knowledgeAndExperience/perClient[]/statedLevel"
+        ],
+        "queries": [
+          {
+            "id": "Q4.4.1",
+            "text": "the client understands the features and risks of the recommended product",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "you understand",
+              "you are aware",
+              "explained",
+              "confirmed"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.4.2",
+            "text": "explanation given to the client about how the product works and what was said in response",
+            "side": "Evidence",
+            "targetCategories": [
+              "C",
+              "D",
+              "H"
+            ],
+            "expectSignals": [
+              "explained",
+              "client asked",
+              "responded",
+              "confirmed",
+              "discussed"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.4.3",
+            "text": "investor type description you have some experience in investments and a degree of understanding of financial matters",
+            "side": "Either",
+            "targetCategories": [
+              "D",
+              "I"
+            ],
+            "expectSignals": [
+              "some experience in investments",
+              "degree of understanding",
+              "Balanced",
+              "as a",
+              "investor"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Compliance concern"
+        ],
+        "comparison": {
+          "method": "NarrativeAlignment",
+          "falsePositiveGuards": [
+            "'You confirmed you understand' is an assertion by the adviser, not evidence of understanding; require a category C record for corroboration.",
+            "A risk-profile description carries preconditions about the client's experience. Where the report reproduces one whose preconditions the file contradicts, the description is being used as evidence of knowledge it does not establish — which is in scope here even though risk profiling itself belongs to CHK-003."
+          ]
+        },
+        "sufficiency": {
+          "ifBothAbsent": "Potential Concern only where G4.3 identified a complex product."
+        },
+        "reconciliation": {
+          "note": "Prose has no value to diverge. Comparing narrative fields as values manufactures findings; this group reaches adjudication on presence alone.",
+          "detect": "None",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G4.5",
+      "requirement": "Evidence that the client can evaluate the risks and features of a complex product, based on their questions and comprehension",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "C"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/knowledgeAndExperience/perClient[]/understandingEvidence[]"
+        ],
+        "queries": [
+          {
+            "id": "Q4.5.1",
+            "text": "questions the client asked during the meeting and the answers given",
+            "side": "Evidence",
+            "targetCategories": [
+              "C"
+            ],
+            "expectSignals": [
+              "asked",
+              "question",
+              "queried",
+              "wanted to know"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.5.2",
+            "text": "meeting notes client understood the explanation and had no further questions",
+            "side": "Evidence",
+            "targetCategories": [
+              "C"
+            ],
+            "expectSignals": [
+              "understood",
+              "no further questions",
+              "happy",
+              "confirmed"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.5.3",
+            "text": "additional explanation or further information provided to help the client understand",
+            "side": "Either",
+            "targetCategories": [
+              "C",
+              "I"
+            ],
+            "expectSignals": [
+              "further",
+              "additional",
+              "clarif",
+              "in more detail"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Missing evidence",
+          "Weak justification"
+        ],
+        "comparison": {
+          "method": "PresenceOnly",
+          "falsePositiveGuards": [
+            "An absence of recorded questions is not proof the client did not understand — report it as an evidence gap, weighted by product complexity."
+          ]
+        },
+        "sufficiency": {
+          "ifEvidenceAbsent": "Potential Concern where the product is complex or the stated knowledge level is None or Limited."
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G4.6",
+      "requirement": "Existing holdings evidencing investment and pension experience",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "B",
+          "E"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/knowledgeAndExperience/perClient[]/productExperience[]",
+          "/existingArrangements[]/planType",
+          "/existingArrangements[]/holdings[]"
+        ],
+        "queries": [
+          {
+            "id": "Q4.6.1",
+            "text": "you have previously held investments and pensions of this type",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "previously",
+              "held",
+              "experience",
+              "existing",
+              "familiar"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.6.2",
+            "text": "existing plan provider policy number current value and fund holdings",
+            "side": "Evidence",
+            "targetCategories": [
+              "E",
+              "B"
+            ],
+            "expectSignals": [
+              "provider",
+              "policy",
+              "value",
+              "fund",
+              "holding"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.6.3",
+            "text": "products currently held by the client ISA pension investment bond",
+            "side": "Evidence",
+            "targetCategories": [
+              "B",
+              "E"
+            ],
+            "expectSignals": [
+              "ISA",
+              "pension",
+              "investment",
+              "bond",
+              "held"
+            ],
+            "priority": "Supplementary"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Consistency",
+        "issueCategories": [
+          "Missing evidence",
+          "Data inconsistency"
+        ],
+        "comparison": {
+          "method": "SetCoverage",
+          "falsePositiveGuards": [
+            "A workplace pension the client was auto-enrolled into evidences ownership, not investment experience; do not count it as either without something more.",
+            "Holding a product is not the same as understanding it. Holdings corroborate experience; they are not proof of knowledge.",
+            "An arrangement inherited or set up by a previous adviser says little about the client's own experience."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "No issue on this requirement where the report makes no claim about prior experience.",
+          "ifEvidenceAbsent": "Potential Concern: prior experience asserted with no holdings or history in the file to support it.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "One candidate per path. Sixteen missing allocation rows are one observation, not sixteen findings.",
+          "detect": "SetDifference",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "High",
+          "note": "The gap is code; whether the missing member matters is not.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    },
+    {
+      "groupId": "G4.7",
+      "requirement": "Adequacy of the rationale supporting a complex recommendation",
+      "declares": {
+        "assertionCategories": [
+          "I"
+        ],
+        "evidenceCategories": [
+          "C",
+          "G",
+          "H"
+        ]
+      },
+      "retrieval": {
+        "canonicalPaths": [
+          "/knowledgeAndExperience/recommendedProductComplexity[]/complexity",
+          "/knowledgeAndExperience/recommendedProductComplexity[]/complexityDrivers[]",
+          "/recommendations[]/rationale[]"
+        ],
+        "queries": [
+          {
+            "id": "Q4.7.1",
+            "text": "I have explained why this product is appropriate for you despite its features",
+            "side": "Assertion",
+            "targetCategories": [
+              "I"
+            ],
+            "expectSignals": [
+              "explained",
+              "because",
+              "rationale",
+              "appropriate",
+              "suitable for you"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.7.2",
+            "text": "meeting note recording the explanation given to the client about how the product works",
+            "side": "Evidence",
+            "targetCategories": [
+              "C"
+            ],
+            "expectSignals": [
+              "explained",
+              "discussed",
+              "understood",
+              "note",
+              "question"
+            ],
+            "priority": "Core"
+          },
+          {
+            "id": "Q4.7.3",
+            "text": "key features document describing unusual or complex features of the product",
+            "side": "Evidence",
+            "targetCategories": [
+              "H",
+              "G"
+            ],
+            "expectSignals": [
+              "key features",
+              "complex",
+              "structured",
+              "guarantee",
+              "feature"
+            ],
+            "priority": "Core"
+          }
+        ]
+      },
+      "verification": {
+        "limb": "Appropriateness",
+        "issueCategories": [
+          "Weak justification",
+          "Missing component"
+        ],
+        "comparison": {
+          "method": "PresenceOnly",
+          "falsePositiveGuards": [
+            "Complexity is a property of the product, not of the amount invested; a small holding in a complex product still needs a rationale.",
+            "Absence of a rationale where the recommended product is simple is not a finding.",
+            "A rationale written for the adviser's file rather than the client still counts as evidence, but does not satisfy the report's own duty to explain."
+          ]
+        },
+        "sufficiency": {
+          "ifAssertionAbsent": "Potential Concern where the recommended product is complex: no explanation was given for recommending it.",
+          "ifEvidenceAbsent": "Note as a gap; the explanation is asserted but not corroborated by a meeting record.",
+          "ifBothAbsent": "No issue where the product is not complex.",
+          "minEvidenceCategories": 1
+        },
+        "reconciliation": {
+          "note": "Absence is a property of the path, not of each element under it.",
+          "detect": "Absence",
+          "emitOnePerPath": true,
+          "modality": "AnyModality"
+        },
+        "adjudication": {
+          "severityCeiling": "Critical",
+          "note": "Appropriateness is a judgement about suitability; code can establish the facts but not the verdict.",
+          "requiresCitation": true,
+          "mode": "Model"
+        }
+      }
+    }
+  ],
+  "decision": {
+    "noIssue": "Evidence complete, consistent and supports the outcome. Knowledge level and experience in the report match the fact find and risk assessment, the recommended product's complexity is proportionate to that level, and comprehension is corroborated in category C where the product is complex.",
+    "potentialConcern": "Material clarification or additional evidence required. The report overstates the client's knowledge relative to the file, recommends a complex product to a client recorded as having limited knowledge, or offers no evidence of comprehension where the product warrants it.",
+    "notApplicable": "Not applicable — this check applies to all advised cases.",
+    "severityHints": [
+      "Highest: complex product recommended to a client the file records as having no or limited relevant knowledge.",
+      "High: the report's description of the client's knowledge contradicts the fact find.",
+      "Moderate: no record of client questions or explanations where the product has unusual features.",
+      "Low: knowledge level stated in the report but not graded in the file."
+    ],
+    "overlayInstruction": "Vulnerability overlay: consider whether any actual or potential drivers or characteristics of vulnerability, support needs, communication requirements or reasonable adjustments identified in the evidence materially affect this check's assessment or the conclusions it reaches. Where they do, say so in the finding. A vulnerability recorded in the file that has no bearing on this requirement is not itself a concern here — CHK-010 assesses vulnerability in its own right. Exclude attitude to risk, capacity for loss, risk profiling, risk-rating overrides, transfer analysis, critical yield, charges and switching suitability, unless the report relies on one of them directly to evidence the client's knowledge, experience or understanding."
+  }
+}

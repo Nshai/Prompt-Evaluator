@@ -1,0 +1,56 @@
+{
+  "manifestVersion": "1.0",
+  "caseReference": "Test-Case 1",
+  "tenantId": 99,
+  "startedAt": "2026-08-31T23:14:52.8152923+01:00",
+  "settingsDigest": "6171cb0e3e4b",
+  "chatModel": "anthropic.claude-haiku-4-5",
+  "embeddingModel": "amazon.titan-embed-text-v2:0",
+  "stages": [
+    {
+      "Stage": "Convert",
+      "Status": "Skipped",
+      "Summary": "Already current for this case; nothing to do.",
+      "ElapsedSeconds": 0,
+      "CompletedAt": "2026-08-31T23:14:53.308768+01:00",
+      "Detail": null,
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    },
+    {
+      "Stage": "Extract",
+      "Status": "Failed",
+      "Summary": "Extract failed unexpectedly: Every extraction pass failed. First error: HTTP 400 (invalid_request_error: validation_error)\r\n\r\nThe model 'anthropic.claude-haiku-4-5' does not support the '/v1/chat/completions' API",
+      "ElapsedSeconds": 2.189,
+      "CompletedAt": "2026-08-31T23:14:55.4968197+01:00",
+      "Detail": {
+        "exception": "InvalidOperationException"
+      },
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    },
+    {
+      "Stage": "Index",
+      "Status": "Succeeded",
+      "Summary": "Indexed 677 passage(s) from 29 document(s).",
+      "ElapsedSeconds": 138.059,
+      "CompletedAt": "2026-08-31T23:17:11.6405021+01:00",
+      "Detail": {
+        "documents": "29",
+        "chunks": "677",
+        "collection": "case_documents",
+        "chunking": "semantic similarity (amazon.titan-embed-text-v2:0), max 600 tokens per chunk, 100 overlap, tables kept whole"
+      },
+      "InputTokens": 373304,
+      "OutputTokens": 0,
+      "UsageReported": true
+    }
+  ],
+  "Satisfied": [
+    "Convert",
+    "Index"
+  ],
+  "Succeeded": false
+}

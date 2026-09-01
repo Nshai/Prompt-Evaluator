@@ -1,0 +1,31 @@
+Model: intelliflo-claude-haiku-4-5
+Total: £0.7159 for 371,354 tokens
+
+Extracting the canonical model for case Test-Case-2 (tenant 99)
+Schema: C:\work\Prompt-Evaluator-Semantic\src\AiPromptEvaluator\bin\Debug\net8.0-windows\canonical-suitability-model.schema.json
+Store:  C:\Users\nshaikh\AppData\Local\AiPromptEvaluator\canonical-models.db
+Report: Suitability Report - Barnes.md
+------------------------------------------------------------------------
+Logging extraction to C:\logs\apipromptevaluator\extract_Test-Case-2_20260828_154933.log
+Response cache bypassed — every section carries a run marker, so nothing can be replayed from an earlier extraction. Expect the full input cost.
+[ 1/12] Case and parties                     10,172 chars (23.1s)
+[ 2/12] Financial position                   26,272 chars (52.3s)
+[ 3/12] Objectives                           4,335 chars (52.3s)
+[ 4/12] Risk, knowledge and vulnerability    10,197 chars — The first reply was not valid JSON; the pass was retried once and the retry parsed. Both attempts are counted in the cost. (59.1s)
+[ 5/12] Existing arrangements                12,807 chars (59.1s)
+[ 6/12] Needs analysis and research          27,518 chars (59.1s)
+[ 7/12] Solution                             16,785 chars (59.1s)
+[ 8/12] Replacement analysis                 30,746 chars (59.1s)
+[ 9/12] Disclosures                          18,098 chars (59.1s)
+[10/12] Recommendations                      34,418 chars (63.4s)
+[11/12] Costs and charges                    23,623 chars (63.4s)
+[12/12] Triggers and extraction report       4,597 chars (14.7s)
+------------------------------------------------------------------------
+Stored 325,372 characters of canonical model for case Test-Case-2 in 212.7s.
+Sections populated: modelVersion, source, case, parties, clientAuthority, financialPosition, objectives, riskAssessment, knowledgeAndExperience, vulnerability, existingArrangements, needsAnalysis, research, solution, replacementAnalysis, riskWarningsAndDisadvantages, taxTreatment, ongoingService, recommendations, costsAndCharges, checkTriggers, extractionReport
+
+2 value(s) are outside the documented vocabulary and were left as written:
+  modality: "Inferred" is not in the documented vocabulary
+  modality: "Derived" is not in the documented vocabulary
+Nothing was discarded. A check matching one of these fields by value will not see them, so either the report uses a word the model does not have or the extraction invented one.
+

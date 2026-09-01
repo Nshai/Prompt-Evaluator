@@ -1,0 +1,108 @@
+{
+  "manifestVersion": "1.0",
+  "caseReference": "Test Case 2",
+  "tenantId": 99,
+  "startedAt": "2026-09-01T00:43:33.6350376+01:00",
+  "settingsDigest": "e833e91de22e",
+  "chatModel": "eu.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "embeddingModel": "amazon.titan-embed-text-v2:0",
+  "stages": [
+    {
+      "Stage": "Convert",
+      "Status": "Skipped",
+      "Summary": "Already current for this case; nothing to do.",
+      "ElapsedSeconds": 0,
+      "CompletedAt": "2026-09-01T00:43:33.7677602+01:00",
+      "Detail": null,
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    },
+    {
+      "Stage": "Extract",
+      "Status": "Succeeded",
+      "Summary": "Extracted the canonical model from 1 document(s).",
+      "ElapsedSeconds": 271.746,
+      "CompletedAt": "2026-09-01T00:48:05.6210216+01:00",
+      "Detail": {
+        "sourceDocuments": "Suitability Report - Barnes.md",
+        "schemaVersion": "1.0"
+      },
+      "InputTokens": 287525,
+      "OutputTokens": 93677,
+      "UsageReported": true
+    },
+    {
+      "Stage": "Index",
+      "Status": "Succeeded",
+      "Summary": "Indexed 787 passage(s) from 39 document(s).",
+      "ElapsedSeconds": 154.764,
+      "CompletedAt": "2026-09-01T00:46:08.8488492+01:00",
+      "Detail": {
+        "documents": "39",
+        "chunks": "787",
+        "collection": "case_documents",
+        "chunking": "semantic similarity (amazon.titan-embed-text-v2:0), max 600 tokens per chunk, 100 overlap, tables kept whole"
+      },
+      "InputTokens": 394227,
+      "OutputTokens": 0,
+      "UsageReported": true
+    },
+    {
+      "Stage": "Assess",
+      "Status": "Succeeded",
+      "Summary": "Assessed 10 check(s): 10 raised a concern.",
+      "ElapsedSeconds": 325.887,
+      "CompletedAt": "2026-09-01T00:53:32.129398+01:00",
+      "Detail": {
+        "runId": "20260901-004333-Test-Case-2",
+        "checks": "10",
+        "concerns": "10",
+        "errors": "0"
+      },
+      "InputTokens": 2887244,
+      "OutputTokens": 203460,
+      "UsageReported": true
+    },
+    {
+      "Stage": "Report",
+      "Status": "Succeeded",
+      "Summary": "Wrote 2 artefact(s) to C:\\Work\\IQ-Assessment\\Ai-Prompt-Evaluator\\docs\\QA-Checks\\Test-Cases\\Test Case 2\\runs\\run-20260901-004333.",
+      "ElapsedSeconds": 0.117,
+      "CompletedAt": "2026-09-01T00:53:32.2540429+01:00",
+      "Detail": {
+        "report": "C:\\Work\\IQ-Assessment\\Ai-Prompt-Evaluator\\docs\\QA-Checks\\Test-Cases\\Test Case 2\\runs\\run-20260901-004333\\compliance-report.html",
+        "model": "C:\\Work\\IQ-Assessment\\Ai-Prompt-Evaluator\\docs\\QA-Checks\\Test-Cases\\Test Case 2\\runs\\run-20260901-004333\\canonical-model.json"
+      },
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    },
+    {
+      "Stage": "Score",
+      "Status": "Succeeded",
+      "Summary": "75 of 75 benchmark row(s) have a candidate to adjudicate.",
+      "ElapsedSeconds": 0.036,
+      "CompletedAt": "2026-09-01T00:53:32.2852706+01:00",
+      "Detail": {
+        "benchmark": "expected-results.md",
+        "expectations": "75",
+        "withCandidates": "75",
+        "checkDidNotRun": "0",
+        "worksheet": "C:\\Work\\IQ-Assessment\\Ai-Prompt-Evaluator\\docs\\QA-Checks\\Test-Cases\\Test Case 2\\runs\\run-20260901-004333\\benchmark-score.md"
+      },
+      "InputTokens": 0,
+      "OutputTokens": 0,
+      "UsageReported": false
+    }
+  ],
+  "Satisfied": [
+    "Convert",
+    "Extract",
+    "Index",
+    "Assess",
+    "Report",
+    "Score"
+  ],
+  "Succeeded": true
+}

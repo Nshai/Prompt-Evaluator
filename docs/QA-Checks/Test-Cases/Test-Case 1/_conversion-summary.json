@@ -1,0 +1,256 @@
+﻿{
+  "converted": [
+    {
+      "source": "A/IMPORT_2.PDF",
+      "category": "A",
+      "characters": 21053,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "A/TFAS Wealth Client Agreement Privacy.pdf",
+      "category": "A",
+      "characters": 31262,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "B/Fact Find (Test 1).pdf",
+      "category": "B",
+      "characters": 41320,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "C/File notes notes - updated.docx",
+      "category": "C",
+      "characters": 4916,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "D/Risk profile report.docx",
+      "category": "D",
+      "characters": 16668,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/Aviva Policy Info.pdf",
+      "category": "E",
+      "characters": 43916,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/People's Pension Fund FactSheet.pdf",
+      "category": "E",
+      "characters": 4919,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/Peoples Pension Policy Info.pdf",
+      "category": "E",
+      "characters": 96432,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/Scottish Widows Policy Info.pdf",
+      "category": "E",
+      "characters": 37140,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/Standard Life Policy illustration.pdf",
+      "category": "E",
+      "characters": 6825,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/Standard_Life_Policy Value.pdf",
+      "category": "E",
+      "characters": 1716,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/Standard_Life_Policy_Info.pdf",
+      "category": "E",
+      "characters": 16978,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/SW Charges Info 2.pdf",
+      "category": "E",
+      "characters": 3898,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/SW Further Info 4.pdf",
+      "category": "E",
+      "characters": 6063,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/SW Illustration 3.pdf",
+      "category": "E",
+      "characters": 14892,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/SW MT Plan Schedule.pdf",
+      "category": "E",
+      "characters": 13860,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "E/Zurich Policy Info.pdf",
+      "category": "E",
+      "characters": 167398,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "F/intelliflo planning Baseline scenario.pdf",
+      "category": "F",
+      "characters": 29477,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "F/intelliflo planning proposed scenario.pdf",
+      "category": "F",
+      "characters": 28888,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "G/Pension switch report - updated.docx",
+      "category": "G",
+      "characters": 46570,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "G/SIPP research report.docx",
+      "category": "G",
+      "characters": 39930,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "G/Test Case 1 - Policy Research -2025.xlsx",
+      "category": "G",
+      "characters": 43649,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "H/Fund Factsheet (1).pdf",
+      "category": "H",
+      "characters": 30124,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "H/Illustration - new.pdf",
+      "category": "H",
+      "characters": 17987,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "H/Key Features (1).pdf",
+      "category": "H",
+      "characters": 50575,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "H/KIIDs (1).pdf",
+      "category": "H",
+      "characters": 24700,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "H/Terms and conditions (1).pdf",
+      "category": "H",
+      "characters": 158449,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    },
+    {
+      "source": "I/Suitability Report Test 1.pdf",
+      "category": "I",
+      "characters": 67524,
+      "recoveredTables": 0,
+      "converter": "docling-serve",
+      "transcribedPictures": 0,
+      "narratedTables": 0
+    }
+  ]
+}

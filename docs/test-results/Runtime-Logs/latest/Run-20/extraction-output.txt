@@ -1,0 +1,69 @@
+Model: intelliflo-claude-haiku-4-5
+
+Total: £0.6800 for 324,888 tokens
+
+ 
+
+Extracting the canonical model for case ABC-99 (tenant 99)
+
+Schema: C:\work\Prompt-Evaluator-Semantic\src\AiPromptEvaluator\bin\Debug\net8.0-windows\canonical-suitability-model.schema.json
+
+Store:  C:\Users\nshaikh\AppData\Local\AiPromptEvaluator\canonical-models.db
+
+Report: Suitability Report Test 1.md
+
+------------------------------------------------------------------------
+
+Logging extraction to C:\logs\apipromptevaluator\extract_ABC-99_20260828_113442.log
+
+Response cache bypassed — every section carries a run marker, so nothing can be replayed from an earlier extraction. Expect the full input cost.
+
+[ 1/12] Case and parties                     9,213 chars (22.9s)
+
+[ 2/12] Financial position                   17,439 chars (32.9s)
+
+[ 3/12] Objectives                           2,940 chars (32.9s)
+
+[ 4/12] Risk, knowledge and vulnerability    11,907 chars (66.5s)
+
+[ 5/12] Existing arrangements                23,138 chars (66.5s)
+
+[ 6/12] Needs analysis and research          34,020 chars (66.5s)
+
+[ 7/12] Solution                             22,574 chars (66.5s)
+
+[ 8/12] Replacement analysis                 31,302 chars (66.5s)
+
+[ 9/12] Disclosures                          23,281 chars (66.5s)
+
+[10/12] Recommendations                      17,675 chars (64.6s)
+
+[11/12] Costs and charges                    30,409 chars (64.6s)
+
+[12/12] Triggers and extraction report       7,810 chars (23.0s)
+
+------------------------------------------------------------------------
+
+Stored 348,781 characters of canonical model for case ABC-99 in 210.2s.
+
+Sections populated: modelVersion, source, case, parties, clientAuthority, financialPosition, objectives, riskAssessment, knowledgeAndExperience, vulnerability, existingArrangements, needsAnalysis, research, solution, replacementAnalysis, riskWarningsAndDisadvantages, taxTreatment, ongoingService, recommendations, costsAndCharges, checkTriggers, extractionReport
+
+ 
+
+2 value(s) are outside the documented vocabulary and were left as written:
+
+  modality: "Inferred" is not in the documented vocabulary
+
+  feeChargingType: "PercentOfAum" is not in the documented vocabulary
+
+Nothing was discarded. A check matching one of these fields by value will not see them, so either the report uses a word the model does not have or the extraction invented one.
+
+ 
+
+1 check trigger(s) were settled from the model:
+
+  checkTriggers.hasComplexProduct settled to true (was false) because "Aviva Personal Pension Platform with Flexi Access Drawdown" is Complex
+
+ 
+
+ 

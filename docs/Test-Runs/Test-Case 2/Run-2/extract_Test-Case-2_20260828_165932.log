@@ -1,0 +1,16 @@
+﻿Case: Test-Case-2
+Run started: 2026-08-28 16:59:32 +01:00
+
+----------------------------------------------------------------------------------------------------
+[RUN CONFIGURATION]
+Chat intelliflo-claude-sonnet-4-6 · temperature default, top-p default, seed not pinned · findings schema-constrained
+Embeddings amazon.titan-embed-text-v2:0 · top 8/search, 24/group (reserving 1/section, 1/category) · extraction cap 32,000 tok · plans 0@09cf0a31b103 · model none (schema v-)
+----------------------------------------------------------------------------------------------------
+
+====================================================================================================
+Run ended without completing  (2026-08-28 16:59:39)
+====================================================================================================
+Cancelled after 0 of 12 extraction passes.
+
+Nothing was stored. The sections above completed but the model they would have formed was never assembled, so this log records work done and not a result.
+

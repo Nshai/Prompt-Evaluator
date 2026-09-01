@@ -4,6 +4,7 @@ partial class ConfigurationForm
 {
     private System.ComponentModel.IContainer components = null;
 
+    private Panel scrollPanel;
     private TableLayoutPanel rootLayout;
     private GroupBox connectionGroup;
     private TableLayoutPanel connectionLayout;
@@ -23,14 +24,130 @@ partial class ConfigurationForm
     private TextBox availableModelsTextBox;
     private Label selectedModelLabel;
     private ComboBox selectedModelComboBox;
+    private Button chatTestButton;
+    private Button embeddingTestButton;
+    private Label embeddingProviderLabel;
+    private ComboBox embeddingProviderComboBox;
+    private Label chatProviderLabel;
+    private ComboBox chatProviderComboBox;
+    private Label embeddingModelLabel;
+    private TextBox embeddingModelTextBox;
+    private FlowLayoutPanel modelsNumericRow;
     private Label maxTokensLabel;
     private NumericUpDown maxTokensUpDown;
+    private Label embeddingDimensionsLabel;
+    private NumericUpDown embeddingDimensionsUpDown;
+    private GroupBox vectorGroup;
+    private TableLayoutPanel vectorLayout;
+    private Label qdrantLabel;
+    private TextBox qdrantTextBox;
+    private Button qdrantTestButton;
+    private Label qdrantHintLabel;
+    private Label collectionLabel;
+    private TextBox collectionTextBox;
+    private Label caseReferenceLabel;
+    private TextBox caseReferenceTextBox;
+    private Label caseReferenceHintLabel;
+    private FlowLayoutPanel vectorNumericRow;
+    private Label tenantLabel;
+    private NumericUpDown tenantUpDown;
+    private Label chunkTokensLabel;
+    private NumericUpDown chunkTokensUpDown;
+    private Label chunkOverlapLabel;
+    private NumericUpDown chunkOverlapUpDown;
+    private Label searchResultsLabel;
+    private NumericUpDown searchResultsUpDown;
+    private GroupBox canonicalGroup;
+    private TableLayoutPanel canonicalLayout;
+    private Label canonicalSchemaLabel;
+    private TextBox canonicalSchemaTextBox;
+    private Button canonicalSchemaBrowseButton;
+    private Label checkPlanLabel;
+    private TextBox checkPlanTextBox;
+    private Button checkPlanBrowseButton;
+    private Label canonicalDbLabel;
+    private TextBox canonicalDbTextBox;
+    private Label runDbLabel;
+    private TextBox runDbTextBox;
+    private Label canonicalHintLabel;
+    private Label extractionTokensLabel;
+    private NumericUpDown extractionTokensUpDown;
+    private GroupBox reproducibilityGroup;
+    private TableLayoutPanel reproducibilityLayout;
+    private CheckBox structuredFindingsCheckBox;
+    private FlowLayoutPanel samplingRow;
+    private CheckBox pinTemperatureCheckBox;
+    private NumericUpDown temperatureUpDown;
+    private CheckBox pinTopPCheckBox;
+    private NumericUpDown topPUpDown;
+    private CheckBox pinSeedCheckBox;
+    private NumericUpDown seedUpDown;
+    private Label reproducibilityHintLabel;
     private GroupBox contextGroup;
     private TableLayoutPanel contextLayout;
     private Label documentFolderLabel;
     private TextBox documentFolderTextBox;
     private Button browseButton;
-    private CheckBox clarificationCheckBox;
+    private GroupBox limitsGroup;
+    private TableLayoutPanel limitsLayout;
+    private Label limitsHintLabel;
+    private FlowLayoutPanel packNumericRow;
+    private Label passagesPerGroupLabel;
+    private NumericUpDown passagesPerGroupUpDown;
+    private Label reserveCategoryLabel;
+    private NumericUpDown reserveCategoryUpDown;
+    private Label reserveSectionLabel;
+    private NumericUpDown reserveSectionUpDown;
+    private Label reserveTopScoreLabel;
+    private NumericUpDown reserveTopScoreUpDown;
+    private Label nearDuplicateLabel;
+    private NumericUpDown nearDuplicateUpDown;
+    private FlowLayoutPanel budgetNumericRow;
+    private Label decisionTokensLabel;
+    private NumericUpDown decisionTokensUpDown;
+    private Label extractionReportLabel;
+    private NumericUpDown extractionReportUpDown;
+    private FlowLayoutPanel concurrencyNumericRow;
+    private Label parallelRequestsLabel;
+    private NumericUpDown parallelRequestsUpDown;
+    private Label parallelChecksLabel;
+    private NumericUpDown parallelChecksUpDown;
+    private Label embeddingCharsLabel;
+    private NumericUpDown embeddingCharsUpDown;
+    private CheckBox coreQueriesOnlyCheckBox;
+    private CheckBox tableAwareChunkingCheckBox;
+    private CheckBox hybridRetrievalCheckBox;
+    private FlowLayoutPanel assertionDigestRow;
+    private CheckBox assertionDigestCheckBox;
+    private Label assertionDigestCharsLabel;
+    private NumericUpDown assertionDigestCharsUpDown;
+    private Label joinedAssertionsLabel;
+    private NumericUpDown joinedAssertionsUpDown;
+    private FlowLayoutPanel narrationRow;
+    private CheckBox pictureNarrationCheckBox;
+    private CheckBox tableNarrationCheckBox;
+    private Label narrationModelLabel;
+    private TextBox narrationModelTextBox;
+    private Label minimumImageBytesLabel;
+    private NumericUpDown minimumImageBytesUpDown;
+    private Label maxImagesLabel;
+    private NumericUpDown maxImagesUpDown;
+    private Label embeddingBaseUrlLabel;
+    private TextBox embeddingBaseUrlTextBox;
+    private Label embeddingApiKeyLabel;
+    private TextBox embeddingApiKeyTextBox;
+    private Label promptLogLabel;
+    private TextBox promptLogTextBox;
+    private Button promptLogBrowseButton;
+
+    /// <summary>
+    /// The shipped defaults, read rather than repeated.
+    ///
+    /// A caption quoting "default 24" is documentation, and documentation typed twice drifts:
+    /// the number here would keep saying 24 long after AppSettings said something else, and it
+    /// would be believed, because it sits next to the control it describes.
+    /// </summary>
+    private static readonly AppSettings Defaults = new();
     private FlowLayoutPanel buttonPanel;
     private Button saveButton;
     private Button cancelButton;
@@ -48,6 +165,7 @@ partial class ConfigurationForm
     private void InitializeComponent()
     {
         components = new System.ComponentModel.Container();
+        scrollPanel = new Panel();
         rootLayout = new TableLayoutPanel();
         connectionGroup = new GroupBox();
         connectionLayout = new TableLayoutPanel();
@@ -67,45 +185,195 @@ partial class ConfigurationForm
         availableModelsTextBox = new TextBox();
         selectedModelLabel = new Label();
         selectedModelComboBox = new ComboBox();
+        chatTestButton = new Button();
+        embeddingTestButton = new Button();
+        embeddingProviderLabel = new Label();
+        embeddingProviderComboBox = new ComboBox();
+        chatProviderLabel = new Label();
+        chatProviderComboBox = new ComboBox();
+        embeddingModelLabel = new Label();
+        embeddingModelTextBox = new TextBox();
+        modelsNumericRow = new FlowLayoutPanel();
         maxTokensLabel = new Label();
         maxTokensUpDown = new NumericUpDown();
+        embeddingDimensionsLabel = new Label();
+        embeddingDimensionsUpDown = new NumericUpDown();
+        vectorGroup = new GroupBox();
+        vectorLayout = new TableLayoutPanel();
+        qdrantLabel = new Label();
+        qdrantTextBox = new TextBox();
+        qdrantTestButton = new Button();
+        qdrantHintLabel = new Label();
+        collectionLabel = new Label();
+        collectionTextBox = new TextBox();
+        caseReferenceLabel = new Label();
+        caseReferenceTextBox = new TextBox();
+        caseReferenceHintLabel = new Label();
+        vectorNumericRow = new FlowLayoutPanel();
+        tenantLabel = new Label();
+        tenantUpDown = new NumericUpDown();
+        chunkTokensLabel = new Label();
+        chunkTokensUpDown = new NumericUpDown();
+        chunkOverlapLabel = new Label();
+        chunkOverlapUpDown = new NumericUpDown();
+        searchResultsLabel = new Label();
+        searchResultsUpDown = new NumericUpDown();
+        canonicalGroup = new GroupBox();
+        canonicalLayout = new TableLayoutPanel();
+        canonicalSchemaLabel = new Label();
+        canonicalSchemaTextBox = new TextBox();
+        canonicalSchemaBrowseButton = new Button();
+        checkPlanLabel = new Label();
+        checkPlanTextBox = new TextBox();
+        checkPlanBrowseButton = new Button();
+        canonicalDbLabel = new Label();
+        canonicalDbTextBox = new TextBox();
+        runDbLabel = new Label();
+        runDbTextBox = new TextBox();
+        canonicalHintLabel = new Label();
+        extractionTokensLabel = new Label();
+        extractionTokensUpDown = new NumericUpDown();
+        reproducibilityGroup = new GroupBox();
+        reproducibilityLayout = new TableLayoutPanel();
+        structuredFindingsCheckBox = new CheckBox();
+        samplingRow = new FlowLayoutPanel();
+        pinTemperatureCheckBox = new CheckBox();
+        temperatureUpDown = new NumericUpDown();
+        pinTopPCheckBox = new CheckBox();
+        topPUpDown = new NumericUpDown();
+        pinSeedCheckBox = new CheckBox();
+        seedUpDown = new NumericUpDown();
+        reproducibilityHintLabel = new Label();
         contextGroup = new GroupBox();
         contextLayout = new TableLayoutPanel();
         documentFolderLabel = new Label();
         documentFolderTextBox = new TextBox();
         browseButton = new Button();
-        clarificationCheckBox = new CheckBox();
+        limitsGroup = new GroupBox();
+        limitsLayout = new TableLayoutPanel();
+        limitsHintLabel = new Label();
+        packNumericRow = new FlowLayoutPanel();
+        passagesPerGroupLabel = new Label();
+        passagesPerGroupUpDown = new NumericUpDown();
+        reserveCategoryLabel = new Label();
+        reserveCategoryUpDown = new NumericUpDown();
+        reserveSectionLabel = new Label();
+        reserveSectionUpDown = new NumericUpDown();
+        reserveTopScoreLabel = new Label();
+        reserveTopScoreUpDown = new NumericUpDown();
+        nearDuplicateLabel = new Label();
+        nearDuplicateUpDown = new NumericUpDown();
+        budgetNumericRow = new FlowLayoutPanel();
+        decisionTokensLabel = new Label();
+        decisionTokensUpDown = new NumericUpDown();
+        extractionReportLabel = new Label();
+        extractionReportUpDown = new NumericUpDown();
+        concurrencyNumericRow = new FlowLayoutPanel();
+        parallelRequestsLabel = new Label();
+        parallelRequestsUpDown = new NumericUpDown();
+        parallelChecksLabel = new Label();
+        parallelChecksUpDown = new NumericUpDown();
+        embeddingCharsLabel = new Label();
+        embeddingCharsUpDown = new NumericUpDown();
+        coreQueriesOnlyCheckBox = new CheckBox();
+        tableAwareChunkingCheckBox = new CheckBox();
+        hybridRetrievalCheckBox = new CheckBox();
+        assertionDigestRow = new FlowLayoutPanel();
+        assertionDigestCheckBox = new CheckBox();
+        assertionDigestCharsLabel = new Label();
+        assertionDigestCharsUpDown = new NumericUpDown();
+        joinedAssertionsLabel = new Label();
+        joinedAssertionsUpDown = new NumericUpDown();
+        narrationRow = new FlowLayoutPanel();
+        pictureNarrationCheckBox = new CheckBox();
+        tableNarrationCheckBox = new CheckBox();
+        narrationModelLabel = new Label();
+        narrationModelTextBox = new TextBox();
+        minimumImageBytesLabel = new Label();
+        minimumImageBytesUpDown = new NumericUpDown();
+        maxImagesLabel = new Label();
+        maxImagesUpDown = new NumericUpDown();
+        embeddingBaseUrlLabel = new Label();
+        embeddingBaseUrlTextBox = new TextBox();
+        embeddingApiKeyLabel = new Label();
+        embeddingApiKeyTextBox = new TextBox();
+        promptLogLabel = new Label();
+        promptLogTextBox = new TextBox();
+        promptLogBrowseButton = new Button();
         buttonPanel = new FlowLayoutPanel();
         saveButton = new Button();
         cancelButton = new Button();
 
+        scrollPanel.SuspendLayout();
         rootLayout.SuspendLayout();
         connectionGroup.SuspendLayout();
         connectionLayout.SuspendLayout();
         modelsGroup.SuspendLayout();
         modelsLayout.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)maxTokensUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)embeddingDimensionsUpDown).BeginInit();
+        vectorGroup.SuspendLayout();
+        vectorLayout.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)tenantUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)chunkTokensUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)chunkOverlapUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)searchResultsUpDown).BeginInit();
+        canonicalGroup.SuspendLayout();
+        canonicalLayout.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)extractionTokensUpDown).BeginInit();
+        reproducibilityGroup.SuspendLayout();
+        reproducibilityLayout.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)temperatureUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)topPUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)seedUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)assertionDigestCharsUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)joinedAssertionsUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)minimumImageBytesUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)maxImagesUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)passagesPerGroupUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)reserveCategoryUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)reserveSectionUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)reserveTopScoreUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)nearDuplicateUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)decisionTokensUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)extractionReportUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)parallelRequestsUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)parallelChecksUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)embeddingCharsUpDown).BeginInit();
         contextGroup.SuspendLayout();
         contextLayout.SuspendLayout();
         buttonPanel.SuspendLayout();
         SuspendLayout();
 
+        // scrollPanel — everything but the Save/Cancel buttons scrolls here, so the form stays
+        // usable when it is resized smaller than its content, and the buttons stay reachable.
+        scrollPanel.AutoScroll = true;
+        scrollPanel.Controls.Add(rootLayout);
+        scrollPanel.Dock = DockStyle.Fill;
+        scrollPanel.Name = "scrollPanel";
+
         // rootLayout
         rootLayout.ColumnCount = 1;
         rootLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-        rootLayout.Dock = DockStyle.Fill;
+        rootLayout.AutoSize = true;
+        rootLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        rootLayout.Dock = DockStyle.Top;
         rootLayout.Padding = new Padding(10);
-        rootLayout.RowCount = 5;
+        rootLayout.RowCount = 7;
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        rootLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+        rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         rootLayout.Controls.Add(connectionGroup, 0, 0);
         rootLayout.Controls.Add(modelsGroup, 0, 1);
-        rootLayout.Controls.Add(contextGroup, 0, 2);
-        rootLayout.Controls.Add(clarificationCheckBox, 0, 3);
-        rootLayout.Controls.Add(buttonPanel, 0, 4);
+        rootLayout.Controls.Add(vectorGroup, 0, 2);
+        rootLayout.Controls.Add(canonicalGroup, 0, 3);
+        rootLayout.Controls.Add(reproducibilityGroup, 0, 4);
+        rootLayout.Controls.Add(contextGroup, 0, 5);
+        rootLayout.Controls.Add(limitsGroup, 0, 6);
         rootLayout.Name = "rootLayout";
 
         // connectionGroup
@@ -142,7 +410,7 @@ partial class ConfigurationForm
         apiKeyLabel.Anchor = AnchorStyles.Left;
         apiKeyLabel.AutoSize = true;
         apiKeyLabel.Name = "apiKeyLabel";
-        apiKeyLabel.Text = "Anthropic API key";
+        apiKeyLabel.Text = "API key";
 
         // apiKeyTextBox
         apiKeyTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
@@ -174,8 +442,9 @@ partial class ConfigurationForm
         baseUrlHintLabel.AutoSize = true;
         baseUrlHintLabel.ForeColor = SystemColors.GrayText;
         baseUrlHintLabel.Margin = new Padding(0, 0, 8, 3);
+        baseUrlHintLabel.MaximumSize = new Size(500, 0);
         baseUrlHintLabel.Name = "baseUrlHintLabel";
-        baseUrlHintLabel.Text = "Leave empty for the default. Enter a base URL (e.g. https://litellm.example.com) or a full format string where {0}=version, {1}=endpoint.";
+        baseUrlHintLabel.Text = $"OpenAI-compatible endpoint — the official API, a gateway (e.g. https://litellm.example.com/v1) or a self-hosted server. Leave empty for {AppSettings.DefaultBaseUrl}.";
 
         // doclingLabel
         doclingLabel.Anchor = AnchorStyles.Left;
@@ -202,6 +471,7 @@ partial class ConfigurationForm
         doclingHintLabel.AutoSize = true;
         doclingHintLabel.ForeColor = SystemColors.GrayText;
         doclingHintLabel.Margin = new Padding(0, 0, 8, 3);
+        doclingHintLabel.MaximumSize = new Size(500, 0);
         doclingHintLabel.Name = "doclingHintLabel";
         doclingHintLabel.Text = $"Docker host running docling-serve, used to convert spreadsheets to Markdown. Leave empty for {AppSettings.DefaultDoclingEndpoint}.";
 
@@ -217,18 +487,52 @@ partial class ConfigurationForm
 
         // modelsLayout
         modelsLayout.AutoSize = true;
-        modelsLayout.ColumnCount = 2;
+        modelsLayout.ColumnCount = 3;
         modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
         modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        modelsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         modelsLayout.Dock = DockStyle.Fill;
-        modelsLayout.RowCount = 3;
+        modelsLayout.RowCount = 8;
+        modelsLayout.Controls.Add(chatProviderLabel, 0, 7);
+        modelsLayout.Controls.Add(chatProviderComboBox, 1, 7);
+        modelsLayout.SetColumnSpan(chatProviderComboBox, 2);
         modelsLayout.Controls.Add(availableModelsLabel, 0, 0);
         modelsLayout.Controls.Add(availableModelsTextBox, 1, 0);
+        modelsLayout.SetColumnSpan(availableModelsTextBox, 2);
         modelsLayout.Controls.Add(selectedModelLabel, 0, 1);
         modelsLayout.Controls.Add(selectedModelComboBox, 1, 1);
-        modelsLayout.Controls.Add(maxTokensLabel, 0, 2);
-        modelsLayout.Controls.Add(maxTokensUpDown, 1, 2);
+        modelsLayout.Controls.Add(chatTestButton, 2, 1);
+        modelsLayout.Controls.Add(embeddingModelLabel, 0, 2);
+        modelsLayout.Controls.Add(embeddingModelTextBox, 1, 2);
+        modelsLayout.Controls.Add(embeddingTestButton, 2, 2);
+        modelsLayout.Controls.Add(embeddingProviderLabel, 0, 3);
+        modelsLayout.Controls.Add(embeddingProviderComboBox, 1, 3);
+        modelsLayout.SetColumnSpan(embeddingProviderComboBox, 2);
+        modelsLayout.Controls.Add(embeddingBaseUrlLabel, 0, 4);
+        modelsLayout.Controls.Add(embeddingBaseUrlTextBox, 1, 4);
+        modelsLayout.SetColumnSpan(embeddingBaseUrlTextBox, 2);
+        modelsLayout.Controls.Add(embeddingApiKeyLabel, 0, 5);
+        modelsLayout.Controls.Add(embeddingApiKeyTextBox, 1, 5);
+        modelsLayout.SetColumnSpan(embeddingApiKeyTextBox, 2);
+        modelsLayout.Controls.Add(modelsNumericRow, 0, 6);
+        modelsLayout.SetColumnSpan(modelsNumericRow, 3);
         modelsLayout.Name = "modelsLayout";
+
+        // modelsNumericRow — max output tokens and embedding dimensions are both short numeric
+        // fields, so they sit side by side instead of each claiming a full-width row. Anchor
+        // (not Dock) takes the width from the parent cell while AutoSize computes the panel's
+        // own height from however many rows WrapContents produces — the combination a wrapping
+        // FlowLayoutPanel needs; Dock on an AutoSize row was clipping content against the
+        // group border because the two AutoSize computations fought each other.
+        modelsNumericRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        modelsNumericRow.AutoSize = true;
+        modelsNumericRow.Controls.Add(maxTokensLabel);
+        modelsNumericRow.Controls.Add(maxTokensUpDown);
+        modelsNumericRow.Controls.Add(embeddingDimensionsLabel);
+        modelsNumericRow.Controls.Add(embeddingDimensionsUpDown);
+        modelsNumericRow.Margin = new Padding(0, 3, 0, 0);
+        modelsNumericRow.Name = "modelsNumericRow";
+        modelsNumericRow.WrapContents = true;
 
         // availableModelsLabel
         availableModelsLabel.Anchor = AnchorStyles.Left;
@@ -251,23 +555,936 @@ partial class ConfigurationForm
         // selectedModelComboBox
         selectedModelComboBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
         selectedModelComboBox.DropDownStyle = ComboBoxStyle.DropDown;
-        selectedModelComboBox.Margin = new Padding(0, 3, 0, 3);
+        selectedModelComboBox.Margin = new Padding(0, 3, 8, 3);
         selectedModelComboBox.Name = "selectedModelComboBox";
 
+        // chatTestButton — sends one minimal chat request as typed, without saving, so a
+        // gateway or model rejection surfaces here rather than after running all ten checks.
+        chatTestButton.Anchor = AnchorStyles.Left;
+        chatTestButton.AutoSize = true;
+        chatTestButton.Name = "chatTestButton";
+        chatTestButton.Text = "Test";
+        chatTestButton.UseVisualStyleBackColor = true;
+        chatTestButton.Click += ChatTestButton_Click;
+
+        // embeddingTestButton — embeds one short string as typed, without saving. Sits beside the
+        // embedding model for the same reason the chat one sits beside the chat model: the field
+        // it verifies is the field next to it. It also reports the vector width, which is the
+        // mistake that does not announce itself — a mismatched model embeds perfectly well and
+        // then disagrees with the collection on every upsert.
+        embeddingTestButton.Anchor = AnchorStyles.Left;
+        embeddingTestButton.AutoSize = true;
+        embeddingTestButton.Name = "embeddingTestButton";
+        embeddingTestButton.Text = "Test";
+        embeddingTestButton.UseVisualStyleBackColor = true;
+        embeddingTestButton.Click += EmbeddingTestButton_Click;
+
+        // embeddingProviderLabel / ComboBox — the wire protocol the embedding endpoint speaks.
+        // Not a preference: Bedrock's runtime takes POST /model/{id}/invoke, not /embeddings, and
+        // answers an unknown path with HTTP 200, so choosing wrong reports zero embeddings rather
+        // than an error. DropDownList because there are exactly two right answers.
+        embeddingProviderLabel.Anchor = AnchorStyles.Left;
+        embeddingProviderLabel.AutoSize = true;
+        embeddingProviderLabel.Margin = new Padding(0, 7, 6, 0);
+        embeddingProviderLabel.Name = "embeddingProviderLabel";
+        embeddingProviderLabel.Text = "Embedding API";
+
+        embeddingProviderComboBox.Anchor = AnchorStyles.Left;
+        embeddingProviderComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        embeddingProviderComboBox.Margin = new Padding(0, 3, 0, 3);
+        embeddingProviderComboBox.Name = "embeddingProviderComboBox";
+        embeddingProviderComboBox.Width = 220;
+
+        // chatProviderLabel / ComboBox — the wire protocol the chat endpoint speaks. Bedrock's
+        // Converse API is the only route to Claude in an account whose gateway lists every
+        // Anthropic model and serves none of them, and the only one that can be told to cache the
+        // prompt prefix this pipeline repeats on every group call.
+        chatProviderLabel.Anchor = AnchorStyles.Left;
+        chatProviderLabel.AutoSize = true;
+        chatProviderLabel.Margin = new Padding(0, 7, 6, 0);
+        chatProviderLabel.Name = "chatProviderLabel";
+        chatProviderLabel.Text = "Chat API";
+
+        chatProviderComboBox.Anchor = AnchorStyles.Left;
+        chatProviderComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        chatProviderComboBox.Margin = new Padding(0, 3, 0, 3);
+        chatProviderComboBox.Name = "chatProviderComboBox";
+        chatProviderComboBox.Width = 220;
+
         // maxTokensLabel
-        maxTokensLabel.Anchor = AnchorStyles.Left;
         maxTokensLabel.AutoSize = true;
+        maxTokensLabel.Margin = new Padding(0, 6, 6, 0);
         maxTokensLabel.Name = "maxTokensLabel";
         maxTokensLabel.Text = "Max output tokens";
 
         // maxTokensUpDown
-        maxTokensUpDown.Anchor = AnchorStyles.Left;
         maxTokensUpDown.Increment = 256;
-        maxTokensUpDown.Margin = new Padding(0, 3, 0, 3);
+        maxTokensUpDown.Margin = new Padding(0, 3, 16, 3);
         maxTokensUpDown.Maximum = 64000;
         maxTokensUpDown.Minimum = 256;
         maxTokensUpDown.Name = "maxTokensUpDown";
-        maxTokensUpDown.Width = 120;
+        maxTokensUpDown.Width = 100;
+
+        // embeddingModelLabel
+        embeddingModelLabel.Anchor = AnchorStyles.Left;
+        embeddingModelLabel.AutoSize = true;
+        embeddingModelLabel.Name = "embeddingModelLabel";
+        embeddingModelLabel.Text = "Embedding model";
+
+        // embeddingModelTextBox
+        embeddingModelTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        embeddingModelTextBox.Margin = new Padding(0, 3, 0, 3);
+        embeddingModelTextBox.Name = "embeddingModelTextBox";
+        embeddingModelTextBox.PlaceholderText = "text-embedding-3-small";
+
+        // embeddingDimensionsLabel
+        embeddingDimensionsLabel.AutoSize = true;
+        embeddingDimensionsLabel.Margin = new Padding(0, 6, 6, 0);
+        embeddingDimensionsLabel.Name = "embeddingDimensionsLabel";
+        embeddingDimensionsLabel.Text = "Embedding dimensions";
+
+        // embeddingDimensionsUpDown — defines the collection, so changing it means reloading docs
+        embeddingDimensionsUpDown.Increment = 128;
+        embeddingDimensionsUpDown.Margin = new Padding(0, 3, 0, 3);
+        embeddingDimensionsUpDown.Maximum = 8192;
+        embeddingDimensionsUpDown.Minimum = 64;
+        embeddingDimensionsUpDown.Name = "embeddingDimensionsUpDown";
+        embeddingDimensionsUpDown.Width = 100;
+
+        // vectorGroup
+        vectorGroup.AutoSize = true;
+        vectorGroup.Controls.Add(vectorLayout);
+        vectorGroup.Dock = DockStyle.Fill;
+        vectorGroup.Margin = new Padding(0, 0, 0, 8);
+        vectorGroup.Name = "vectorGroup";
+        vectorGroup.Padding = new Padding(8);
+        vectorGroup.TabStop = false;
+        vectorGroup.Text = "Vector store (Qdrant)";
+
+        // vectorLayout
+        vectorLayout.AutoSize = true;
+        vectorLayout.ColumnCount = 3;
+        vectorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
+        vectorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        vectorLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        vectorLayout.Dock = DockStyle.Fill;
+        vectorLayout.RowCount = 6;
+        vectorLayout.Controls.Add(qdrantLabel, 0, 0);
+        vectorLayout.Controls.Add(qdrantTextBox, 1, 0);
+        vectorLayout.Controls.Add(qdrantTestButton, 2, 0);
+        vectorLayout.Controls.Add(qdrantHintLabel, 1, 1);
+        vectorLayout.Controls.Add(collectionLabel, 0, 2);
+        vectorLayout.Controls.Add(collectionTextBox, 1, 2);
+        vectorLayout.Controls.Add(caseReferenceLabel, 0, 3);
+        vectorLayout.Controls.Add(caseReferenceTextBox, 1, 3);
+        vectorLayout.Controls.Add(caseReferenceHintLabel, 1, 4);
+        vectorLayout.Controls.Add(vectorNumericRow, 0, 5);
+        vectorLayout.SetColumnSpan(vectorNumericRow, 3);
+        vectorLayout.Name = "vectorLayout";
+
+        // vectorNumericRow — tenant id, chunk size, overlap and result count are all short
+        // numeric fields; grouping them side by side (wrapping as the form narrows) avoids a
+        // full-width row each and cuts the group's height by four rows. Anchor, not Dock — see
+        // modelsNumericRow.
+        vectorNumericRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        vectorNumericRow.AutoSize = true;
+        vectorNumericRow.Controls.Add(tenantLabel);
+        vectorNumericRow.Controls.Add(tenantUpDown);
+        vectorNumericRow.Controls.Add(chunkTokensLabel);
+        vectorNumericRow.Controls.Add(chunkTokensUpDown);
+        vectorNumericRow.Controls.Add(chunkOverlapLabel);
+        vectorNumericRow.Controls.Add(chunkOverlapUpDown);
+        vectorNumericRow.Controls.Add(searchResultsLabel);
+        vectorNumericRow.Controls.Add(searchResultsUpDown);
+        vectorNumericRow.Margin = new Padding(0, 3, 0, 0);
+        vectorNumericRow.Name = "vectorNumericRow";
+        vectorNumericRow.WrapContents = true;
+
+        // canonicalGroup — where the schema, the query plans and the extracted models live
+        canonicalGroup.AutoSize = true;
+        canonicalGroup.Controls.Add(canonicalLayout);
+        canonicalGroup.Dock = DockStyle.Fill;
+        canonicalGroup.Margin = new Padding(0, 0, 0, 8);
+        canonicalGroup.Name = "canonicalGroup";
+        canonicalGroup.Padding = new Padding(8);
+        canonicalGroup.TabStop = false;
+        canonicalGroup.Text = "Canonical model";
+
+        // canonicalLayout
+        canonicalLayout.AutoSize = true;
+        canonicalLayout.ColumnCount = 3;
+        canonicalLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
+        canonicalLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        canonicalLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        canonicalLayout.Dock = DockStyle.Fill;
+        canonicalLayout.RowCount = 6;
+        canonicalLayout.Controls.Add(canonicalSchemaLabel, 0, 0);
+        canonicalLayout.Controls.Add(canonicalSchemaTextBox, 1, 0);
+        canonicalLayout.Controls.Add(canonicalSchemaBrowseButton, 2, 0);
+        canonicalLayout.Controls.Add(checkPlanLabel, 0, 1);
+        canonicalLayout.Controls.Add(checkPlanTextBox, 1, 1);
+        canonicalLayout.Controls.Add(checkPlanBrowseButton, 2, 1);
+        canonicalLayout.Controls.Add(canonicalHintLabel, 1, 2);
+        canonicalLayout.Controls.Add(canonicalDbLabel, 0, 3);
+        canonicalLayout.Controls.Add(canonicalDbTextBox, 1, 3);
+        canonicalLayout.Controls.Add(runDbLabel, 0, 4);
+        canonicalLayout.Controls.Add(runDbTextBox, 1, 4);
+        canonicalLayout.Controls.Add(extractionTokensLabel, 0, 5);
+        canonicalLayout.Controls.Add(extractionTokensUpDown, 1, 5);
+        canonicalLayout.Name = "canonicalLayout";
+
+        // canonicalSchemaLabel
+        canonicalSchemaLabel.Anchor = AnchorStyles.Left;
+        canonicalSchemaLabel.AutoSize = true;
+        canonicalSchemaLabel.Name = "canonicalSchemaLabel";
+        canonicalSchemaLabel.Text = "Model schema";
+
+        // canonicalSchemaTextBox
+        canonicalSchemaTextBox.Dock = DockStyle.Fill;
+        canonicalSchemaTextBox.Margin = new Padding(0, 3, 8, 3);
+        canonicalSchemaTextBox.Name = "canonicalSchemaTextBox";
+        canonicalSchemaTextBox.PlaceholderText = AppSettings.DefaultCanonicalSchemaFileName + " (beside the app)";
+
+        // canonicalSchemaBrowseButton
+        canonicalSchemaBrowseButton.AutoSize = true;
+        canonicalSchemaBrowseButton.Margin = new Padding(0, 3, 0, 3);
+        canonicalSchemaBrowseButton.Name = "canonicalSchemaBrowseButton";
+        canonicalSchemaBrowseButton.Padding = new Padding(8, 2, 8, 2);
+        canonicalSchemaBrowseButton.Text = "Browse...";
+        canonicalSchemaBrowseButton.UseVisualStyleBackColor = true;
+        canonicalSchemaBrowseButton.Click += CanonicalSchemaBrowseButton_Click;
+
+        // checkPlanLabel
+        checkPlanLabel.Anchor = AnchorStyles.Left;
+        checkPlanLabel.AutoSize = true;
+        checkPlanLabel.Name = "checkPlanLabel";
+        checkPlanLabel.Text = "Check plan folder";
+
+        // checkPlanTextBox
+        checkPlanTextBox.Dock = DockStyle.Fill;
+        checkPlanTextBox.Margin = new Padding(0, 3, 8, 3);
+        checkPlanTextBox.Name = "checkPlanTextBox";
+        checkPlanTextBox.PlaceholderText = AppSettings.DefaultCheckPlanFolderName + " (beside the app)";
+
+        // checkPlanBrowseButton
+        checkPlanBrowseButton.AutoSize = true;
+        checkPlanBrowseButton.Margin = new Padding(0, 3, 0, 3);
+        checkPlanBrowseButton.Name = "checkPlanBrowseButton";
+        checkPlanBrowseButton.Padding = new Padding(8, 2, 8, 2);
+        checkPlanBrowseButton.Text = "Browse...";
+        checkPlanBrowseButton.UseVisualStyleBackColor = true;
+        checkPlanBrowseButton.Click += CheckPlanBrowseButton_Click;
+
+        // canonicalHintLabel
+        canonicalHintLabel.AutoSize = true;
+        canonicalHintLabel.ForeColor = SystemColors.GrayText;
+        canonicalHintLabel.Margin = new Padding(0, 0, 0, 8);
+        canonicalHintLabel.Name = "canonicalHintLabel";
+        canonicalHintLabel.Text =
+            "Leave blank to use the copies deployed with the app. A check reads what the report asserts\r\n"
+            + "from the extracted model and searches only the evidence documents.";
+
+        // canonicalDbLabel
+        canonicalDbLabel.Anchor = AnchorStyles.Left;
+        canonicalDbLabel.AutoSize = true;
+        canonicalDbLabel.Name = "canonicalDbLabel";
+        canonicalDbLabel.Text = "Model database";
+
+        // canonicalDbTextBox
+        canonicalDbTextBox.Dock = DockStyle.Fill;
+        canonicalDbTextBox.Margin = new Padding(0, 3, 8, 3);
+        canonicalDbTextBox.Name = "canonicalDbTextBox";
+        canonicalDbTextBox.PlaceholderText = "canonical-models.db (in the app's local data folder)";
+
+        // runDbLabel
+        runDbLabel.Anchor = AnchorStyles.Left;
+        runDbLabel.AutoSize = true;
+        runDbLabel.Name = "runDbLabel";
+        runDbLabel.Text = "Run archive";
+
+        // runDbTextBox
+        runDbTextBox.Dock = DockStyle.Fill;
+        runDbTextBox.Margin = new Padding(0, 3, 8, 3);
+        runDbTextBox.Name = "runDbTextBox";
+        runDbTextBox.PlaceholderText = "check-runs.db (beside the model database)";
+
+        // extractionTokensLabel
+        extractionTokensLabel.Anchor = AnchorStyles.Left;
+        extractionTokensLabel.AutoSize = true;
+        extractionTokensLabel.Name = "extractionTokensLabel";
+        extractionTokensLabel.Text = $"Extraction max tokens (default {Defaults.ExtractionMaxTokens:N0})";
+
+        // extractionTokensUpDown
+        extractionTokensUpDown.Anchor = AnchorStyles.Left;
+        extractionTokensUpDown.Increment = 1000;
+        extractionTokensUpDown.Margin = new Padding(0, 3, 0, 3);
+        extractionTokensUpDown.Maximum = 128000;
+        extractionTokensUpDown.Minimum = 1000;
+        extractionTokensUpDown.Name = "extractionTokensUpDown";
+        extractionTokensUpDown.Width = 120;
+
+        // reproducibilityGroup — what keeps two runs of the same check agreeing with each other
+        reproducibilityGroup.AutoSize = true;
+        reproducibilityGroup.Controls.Add(reproducibilityLayout);
+        reproducibilityGroup.Dock = DockStyle.Fill;
+        reproducibilityGroup.Margin = new Padding(0, 0, 0, 8);
+        reproducibilityGroup.Name = "reproducibilityGroup";
+        reproducibilityGroup.Padding = new Padding(8);
+        reproducibilityGroup.TabStop = false;
+        reproducibilityGroup.Text = "Assessment reproducibility";
+
+        // reproducibilityLayout
+        reproducibilityLayout.AutoSize = true;
+        reproducibilityLayout.ColumnCount = 1;
+        reproducibilityLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        reproducibilityLayout.Dock = DockStyle.Fill;
+        reproducibilityLayout.RowCount = 3;
+        reproducibilityLayout.Controls.Add(structuredFindingsCheckBox, 0, 0);
+        reproducibilityLayout.Controls.Add(samplingRow, 0, 1);
+        reproducibilityLayout.Controls.Add(reproducibilityHintLabel, 0, 2);
+        reproducibilityLayout.Name = "reproducibilityLayout";
+
+        // structuredFindingsCheckBox
+        structuredFindingsCheckBox.AutoSize = true;
+        structuredFindingsCheckBox.Margin = new Padding(0, 3, 0, 3);
+        structuredFindingsCheckBox.Name = "structuredFindingsCheckBox";
+        structuredFindingsCheckBox.Text = "Constrain findings to the response schema";
+        structuredFindingsCheckBox.UseVisualStyleBackColor = true;
+
+        // samplingRow — temperature, top-p and seed are each independently pinnable, since a
+        // gateway or model can reject one of the three without objecting to the others. Anchor,
+        // not Dock — see modelsNumericRow.
+        samplingRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        samplingRow.AutoSize = true;
+        samplingRow.Controls.Add(pinTemperatureCheckBox);
+        samplingRow.Controls.Add(temperatureUpDown);
+        samplingRow.Controls.Add(pinTopPCheckBox);
+        samplingRow.Controls.Add(topPUpDown);
+        samplingRow.Controls.Add(pinSeedCheckBox);
+        samplingRow.Controls.Add(seedUpDown);
+        samplingRow.Margin = new Padding(0, 3, 0, 3);
+        samplingRow.Name = "samplingRow";
+        samplingRow.WrapContents = true;
+
+        // pinTemperatureCheckBox
+        pinTemperatureCheckBox.AutoSize = true;
+        pinTemperatureCheckBox.Margin = new Padding(0, 6, 4, 0);
+        pinTemperatureCheckBox.Name = "pinTemperatureCheckBox";
+        pinTemperatureCheckBox.Text = "Temperature";
+        pinTemperatureCheckBox.UseVisualStyleBackColor = true;
+        pinTemperatureCheckBox.CheckedChanged += PinTemperatureCheckBox_CheckedChanged;
+
+        // temperatureUpDown
+        temperatureUpDown.DecimalPlaces = 1;
+        temperatureUpDown.Increment = 0.1m;
+        temperatureUpDown.Margin = new Padding(0, 3, 16, 3);
+        temperatureUpDown.Maximum = 2m;
+        temperatureUpDown.Minimum = 0m;
+        temperatureUpDown.Name = "temperatureUpDown";
+        temperatureUpDown.Width = 70;
+
+        // pinTopPCheckBox
+        pinTopPCheckBox.AutoSize = true;
+        pinTopPCheckBox.Margin = new Padding(0, 6, 4, 0);
+        pinTopPCheckBox.Name = "pinTopPCheckBox";
+        pinTopPCheckBox.Text = "Top-p";
+        pinTopPCheckBox.UseVisualStyleBackColor = true;
+        pinTopPCheckBox.CheckedChanged += PinTopPCheckBox_CheckedChanged;
+
+        // topPUpDown
+        topPUpDown.DecimalPlaces = 2;
+        topPUpDown.Increment = 0.05m;
+        topPUpDown.Margin = new Padding(0, 3, 16, 3);
+        topPUpDown.Maximum = 1m;
+        topPUpDown.Minimum = 0m;
+        topPUpDown.Name = "topPUpDown";
+        topPUpDown.Width = 70;
+
+        // pinSeedCheckBox
+        pinSeedCheckBox.AutoSize = true;
+        pinSeedCheckBox.Margin = new Padding(0, 6, 4, 0);
+        pinSeedCheckBox.Name = "pinSeedCheckBox";
+        pinSeedCheckBox.Text = "Seed";
+        pinSeedCheckBox.UseVisualStyleBackColor = true;
+        pinSeedCheckBox.CheckedChanged += PinSeedCheckBox_CheckedChanged;
+
+        // seedUpDown
+        seedUpDown.Margin = new Padding(0, 3, 0, 3);
+        seedUpDown.Maximum = int.MaxValue;
+        seedUpDown.Minimum = 0;
+        seedUpDown.Name = "seedUpDown";
+        seedUpDown.Width = 100;
+
+        // reproducibilityHintLabel
+        reproducibilityHintLabel.AutoSize = true;
+        reproducibilityHintLabel.ForeColor = SystemColors.GrayText;
+        reproducibilityHintLabel.Margin = new Padding(0, 6, 0, 0);
+        reproducibilityHintLabel.Name = "reproducibilityHintLabel";
+        reproducibilityHintLabel.Text =
+            "Two runs of the same check over the same case should reach the same finding. Uncheck a\r\n"
+            + "parameter only for an endpoint that rejects it. Changing the seed samples a second opinion;\r\n"
+            + "the findings report records what was pinned, so a difference between runs can be traced to\r\n"
+            + "what actually changed.";
+
+        // qdrantLabel
+        qdrantLabel.Anchor = AnchorStyles.Left;
+        qdrantLabel.AutoSize = true;
+        qdrantLabel.Name = "qdrantLabel";
+        qdrantLabel.Text = "Qdrant endpoint";
+
+        // qdrantTextBox
+        qdrantTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        qdrantTextBox.Margin = new Padding(0, 3, 8, 0);
+        qdrantTextBox.Name = "qdrantTextBox";
+        qdrantTextBox.PlaceholderText = AppSettings.DefaultQdrantEndpoint;
+
+        // qdrantTestButton
+        qdrantTestButton.Anchor = AnchorStyles.Left;
+        qdrantTestButton.AutoSize = true;
+        qdrantTestButton.Name = "qdrantTestButton";
+        qdrantTestButton.Text = "Test";
+        qdrantTestButton.UseVisualStyleBackColor = true;
+        qdrantTestButton.Click += QdrantTestButton_Click;
+
+        // qdrantHintLabel
+        qdrantHintLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        qdrantHintLabel.AutoSize = true;
+        qdrantHintLabel.ForeColor = SystemColors.GrayText;
+        qdrantHintLabel.Margin = new Padding(0, 0, 8, 3);
+        qdrantHintLabel.MaximumSize = new Size(500, 0);
+        qdrantHintLabel.Name = "qdrantHintLabel";
+        qdrantHintLabel.Text = $"Docker host running Qdrant, holding the indexed case chunks. This is the gRPC port, not the 6333 dashboard. Leave empty for {AppSettings.DefaultQdrantEndpoint}.";
+
+        // collectionLabel
+        collectionLabel.Anchor = AnchorStyles.Left;
+        collectionLabel.AutoSize = true;
+        collectionLabel.Name = "collectionLabel";
+        collectionLabel.Text = "Collection";
+
+        // collectionTextBox
+        collectionTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        collectionTextBox.Margin = new Padding(0, 3, 8, 3);
+        collectionTextBox.Name = "collectionTextBox";
+        collectionTextBox.PlaceholderText = AppSettings.DefaultQdrantCollection;
+
+        // caseReferenceLabel
+        caseReferenceLabel.Anchor = AnchorStyles.Left;
+        caseReferenceLabel.AutoSize = true;
+        caseReferenceLabel.Name = "caseReferenceLabel";
+        caseReferenceLabel.Text = "Case reference";
+
+        // caseReferenceTextBox
+        caseReferenceTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        caseReferenceTextBox.Margin = new Padding(0, 3, 8, 0);
+        caseReferenceTextBox.Name = "caseReferenceTextBox";
+        caseReferenceTextBox.PlaceholderText = "(the case folder's name)";
+
+        // caseReferenceHintLabel
+        caseReferenceHintLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        caseReferenceHintLabel.AutoSize = true;
+        caseReferenceHintLabel.ForeColor = SystemColors.GrayText;
+        caseReferenceHintLabel.Margin = new Padding(0, 0, 8, 3);
+        caseReferenceHintLabel.Name = "caseReferenceHintLabel";
+        caseReferenceHintLabel.Text = "Stamped on every indexed chunk and used to scope every search. Leave empty to use the case folder's name.";
+
+        // tenantLabel
+        tenantLabel.AutoSize = true;
+        tenantLabel.Margin = new Padding(0, 6, 6, 0);
+        tenantLabel.Name = "tenantLabel";
+        tenantLabel.Text = "Tenant id";
+
+        // tenantUpDown
+        tenantUpDown.Margin = new Padding(0, 3, 16, 3);
+        tenantUpDown.Maximum = 1000000;
+        tenantUpDown.Minimum = 0;
+        tenantUpDown.Name = "tenantUpDown";
+        tenantUpDown.Width = 90;
+
+        // chunkTokensLabel
+        chunkTokensLabel.AutoSize = true;
+        chunkTokensLabel.Margin = new Padding(0, 6, 6, 0);
+        chunkTokensLabel.Name = "chunkTokensLabel";
+        chunkTokensLabel.Text = "Max tokens/chunk";
+
+        // chunkTokensUpDown
+        chunkTokensUpDown.Increment = 50;
+        chunkTokensUpDown.Margin = new Padding(0, 3, 16, 3);
+        chunkTokensUpDown.Maximum = 4000;
+        chunkTokensUpDown.Minimum = 64;
+        chunkTokensUpDown.Name = "chunkTokensUpDown";
+        chunkTokensUpDown.Width = 90;
+
+        // chunkOverlapLabel
+        chunkOverlapLabel.AutoSize = true;
+        chunkOverlapLabel.Margin = new Padding(0, 6, 6, 0);
+        chunkOverlapLabel.Name = "chunkOverlapLabel";
+        chunkOverlapLabel.Text = "Chunk overlap";
+
+        // chunkOverlapUpDown
+        chunkOverlapUpDown.Increment = 25;
+        chunkOverlapUpDown.Margin = new Padding(0, 3, 16, 3);
+        chunkOverlapUpDown.Maximum = 2000;
+        chunkOverlapUpDown.Minimum = 0;
+        chunkOverlapUpDown.Name = "chunkOverlapUpDown";
+        chunkOverlapUpDown.Width = 90;
+
+        // searchResultsLabel
+        searchResultsLabel.AutoSize = true;
+        searchResultsLabel.Margin = new Padding(0, 6, 6, 0);
+        searchResultsLabel.Name = "searchResultsLabel";
+        searchResultsLabel.Text = $"Results/search (0 = all, default {Defaults.MaxSearchResults})";
+
+        // searchResultsUpDown
+        searchResultsUpDown.Margin = new Padding(0, 3, 0, 3);
+        searchResultsUpDown.Maximum = 50;
+        // 0, not 1: maxSearchResults takes 0 for unbounded, and a minimum of 1 would silently
+        // clamp an unbounded setting back to the narrowest possible one the first time the form
+        // was opened.
+        searchResultsUpDown.Minimum = 0;
+        searchResultsUpDown.Name = "searchResultsUpDown";
+        searchResultsUpDown.Width = 90;
+
+        // limitsGroup — the caps that decide what a model is shown and how much it may write.
+        // These were compile-time constants until they became settings, which is why the most
+        // consequential of them had never been varied: doing so meant a rebuild.
+        limitsGroup.AutoSize = true;
+        limitsGroup.Controls.Add(limitsLayout);
+        limitsGroup.Dock = DockStyle.Fill;
+        limitsGroup.Margin = new Padding(0, 0, 0, 8);
+        limitsGroup.Name = "limitsGroup";
+        limitsGroup.Padding = new Padding(8);
+        limitsGroup.TabStop = false;
+        limitsGroup.Text = "Run limits";
+
+        // limitsLayout
+        limitsLayout.AutoSize = true;
+        limitsLayout.ColumnCount = 1;
+        limitsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        limitsLayout.Dock = DockStyle.Fill;
+        limitsLayout.RowCount = 9;
+        limitsLayout.Controls.Add(limitsHintLabel, 0, 0);
+        limitsLayout.Controls.Add(packNumericRow, 0, 1);
+        limitsLayout.Controls.Add(budgetNumericRow, 0, 2);
+        limitsLayout.Controls.Add(concurrencyNumericRow, 0, 3);
+        limitsLayout.Controls.Add(coreQueriesOnlyCheckBox, 0, 4);
+        limitsLayout.Controls.Add(assertionDigestRow, 0, 5);
+        limitsLayout.Controls.Add(tableAwareChunkingCheckBox, 0, 6);
+        limitsLayout.Controls.Add(hybridRetrievalCheckBox, 0, 7);
+        limitsLayout.Controls.Add(narrationRow, 0, 8);
+
+        // narrationRow — the two conversion passes that cost money, and the guards around them.
+        //
+        // Both are off by default and belong here rather than beside the Docling endpoint, because
+        // what they are is a spending decision: a vision call per picture and a model call per
+        // table, on a pipeline whose objective is minimum cost. Changing either means the case has
+        // to be re-converted and re-indexed, which is why the labels say so.
+        narrationRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        narrationRow.AutoSize = true;
+        narrationRow.Controls.Add(pictureNarrationCheckBox);
+        narrationRow.Controls.Add(tableNarrationCheckBox);
+        narrationRow.Controls.Add(narrationModelLabel);
+        narrationRow.Controls.Add(narrationModelTextBox);
+        narrationRow.Controls.Add(minimumImageBytesLabel);
+        narrationRow.Controls.Add(minimumImageBytesUpDown);
+        narrationRow.Controls.Add(maxImagesLabel);
+        narrationRow.Controls.Add(maxImagesUpDown);
+        narrationRow.Margin = new Padding(0, 6, 0, 0);
+        narrationRow.Name = "narrationRow";
+        narrationRow.WrapContents = true;
+
+        // pictureNarrationCheckBox — where a document's tables are bitmaps this is the only route
+        // to their content: Docling cannot extract structure from a picture of a table and OCR
+        // does not reach it.
+        pictureNarrationCheckBox.AutoSize = true;
+        pictureNarrationCheckBox.Margin = new Padding(0, 7, 16, 0);
+        pictureNarrationCheckBox.Name = "pictureNarrationCheckBox";
+        pictureNarrationCheckBox.Text =
+            "Transcribe pictures with a vision model (costs a call per picture; re-convert after "
+            + "changing this)";
+        pictureNarrationCheckBox.UseVisualStyleBackColor = true;
+
+        // tableNarrationCheckBox — the narrative is appended, never substituted: the grid stays
+        // exactly as it was, because that is what the extractor reads.
+        tableNarrationCheckBox.AutoSize = true;
+        tableNarrationCheckBox.Margin = new Padding(0, 7, 16, 0);
+        tableNarrationCheckBox.Name = "tableNarrationCheckBox";
+        tableNarrationCheckBox.Text =
+            "Also narrate each table as prose (costs a call per table; the table itself is kept)";
+        tableNarrationCheckBox.UseVisualStyleBackColor = true;
+
+        // narrationModelLabel
+        narrationModelLabel.Anchor = AnchorStyles.Left;
+        narrationModelLabel.AutoSize = true;
+        narrationModelLabel.Margin = new Padding(0, 7, 6, 0);
+        narrationModelLabel.Name = "narrationModelLabel";
+        narrationModelLabel.Text = "Narration model (blank = the selected chat model)";
+
+        // narrationModelTextBox — reading a picture needs a vision-capable model, and
+        // transcription is a cheaper task than adjudication.
+        narrationModelTextBox.Margin = new Padding(0, 3, 16, 3);
+        narrationModelTextBox.Name = "narrationModelTextBox";
+        narrationModelTextBox.Width = 220;
+
+        // minimumImageBytesLabel
+        minimumImageBytesLabel.Anchor = AnchorStyles.Left;
+        minimumImageBytesLabel.AutoSize = true;
+        minimumImageBytesLabel.Margin = new Padding(0, 7, 6, 0);
+        minimumImageBytesLabel.Name = "minimumImageBytesLabel";
+        minimumImageBytesLabel.Text = "Smallest picture worth a call, bytes";
+
+        // minimumImageBytesUpDown — the measured split put content between roughly 19 KB and
+        // 75 KB and decoration near 2 KB, so the default sits below the content and above the
+        // noise. 0 asks about every picture, letterhead included.
+        minimumImageBytesUpDown.Margin = new Padding(0, 3, 16, 3);
+        minimumImageBytesUpDown.Maximum = 10000000;
+        minimumImageBytesUpDown.Minimum = 0;
+        minimumImageBytesUpDown.Name = "minimumImageBytesUpDown";
+        minimumImageBytesUpDown.Width = 110;
+
+        // maxImagesLabel
+        maxImagesLabel.Anchor = AnchorStyles.Left;
+        maxImagesLabel.AutoSize = true;
+        maxImagesLabel.Margin = new Padding(0, 7, 6, 0);
+        maxImagesLabel.Name = "maxImagesLabel";
+        maxImagesLabel.Text = "Most pictures read per document";
+
+        // maxImagesUpDown — so a slide deck cannot run away with a run.
+        maxImagesUpDown.Margin = new Padding(0, 3, 16, 3);
+        maxImagesUpDown.Maximum = 1000;
+        maxImagesUpDown.Minimum = 0;
+        maxImagesUpDown.Name = "maxImagesUpDown";
+        maxImagesUpDown.Width = 90;
+
+        // hybridRetrievalCheckBox — sparse lexical matching fused with the dense search. A routing
+        // fix rather than a recall fix: retrieval already finds the passages, but a figure like
+        // 33.4 reaches one group while two checks need it, and dense embeddings are weakest on
+        // exactly the exact tokens those findings turn on. Changing it changes the collection's
+        // shape, so the case must be re-indexed.
+        hybridRetrievalCheckBox.AutoSize = true;
+        hybridRetrievalCheckBox.Margin = new Padding(0, 6, 0, 0);
+        hybridRetrievalCheckBox.Name = "hybridRetrievalCheckBox";
+        hybridRetrievalCheckBox.Text =
+            "Hybrid retrieval: fuse sparse literal matching with the dense search "
+            + "(rebuild the collection and re-index after changing this)";
+        hybridRetrievalCheckBox.UseVisualStyleBackColor = true;
+
+        // tableAwareChunkingCheckBox — a table cut in half is worse than a table missing: a header
+        // row without figures, or figures without a header row, answers nothing. Changing this
+        // changes the index, so a case has to be re-indexed for it to take effect.
+        tableAwareChunkingCheckBox.AutoSize = true;
+        tableAwareChunkingCheckBox.Margin = new Padding(0, 6, 0, 0);
+        tableAwareChunkingCheckBox.Name = "tableAwareChunkingCheckBox";
+        tableAwareChunkingCheckBox.Text =
+            "Keep tables whole when chunking (re-index the case after changing this)";
+        tableAwareChunkingCheckBox.UseVisualStyleBackColor = true;
+        limitsLayout.Name = "limitsLayout";
+
+        // assertionDigestRow — sits with the pack cap because the two are one decision.
+        // The digest is meant to be paid for out of the pack, not added to it: on the measured
+        // runs, adding 13% more prompt cost eleven points of recall, and the designed
+        // configuration is a pack of 12 with the digest on, which is a smaller prompt than the
+        // default pack of 24 with it off.
+        assertionDigestRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        assertionDigestRow.AutoSize = true;
+        assertionDigestRow.Controls.Add(assertionDigestCheckBox);
+        assertionDigestRow.Controls.Add(assertionDigestCharsLabel);
+        assertionDigestRow.Controls.Add(assertionDigestCharsUpDown);
+        assertionDigestRow.Controls.Add(joinedAssertionsLabel);
+        assertionDigestRow.Controls.Add(joinedAssertionsUpDown);
+        assertionDigestRow.Margin = new Padding(0, 6, 0, 0);
+        assertionDigestRow.Name = "assertionDigestRow";
+        assertionDigestRow.WrapContents = true;
+
+        // assertionDigestCheckBox
+        assertionDigestCheckBox.AutoSize = true;
+        assertionDigestCheckBox.Margin = new Padding(0, 7, 16, 0);
+        assertionDigestCheckBox.Name = "assertionDigestCheckBox";
+        assertionDigestCheckBox.Text =
+            "Show every group the whole assertion side, one line per canonical path";
+        assertionDigestCheckBox.UseVisualStyleBackColor = true;
+
+        // assertionDigestCharsLabel
+        assertionDigestCharsLabel.Anchor = AnchorStyles.Left;
+        assertionDigestCharsLabel.AutoSize = true;
+        assertionDigestCharsLabel.Margin = new Padding(0, 7, 6, 0);
+        assertionDigestCharsLabel.Name = "assertionDigestCharsLabel";
+        assertionDigestCharsLabel.Text =
+            $"Digest budget, characters (0 = off, default {Defaults.AssertionDigestMaxChars})";
+
+        // assertionDigestCharsUpDown
+        assertionDigestCharsUpDown.Increment = 1000;
+        assertionDigestCharsUpDown.Margin = new Padding(0, 3, 0, 3);
+        assertionDigestCharsUpDown.Maximum = 400000;
+        assertionDigestCharsUpDown.Minimum = 0;
+        assertionDigestCharsUpDown.Name = "assertionDigestCharsUpDown";
+        assertionDigestCharsUpDown.Width = 110;
+
+        // joinedAssertions — the code-level join's budget. Sits with the digest because both
+        // spend the same thing: room in one group's prompt, traded against the passage pack.
+        joinedAssertionsLabel.Anchor = AnchorStyles.Left;
+        joinedAssertionsLabel.AutoSize = true;
+        joinedAssertionsLabel.Margin = new Padding(16, 7, 6, 0);
+        joinedAssertionsLabel.Name = "joinedAssertionsLabel";
+        joinedAssertionsLabel.Text =
+            $"Joined assertions / group (0 = off, default {Defaults.MaxJoinedAssertions})";
+
+        joinedAssertionsUpDown.Margin = new Padding(0, 3, 0, 3);
+        joinedAssertionsUpDown.Maximum = 100;
+        joinedAssertionsUpDown.Minimum = 0;
+        joinedAssertionsUpDown.Name = "joinedAssertionsUpDown";
+        joinedAssertionsUpDown.Width = 90;
+
+        // limitsHintLabel — 0 means unbounded for the caps, and no reservation for the floors.
+        // Saying which is which here is cheaper than a reader discovering it from a run.
+        limitsHintLabel.AutoSize = true;
+        limitsHintLabel.ForeColor = SystemColors.GrayText;
+        limitsHintLabel.Margin = new Padding(0, 0, 0, 4);
+        limitsHintLabel.Name = "limitsHintLabel";
+        limitsHintLabel.Text =
+            "Fields marked (0 = ...) accept zero for that meaning; the others do not. "
+            + "Results/search at 0 asks the store for every match of every query, which is "
+            + "rarely what you want — the passage cap is the useful one to open up.";
+
+        // packNumericRow — what reaches one assessor call
+        packNumericRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        packNumericRow.AutoSize = true;
+        packNumericRow.Controls.Add(passagesPerGroupLabel);
+        packNumericRow.Controls.Add(passagesPerGroupUpDown);
+        packNumericRow.Controls.Add(reserveCategoryLabel);
+        packNumericRow.Controls.Add(reserveCategoryUpDown);
+        packNumericRow.Controls.Add(reserveSectionLabel);
+        packNumericRow.Controls.Add(reserveSectionUpDown);
+        packNumericRow.Controls.Add(reserveTopScoreLabel);
+        packNumericRow.Controls.Add(reserveTopScoreUpDown);
+        packNumericRow.Controls.Add(nearDuplicateLabel);
+        packNumericRow.Controls.Add(nearDuplicateUpDown);
+        packNumericRow.Margin = new Padding(0, 0, 0, 0);
+        packNumericRow.Name = "packNumericRow";
+        packNumericRow.WrapContents = true;
+
+        // passagesPerGroupLabel
+        passagesPerGroupLabel.Anchor = AnchorStyles.Left;
+        passagesPerGroupLabel.AutoSize = true;
+        passagesPerGroupLabel.Margin = new Padding(0, 7, 6, 0);
+        passagesPerGroupLabel.Name = "passagesPerGroupLabel";
+        passagesPerGroupLabel.Text = $"Passages / group (0 = all, default {Defaults.MaxPassagesPerGroup})";
+
+        // passagesPerGroupUpDown
+        passagesPerGroupUpDown.Margin = new Padding(0, 3, 16, 3);
+        passagesPerGroupUpDown.Maximum = 500;
+        passagesPerGroupUpDown.Minimum = 0;
+        passagesPerGroupUpDown.Name = "passagesPerGroupUpDown";
+        passagesPerGroupUpDown.Width = 90;
+
+        // reserveCategoryLabel
+        reserveCategoryLabel.Anchor = AnchorStyles.Left;
+        reserveCategoryLabel.AutoSize = true;
+        reserveCategoryLabel.Margin = new Padding(0, 7, 6, 0);
+        reserveCategoryLabel.Name = "reserveCategoryLabel";
+        reserveCategoryLabel.Text = $"Reserve / category (0 = none, default {Defaults.ReservedSlotsPerTargetedCategory})";
+
+        // reserveCategoryUpDown
+        reserveCategoryUpDown.Margin = new Padding(0, 3, 16, 3);
+        reserveCategoryUpDown.Maximum = 10;
+        reserveCategoryUpDown.Minimum = 0;
+        reserveCategoryUpDown.Name = "reserveCategoryUpDown";
+        reserveCategoryUpDown.Width = 70;
+
+        // reserveSectionLabel
+        reserveSectionLabel.Anchor = AnchorStyles.Left;
+        reserveSectionLabel.AutoSize = true;
+        reserveSectionLabel.Margin = new Padding(0, 7, 6, 0);
+        reserveSectionLabel.Name = "reserveSectionLabel";
+        reserveSectionLabel.Text = $"Reserve / section (0 = none, default {Defaults.ReservedSlotsPerDeclaredSection})";
+
+        // reserveSectionUpDown
+        reserveSectionUpDown.Margin = new Padding(0, 3, 0, 3);
+        reserveSectionUpDown.Maximum = 10;
+        reserveSectionUpDown.Minimum = 0;
+        reserveSectionUpDown.Name = "reserveSectionUpDown";
+        reserveSectionUpDown.Width = 70;
+        //
+        // reserveTopScoreLabel
+        reserveTopScoreLabel.Anchor = AnchorStyles.Left;
+        reserveTopScoreLabel.AutoSize = true;
+        reserveTopScoreLabel.Margin = new Padding(0, 7, 6, 0);
+        reserveTopScoreLabel.Name = "reserveTopScoreLabel";
+        reserveTopScoreLabel.Text = $"Reserve / top score (0 = none, default {Defaults.ReservedSlotsForTopScore})";
+        //
+        // reserveTopScoreUpDown
+        reserveTopScoreUpDown.Margin = new Padding(0, 3, 16, 3);
+        reserveTopScoreUpDown.Maximum = 10;
+        reserveTopScoreUpDown.Minimum = 0;
+        reserveTopScoreUpDown.Name = "reserveTopScoreUpDown";
+        reserveTopScoreUpDown.Width = 70;
+        //
+        // nearDuplicateLabel
+        nearDuplicateLabel.Anchor = AnchorStyles.Left;
+        nearDuplicateLabel.AutoSize = true;
+        nearDuplicateLabel.Margin = new Padding(0, 7, 6, 0);
+        nearDuplicateLabel.Name = "nearDuplicateLabel";
+        nearDuplicateLabel.Text =
+            $"Near-duplicate overlap (1 = off, default {Defaults.NearDuplicateOverlap:0.00})";
+        //
+        // nearDuplicateUpDown
+        nearDuplicateUpDown.DecimalPlaces = 2;
+        nearDuplicateUpDown.Increment = 0.05M;
+        nearDuplicateUpDown.Margin = new Padding(0, 3, 0, 3);
+        nearDuplicateUpDown.Maximum = 1.00M;
+        nearDuplicateUpDown.Minimum = 0.50M;
+        nearDuplicateUpDown.Name = "nearDuplicateUpDown";
+        nearDuplicateUpDown.Width = 70;
+
+        // budgetNumericRow — how much a model may write, and how much context it is given
+        budgetNumericRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        budgetNumericRow.AutoSize = true;
+        budgetNumericRow.Controls.Add(decisionTokensLabel);
+        budgetNumericRow.Controls.Add(decisionTokensUpDown);
+        budgetNumericRow.Controls.Add(extractionReportLabel);
+        budgetNumericRow.Controls.Add(extractionReportUpDown);
+        budgetNumericRow.Margin = new Padding(0, 0, 0, 0);
+        budgetNumericRow.Name = "budgetNumericRow";
+        budgetNumericRow.WrapContents = true;
+
+        // decisionTokensLabel
+        decisionTokensLabel.Anchor = AnchorStyles.Left;
+        decisionTokensLabel.AutoSize = true;
+        decisionTokensLabel.Margin = new Padding(0, 7, 6, 0);
+        decisionTokensLabel.Name = "decisionTokensLabel";
+        decisionTokensLabel.Text = $"Decision tokens (0 = unbounded, default {Defaults.DecisionMaxTokens:N0})";
+
+        // decisionTokensUpDown
+        decisionTokensUpDown.Increment = 500;
+        decisionTokensUpDown.Margin = new Padding(0, 3, 16, 3);
+        decisionTokensUpDown.Maximum = 64000;
+        decisionTokensUpDown.Minimum = 0;
+        decisionTokensUpDown.Name = "decisionTokensUpDown";
+        decisionTokensUpDown.Width = 90;
+
+        // extractionReportLabel
+        extractionReportLabel.Anchor = AnchorStyles.Left;
+        extractionReportLabel.AutoSize = true;
+        extractionReportLabel.Margin = new Padding(0, 7, 6, 0);
+        extractionReportLabel.Name = "extractionReportLabel";
+        extractionReportLabel.Text = $"Extraction report chars (0 = whole, default {Defaults.ExtractionReportMaxChars:N0})";
+
+        // extractionReportUpDown
+        extractionReportUpDown.Increment = 1000;
+        extractionReportUpDown.Margin = new Padding(0, 3, 16, 3);
+        extractionReportUpDown.Maximum = 200000;
+        extractionReportUpDown.Minimum = 0;
+        extractionReportUpDown.Name = "extractionReportUpDown";
+        extractionReportUpDown.Width = 100;
+
+        // concurrencyNumericRow
+        concurrencyNumericRow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+        concurrencyNumericRow.AutoSize = true;
+        concurrencyNumericRow.Controls.Add(parallelRequestsLabel);
+        concurrencyNumericRow.Controls.Add(parallelRequestsUpDown);
+        concurrencyNumericRow.Controls.Add(parallelChecksLabel);
+        concurrencyNumericRow.Controls.Add(parallelChecksUpDown);
+        concurrencyNumericRow.Controls.Add(embeddingCharsLabel);
+        concurrencyNumericRow.Controls.Add(embeddingCharsUpDown);
+        concurrencyNumericRow.Margin = new Padding(0, 0, 0, 0);
+        concurrencyNumericRow.Name = "concurrencyNumericRow";
+        concurrencyNumericRow.WrapContents = true;
+
+        // parallelRequestsLabel
+        parallelRequestsLabel.Anchor = AnchorStyles.Left;
+        parallelRequestsLabel.AutoSize = true;
+        parallelRequestsLabel.Margin = new Padding(0, 7, 6, 0);
+        parallelRequestsLabel.Name = "parallelRequestsLabel";
+        parallelRequestsLabel.Text = $"Parallel requests (default {Defaults.MaxParallelRequests})";
+
+        // parallelRequestsUpDown
+        parallelRequestsUpDown.Margin = new Padding(0, 3, 16, 3);
+        parallelRequestsUpDown.Maximum = 64;
+        parallelRequestsUpDown.Minimum = 1;
+        parallelRequestsUpDown.Name = "parallelRequestsUpDown";
+        parallelRequestsUpDown.Width = 70;
+
+        // parallelChecksLabel
+        parallelChecksLabel.Anchor = AnchorStyles.Left;
+        parallelChecksLabel.AutoSize = true;
+        parallelChecksLabel.Margin = new Padding(0, 7, 6, 0);
+        parallelChecksLabel.Name = "parallelChecksLabel";
+        parallelChecksLabel.Text = $"Parallel checks (default {Defaults.MaxParallelChecks})";
+
+        // parallelChecksUpDown
+        parallelChecksUpDown.Margin = new Padding(0, 3, 16, 3);
+        parallelChecksUpDown.Maximum = 32;
+        parallelChecksUpDown.Minimum = 1;
+        parallelChecksUpDown.Name = "parallelChecksUpDown";
+        parallelChecksUpDown.Width = 70;
+
+        // embeddingCharsLabel
+        embeddingCharsLabel.Anchor = AnchorStyles.Left;
+        embeddingCharsLabel.AutoSize = true;
+        embeddingCharsLabel.Margin = new Padding(0, 7, 6, 0);
+        embeddingCharsLabel.Name = "embeddingCharsLabel";
+        embeddingCharsLabel.Text = $"Embedding input chars (default {Defaults.MaxEmbeddingInputCharacters:N0})";
+
+        // embeddingCharsUpDown
+        embeddingCharsUpDown.Increment = 1000;
+        embeddingCharsUpDown.Margin = new Padding(0, 3, 0, 3);
+        embeddingCharsUpDown.Maximum = 200000;
+        embeddingCharsUpDown.Minimum = 1000;
+        embeddingCharsUpDown.Name = "embeddingCharsUpDown";
+        embeddingCharsUpDown.Width = 100;
+
+        // coreQueriesOnlyCheckBox
+        coreQueriesOnlyCheckBox.AutoSize = true;
+        coreQueriesOnlyCheckBox.Margin = new Padding(0, 6, 0, 0);
+        coreQueriesOnlyCheckBox.Name = "coreQueriesOnlyCheckBox";
+        coreQueriesOnlyCheckBox.Text =
+            "Run only the queries the plans mark Core (skips roughly one query in seven)";
+        coreQueriesOnlyCheckBox.UseVisualStyleBackColor = true;
+
+        // embeddingBaseUrlLabel
+        embeddingBaseUrlLabel.Anchor = AnchorStyles.Left;
+        embeddingBaseUrlLabel.AutoSize = true;
+        embeddingBaseUrlLabel.Name = "embeddingBaseUrlLabel";
+        embeddingBaseUrlLabel.Text = "Embedding URL";
+
+        // embeddingBaseUrlTextBox
+        embeddingBaseUrlTextBox.Dock = DockStyle.Fill;
+        embeddingBaseUrlTextBox.Margin = new Padding(0, 3, 0, 3);
+        embeddingBaseUrlTextBox.Name = "embeddingBaseUrlTextBox";
+        embeddingBaseUrlTextBox.PlaceholderText = "leave empty to use the chat endpoint";
+
+        // embeddingApiKeyLabel
+        embeddingApiKeyLabel.Anchor = AnchorStyles.Left;
+        embeddingApiKeyLabel.AutoSize = true;
+        embeddingApiKeyLabel.Name = "embeddingApiKeyLabel";
+        embeddingApiKeyLabel.Text = "Embedding key";
+
+        // embeddingApiKeyTextBox
+        embeddingApiKeyTextBox.Dock = DockStyle.Fill;
+        embeddingApiKeyTextBox.Margin = new Padding(0, 3, 0, 3);
+        embeddingApiKeyTextBox.Name = "embeddingApiKeyTextBox";
+        embeddingApiKeyTextBox.PlaceholderText = "leave empty to use the chat key";
+        embeddingApiKeyTextBox.UseSystemPasswordChar = true;
+
+        // promptLogLabel
+        promptLogLabel.Anchor = AnchorStyles.Left;
+        promptLogLabel.AutoSize = true;
+        promptLogLabel.Name = "promptLogLabel";
+        promptLogLabel.Text = "Prompt logs";
+
+        // promptLogTextBox
+        promptLogTextBox.Dock = DockStyle.Fill;
+        promptLogTextBox.Margin = new Padding(0, 3, 8, 3);
+        promptLogTextBox.Name = "promptLogTextBox";
+        promptLogTextBox.PlaceholderText = "leave empty to write no prompt log";
+
+        // promptLogBrowseButton
+        promptLogBrowseButton.AutoSize = true;
+        promptLogBrowseButton.Margin = new Padding(0, 3, 0, 3);
+        promptLogBrowseButton.Name = "promptLogBrowseButton";
+        promptLogBrowseButton.Padding = new Padding(8, 2, 8, 2);
+        promptLogBrowseButton.Text = "Browse...";
+        promptLogBrowseButton.UseVisualStyleBackColor = true;
+        promptLogBrowseButton.Click += PromptLogBrowseButton_Click;
 
         // contextGroup
         contextGroup.AutoSize = true;
@@ -286,10 +1503,13 @@ partial class ConfigurationForm
         contextLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         contextLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         contextLayout.Dock = DockStyle.Fill;
-        contextLayout.RowCount = 1;
+        contextLayout.RowCount = 2;
         contextLayout.Controls.Add(documentFolderLabel, 0, 0);
         contextLayout.Controls.Add(documentFolderTextBox, 1, 0);
         contextLayout.Controls.Add(browseButton, 2, 0);
+        contextLayout.Controls.Add(promptLogLabel, 0, 1);
+        contextLayout.Controls.Add(promptLogTextBox, 1, 1);
+        contextLayout.Controls.Add(promptLogBrowseButton, 2, 1);
         contextLayout.Name = "contextLayout";
 
         // documentFolderLabel
@@ -312,18 +1532,12 @@ partial class ConfigurationForm
         browseButton.UseVisualStyleBackColor = true;
         browseButton.Click += BrowseButton_Click;
 
-        // clarificationCheckBox
-        clarificationCheckBox.AutoSize = true;
-        clarificationCheckBox.Margin = new Padding(0, 0, 0, 8);
-        clarificationCheckBox.Name = "clarificationCheckBox";
-        clarificationCheckBox.Text = "Ask for clarification when the prompt is ambiguous";
-        clarificationCheckBox.UseVisualStyleBackColor = true;
-
-        // buttonPanel
+        // buttonPanel — docked to the form itself, not the scrolling area, so Save/Cancel are
+        // always reachable regardless of scroll position.
         buttonPanel.AutoSize = true;
-        buttonPanel.Dock = DockStyle.Fill;
+        buttonPanel.Dock = DockStyle.Bottom;
         buttonPanel.FlowDirection = FlowDirection.RightToLeft;
-        buttonPanel.Margin = new Padding(0);
+        buttonPanel.Padding = new Padding(10);
         buttonPanel.Controls.Add(cancelButton);
         buttonPanel.Controls.Add(saveButton);
         buttonPanel.Name = "buttonPanel";
@@ -352,7 +1566,8 @@ partial class ConfigurationForm
         AutoScaleMode = AutoScaleMode.Font;
         CancelButton = cancelButton;
         ClientSize = new Size(720, 460);
-        Controls.Add(rootLayout);
+        Controls.Add(scrollPanel);
+        Controls.Add(buttonPanel);
         FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = false;
         MinimizeBox = false;
@@ -368,7 +1583,48 @@ partial class ConfigurationForm
         contextLayout.PerformLayout();
         contextGroup.ResumeLayout(false);
         contextGroup.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)extractionTokensUpDown).EndInit();
+        canonicalLayout.ResumeLayout(false);
+        canonicalLayout.PerformLayout();
+        canonicalGroup.ResumeLayout(false);
+        canonicalGroup.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)embeddingCharsUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)parallelChecksUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)parallelRequestsUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)extractionReportUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)decisionTokensUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)nearDuplicateUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)reserveTopScoreUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)reserveSectionUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)reserveCategoryUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)assertionDigestCharsUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)joinedAssertionsUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)maxImagesUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)minimumImageBytesUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)passagesPerGroupUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)seedUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)topPUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)temperatureUpDown).EndInit();
+        samplingRow.ResumeLayout(false);
+        samplingRow.PerformLayout();
+        reproducibilityLayout.ResumeLayout(false);
+        reproducibilityLayout.PerformLayout();
+        reproducibilityGroup.ResumeLayout(false);
+        reproducibilityGroup.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)searchResultsUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)chunkOverlapUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)chunkTokensUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)tenantUpDown).EndInit();
+        vectorNumericRow.ResumeLayout(false);
+        vectorNumericRow.PerformLayout();
+        vectorLayout.ResumeLayout(false);
+        vectorLayout.PerformLayout();
+        vectorGroup.ResumeLayout(false);
+        vectorGroup.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)embeddingDimensionsUpDown).EndInit();
         ((System.ComponentModel.ISupportInitialize)maxTokensUpDown).EndInit();
+        modelsNumericRow.ResumeLayout(false);
+        modelsNumericRow.PerformLayout();
         modelsLayout.ResumeLayout(false);
         modelsLayout.PerformLayout();
         modelsGroup.ResumeLayout(false);
@@ -379,6 +1635,8 @@ partial class ConfigurationForm
         connectionGroup.PerformLayout();
         rootLayout.ResumeLayout(false);
         rootLayout.PerformLayout();
+        scrollPanel.ResumeLayout(false);
+        scrollPanel.PerformLayout();
         ResumeLayout(false);
         PerformLayout();
     }
